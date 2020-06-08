@@ -223,6 +223,26 @@ class JuShuiTanController extends ApiController
         if (!empty($order_sn) && $order_sn) {
             $order = Db::table('yz_order')->where(['order_sn' => $order_sn, 'status' => 1])->first();
             if (!empty($order) && $order) {
+                $lc_id = $this->param['lc_id'];
+                if ($lc_id == 'ZTO.8' || $lc_id == 'ZTO.5' || $lc_id == 'ZTO.2' || $lc_id == 'ZTO.1' || $lc_id == 'ZTO') {
+                    $data['express_code'] = 'zhongtong'; //中通快递
+                } elseif ($lc_id == 'YMDD') {
+                    $data['express_code'] = 'yimidida';//壹米滴答
+                } elseif ($lc_id == 'TTKDEX') {
+                    $data['express_code'] = 'tiantian';//天天快递
+                } elseif ($lc_id == 'STO') {
+                    $data['express_code'] = 'shentong';//申通快递
+                } elseif ($lc_id == 'SF.9' || $lc_id == 'SF.10' || $lc_id == 'SF.1' || $lc_id == 'SF') {
+                    $data['express_code'] = 'shunfeng';     //顺丰快递
+                } elseif ($lc_id == 'POSTB.5' || $lc_id == 'POSTB') {
+                    $data['express_code'] = 'youzhengguonei'; //邮政快递
+                } elseif ($lc_id == 'HTKY') {
+                    $data['express_code'] = 'huitongkuaidi';//百世快递
+                } elseif ($lc_id == 'DBL') {
+                    $data['express_code'] = 'debangwuliu';//德邦物流
+                } else {
+                    $data['express_code'] = $lc_id;
+                }
                 $data['order_id'] = $order['id'];
                 $data['express_code'] = $this->param['lc_id'];
                 $data['express_company_name'] = $this->param['logistics_company'];
