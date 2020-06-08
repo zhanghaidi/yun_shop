@@ -1,0 +1,191 @@
+<!DOCTYPE html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width,user-scalable=no,initial-scale=1,maximum-scale=1,minimum-scale=1,viewport-fit=cover"><link rel="shortcut icon" href=./static/app/images/logo.jpg type=image/x-icon><link rel=stylesheet href=//at.alicdn.com/t/font_432132_bp5welx1hn5.css><link rel=stylesheet href=./static/app/mint-ui.css><link rel=stylesheet href=./static/app/ydui.px.css><link rel=stylesheet href=./static/app/swiper.min.css><style>/*提现*/
+      .tbbox_a .van-checkbox {
+        margin: 0.5rem 0 0 1.5rem;
+      }
+
+      /*报单系统*/
+      .van-cell__value .van-radio {
+        display: inline-block;
+      }
+
+      .mint-toast.is-placemiddle {
+        z-index: 2009;
+      }
+
+      .noVantRadio .van-radio__label {
+        line-height: 20px;
+        padding: 2px 8px;
+        margin-left: 0;
+      }
+
+      .noVantRadio .vantRadioshow .van-radio__label {
+        color: #fff;
+      }
+
+      /*商品详情*/
+      .noVantRadio .van-radio__icon {
+        display: none;
+      }
+
+      #balance_recharge .van-radio__icon,
+      #page .van-radio__icon,
+      #microshop_apply .van-radio__icon,
+      #withdrawal .van-radio__icon {
+        position: absolute;
+        right: 1rem;
+        /*margin-top: 1.2rem;*/
+      }
+
+      #global_dividend .van-ellipsis {
+        width: 6.5rem;
+        text-align: center;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        white-space: normal;
+        display: inline-block;
+      }
+
+      #global_dividend .van-tabs--line .van-tabs__wrap {
+        min-height: 44px;
+        height: auto;
+      }
+
+      #global_dividend .van-tab {
+        line-height: 20px;
+      }
+
+      #global_dividend .van-tabs__nav--line {
+        padding-top: 10px;
+      }
+
+      #global_dividend .van-tabs--line {
+        background: #fff;
+        padding-top: 65px;
+      }
+
+      #coupon_edit .van-overlay {
+        background: #fff;
+      }
+
+      #notice .van-tabs__wrap--scrollable .van-tab {
+        padding: 0 15px;
+        flex-basis: auto !important;
+      }
+
+      #notice .van-tabs__wrap--scrollable .van-tab--active .van-ellipsis {
+        border-bottom: solid 2px #f44;
+      }
+
+      .coupon-list-info .yd-checkbox-text {
+        display: none;
+      }
+
+      .list-paddingleft-2 {
+        padding-left: 40px;
+      }
+
+      #search-box-first .van-collapse-item__content {
+        padding: 0;
+      }
+
+      #search-box-first .van-icon-passed {
+        color: #e60012;
+      }
+
+      #diy-form .yd-cell-title {
+        color: #999;
+      }
+
+      #diy-form .yd-cell-left {
+        color: #333;
+      }
+
+      #diy-form .yd-cell {
+        background: none;
+      }
+
+      #diy-form .yd-textarea {
+        background: none;
+      }
+      .scroll-hide .yd-popup-content {
+        overflow: hidden;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+      #Activity ol {
+        list-style-type: decimal !important;
+      }</style><title></title><script type=text/javascript>(function(doc, win) {
+        var isAndroid = win.navigator.appVersion.match(/android/gi);
+        var isIPhone = win.navigator.appVersion.match(/iphone/gi);
+
+        var scale = 1.0;
+        var ratio = 1;
+        // if(isIPhone) {
+        //   if (window.devicePixelRatio == 2) {
+        //     scale *= 0.5;
+        //     ratio *= 2;
+        //   }
+        //   if (window.devicePixelRatio == 3) {
+        //     scale *= (1/3);
+        //     ratio *= 3;
+        //   }
+        // }
+        if (
+          !navigator.userAgent.match(
+            /(phone|pad|pod|iPhone|iPod|ios|iPad|android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i
+          )
+        ) {
+          var httpEquiv =
+            '<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />';
+          document.write(httpEquiv);
+        }
+
+        var text =
+          '<meta name="viewport" content="initial-scale=' +
+          scale +
+          ", maximum-scale=" +
+          scale +
+          "," +
+          " minimum-scale=" +
+          scale +
+          ", width=device-width," +
+          ' user-scalable=no" />';
+        document.write(text);
+
+        var docEl = doc.documentElement;
+        var resizeEvt =
+          "orientationchange" in window ? "orientationchange" : "resize";
+        var recalc = function() {
+          if (!isAndroid && !isIPhone) {
+            var clientWidth = 375;
+          } else {
+            var clientWidth = docEl.clientWidth;
+          }
+          if (!clientWidth) return;
+          docEl.style.fontSize = 16 * (clientWidth / 375) + "px";
+
+          // 解决部分rem特别大的问题
+          var docElFontSize = docEl.style.fontSize.replace(/px/gi, "");
+          var computedFontSize = win
+            .getComputedStyle(docEl)
+            ["font-size"].replace(/px/gi, "");
+          docElFontSize != computedFontSize &&
+            (docEl.style.fontSize =
+              (docElFontSize * docElFontSize) / computedFontSize + "px");
+        };
+        if (!doc.addEventListener) return;
+        recalc();
+        win.addEventListener(resizeEvt, recalc, false);
+        // doc.addEventListener("DOMContentLoaded", recalc, false);
+      })(document, window);</script><script type=text/javascript src=./static/app/TcPlayer-2.3.2.js charset=utf-8></script><script src=https://player.polyv.net/livesdk/polyv-live.min.js></script><script type=text/javascript src=./static/app/app-min.js></script><script src=./static/app/recorder-core.js></script><script src=./static/gov_province_city_area_id.js></script><script type=text/javascript src=./static/app/swiper.min.js></script><script type=text/javascript src=./static/app/vue.min.js></script><script type=text/javascript src=./static/app/vue-awesome-swiper.js></script><script type=text/javascript src=./static/app/vue-router1.min.js></script><script type=text/javascript src=./static/app/vuex.min.js></script><script type=text/javascript src=./static/app/axios.min.js></script><script type=text/javascript src=./static/app/ydui.px.js></script><script type=text/javascript src=./static/app/mint-ui.js></script><script type=text/javascript src="https://webapi.amap.com/maps?v=1.4.9&key=43de56d8e65fe042493541213d9ad7b0"></script><script type=text/javascript src="https://webapi.amap.com/maps?v=1.4.9&key=43de56d8e65fe042493541213d9ad7b0&plugin=AMap.Autocomplete"></script><script type=text/javascript src=./static/app/YdbOnline.js></script><script>var YDB_UUID = 0;
+      var senduid = function(uuid) {
+        YDB_UUID = uuid;
+        if (!YDB_UUID) {
+          YDB_UUID = 0;
+        }
+        window.localStorage.setItem("uuid", YDB_UUID);
+        // alert(YDB_UUID);
+      };</script><script type=text/javascript src=./static/app/apps.js></script><script type=text/javascript src=./static/app/fixifmheight.js charset=utf-8></script><script src=./static/app/jweixin-1.3.2.js type=text/javascript charset=utf-8></script><script src=static/app/core.js></script><script src=static/app/enc-base64.js></script><script src=static/app/cipher-core.js></script><script src=static/app/aes.js></script><script src=static/app/md5.js></script><link href=/addons/yun_shop/static/app/css/app.d829f627100ff6e51b19d7715c832cda.css rel=stylesheet></head><body><div id=app></div><script type=text/javascript src=/addons/yun_shop/static/app/js/manifest.5996026b1109c2a82bc2.js></script><script type=text/javascript src=/addons/yun_shop/static/app/js/vendor.4652fc9aedb6b0edf4e2.js></script><script type=text/javascript src=/addons/yun_shop/static/app/js/app.57943fee45eb736b48bf.js></script></body></html>

@@ -1,0 +1,6 @@
+[2020-06-05 10:52:23] production.INFO: 1.2385859489441 {"c":"site","a":"entry","m":"yun_shop","do":"member","route":"member.member.index","search":{"mid":"","realname":"","first_count":"","second_count":"","third_count":"","team_count":"","custom_value":"","level":"","groupid":"","isagent":"","followed":"","isblack":"","searchtime":"0","times":{"start":"2020-05-05 10:29","end":"2020-06-05 10:29"}}} 
+[2020-06-05 10:58:10] production.INFO: 1.2228307723999 {"c":"site","a":"entry","m":"yun_shop","do":"3980","route":"member.member"} 
+[2020-06-05 14:26:17] production.INFO: 1.0068211555481 {"url":"https://www.aijuyi.net/addons/yun_shop/?menu#/member/orderdetail/228?i=39&type=1&mid=125607&shop_id","i":"39","uuid":"0","mid":"125607","type":"1","shop_id":"null","route":"member.member.wxJsSdkConfig"} 
+[2020-06-05 16:10:02] production.INFO: 1.1571869850159 {"c":"site","a":"entry","m":"yun_shop","do":"9438","route":"setting.wechat-notice.index"} 
+[2020-06-05 16:10:04] production.INFO: 1.0255498886108 {"c":"site","a":"entry","m":"yun_shop","do":"1029","route":"setting.wechat-notice.index"} 
+[2020-06-05 16:51:18] production.INFO: 1.0767538547516 {"url":"https://www.aijuyi.net/addons/yun_shop/?menu#/member/orderList/0?i=39&type=1&mid=125607&shop_id","i":"39","uuid":"0","mid":"125607","type":"1","shop_id":"null","route":"member.member.wxJsSdkConfig"} 

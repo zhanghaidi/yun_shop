@@ -1,0 +1,6 @@
+[2020-06-07 01:01:01] production.ERROR: Cron run with manager id 244453 is with 120 seconds between last run too late.  
+[2020-06-07 14:44:48] production.ERROR: 订单测试 ["{\"id\":65,\"status\":\"waiting\",\"order_id\":237,\"created_at\":\"2020-06-07 14:44:44\",\"updated_at\":\"2020-06-07 14:44:44\",\"deleted_at\":null}"] 
+[2020-06-07 14:44:54] production.ERROR: 订单测试 ["{\"id\":66,\"status\":\"waiting\",\"order_id\":234,\"created_at\":\"2020-06-07 14:44:53\",\"updated_at\":\"2020-06-07 14:44:53\",\"deleted_at\":null}"] 
+[2020-06-07 15:03:57] production.ERROR: 订单测试 ["{\"id\":67,\"status\":\"waiting\",\"order_id\":235,\"created_at\":\"2020-06-07 15:03:55\",\"updated_at\":\"2020-06-07 15:03:55\",\"deleted_at\":null}"] 
+[2020-06-07 15:04:03] production.ERROR: 订单测试 ["{\"id\":68,\"status\":\"waiting\",\"order_id\":233,\"created_at\":\"2020-06-07 15:04:01\",\"updated_at\":\"2020-06-07 15:04:01\",\"deleted_at\":null}"] 
+[2020-06-07 15:57:43] production.ERROR: 订单测试 ["{\"id\":69,\"status\":\"waiting\",\"order_id\":232,\"created_at\":\"2020-06-07 15:57:41\",\"updated_at\":\"2020-06-07 15:57:41\",\"deleted_at\":null}"] 
