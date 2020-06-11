@@ -392,4 +392,140 @@ class OrderService
             OrderService::orderReceive(['order_id' => $order['id']]);
         }
     }
+
+    /**
+     *聚水潭签名
+    */
+    public static function generate_signature()
+    {
+
+        $sign_str = '';
+        // ksort($system_params);
+        $system_params = array(
+            'method' => 'jushuitan.orders.upload',
+            'partnerid' => config('jushuitan')['partnerid'],
+            'ts' => time(),
+            'token' => config('jushuitan')['token'],
+
+        );
+        //奇门接口
+        if (strstr($system_params['method'], 'jst')) {
+//            $method = str_replace('jst.', '', $system_params['method']);
+//            $jstsign = $method . $this->config->partner_id . "token" . $this->config->token . "ts" . $system_params['ts'] . $this->config->partner_key;
+//
+//            if ($this->config->debug_mode) echo '计算jstsign源串->' . $jstsign;
+//
+//            $system_params['jstsign'] = md5($jstsign);
+//
+//            //如果有业务参数则合并
+//            if ($params != null) {
+//                $system_params = array_merge($system_params, $params);
+//                ksort($system_params);
+//
+//                foreach ($system_params as $key => $value) {
+//                    if (is_array($value)) {
+//                        $sign_str .= $key . join(',', $value);
+//                        continue;
+//                    }
+//                    $sign_str .= $key . strval($value);
+//                }
+//            }
+//
+//            $system_params['sign'] = strtoupper(md5($this->config->taobao_secret . $sign_str . $this->config->taobao_secret));
+        } else  //普通接口
+        {
+            $no_exists_array = array('method', 'sign', 'partnerid', 'partnerkey');
+
+            $sign_str = $system_params['method'] . $system_params['partnerid'];
+
+            foreach ($system_params as $key => $value) {
+
+                if (in_array($key, $no_exists_array)) {
+                    continue;
+                }
+                $sign_str .= $key . strval($value);
+            }
+
+            $sign_str .= config('jushuitan')['partnerkey'];
+            $system_params['sign'] = md5($sign_str);
+        }
+
+        return $system_params;
+
+    }
+
+
+    /**
+     * url  聚水潭线上地址
+     * data 请求聚水潭参数  参考：https://open.jushuitan.com/document/2137.html
+     * url_params  签名
+     *action 聚水潭接口名称
+    */
+    public static function post($url, $data, $url_params, $action)
+    {
+        $post_data = '';
+        try {
+            if (strstr($action, 'jst')) {
+                foreach ($data as $key => $value) {
+                    if (is_array($value)) {
+                        $url_params[$key] = join(',', $value);
+                        continue;
+                    }
+                    $url_params[$key] = $value;
+                }
+            } else {
+                $post_data = json_encode($data);
+
+            }
+
+            $url .= '?' . http_build_query($url_params);
+          //  if ($this->config->debug_mode) echo $url;
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                'Content-Type: application/x-www-form-urlencoded'
+            ));
+
+            $result = curl_exec($ch);
+            if (curl_errno($ch)) {
+                print curl_error($ch);
+            }
+            curl_close($ch);
+            return json_decode($result, true);
+
+        } catch (Exception $e) {
+            return null;
+        }
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
