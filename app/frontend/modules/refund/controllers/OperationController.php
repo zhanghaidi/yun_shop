@@ -15,6 +15,8 @@ use app\common\modules\refund\services\RefundService;
 use app\frontend\modules\refund\models\RefundApply;
 use app\frontend\modules\refund\services\RefundMessageService;
 use app\frontend\modules\refund\services\RefundOperationService;
+use Illuminate\Support\Facades\DB;
+use app\frontend\modules\order\services\OrderService;
 
 class OperationController extends ApiController
 {
@@ -27,13 +29,47 @@ class OperationController extends ApiController
      */
     public function send()
     {
-        $this->validate([
-            'refund_id' => 'required|filled|integer',
-            'express_company_code' => 'required|string',
-            'express_company_name' => 'required|string',
-            'express_sn' => 'required|filled|string',
-        ]);
-        RefundOperationService::refundSend();
+        $request = request()->input();
+//        $this->validate([
+//            'refund_id' => 'required|filled|integer',
+//            'express_company_code' => 'required|string',
+//            'express_company_name' => 'required|string',
+//            'express_sn' => 'required|filled|string',
+//        ]);
+//        RefundOperationService::refundSend();
+
+        if (!empty($request['refund_id'])) {
+            $data = Db::table('yz_order_refund')->where(['id' => $request['refund_id']])->first();
+            $order_data = Db::table('yz_order')->where(['id' => $data['order_id']])->first();
+            $params = array(
+                [
+                    'shop_id' => 10820686,
+                    'outer_as_id' => $data['refund_sn'],
+                    'so_id' => $order_data['order_sn'],
+                    'type' => '普通退货',
+                    'logistics_company' => $request['express_company_name'],
+                    'l_id' => $request['express_sn'],
+                    'shop_status' => 'WAIT_SELLER_CONFIRM_GOODS',
+                    'remark' => $data['content'],
+                    'good_status' => 'BUYER_RETURNED_GOODS',
+                    'question_type' => '买家退款，退货',
+                    'total_amount' => floatval($data['price']),
+                    'refund' => floatval($data['price']),
+                    'payment' => floatval(0),
+                    'iteams' => [
+                        'sku_id' => 'TP0024',
+                        'qty' => $order_data['goods_total'],
+                        'amount' => $data['price'],
+                        'type' => '退货',
+                    ],
+                ]
+            );
+
+
+            $result = OrderService::post($params, 'aftersale.upload');
+            var_dump(json_encode($params));
+            die;
+        }
         return $this->successJson();
     }
 

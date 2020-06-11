@@ -34,7 +34,7 @@ class JuShuiTanController extends ApiController
             ->where('o.status', 1)
             ->where('o.jushuitan_status', 0)
             ->orderBy('o.create_time', 'DESC')
-            ->take(3)
+            ->take(1)
             ->get();
 
         foreach ($ret as $k => $v) {
@@ -97,12 +97,8 @@ class JuShuiTanController extends ApiController
                 "items" => $array,
             ]
         );
-//        var_dump(json_encode($params));
-//        die;
-        $ret = OrderService::generate_signature();
-        $url = 'https://open.erp321.com/api/open/query.aspx';        //请求网址
-        $result = OrderService::post($url, $params, $ret, 'jushuitan.orders.upload');
 
+        $result = OrderService::post($params, 'jushuitan.orders.upload');
         if (!empty($result) && $result['code'] == 0) {
             $data['jushuitan_status'] = '1';
             DB::table('yz_order')->where(['id' => $order_data['id']])->update($data);
@@ -113,7 +109,6 @@ class JuShuiTanController extends ApiController
 
     }
 
-    
 
     public function sendorder()
     {
@@ -147,8 +142,8 @@ class JuShuiTanController extends ApiController
                 $data['express_sn'] = $this->param['l_id'];
                 $data['confirmsend'] = "yes";
                 // OrderService::orderSend($data);
-                $this->ju_log("订单{$order_sn}发货成功",1);
-                echo json_encode(['code'=>"0",'msg'=>'执行成功'],JSON_UNESCAPED_UNICODE);
+                $this->ju_log("订单{$order_sn}发货成功", 1);
+                echo json_encode(['code' => "0", 'msg' => '执行成功'], JSON_UNESCAPED_UNICODE);
             } else {
                 $this->ju_log("订单{$order_sn}发货失败：订单已发货，或被删除");
             }
@@ -159,14 +154,14 @@ class JuShuiTanController extends ApiController
     }
 
 
-    public function ju_log($query='',$type='')
+    public function ju_log($query = '', $type = '')
     {
-        if($type==1){
+        if ($type == 1) {
             $logFile = fopen(
                 storage_path('logs/jushuitan' . DIRECTORY_SEPARATOR . date('Y-m-d') . '_success.log'),
                 'a+'
             );
-        }else{
+        } else {
             $logFile = fopen(
                 storage_path('logs/jushuitan' . DIRECTORY_SEPARATOR . date('Y-m-d') . '_failed.log'),
                 'a+'
