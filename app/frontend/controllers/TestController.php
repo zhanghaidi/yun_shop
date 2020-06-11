@@ -13,6 +13,9 @@ use Yunshop\Love\Modules\Goods\GoodsLoveRepository;
 
 class TestController extends BaseController
 {
+    public function test(){
+        return $this->successJson([1,2,3]);
+    }
     public function index()
     {
         $order = Order::find(45751);
