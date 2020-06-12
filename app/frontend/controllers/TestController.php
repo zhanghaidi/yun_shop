@@ -27,6 +27,7 @@ class TestController extends BaseController
             'created_at' => time()
         ];
         $this->dispatch((new addGoodsCouponQueueJob($queueData)));
+        return json([1,2,3]);
     }
     public function index()
     {
