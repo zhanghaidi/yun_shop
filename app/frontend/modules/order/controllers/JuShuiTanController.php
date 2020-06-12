@@ -118,27 +118,38 @@ class JuShuiTanController extends ApiController
             if (!empty($order) && $order) {
                 $lc_id = $this->param['lc_id'];
                 if ($lc_id == 'ZTO.8' || $lc_id == 'ZTO.5' || $lc_id == 'ZTO.2' || $lc_id == 'ZTO.1' || $lc_id == 'ZTO') {
-                    $data['express_code'] = 'zhongtong'; //中通快递
+                    $data['express_code'] = 'zhongtong'; //中通速递
+                    $data['express_company_name'] = '中通速递';
                 } elseif ($lc_id == 'YMDD') {
                     $data['express_code'] = 'yimidida';//壹米滴答
+                    $data['express_company_name'] = '壹米滴答';
                 } elseif ($lc_id == 'TTKDEX') {
                     $data['express_code'] = 'tiantian';//天天快递
+                    $data['express_company_name'] = '天天快递';
                 } elseif ($lc_id == 'STO') {
                     $data['express_code'] = 'shentong';//申通快递
+                    $data['express_company_name'] = '申通快递';
                 } elseif ($lc_id == 'SF.9' || $lc_id == 'SF.10' || $lc_id == 'SF.1' || $lc_id == 'SF') {
-                    $data['express_code'] = 'shunfeng';     //顺丰快递
+                    $data['express_code'] = 'shunfeng';     //顺丰速运
+                    $data['express_company_name'] = '顺丰速运';
                 } elseif ($lc_id == 'POSTB.5' || $lc_id == 'POSTB') {
                     $data['express_code'] = 'youzhengguonei'; //邮政快递
+                    $data['express_company_name'] = '邮政快递包裹';
                 } elseif ($lc_id == 'HTKY') {
                     $data['express_code'] = 'huitongkuaidi';//百世快递
+                    $data['express_company_name'] = '百世快递';
                 } elseif ($lc_id == 'DBL') {
                     $data['express_code'] = 'debangwuliu';//德邦物流
+                    $data['express_company_name'] = '德邦物流';
+                }elseif($lc_id=='JD'){
+                    $data['express_code'] = 'debangwuliu';//京东快递
+                    $data['express_company_name'] = '京东快递';
                 } else {
                     $data['express_code'] = $lc_id;
+                    $data['express_company_name'] = '自提自送';
                 }
                 $data['order_id'] = $order['id'];
                 $data['express_code'] = $this->param['lc_id'];
-                $data['express_company_name'] = $this->param['logistics_company'];
                 $data['express_sn'] = $this->param['l_id'];
                 $data['confirmsend'] = "yes";
                 // OrderService::orderSend($data);
