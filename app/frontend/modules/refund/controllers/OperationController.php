@@ -30,13 +30,13 @@ class OperationController extends ApiController
     public function send()
     {
         $request = request()->input();
-//        $this->validate([
-//            'refund_id' => 'required|filled|integer',
-//            'express_company_code' => 'required|string',
-//            'express_company_name' => 'required|string',
-//            'express_sn' => 'required|filled|string',
-//        ]);
-//        RefundOperationService::refundSend();
+        $this->validate([
+            'refund_id' => 'required|filled|integer',
+            'express_company_code' => 'required|string',
+            'express_company_name' => 'required|string',
+            'express_sn' => 'required|filled|string',
+        ]);
+        RefundOperationService::refundSend();
 
         if (!empty($request['refund_id'])) {
             $data = Db::table('yz_order_refund')->where(['id' => $request['refund_id']])->first();
@@ -62,7 +62,7 @@ class OperationController extends ApiController
                     "question_type" => '买家退款，退货',
                     "total_amount" => floatval($data['price']),
                     "refund" => floatval($data['price']),
-                    "payment" => floatval(12),
+                    "payment" => floatval(0),
                     "iteams" => $array,
 
                 ]
@@ -70,12 +70,12 @@ class OperationController extends ApiController
 
             $result = OrderService::post($params, 'aftersale.upload');
             if (!empty($result) && $result['code'] == 0) {
-                echo '退款，退货聚水潭成功' . $order_data['id'];
+                return $this->successJson();
             } else {
-                echo $result;
+                return $this->errorJson('物流添加失败，请联系管理员');
             }
         }
-        return $this->successJson();
+
     }
 
     /**

@@ -141,7 +141,7 @@ class JuShuiTanController extends ApiController
                 } elseif ($lc_id == 'DBL') {
                     $data['express_code'] = 'debangwuliu';//德邦物流
                     $data['express_company_name'] = '德邦物流';
-                }elseif($lc_id=='JD'){
+                } elseif ($lc_id == 'JD') {
                     $data['express_code'] = 'debangwuliu';//京东快递
                     $data['express_company_name'] = '京东快递';
                 } else {
@@ -152,7 +152,7 @@ class JuShuiTanController extends ApiController
                 $data['express_code'] = $this->param['lc_id'];
                 $data['express_sn'] = $this->param['l_id'];
                 $data['confirmsend'] = "yes";
-                // OrderService::orderSend($data);
+                OrderService::orderSend($data);
                 $this->ju_log("订单{$order_sn}发货成功", 1);
                 echo json_encode(['code' => "0", 'msg' => '执行成功'], JSON_UNESCAPED_UNICODE);
             } else {
@@ -183,5 +183,12 @@ class JuShuiTanController extends ApiController
         fclose($logFile);
     }
 
+
+    public function refund_order()
+    {
+        file_put_contents('luyang.txt', print_r($this->param, true));
+        var_dump('6666');
+        die;
+    }
 
 }
