@@ -41,34 +41,39 @@ class OperationController extends ApiController
         if (!empty($request['refund_id'])) {
             $data = Db::table('yz_order_refund')->where(['id' => $request['refund_id']])->first();
             $order_data = Db::table('yz_order')->where(['id' => $data['order_id']])->first();
+            $array[] =
+                [
+                    'sku_id' => 'TP0024',
+                    'qty' => floatval($order_data['goods_total']),
+                    'amount' => floatval($data['price']),
+                    'type' => '退货',
+                ];
             $params = array(
                 [
-                    'shop_id' => 10820686,
-                    'outer_as_id' => $data['refund_sn'],
-                    'so_id' => $order_data['order_sn'],
-                    'type' => '普通退货',
-                    'logistics_company' => $request['express_company_name'],
-                    'l_id' => $request['express_sn'],
-                    'shop_status' => 'WAIT_SELLER_CONFIRM_GOODS',
-                    'remark' => $data['content'],
-                    'good_status' => 'BUYER_RETURNED_GOODS',
-                    'question_type' => '买家退款，退货',
-                    'total_amount' => floatval($data['price']),
-                    'refund' => floatval($data['price']),
-                    'payment' => floatval(0),
-                    'iteams' => [
-                        'sku_id' => 'TP0024',
-                        'qty' => $order_data['goods_total'],
-                        'amount' => $data['price'],
-                        'type' => '退货',
-                    ],
+                    "shop_id" => 10820686,
+                    "outer_as_id" => $data['refund_sn'],
+                    "so_id" => $order_data['order_sn'],
+                    "type" => '普通退货',
+                    "logistics_company" => $request['express_company_name'],
+                    "l_id" => $request['express_sn'],
+                    "shop_status" => 'WAIT_SELLER_CONFIRM_GOODS',
+                    "remark" => $data['content'],
+                    "good_status" => 'BUYER_RETURNED_GOODS',
+                    "question_type" => '买家退款，退货',
+                    "total_amount" => floatval($data['price']),
+                    "refund" => floatval($data['price']),
+                    "payment" => floatval(12),
+                    "iteams" => $array,
+
                 ]
             );
 
-
             $result = OrderService::post($params, 'aftersale.upload');
-            var_dump(json_encode($params));
-            die;
+            if (!empty($result) && $result['code'] == 0) {
+                echo '退款，退货聚水潭成功' . $order_data['id'];
+            } else {
+                echo $result;
+            }
         }
         return $this->successJson();
     }
