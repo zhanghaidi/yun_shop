@@ -29,7 +29,6 @@ class addGoodsCouponQueueJob implements ShouldQueue
      */
     public function handle()
     {
-        sleep(30);
         GoodsCouponQueue::insert($this->queueData);
     }
 }
