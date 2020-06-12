@@ -9,12 +9,24 @@ use app\common\models\Order;
 use app\common\modules\goods\GoodsRepository;
 use app\common\modules\option\OptionRepository;
 use app\frontend\models\Goods;
+use app\Jobs\addGoodsCouponQueueJob;
 use Yunshop\Love\Modules\Goods\GoodsLoveRepository;
 
 class TestController extends BaseController
 {
     public function test(){
-        return $this->successJson([1,2,3]);
+//        return json([1,2,3]);
+        $queueData = [
+            'uniacid' => \YunShop::app()->uniacid,
+            'goods_id' => 'laoge001',
+            'uid' => 'uid-123321',
+            'coupon_id' => 'coupon-456654',
+            'send_num' => '123',
+            'end_send_num' => 0,
+            'status' => 0,
+            'created_at' => time()
+        ];
+        $this->dispatch((new addGoodsCouponQueueJob($queueData)));
     }
     public function index()
     {
