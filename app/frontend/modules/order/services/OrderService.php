@@ -398,13 +398,13 @@ class OrderService
     /**
      *聚水潭签名
      */
-    public static function generate_signature()
+    public static function generate_signature($action = '')
     {
 
         $sign_str = '';
         // ksort($system_params);
         $system_params = array(
-            'method' => 'jushuitan.orders.upload',
+            'method' => $action,
             'partnerid' => config('jushuitan')['partnerid'],
             'ts' => time(),
             'token' => config('jushuitan')['token'],
@@ -412,28 +412,7 @@ class OrderService
         );
         //奇门接口
         if (strstr($system_params['method'], 'jst')) {
-//            $method = str_replace('jst.', '', $system_params['method']);
-//            $jstsign = $method . $this->config->partner_id . "token" . $this->config->token . "ts" . $system_params['ts'] . $this->config->partner_key;
-//
-//            if ($this->config->debug_mode) echo '计算jstsign源串->' . $jstsign;
-//
-//            $system_params['jstsign'] = md5($jstsign);
-//
-//            //如果有业务参数则合并
-//            if ($params != null) {
-//                $system_params = array_merge($system_params, $params);
-//                ksort($system_params);
-//
-//                foreach ($system_params as $key => $value) {
-//                    if (is_array($value)) {
-//                        $sign_str .= $key . join(',', $value);
-//                        continue;
-//                    }
-//                    $sign_str .= $key . strval($value);
-//                }
-//            }
-//
-//            $system_params['sign'] = strtoupper(md5($this->config->taobao_secret . $sign_str . $this->config->taobao_secret));
+
         } else  //普通接口
         {
             $no_exists_array = array('method', 'sign', 'partnerid', 'partnerkey');
@@ -465,7 +444,7 @@ class OrderService
     public static function post($data, $action)
     {
         $url = OrderService::$ju_url;
-        $url_params = OrderService::generate_signature();
+        $url_params = OrderService::generate_signature($action);
         $post_data = '';
         try {
             if (strstr($action, 'jst')) {
