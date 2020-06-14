@@ -186,9 +186,15 @@ class JuShuiTanController extends ApiController
 
     public function refund_order()
     {
-        file_put_contents('luyang.txt', print_r($this->param, true));
-        var_dump('6666');
-        die;
+        $refund_sn=$this->param['outer_as_id'];
+        if(!empty($outer_id)){
+            $data['status'] = '8';
+            DB::table('yz_order_refund')->where(['refund_sn' => $refund_sn])->update($data);
+            echo json_encode(['code' => "0", 'msg' => '执行成功'], JSON_UNESCAPED_UNICODE);
+        }else{
+            echo json_encode(['code' => "1", 'msg' => '接收失败'], JSON_UNESCAPED_UNICODE);
+        }
+
     }
 
 }
