@@ -504,7 +504,7 @@ class Member extends BackendModel
 
         if (1 != $model->inviter && 2 != $model->status) {
             $relation = new MemberRelation();
-            //$relation->becomeChildAgent($mid, $model);
+            $relation->becomeChildAgent($mid, $model);
         }
 
         if ($mark_id && $mark) {
