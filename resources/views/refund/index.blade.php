@@ -77,7 +77,7 @@
                 </div>
             </div>
         @endif
-        @if ($order['has_one_refund_apply']['is_refunding'])
+        @if ($order['has_one_refund_apply']['is_refunding'] || $order['has_one_refund_apply']['status']==8)
         <div class="form-group">
             <label class="col-xs-12 col-sm-3 col-md-2 control-label"> </label>
             <div class="col-sm-9 col-xs-12">
