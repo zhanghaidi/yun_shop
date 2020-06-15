@@ -131,7 +131,16 @@ class MemberCouponController extends ApiController
             return $this->errorJson('没有找到记录', []);
         }
         $coupons = $coupons->paginate($pageSize)->toArray();
-
+        if (!empty($coupons)) {
+            $time = time();
+            $data = $coupons['data'];
+            foreach ($data as $key => $v) {
+                if (strtotime($v['time_end']) < $time) {
+                    unset($data[$key]);
+                }
+            }
+            $coupons['data'] = $data;
+        }
         //添加"是否可领取" & "是否已抢光" & "是否已领取"的标识
         $couponsData = self::getCouponData($coupons, $memberLevel);
 
@@ -147,10 +156,10 @@ class MemberCouponController extends ApiController
         $uid = \YunShop::app()->getMemberId();
         $member = MemberShopInfo::getMemberShopInfo($uid);
         if (empty($member)) {
-            if(is_null($integrated)){
+            if (is_null($integrated)) {
                 return $this->errorJson('没有找到该用户', []);
-            }else{
-                return show_json(0,'没有找到该用户');
+            } else {
+                return show_json(0, '没有找到该用户');
             }
         }
         $memberLevel = $member->level_id;
@@ -160,10 +169,10 @@ class MemberCouponController extends ApiController
             ->orderBy('display_order', 'desc')
             ->orderBy('updated_at', 'desc');
         if ($coupons->get()->isEmpty()) {
-            if(is_null($integrated)){
+            if (is_null($integrated)) {
                 return $this->errorJson('没有找到记录', []);
-            }else{
-                return show_json(0,'没有找到记录');
+            } else {
+                return show_json(0, '没有找到记录');
             }
         }
         $coupons_data['data'] = $coupons->get()->toArray();
@@ -188,7 +197,7 @@ class MemberCouponController extends ApiController
             } elseif ($v['get_max'] == self::NO_LIMIT) {
                 $coupons_data['data'][$k]['api_remaining'] = -1;
             }
-           
+
             //添加优惠券使用范围描述
             switch ($v['use_type']) {
 
@@ -209,10 +218,10 @@ class MemberCouponController extends ApiController
                     break;
             }
         }
-        if(is_null($integrated)){
+        if (is_null($integrated)) {
             return $this->successJson('ok', $coupons_data);
-        }else{
-            return show_json(1,$coupons_data);
+        } else {
+            return show_json(1, $coupons_data);
         }
     }
 
@@ -296,14 +305,14 @@ class MemberCouponController extends ApiController
             $coupons[$k]['belongs_to_coupon']['deduct'] = intval($coupons[$k]['belongs_to_coupon']['deduct']);
             $coupons[$k]['belongs_to_coupon']['discount'] = intval($coupons[$k]['belongs_to_coupon']['discount']);
 
-            if(app('plugins')->isEnabled('hotel')){
-                if($v['belongs_to_coupon']['use_type'] == Coupon::COUPON_ONE_HOTEL_USE){
-                    $find = CouponHotel::where('coupon_id',$v['belongs_to_coupon']['id'])->first();
+            if (app('plugins')->isEnabled('hotel')) {
+                if ($v['belongs_to_coupon']['use_type'] == Coupon::COUPON_ONE_HOTEL_USE) {
+                    $find = CouponHotel::where('coupon_id', $v['belongs_to_coupon']['id'])->first();
                     $coupons[$k]['belongs_to_coupon']['hotel_ids'] = $find->hotel_id;
-                }elseif ($v['belongs_to_coupon']['use_type'] == Coupon::COUPON_MORE_HOTEL_USE){
-                    $finds = CouponHotel::where('coupon_id',$v['belongs_to_coupon']['id'])->get();
+                } elseif ($v['belongs_to_coupon']['use_type'] == Coupon::COUPON_MORE_HOTEL_USE) {
+                    $finds = CouponHotel::where('coupon_id', $v['belongs_to_coupon']['id'])->get();
                     $findsArr = [];
-                    foreach ($finds as $find_v){
+                    foreach ($finds as $find_v) {
                         $findsArr[] = $find_v->hotel_id;
                     }
                     $coupons[$k]['belongs_to_coupon']['hotel_ids'] = $findsArr;
@@ -343,14 +352,14 @@ class MemberCouponController extends ApiController
             $coupons[$k]['belongs_to_coupon']['deduct'] = intval($coupons[$k]['belongs_to_coupon']['deduct']);
             $coupons[$k]['belongs_to_coupon']['discount'] = intval($coupons[$k]['belongs_to_coupon']['discount']);
 
-            if(app('plugins')->isEnabled('hotel')){
-                if($v['belongs_to_coupon']['use_type'] == Coupon::COUPON_ONE_HOTEL_USE){
-                    $find = CouponHotel::where('coupon_id',$v['belongs_to_coupon']['id'])->first();
+            if (app('plugins')->isEnabled('hotel')) {
+                if ($v['belongs_to_coupon']['use_type'] == Coupon::COUPON_ONE_HOTEL_USE) {
+                    $find = CouponHotel::where('coupon_id', $v['belongs_to_coupon']['id'])->first();
                     $coupons[$k]['belongs_to_coupon']['hotel_ids'] = $find->hotel_id;
-                }elseif ($v['belongs_to_coupon']['use_type'] == Coupon::COUPON_MORE_HOTEL_USE){
-                    $finds = CouponHotel::where('coupon_id',$v['belongs_to_coupon']['id'])->get();
+                } elseif ($v['belongs_to_coupon']['use_type'] == Coupon::COUPON_MORE_HOTEL_USE) {
+                    $finds = CouponHotel::where('coupon_id', $v['belongs_to_coupon']['id'])->get();
                     $findsArr = [];
-                    foreach ($finds as $find_v){
+                    foreach ($finds as $find_v) {
                         $findsArr[] = $find_v->hotel_id;
                     }
                     $coupons[$k]['belongs_to_coupon']['hotel_ids'] = $findsArr;
@@ -384,14 +393,14 @@ class MemberCouponController extends ApiController
         foreach ($coupons as $k => $v) {
             $coupons[$k]['belongs_to_coupon']['deduct'] = intval($coupons[$k]['belongs_to_coupon']['deduct']);
             $coupons[$k]['belongs_to_coupon']['discount'] = intval($coupons[$k]['belongs_to_coupon']['discount']);
-            if(app('plugins')->isEnabled('hotel')){
-                if($v['belongs_to_coupon']['use_type'] == Coupon::COUPON_ONE_HOTEL_USE){
-                    $find = CouponHotel::where('coupon_id',$v['belongs_to_coupon']['id'])->first();
+            if (app('plugins')->isEnabled('hotel')) {
+                if ($v['belongs_to_coupon']['use_type'] == Coupon::COUPON_ONE_HOTEL_USE) {
+                    $find = CouponHotel::where('coupon_id', $v['belongs_to_coupon']['id'])->first();
                     $coupons[$k]['belongs_to_coupon']['hotel_ids'] = $find->hotel_id;
-                }elseif ($v['belongs_to_coupon']['use_type'] == Coupon::COUPON_MORE_HOTEL_USE){
-                    $finds = CouponHotel::where('coupon_id',$v['belongs_to_coupon']['id'])->get();
+                } elseif ($v['belongs_to_coupon']['use_type'] == Coupon::COUPON_MORE_HOTEL_USE) {
+                    $finds = CouponHotel::where('coupon_id', $v['belongs_to_coupon']['id'])->get();
                     $findsArr = [];
-                    foreach ($finds as $find_v){
+                    foreach ($finds as $find_v) {
                         $findsArr[] = $find_v->hotel_id;
                     }
                     $coupons[$k]['belongs_to_coupon']['hotel_ids'] = $findsArr;
@@ -436,8 +445,8 @@ class MemberCouponController extends ApiController
                 break;
             case Coupon::COUPON_ONE_HOTEL_USE:
                 $res = '适用于酒店 :';
-                if(app('plugins')->isEnabled('hotel')){
-                    $coupon_hotel = CouponHotel::where('coupon_id',$couponInArrayFormat['id'])->with(['hotel' => function ($query){
+                if (app('plugins')->isEnabled('hotel')) {
+                    $coupon_hotel = CouponHotel::where('coupon_id', $couponInArrayFormat['id'])->with(['hotel' => function ($query) {
                         $query->select('hotel_name');
                     }])->first();
                     $res .= $coupon_hotel->hotel->hotel_name;
@@ -446,12 +455,12 @@ class MemberCouponController extends ApiController
                 break;
             case Coupon::COUPON_MORE_HOTEL_USE:
                 $res = '适用于下列酒店: ';
-                if(app('plugins')->isEnabled('hotel')){
+                if (app('plugins')->isEnabled('hotel')) {
                     $hotel_arr = [];
-                    $coupon_hotels = CouponHotel::where('coupon_id',$couponInArrayFormat['id'])->with(['hotel' => function ($query){
+                    $coupon_hotels = CouponHotel::where('coupon_id', $couponInArrayFormat['id'])->with(['hotel' => function ($query) {
                         $query->select('hotel_name');
                     }])->get();
-                    foreach ($coupon_hotels as $v){
+                    foreach ($coupon_hotels as $v) {
                         $hotel_arr[] = $v->hotel->hotel_name;
                     }
                     $res .= implode(',', $hotel_arr);

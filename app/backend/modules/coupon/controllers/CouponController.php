@@ -1,4 +1,5 @@
 <?php
+
 namespace app\backend\modules\coupon\controllers;
 
 use app\backend\modules\coupon\models\HotelCoupon;
@@ -87,9 +88,22 @@ class CouponController extends BaseController
 
         //表单验证
         if ($_POST) {
+            $time_days = $couponRequest['time_days'];
+            if (!empty($time_days) && $time_days <= 100) {
+                if ($time_days == 0) {
+                    $couponRequest['time_start'] = strtotime(date('Y-m-d 00:00:00'));
+                    $couponRequest['time_end'] = strtotime(date('Y-m-d 00:00:00', strtotime('+300 day')));
+                } else {
+                    $couponRequest['time_start'] = strtotime(date('Y-m-d 00:00:00'));
+                    $couponRequest['time_end'] = strtotime(date('Y-m-d 00:00:00', strtotime('+' . $time_days . ' day')));
+                }
+            } else {
+                $this->error('优惠券时间最大填写值为100!');
+            }
+
             if (\YunShop::request()->goods_id) {
                 if (count($couponRequest['goods_id']) > 1) {
-                   return $this->message('优惠券创建失败,兑换券只能指定一个商品');
+                    return $this->message('优惠券创建失败,兑换券只能指定一个商品');
                 }
             }
             $coupon = new HotelCoupon();
@@ -125,7 +139,7 @@ class CouponController extends BaseController
         if (!$coupon_id) {
             $this->error('请传入正确参数.');
         }
-        
+
         //获取会员等级列表
         $memberLevels = MemberLevel::getMemberLevelList();
 
