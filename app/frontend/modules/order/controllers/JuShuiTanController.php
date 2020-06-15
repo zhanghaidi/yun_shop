@@ -34,31 +34,33 @@ class JuShuiTanController extends ApiController
             ->where('o.status', 1)
             ->where('o.jushuitan_status', 0)
             ->orderBy('o.create_time', 'DESC')
-            ->take(1)
+            ->take(10)
             ->get();
 
-        foreach ($ret as $k => $v) {
-            //if ($now_time - $v['pay_time'] > 1800) {
-            $addres = explode(" ", $v['address']);
-            $order_goods = Db::table('yz_order_goods')->where(['order_id' => $v['id']])->get();
-            $array = [];
-            foreach ($order_goods as $key => $val) {
-                $array[] =
-                    [
-                        'sku_id' => 'TP0024',
-                        'shop_sku_id' => 'SKU A1',
-                        'amount' => floatval($val['goods_price']),
-                        'base_price' => floatval($val['goods_price']),
-                        'qty' => $val['total'],
-                        'name' => $val['title'],
-                        'outer_oi_id' => strval($val['id']),
-                        'properties_value' => $val['goods_option_title']
-                    ];
+        if (!empty($ret)) {
+            foreach ($ret as $k => $v) {
+                if ($now_time - $v['pay_time'] > 300) {
+                    $addres = explode(" ", $v['address']);
+                    $order_goods = Db::table('yz_order_goods')->where(['order_id' => $v['id']])->get();
+                    $array = [];
+                    foreach ($order_goods as $key => $val) {
+                        $array[] =
+                            [
+                                'sku_id' => 'TP0024',
+                                'shop_sku_id' => 'SKU A1',
+                                'amount' => floatval($val['goods_price']),
+                                'base_price' => floatval($val['goods_price']),
+                                'qty' => $val['total'],
+                                'name' => $val['title'],
+                                'outer_oi_id' => strval($val['id']),
+                                'properties_value' => $val['goods_option_title']
+                            ];
 
+                    }
+
+                    $this->jushuitan($v, $addres[0], $addres[1], $addres[2], $addres[3], $array);
+                }
             }
-
-            $this->jushuitan($v, $addres[0], $addres[1], $addres[2], $addres[3], $array);
-            //}
         }
 
 
@@ -186,12 +188,12 @@ class JuShuiTanController extends ApiController
 
     public function refund_order()
     {
-        $refund_sn=$this->param['outer_as_id'];
-        if(!empty($outer_id)){
+        $refund_sn = $this->param['outer_as_id'];
+        if (!empty($refund_sn)) {
             $data['status'] = '8';
             DB::table('yz_order_refund')->where(['refund_sn' => $refund_sn])->update($data);
             echo json_encode(['code' => "0", 'msg' => '执行成功'], JSON_UNESCAPED_UNICODE);
-        }else{
+        } else {
             echo json_encode(['code' => "1", 'msg' => '接收失败'], JSON_UNESCAPED_UNICODE);
         }
 
