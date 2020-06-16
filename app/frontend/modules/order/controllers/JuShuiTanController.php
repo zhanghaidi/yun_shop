@@ -34,31 +34,33 @@ class JuShuiTanController extends ApiController
             ->where('o.status', 1)
             ->where('o.jushuitan_status', 0)
             ->orderBy('o.create_time', 'DESC')
-            ->take(20)
+            ->take(10)
             ->get();
 
-        foreach ($ret as $k => $v) {
-            //if ($now_time - $v['pay_time'] > 1800) {
-            $addres = explode(" ", $v['address']);
-            $order_goods = Db::table('yz_order_goods')->where(['order_id' => $v['id']])->get();
-            $array = [];
-            foreach ($order_goods as $key => $val) {
-                $array[] =
-                    [
-                        'sku_id' => 'TP0024',
-                        'shop_sku_id' => 'SKU A1',
-                        'amount' => floatval($val['goods_price']),
-                        'base_price' => floatval($val['goods_price']),
-                        'qty' => $val['total'],
-                        'name' => $val['title'],
-                        'outer_oi_id' => strval($val['id']),
-                        'properties_value' => $val['goods_option_title']
-                    ];
+        if (!empty($ret)) {
+            foreach ($ret as $k => $v) {
+                if ($now_time - $v['pay_time'] > 300) {
+                    $addres = explode(" ", $v['address']);
+                    $order_goods = Db::table('yz_order_goods')->where(['order_id' => $v['id']])->get();
+                    $array = [];
+                    foreach ($order_goods as $key => $val) {
+                        $array[] =
+                            [
+                                'sku_id' => 'TP0024',
+                                'shop_sku_id' => 'SKU A1',
+                                'amount' => floatval($val['goods_price']),
+                                'base_price' => floatval($val['goods_price']),
+                                'qty' => $val['total'],
+                                'name' => $val['title'],
+                                'outer_oi_id' => strval($val['id']),
+                                'properties_value' => $val['goods_option_title']
+                            ];
 
+                    }
+
+                    $this->jushuitan($v, $addres[0], $addres[1], $addres[2], $addres[3], $array);
+                }
             }
-
-            $this->jushuitan($v, $addres[0], $addres[1], $addres[2], $addres[3], $array);
-            //}
         }
 
 
@@ -97,13 +99,8 @@ class JuShuiTanController extends ApiController
                 "items" => $array,
             ]
         );
-        var_dump(json_encode($params));
-        die;
-        $ret = $this->generate_signature();
-        // var_dump($ret);die;
-//        $url = 'https://open.erp321.com/api/open/query.aspx';        //请求网址
-//        $result = $this->post($url, $params, $ret, 'jushuitan.orders.upload');
 
+        $result = OrderService::post($params, 'jushuitan.orders.upload');
         if (!empty($result) && $result['code'] == 0) {
             $data['jushuitan_status'] = '1';
             DB::table('yz_order')->where(['id' => $order_data['id']])->update($data);
@@ -115,122 +112,51 @@ class JuShuiTanController extends ApiController
     }
 
 
-    //计算验签
-    public function generate_signature($params = null)
-    {
-
-        $sign_str = '';
-        // ksort($system_params);
-        $system_params = array(
-            'method' => 'jushuitan.orders.upload',
-            'partnerid' => $this->cig['partnerid'],
-            'ts' => time(),
-            'token' => $this->cig['token'],
-
-        );
-        //奇门接口
-        if (strstr($system_params['method'], 'jst')) {
-            $method = str_replace('jst.', '', $system_params['method']);
-            $jstsign = $method . $this->config->partner_id . "token" . $this->config->token . "ts" . $system_params['ts'] . $this->config->partner_key;
-
-            if ($this->config->debug_mode) echo '计算jstsign源串->' . $jstsign;
-
-            $system_params['jstsign'] = md5($jstsign);
-
-            //如果有业务参数则合并
-            if ($params != null) {
-                $system_params = array_merge($system_params, $params);
-                ksort($system_params);
-
-                foreach ($system_params as $key => $value) {
-                    if (is_array($value)) {
-                        $sign_str .= $key . join(',', $value);
-                        continue;
-                    }
-                    $sign_str .= $key . strval($value);
-                }
-            }
-
-            $system_params['sign'] = strtoupper(md5($this->config->taobao_secret . $sign_str . $this->config->taobao_secret));
-        } else  //普通接口
-        {
-            $no_exists_array = array('method', 'sign', 'partnerid', 'partnerkey');
-
-            $sign_str = $system_params['method'] . $system_params['partnerid'];
-
-            foreach ($system_params as $key => $value) {
-
-                if (in_array($key, $no_exists_array)) {
-                    continue;
-                }
-                $sign_str .= $key . strval($value);
-            }
-
-            $sign_str .= $this->cig['partnerkey'];
-            $system_params['sign'] = md5($sign_str);
-        }
-
-        return $system_params;
-
-    }
-
-
-    //发送请求
-    public function post($url, $data, $url_params, $action)
-    {
-        $post_data = '';
-        try {
-            if (strstr($action, 'jst')) {
-                foreach ($data as $key => $value) {
-                    if (is_array($value)) {
-                        $url_params[$key] = join(',', $value);
-                        continue;
-                    }
-                    $url_params[$key] = $value;
-                }
-            } else {
-                $post_data = json_encode($data);
-
-            }
-
-            $url .= '?' . http_build_query($url_params);
-            if ($this->config->debug_mode) echo $url;
-            $ch = curl_init($url);
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                'Content-Type: application/x-www-form-urlencoded'
-            ));
-
-            $result = curl_exec($ch);
-            if (curl_errno($ch)) {
-                print curl_error($ch);
-            }
-            curl_close($ch);
-            return json_decode($result, true);
-
-        } catch (Exception $e) {
-            return null;
-        }
-
-    }
-
-
     public function sendorder()
     {
         $order_sn = $this->param['so_id'];
         if (!empty($order_sn) && $order_sn) {
             $order = Db::table('yz_order')->where(['order_sn' => $order_sn, 'status' => 1])->first();
             if (!empty($order) && $order) {
+                $lc_id = $this->param['lc_id'];
+                if ($lc_id == 'ZTO.8' || $lc_id == 'ZTO.5' || $lc_id == 'ZTO.2' || $lc_id == 'ZTO.1' || $lc_id == 'ZTO') {
+                    $data['express_code'] = 'zhongtong'; //中通速递
+                    $data['express_company_name'] = '中通速递';
+                } elseif ($lc_id == 'YMDD') {
+                    $data['express_code'] = 'yimidida';//壹米滴答
+                    $data['express_company_name'] = '壹米滴答';
+                } elseif ($lc_id == 'TTKDEX') {
+                    $data['express_code'] = 'tiantian';//天天快递
+                    $data['express_company_name'] = '天天快递';
+                } elseif ($lc_id == 'STO') {
+                    $data['express_code'] = 'shentong';//申通快递
+                    $data['express_company_name'] = '申通快递';
+                } elseif ($lc_id == 'SF.9' || $lc_id == 'SF.10' || $lc_id == 'SF.1' || $lc_id == 'SF') {
+                    $data['express_code'] = 'shunfeng';     //顺丰速运
+                    $data['express_company_name'] = '顺丰速运';
+                } elseif ($lc_id == 'POSTB.5' || $lc_id == 'POSTB') {
+                    $data['express_code'] = 'youzhengguonei'; //邮政快递
+                    $data['express_company_name'] = '邮政快递包裹';
+                } elseif ($lc_id == 'HTKY') {
+                    $data['express_code'] = 'huitongkuaidi';//百世快递
+                    $data['express_company_name'] = '百世快递';
+                } elseif ($lc_id == 'DBL') {
+                    $data['express_code'] = 'debangwuliu';//德邦物流
+                    $data['express_company_name'] = '德邦物流';
+                } elseif ($lc_id == 'JD') {
+                    $data['express_code'] = 'debangwuliu';//京东快递
+                    $data['express_company_name'] = '京东快递';
+                } else {
+                    $data['express_code'] = $lc_id;
+                    $data['express_company_name'] = '自提自送';
+                }
                 $data['order_id'] = $order['id'];
                 $data['express_code'] = $this->param['lc_id'];
-                $data['express_company_name'] = $this->param['logistics_company'];
                 $data['express_sn'] = $this->param['l_id'];
                 $data['confirmsend'] = "yes";
-                // OrderService::orderSend($data);
-                $this->ju_log("订单{$order_sn}发货成功",1);
-                echo json_encode(['code'=>"0",'msg'=>'执行成功'],JSON_UNESCAPED_UNICODE);
+                OrderService::orderSend($data);
+                $this->ju_log("订单{$order_sn}发货成功", 1);
+                echo json_encode(['code' => "0", 'msg' => '执行成功'], JSON_UNESCAPED_UNICODE);
             } else {
                 $this->ju_log("订单{$order_sn}发货失败：订单已发货，或被删除");
             }
@@ -241,14 +167,14 @@ class JuShuiTanController extends ApiController
     }
 
 
-    public function ju_log($query='',$type='')
+    public function ju_log($query = '', $type = '')
     {
-        if($type==1){
+        if ($type == 1) {
             $logFile = fopen(
                 storage_path('logs/jushuitan' . DIRECTORY_SEPARATOR . date('Y-m-d') . '_success.log'),
                 'a+'
             );
-        }else{
+        } else {
             $logFile = fopen(
                 storage_path('logs/jushuitan' . DIRECTORY_SEPARATOR . date('Y-m-d') . '_failed.log'),
                 'a+'
@@ -259,5 +185,18 @@ class JuShuiTanController extends ApiController
         fclose($logFile);
     }
 
+
+    public function refund_order()
+    {
+        $refund_sn = $this->param['outer_as_id'];
+        if (!empty($refund_sn)) {
+            $data['status'] = '8';
+            DB::table('yz_order_refund')->where(['refund_sn' => $refund_sn])->update($data);
+            echo json_encode(['code' => "0", 'msg' => '执行成功'], JSON_UNESCAPED_UNICODE);
+        } else {
+            echo json_encode(['code' => "1", 'msg' => '接收失败'], JSON_UNESCAPED_UNICODE);
+        }
+
+    }
 
 }

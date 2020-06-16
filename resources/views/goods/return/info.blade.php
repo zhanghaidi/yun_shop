@@ -135,10 +135,10 @@
             alert('请选择区域');
             return false;
         }
-        if ($(':input[name="address[street_id]"]').val() == 0) {
-            alert('请选择街道');
-            return false;
-        }
+        // if ($(':input[name="address[street_id]"]').val() == 0) {
+        //     alert('请选择街道');
+        //     return false;
+        // }
         return true;
     }
 </script>

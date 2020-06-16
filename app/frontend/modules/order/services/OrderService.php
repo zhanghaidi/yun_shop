@@ -34,6 +34,8 @@ use Illuminate\Support\Facades\DB;
 
 class OrderService
 {
+    public static $ju_url = "https://open.erp321.com/api/open/query.aspx";
+
     /**
      * 获取订单商品对象数组
      * @param Collection $memberCarts
@@ -335,13 +337,13 @@ class OrderService
             return;
         }
 
-        \app\backend\modules\order\models\Order::waitReceive()->where('auto_receipt', 0)->whereNotIn('dispatch_type_id',[DispatchType::SELF_DELIVERY,DispatchType::HOTEL_CHECK_IN,DispatchType::DELIVERY_STATION_SEND,DispatchType::DRIVER_DELIVERY,DispatchType::PACKAGE_DELIVER])->where('send_time', '<', (int)Carbon::now()->addDays(-$days)->timestamp)->normal()->chunk(1000, function ($orders) {
+        \app\backend\modules\order\models\Order::waitReceive()->where('auto_receipt', 0)->whereNotIn('dispatch_type_id', [DispatchType::SELF_DELIVERY, DispatchType::HOTEL_CHECK_IN, DispatchType::DELIVERY_STATION_SEND, DispatchType::DRIVER_DELIVERY, DispatchType::PACKAGE_DELIVER])->where('send_time', '<', (int)Carbon::now()->addDays(-$days)->timestamp)->normal()->chunk(1000, function ($orders) {
             if (!$orders->isEmpty()) {
                 $orders->each(function ($order) {
                     try {
                         OrderService::orderReceive(['order_id' => $order->id]);
                     } catch (\Exception $e) {
-                        \Log::error("订单:{$order->id}自动收货失败",$e->getMessage());
+                        \Log::error("订单:{$order->id}自动收货失败", $e->getMessage());
 
                     }
                 });
@@ -367,10 +369,10 @@ class OrderService
         if (!$orders->isEmpty()) {
             $orders->each(function ($order) {
                 //dd($order->send_time);
-                try{
+                try {
                     OrderService::orderClose(['order_id' => $order->id]);
-                }catch (\Exception $e){
-                    \Log::error("订单:{$order->id}自动关闭失败",$e->getMessage());
+                } catch (\Exception $e) {
+                    \Log::error("订单:{$order->id}自动关闭失败", $e->getMessage());
                 }
             });
         }
@@ -392,4 +394,94 @@ class OrderService
             OrderService::orderReceive(['order_id' => $order['id']]);
         }
     }
+
+    /**
+     *聚水潭签名
+     */
+    public static function generate_signature($action = '')
+    {
+
+        $sign_str = '';
+        // ksort($system_params);
+        $system_params = array(
+            'method' => $action,
+            'partnerid' => config('jushuitan')['partnerid'],
+            'ts' => time(),
+            'token' => config('jushuitan')['token'],
+
+        );
+        //奇门接口
+        if (strstr($system_params['method'], 'jst')) {
+
+        } else  //普通接口
+        {
+            $no_exists_array = array('method', 'sign', 'partnerid', 'partnerkey');
+
+            $sign_str = $system_params['method'] . $system_params['partnerid'];
+
+            foreach ($system_params as $key => $value) {
+
+                if (in_array($key, $no_exists_array)) {
+                    continue;
+                }
+                $sign_str .= $key . strval($value);
+            }
+
+            $sign_str .= config('jushuitan')['partnerkey'];
+            $system_params['sign'] = md5($sign_str);
+        }
+
+        return $system_params;
+
+    }
+
+
+    /**
+     * url  聚水潭线上地址
+     * data 请求聚水潭参数  参考：https://open.jushuitan.com/document/2137.html
+     *action 聚水潭接口名称
+     */
+    public static function post($data, $action)
+    {
+        $url = OrderService::$ju_url;
+        $url_params = OrderService::generate_signature($action);
+        $post_data = '';
+        try {
+            if (strstr($action, 'jst')) {
+                foreach ($data as $key => $value) {
+                    if (is_array($value)) {
+                        $url_params[$key] = join(',', $value);
+                        continue;
+                    }
+                    $url_params[$key] = $value;
+                }
+            } else {
+                $post_data = json_encode($data);
+
+            }
+
+            $url .= '?' . http_build_query($url_params);
+            //  if ($this->config->debug_mode) echo $url;
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                'Content-Type: application/x-www-form-urlencoded'
+            ));
+
+            $result = curl_exec($ch);
+            if (curl_errno($ch)) {
+                print curl_error($ch);
+            }
+            curl_close($ch);
+            return json_decode($result, true);
+
+        } catch (Exception $e) {
+            return null;
+        }
+
+    }
+
+
 }

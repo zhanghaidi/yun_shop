@@ -1686,5 +1686,18 @@
   {
     "name": "极兔速递",
     "value": "JTSD"
+  },
+  {
+    "name": "自提自送",
+    "value": "ZTZS"
+  },
+  {
+    "name": "中通速递",
+    "value": "zhongtong"
+  },
+  {
+    "name": "德邦物流",
+    "value": "debangwuliu"
   }
+
 ]

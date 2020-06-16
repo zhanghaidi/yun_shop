@@ -178,6 +178,11 @@ class MemberAddressController extends ApiController
         if (!$mobile) {
             return $this->errorJson('手机号不能为空');
         }
+
+        $is_ad= Address::where('areaname',$requestAddress['district'])->value('id');
+        if(empty($is_ad)){
+            return $this->errorJson('填写地址暂未收录，请重新填写');
+        }
         //if (!preg_match("/^1\d{10}$/",$mobile)) {
            // return $this->errorJson('手机号格式不正确');
         //}

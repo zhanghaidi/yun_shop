@@ -54,7 +54,7 @@ class RefundApply extends BaseModel
     const WAIT_REFUND = '5';//待打款
     const COMPLETE = '6';//已完成
     const CONSENSUS = '7';//手动退款
-
+    const OVER_RETURN_GOODS ='8';
     public function getAllTypeAttribute()
     {
         return collect([
@@ -227,6 +227,7 @@ class RefundApply extends BaseModel
             self::WAIT_REFUND => '待退款',
             self::COMPLETE => '已' . $this->getRefundTypeName()[$this->refund_type],
             self::CONSENSUS => '已手动退款',
+            SELF::OVER_RETURN_GOODS=>'已收到退货(可退款)',
         ];
 
     }
