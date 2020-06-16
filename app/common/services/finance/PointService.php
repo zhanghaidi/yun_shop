@@ -89,6 +89,9 @@ class PointService
     const POINT_MODE_TASK_REWARD = 17;
     const POINT_MODE_TASK_REWARD_ATTACHED = '任务奖励';
 
+    const POINT_MODE_STEPS_REWARD = 171;
+    const POINT_MODE_STEPS_REWARD_ATTACHED = '步数兑换';
+
     const POINT_MODE_SIGN_REWARD = 19;
     const POINT_MODE_SIGN_REWARD_ATTACHED = '签到奖励';
 
@@ -416,6 +419,9 @@ class PointService
                 break;
             case (17):
                 $mode_attribute = self::POINT_MODE_TASK_REWARD_ATTACHED;
+                break;
+            case (171):
+                $mode_attribute = self::POINT_MODE_STEPS_REWARD_ATTACHED;
                 break;
             case (18):
                 $mode_attribute = self::POINT_MODE_TRANSFER_LOVE_ATTACHED;
