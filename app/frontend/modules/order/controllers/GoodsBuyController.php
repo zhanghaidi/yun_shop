@@ -53,21 +53,20 @@ class GoodsBuyController extends ApiController
     {
         $this->validateParam();
         $trade = $this->getMemberCarts()->getTrade();
-//        $data = json_decode($trade, true);
-//        $da = $data['discount']['member_coupons'];
-//        if (!empty($da)) {
-//            foreach ($da as $k => $v) {
-//                if (strtotime($v['belongs_to_coupon']['time_end']) >= strtotime(date('Y-m-d 00:00:00'))) {
-//                    $da[$k]['time_start'] = $v['belongs_to_coupon']['time_start'];
-//                    $da[$k]['time_end'] = $v['belongs_to_coupon']['time_end'];
-//                } else {
-//                    unset($da[$k]);
-//                }
-//            }
-//
-//            $data['discount']['member_coupons'] = $da;
-//            $trade = $data;
-//        }
+        $data = json_decode($trade, true);
+        $da = $data['discount']['member_coupons'];
+        if (!empty($da)) {
+            $now = strtotime('now');
+            foreach ($da as $k => $v) {
+                $end = strtotime($v['get_time']) + $v['belongs_to_coupon']['time_days'] * 3600 * 24;
+                if ($end < $now) {
+                    unset($da[$k]);
+                }
+            }
+            $da=array_merge($da);
+            $data['discount']['member_coupons'] = $da;
+            $trade = $data;
+        }
 
         return $this->successJson('成功', $trade);
     }

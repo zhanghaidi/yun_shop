@@ -70,7 +70,7 @@ class MemberCouponController extends ApiController
     {
         $uid = \YunShop::app()->getMemberId();
         $pageSize = \YunShop::request()->get('pagesize');
-        $pageSize = $pageSize ? $pageSize : 10;
+        $pageSize = $pageSize ? $pageSize : 20;
 
         $coupons = MemberCoupon::getCouponsOfMember($uid)->paginate($pageSize)->toArray();
         if (empty($coupons['data'])) {
@@ -84,7 +84,7 @@ class MemberCouponController extends ApiController
                 $coupons['data'][$k]['api_status'] = self::IS_USED;
             } elseif ($v['used'] == MemberCoupon::NOT_USED) { //未使用
                 if ($v['belongs_to_coupon']['time_limit'] == Coupon::COUPON_SINCE_RECEIVE) { //时间限制类型是"领取后几天有效"
-                    $end = strtotime($v['get_time']) + $v['belongs_to_coupon']['time_days'] * 3600;
+                    $end = strtotime($v['get_time']) + $v['belongs_to_coupon']['time_days'] * 3600*24;
                     if ($now < $end) { //优惠券在有效期内
                         $coupons['data'][$k]['api_status'] = self::NOT_USED;
                         $coupons['data'][$k]['start'] = substr($v['get_time'], 0, 10); //前端需要起止时间
