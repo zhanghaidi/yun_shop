@@ -19,6 +19,7 @@ use app\common\services\goods\VideoDemandCourseGoods;
 use Yunshop\Diyform\models\DiyformDataModel;
 use Yunshop\Diyform\models\DiyformOrderContentModel;
 use Yunshop\Diyform\models\OrderGoodsDiyForm;
+use Illuminate\Support\Facades\DB;
 
 class DetailController extends ApiController
 {
@@ -50,6 +51,9 @@ class DetailController extends ApiController
         $data['collect_name'] = $invoice->collect_name;
         $data['company_number'] = $invoice->company_number;
         $data['invoice_state'] = $invoice->invoice;
+        $data['pay_time']=$invoice->pay_time;
+        $data['send_time']=$invoice->send_time;
+        $data['created_at']=$invoice->created_at;
         $backups_button = $data['button_models'];
 
         $data['address_info'] = OrderAddress::select('address', 'mobile', 'realname')->where('order_id', $order['id'])->first() ?: [];

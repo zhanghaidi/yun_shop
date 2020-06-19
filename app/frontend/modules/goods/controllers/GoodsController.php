@@ -1441,4 +1441,20 @@ class GoodsController extends GoodsApiController
         return $this->successJson('成功', $json);
     }
 
+    public function getDiscountGoods()
+    {
+        $list = Goods::uniacid()
+            ->select('id', 'id as goods_id', 'title', 'thumb', 'price', 'market_price')
+            ->where('is_discount', '1')
+            ->whereStatus('1')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        if (!$list->isEmpty()) {
+            $list = set_medias($list->toArray(), 'thumb');
+        }
+
+        return $this->successJson('获取促销商品成功', $list);
+    }
+
 }

@@ -130,7 +130,7 @@ class Order extends BaseModel
      */
     public function getDates()
     {
-        return ['create_time', 'refund_time', 'operate_time', 'send_time', 'return_time', 'end_time', 'pay_time', 'send_time', 'cancel_time', 'create_time', 'cancel_pay_time', 'cancel_send_time', 'finish_time'] + parent::getDates();
+        return ['create_time', 'refund_time','created_at', 'operate_time', 'send_time', 'return_time', 'end_time', 'pay_time', 'send_time', 'cancel_time', 'create_time', 'cancel_pay_time', 'cancel_send_time', 'finish_time'] + parent::getDates();
     }
 
 
@@ -184,7 +184,7 @@ class Order extends BaseModel
     public static function getInvoice($order)
     {
         //return self ::select('invoice_type','rise_type','call','company_number','invoice')
-        return self::select('invoice_type', 'rise_type', 'collect_name', 'company_number', 'invoice')
+        return self::select('invoice_type', 'rise_type', 'collect_name', 'company_number', 'invoice','pay_time','created_at','send_time')
             ->where('id', $order)
             ->first();
     }
