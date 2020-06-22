@@ -162,6 +162,18 @@ class CouponController extends BaseController
 
         $couponRequest = \YunShop::request()->coupon;
         if ($couponRequest) {
+            $time_days = $couponRequest['time_days'];
+            if (!empty($time_days) && $time_days <= 100) {
+                if ($time_days == 0) {
+                    $couponRequest['time_start'] = strtotime(date('Y-m-d 00:00:00'));
+                    $couponRequest['time_end'] = strtotime(date('Y-m-d 00:00:00', strtotime('+300 day')));
+                } else {
+                    $couponRequest['time_start'] = strtotime(date('Y-m-d 00:00:00'));
+                    $couponRequest['time_end'] = strtotime(date('Y-m-d 00:00:00', strtotime('+' . $time_days . ' day')));
+                }
+            } else {
+                $this->error('优惠券时间最大填写值为100!');
+            }
             if ($couponRequest['use_type'] == 8) {
                 if (count(\YunShop::request()->goods_id) > 1) {
                     return $this->message('优惠券修改失败,兑换券只能指定一个商品');
@@ -169,8 +181,8 @@ class CouponController extends BaseController
                 $goodsIds = \YunShop::request()->goods_id;
                 $goodsNames = \YunShop::request()->goods_name;
             }
-            $couponRequest['time_start'] = strtotime(\YunShop::request()->time['start']);
-            $couponRequest['time_end'] = strtotime(\YunShop::request()->time['end']);
+//            $couponRequest['time_start'] = strtotime(\YunShop::request()->time['start']);
+//            $couponRequest['time_end'] = strtotime(\YunShop::request()->time['end']);
             $coupon->use_type = \YunShop::request()->usetype;
             $coupon->category_ids = array_filter(array_unique(\YunShop::request()->category_ids)); //去重,去空值
             $coupon->categorynames = \YunShop::request()->category_names;
