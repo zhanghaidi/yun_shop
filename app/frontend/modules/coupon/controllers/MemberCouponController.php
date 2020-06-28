@@ -109,6 +109,55 @@ class MemberCouponController extends ApiController
     }
 
     /**
+     * 获取优惠券可用数量
+    */
+
+    public function countCoupons()
+    {
+        $uid = \YunShop::app()->getMemberId();
+        $pageSize = \YunShop::request()->get('pagesize');
+        $pageSize = $pageSize ? $pageSize : 20;
+
+        $coupons = MemberCoupon::getCouponsOfMember($uid)->paginate($pageSize)->toArray();
+        if (empty($coupons['data'])) {
+            return $this->errorJson('没有找到记录', []);
+        }
+
+        //添加 "是否可用" & "是否已经使用" & "是否过期" 的标识
+        $now = strtotime('now');
+        $data=0;
+        foreach ($coupons['data'] as $k => $v) {
+            if ($v['used'] == MemberCoupon::USED) { //已使用
+                $coupons['data'][$k]['api_status'] = self::IS_USED;
+            } elseif ($v['used'] == MemberCoupon::NOT_USED) { //未使用
+                if ($v['belongs_to_coupon']['time_limit'] == Coupon::COUPON_SINCE_RECEIVE) { //时间限制类型是"领取后几天有效"
+                    $end = strtotime($v['get_time']) + $v['belongs_to_coupon']['time_days'] * 3600*24;
+                    if ($now < $end) { //优惠券在有效期内
+                        $coupons['data'][$k]['api_status'] = self::NOT_USED;
+                        $coupons['data'][$k]['start'] = substr($v['get_time'], 0, 10); //前端需要起止时间
+                        $coupons['data'][$k]['end'] = date('Y-m-d', $end); //前端需要起止时间
+                        $data++;
+                    } else { //优惠券在有效期外
+                        $coupons['data'][$k]['api_status'] = self::OVERDUE;
+                    }
+                } elseif ($v['belongs_to_coupon']['time_limit'] == Coupon::COUPON_DATE_TIME_RANGE) { //时间限制类型是"时间范围"
+                    if (($now > $v['belongs_to_coupon']['time_end'])) { //优惠券在有效期外
+                        $coupons['data'][$k]['api_status'] = self::OVERDUE;
+                        $coupons['data'][$k]['start'] = $coupons['data'][$k]['time_start']; //为了和前面保持一致
+                        $coupons['data'][$k]['end'] = $coupons['data'][$k]['time_end']; //为了和前面保持一致
+                    } else { //优惠券在有效期内
+                        $coupons['data'][$k]['api_status'] = self::NOT_USED;
+                    }
+                }
+            } else {
+                $coupons['data'][$k]['api_availability'] = self::IS_AVAILABLE;
+            }
+        }
+        return $this->successJson('ok',$data);
+    }
+
+
+    /**
      * 提供给用户的"优惠券中心"的数据接口
      * @return \Illuminate\Http\JsonResponse
      */
