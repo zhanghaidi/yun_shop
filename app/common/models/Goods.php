@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use app\common\facades\SiteSetting as SiteSettingFacades;
 use app\common\modules\discount\GoodsMemberLevelDiscount;
+use Illuminate\Support\Facades\Redis;
 
 
 /**

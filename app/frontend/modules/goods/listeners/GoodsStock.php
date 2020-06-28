@@ -10,6 +10,7 @@ use app\common\facades\SiteSetting;
 use app\common\models\OrderGoods;
 use app\frontend\models\goods;
 use app\frontend\models\GoodsOption;
+use Illuminate\Support\Facades\Redis;
 
 /**
  * Created by PhpStorm.
