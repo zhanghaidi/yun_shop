@@ -46,7 +46,7 @@ class JuShuiTanController extends ApiController
                     foreach ($order_goods as $key => $val) {
                         $array[] =
                             [
-                                'sku_id' => 'TP0024',
+                                'sku_id' => $order_goods['goods_sn'],
                                 'shop_sku_id' => 'SKU A1',
                                 'amount' => floatval($val['goods_price']),
                                 'base_price' => floatval($val['goods_price']),
