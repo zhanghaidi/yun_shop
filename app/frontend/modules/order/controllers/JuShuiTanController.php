@@ -34,19 +34,19 @@ class JuShuiTanController extends ApiController
             ->where('o.status', 1)
             ->where('o.jushuitan_status', 0)
             ->orderBy('o.create_time', 'DESC')
-            ->take(10)
+            ->take(1)
             ->get();
 
         if (!empty($ret)) {
             foreach ($ret as $k => $v) {
-                if ($now_time - $v['pay_time'] > 300) {
+//                if ($now_time - $v['pay_time'] > 300) {
                     $addres = explode(" ", $v['address']);
                     $order_goods = Db::table('yz_order_goods')->where(['order_id' => $v['id']])->get();
                     $array = [];
                     foreach ($order_goods as $key => $val) {
                         $array[] =
                             [
-                                'sku_id' => $order_goods['goods_sn'],
+                                'sku_id' => $val['goods_sn'],
                                 'shop_sku_id' => 'SKU A1',
                                 'amount' => floatval($val['goods_price']),
                                 'base_price' => floatval($val['goods_price']),
@@ -56,7 +56,7 @@ class JuShuiTanController extends ApiController
                                 'properties_value' => $val['goods_option_title']
                             ];
 
-                    }
+//                    }
 
                     $this->jushuitan($v, $addres[0], $addres[1], $addres[2], $addres[3], $array);
                 }
@@ -151,11 +151,10 @@ class JuShuiTanController extends ApiController
                     $data['express_company_name'] = '自提自送';
                 }
                 $data['order_id'] = $order['id'];
-                $data['express_code'] = $this->param['lc_id'];
                 $data['express_sn'] = $this->param['l_id'];
                 $data['confirmsend'] = "yes";
                 OrderService::orderSend($data);
-                $this->ju_log("订单{$order_sn}发货成功", 1);
+                $this->ju_log("订单：{$order_sn}发货成功,物流编号：{$lc_id},物流名称：{$data['express_company_name']}", 1);
                 echo json_encode(['code' => "0", 'msg' => '执行成功'], JSON_UNESCAPED_UNICODE);
             } else {
                 $this->ju_log("订单{$order_sn}发货失败：订单已发货，或被删除");
