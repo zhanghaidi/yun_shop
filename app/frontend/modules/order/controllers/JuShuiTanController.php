@@ -153,7 +153,8 @@ class JuShuiTanController extends ApiController
                 $data['order_id'] = $order['id'];
                 $data['express_sn'] = $this->param['l_id'];
                 $data['confirmsend'] = "yes";
-                OrderService::orderSend($data);
+               // OrderService::orderSend($data);
+                OrderService::orderMess($order_sn,$order,1);
                 $this->ju_log("订单：{$order_sn}发货成功,物流编号：{$lc_id},物流名称：{$data['express_company_name']}", 1);
                 echo json_encode(['code' => "0", 'msg' => '执行成功'], JSON_UNESCAPED_UNICODE);
             } else {

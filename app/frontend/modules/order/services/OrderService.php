@@ -483,5 +483,19 @@ class OrderService
 
     }
 
+    /**
+     * 发货，退款消息入库
+     *
+     */
+    public static function orderMess($order_sn='', $order='',$type='')
+    {
+        DB::table('yz_order_messages')->insert([
+            'order_sn' => $order_sn,
+            'create_time' => time(),
+            'order_id' => $order['id'],
+            'type' => $type,
+            'rele_user_id' => $order['uid'],
+        ]);
+    }
 
 }
