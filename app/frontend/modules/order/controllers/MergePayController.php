@@ -119,13 +119,14 @@ class MergePayController extends BaseController
     }
 
     /**
-     * 支付的时候,生成支付记录的时候,通过订单ids获取订单集合
+     * 支付的时候,生成支付记录的时候,通过订单ids获取订单集合1
      * @param $orderIds
      * @return OrderCollection
      * @throws AppException
      */
     private function orders($orderIds)
     {
+        //c
         if (!is_array($orderIds)) {
             $orderIds = explode(',', $orderIds);
         }
