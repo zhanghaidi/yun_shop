@@ -4,6 +4,13 @@
     </div>
     <div class="panel-body">
         <div class="form-group">
+            <label class="col-xs-12 col-sm-3 col-md-2 control-label">开票金额 :</label>
+            <div class="col-sm-9 col-xs-12">
+                <p class="form-control-static">{{$order['price']}}元</p>
+            </div>
+        </div>
+
+        <div class="form-group">
             <label class="col-xs-12 col-sm-3 col-md-2 control-label">发票类型 :</label>
             <div class="col-sm-9 col-xs-12">
                 <p class="form-control-static">
@@ -58,9 +65,19 @@
 
         @if(1==$order['invoice_status'])
             <div class="form-group">
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label">状态 :</label>
+                <div class="col-sm-9 col-xs-12">
+                    <p class="form-control-static">
+                        <span class="label label-default">待审核</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="form-group">
                 <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
                 <div class="col-sm-9 col-xs-12">
-                    <button name='' onclick="sub('invoice')" class='btn btn-default'>审核发票</button>
+                    <button name='' onclick="sub('invoice')" class='btn btn-default'>同意开票</button>
+                    <br/>
                 </div>
             </div>
         @endif
