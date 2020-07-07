@@ -28,7 +28,7 @@ class MessageService
      * @param string $url
      * @return bool
      */
-    public function push($member_id, $temp_id, array $params, $url='', $uniacid='')
+    public function push($member_id, $temp_id, array $params, $url='', $uniacid='', $miniApp='')
     {
         if ($uniacid) {
             \Setting::$uniqueAccountId = \YunShop::app()->uniacid = $uniacid;
@@ -74,6 +74,7 @@ class MessageService
             $app = $app->andData($send_msg);
             $app = $app->andReceiver($memberModel->hasOneFans->openid);
             $app = $app->andUrl($url);
+            $app = $app->andminiApp($miniApp);
             $app->send();
 
         } catch (Exception $error) {
