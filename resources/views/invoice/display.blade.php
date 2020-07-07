@@ -67,10 +67,10 @@
             <label class="col-xs-12 col-sm-3 col-md-2 control-label">状态 :</label>
             <div class="col-sm-9 col-xs-12">
                 <p class="form-control-static">
-                    @if(1==$order['rise_type'])
+                    @if(1==$order['invoice_status'])
                         <span class="label label-default">待审核</span>
                         <button name='' onclick="sub('invoice')" class='btn btn-default'>同意开票</button>
-                    @elseif(2==$order['rise_type'])
+                    @elseif(2==$order['invoice_status'])
                         <span class="label label-success">已开票</span>
                     @endif
                 </p>
