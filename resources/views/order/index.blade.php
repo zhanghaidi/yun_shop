@@ -420,9 +420,17 @@
                                                 <a href="{!! yzWebUrl($detail_url,['id'=>$order['id']])!!}">查看详情</a>
                                             </td>
                                             <td rowspan="{{count($order['has_many_order_goods'])}}" width="10%">
-
-                                                @include($include_ops)
-
+                                                @if ($order['status'] == 3)
+                                                    @if ($order['invoice_status'] == 0)
+                                                        <label class='label label-info'>未申请发票</label>
+                                                    @elseif ($order['invoice_status'] == 1)
+                                                        <label class='label label-default'>发票申请待审核</label>
+                                                    @elseif ($order['invoice_status'] == 2)
+                                                        <label class='label label-success'>已开具发票</label>
+                                                    @endif
+                                                @else
+                                                    @include($include_ops)
+                                                @endif
                                             </td>
                                         @endif
                                     </tr>
