@@ -13,6 +13,8 @@ use app\common\exceptions\ShopException;
 use app\common\modules\refund\services\RefundService;
 use app\backend\modules\refund\services\RefundMessageService;
 use app\backend\modules\refund\models\RefundApply;
+use Illuminate\Support\Facades\DB;
+use app\frontend\modules\order\services\OrderService;
 
 
 class PayController extends BaseController
@@ -39,7 +41,6 @@ class PayController extends BaseController
     public function index()
     {
         $request = request()->input();
-        
         $this->validate([
             'refund_id' => 'required'
         ]);
@@ -63,7 +64,12 @@ class PayController extends BaseController
         if (is_array($result) && isset($result['action']) && isset($result['input'])) {
            echo $this->formPost($result);exit();
         }
-
+        //陆洋添加，退款消息通知
+        $refund_order = Db::table('yz_order_refund')->where(['id' => $request['refund_id']])->first();
+        if(!empty($refund_order)){
+            $order = Db::table('yz_order')->where(['id' => $refund_order['order_id']])->first();
+            OrderService::orderMess($order['order_sn'],$order,2);
+        }
         RefundMessageService::passMessage($this->refundApply);//通知买家
         return $this->message('操作成功');
 

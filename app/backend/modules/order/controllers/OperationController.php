@@ -183,10 +183,8 @@ class OperationController extends BaseController
             throw new AppException("未找到该订单".request()->input('order_id'));
         }
 
-        if (request()->has('invoice')) {
-            $order->invoice = request()->input('invoice');
-            $order->save();
-        }
+        $order->invoice_status = 2;
+        $order->save();
         echo json_encode(["data" => '', "result" => 1]);
     }
 }

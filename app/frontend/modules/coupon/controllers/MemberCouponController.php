@@ -180,16 +180,16 @@ class MemberCouponController extends ApiController
             return $this->errorJson('没有找到记录', []);
         }
         $coupons = $coupons->paginate($pageSize)->toArray();
-//        if (!empty($coupons)) {
-//            $time = time();
-//            $data = $coupons['data'];
-//            foreach ($data as $key => $v) {
-//                if (strtotime($v['time_end']) < $time) {
-//                    unset($data[$key]);
-//                }
-//            }
-//            $coupons['data'] = $data;
-//        }
+        if (!empty($coupons)) {
+            $time = time();
+            $data = $coupons['data'];
+            foreach ($data as $key => $v) {
+                if (strtotime($v['time_end']) < $time) {
+                    unset($data[$key]);
+                }
+            }
+            $coupons['data'] = $data;
+        }
         //添加"是否可领取" & "是否已抢光" & "是否已领取"的标识
         $couponsData = self::getCouponData($coupons, $memberLevel);
 

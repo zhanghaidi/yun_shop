@@ -122,6 +122,7 @@ class PreOrderGoods extends OrderGoods
         $this->coupon_price = (float)$this->coupon_price;
         $this->need_address = (float)$this->need_address;
         $this->payment_amount = (float)$this->getPaymentAmount();
+        $this->reduce_stock_method = (int)$this->goods->reduce_stock_method; // 2020.07.05 10:10 lgg add 修复拍下减库存情况下库存为1时无法支付的问题
 
         if ($this->isOption()) {
             $this->goods_option_id = (int)$this->goods_option_id;

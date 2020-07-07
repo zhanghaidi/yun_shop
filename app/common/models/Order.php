@@ -242,6 +242,16 @@ class Order extends BaseModel
     }
 
     /**
+     * 订单状态:完成且要票
+     * @param $query
+     * @return mixed
+     */
+    public function scopeInvoiced($query)
+    {
+        return $query->where(['status' => self::COMPLETE])->where('invoice_status', '>', '0');
+    }
+
+    /**
      * 订单状态:退款中
      * @param $query
      * @return mixed
