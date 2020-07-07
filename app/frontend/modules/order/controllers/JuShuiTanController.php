@@ -34,12 +34,12 @@ class JuShuiTanController extends ApiController
             ->where('o.status', 1)
             ->where('o.jushuitan_status', 0)
             ->orderBy('o.create_time', 'DESC')
-            ->take(2)
+            ->take(10)
             ->get();
 
         if (!empty($ret)) {
             foreach ($ret as $k => $v) {
-//                if ($now_time - $v['pay_time'] > 300) {
+                if ($now_time - $v['pay_time'] > 300) {
                     $addres = explode(" ", $v['address']);
                     $order_goods = Db::table('yz_order_goods')->where(['order_id' => $v['id']])->get();
                     $array = [];
@@ -56,7 +56,7 @@ class JuShuiTanController extends ApiController
                                 'properties_value' => $val['goods_option_title']
                             ];
 
-//                    }
+                    }
 
                     $this->jushuitan($v, $addres[0], $addres[1], $addres[2], $addres[3], $array);
                 }
