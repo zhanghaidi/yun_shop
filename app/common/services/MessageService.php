@@ -248,7 +248,7 @@ class MessageService
         FormId::where('id',$scene['id'])->delete();//删除formid减少消耗
     }
 
-    public static function notice($templateId, $data, $uid, $uniacid = '', $url = '',$miniApp = [])
+    public static function notice($templateId, $data, $uid, $uniacid = '', $url = '',$miniApp = ['appid' => 'wxcaa8acf49f845662', 'pagepath' => '/pages/template/community/community'])
     {
         if (\Setting::get('shop.notice.toggle') == false) {
             return false;
@@ -263,7 +263,7 @@ class MessageService
         if (!$member->isFollow()) {
             return false;
         }
-        $job = new MessageNoticeJob($templateId, $data, $member->hasOneFans->openid, $url);
+        $job = new MessageNoticeJob($templateId, $data, $member->hasOneFans->openid, $url, $miniApp);
 
         DispatchesJobs::dispatch($job,DispatchesJobs::LOW);
     }

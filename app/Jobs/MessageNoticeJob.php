@@ -33,6 +33,7 @@ class MessageNoticeJob implements  ShouldQueue
     protected $openId;
     protected $url;
     protected $uniacid;
+    protected $miniApp;
 
     /**
      * MessageNoticeJob constructor.
@@ -42,13 +43,14 @@ class MessageNoticeJob implements  ShouldQueue
      * @param $url
      * @param $uniacid
      */
-    public function __construct($templateId, $noticeData, $openId, $url)
+    public function __construct($templateId, $noticeData, $openId, $url, $miniApp)
     {
         $this->templateId = $templateId;
         $this->noticeData = $noticeData;
         $this->openId = $openId;
         $this->url = $url;
         $this->uniacid = \YunShop::app()->uniacid;
+        $this->miniApp = $miniApp;
     }
 
     /**
@@ -69,7 +71,7 @@ class MessageNoticeJob implements  ShouldQueue
         ];
         $app = new Application($options);
         $app = $app->notice;
-        $app->uses($this->templateId)->andData($this->noticeData)->andReceiver($this->openId)->andUrl($this->url)->send();
+        $app->uses($this->templateId)->andData($this->noticeData)->andReceiver($this->openId)->andUrl($this->url)->and($this->miniApp)->send();
         return true;
     }
 }
