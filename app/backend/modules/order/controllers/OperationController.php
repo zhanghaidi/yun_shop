@@ -184,7 +184,7 @@ class OperationController extends BaseController
         }
 
         if (request()->has('invoice')) {
-            $order->invoice = request()->input('invoice');
+            $order->invoice_status = 2;
             $order->save();
         }
         echo json_encode(["data" => '', "result" => 1]);
