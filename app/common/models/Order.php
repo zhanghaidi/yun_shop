@@ -248,7 +248,7 @@ class Order extends BaseModel
      */
     public function scopeInvoiced($query)
     {
-        return $query->where(['status' => self::CLOSE])->where('invoice_status', '>', '0');
+        return $query->where(['status' => self::COMPLETE])->where('invoice_status', '>', '0');
     }
 
     /**

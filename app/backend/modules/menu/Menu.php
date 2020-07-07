@@ -2448,7 +2448,7 @@ class Menu
                         'url_params' => '',
                         'permit'     => 1,
                         'menu'       => 1,
-                        'icon'       => 'fa-check-square-o',
+                        'icon'       => 'fa-ticket',
                         'sort'       => '5',
                         'item'       => 'order_list_invoiced',
                         'parents'    => ['Order'],
