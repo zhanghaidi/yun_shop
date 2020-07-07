@@ -63,23 +63,18 @@
             </div>
         @endif
 
-        @if(1==$order['invoice_status'])
-            <div class="form-group">
-                <label class="col-xs-12 col-sm-3 col-md-2 control-label">状态 :</label>
-                <div class="col-sm-9 col-xs-12">
-                    <p class="form-control-static">
+        <div class="form-group">
+            <label class="col-xs-12 col-sm-3 col-md-2 control-label">状态 :</label>
+            <div class="col-sm-9 col-xs-12">
+                <p class="form-control-static">
+                    @if(1==$order['rise_type'])
                         <span class="label label-default">待审核</span>
-                    </p>
-                </div>
+                        <button name='' onclick="sub('invoice')" class='btn btn-default'>同意开票</button>
+                    @elseif(2==$order['rise_type'])
+                        <span class="label label-success">已开票</span>
+                    @endif
+                </p>
             </div>
-
-            <div class="form-group">
-                <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
-                <div class="col-sm-9 col-xs-12">
-                    <button name='' onclick="sub('invoice')" class='btn btn-default'>同意开票</button>
-                    <br/>
-                </div>
-            </div>
-        @endif
+        </div>
     </div>
 </div>
