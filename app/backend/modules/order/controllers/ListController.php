@@ -118,6 +118,18 @@ class ListController extends BaseController
      * @return string
      * @throws \Throwable
      */
+    public function invoiced()
+    {
+        $this->orderModel->invoiced();
+        $this->export($this->orderModel->invoiced());
+        $this->directExport($this->orderModel->invoiced());
+        return view('order.index', $this->getData())->render();
+    }
+
+    /**
+     * @return string
+     * @throws \Throwable
+     */
     public function cancelled()
     {
         $this->orderModel->cancelled();
