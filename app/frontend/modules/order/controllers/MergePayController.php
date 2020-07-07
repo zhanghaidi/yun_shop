@@ -149,13 +149,16 @@ class MergePayController extends BaseController
             foreach ($order->orderGoods as $orderGoods) {
                 if ($orderGoods['goods_option_id']) {
                     $goodsOptionTotal[$orderGoods['goods_option_id']] += $orderGoods['total'];
-                    if (!$orderGoods->goodsOption->stockEnough($goodsOptionTotal[$orderGoods['goods_option_id']])) {
+                    // if (!$orderGoods->goodsOption->stockEnough($goodsOptionTotal[$orderGoods['goods_option_id']])) {
+                    // 2020.07.05 11:29 lgg add 修复拍下减库存情况下库存为1时无法支付的问题
+                    if (!$orderGoods->goodsOption->stockEnough($goodsOptionTotal[$orderGoods['goods_option_id']]) && $orderGoods['reduce_stock_method'] == 1) {
                         throw new GoodsStockNotEnough('支付失败,商品:' . $orderGoods->title . ' 库存不足'.$goodsOptionTotal[$orderGoods['goods_option_id']].'件');
                     }
                 } else {
                     $goodsTotal[$orderGoods['goods_id']] += $orderGoods['total'];
-
-                    if (!$orderGoods->goods->stockEnough($goodsTotal[$orderGoods['goods_id']])) {
+                    // if (!$orderGoods->goods->stockEnough($goodsTotal[$orderGoods['goods_id']])) {
+                    // 2020.07.05 11:29 lgg add 修复拍下减库存情况下库存为1时无法支付的问题
+                    if (!$orderGoods->goods->stockEnough($goodsTotal[$orderGoods['goods_id']]) && $orderGoods['reduce_stock_method'] == 1) {
                         throw new GoodsStockNotEnough('支付失败,商品:' . $orderGoods->title . ' 库存不足'.$goodsTotal[$orderGoods['goods_id']].'件');
                     }
                 }
