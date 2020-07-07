@@ -2441,6 +2441,33 @@ class Menu
                             ],
                         ],
                     ],
+
+                    'order_list_invoiced'     => [
+                        'name'       => '已完成要票订单',
+                        'url'        => 'order.list.invoiced',
+                        'url_params' => '',
+                        'permit'     => 1,
+                        'menu'       => 1,
+                        'icon'       => 'fa-ticket',
+                        'sort'       => '5',
+                        'item'       => 'order_list_invoiced',
+                        'parents'    => ['Order'],
+                        'child'      => [
+                            'order_list_invoiced_see' => [
+                                'name'       => '浏览',
+                                'url'        => 'order.list.invoiced',
+                                'url_params' => '',
+                                'permit'     => 1,
+                                'menu'       => 0,
+                                'icon'       => '',
+                                'sort'       => 1,
+                                'item'       => 'order_list_invoiced_see',
+                                'parents'    => ['Order', 'order_list_invoiced'],
+                                'child'      => [],
+                            ],
+                        ],
+                    ],
+
                     'order_list_cancelled'     => [
                         'name'       => '已关闭订单',
                         'url'        => 'order.list.cancelled',
