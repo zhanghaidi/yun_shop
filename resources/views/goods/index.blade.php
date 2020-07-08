@@ -235,8 +235,8 @@
                                                     <div>
                                                         <input v-model="scope.row.link" :ref="'list'+scope.row.id"
                                                                style="position:absolute;opacity:0;height:1px;"/>
-                                                        <input v-model="scope.row.mplink" :ref="'mplist'+scope.row.id"
-                                                               style="position:absolute;opacity:0;height:1px;"/>
+{{--                                                        <input v-model="scope.row.mplink" :ref="'mplist'+scope.row.id"--}}
+{{--                                                               style="position:absolute;opacity:0;height:1px;"/>--}}
                                                     </div>
                                                 </div>
                                                 <div>
@@ -492,14 +492,14 @@
                     document.execCommand("Copy", false);
                     that.$message({message: "复制成功！", type: "success"});
                 },
-                // 复制小程序链接
-                copyMpList(index) {
-                    that = this;
-                    let Url = that.$refs['mplist' + index];
-                    Url.select(); // 选择对象
-                    document.execCommand("Copy", false);
-                    that.$message({message: "复制成功！", type: "success"});
-                },
+                // // 复制小程序链接
+                // copyMpList(index) {
+                //     that = this;
+                //     let Url = that.$refs['mplist' + index];
+                //     Url.select(); // 选择对象
+                //     document.execCommand("Copy", false);
+                //     that.$message({message: "复制成功！", type: "success"});
+                // },
                 // 单个选择
                 oneChange(item) {
                     let that = this;
