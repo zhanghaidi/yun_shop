@@ -190,7 +190,7 @@ class GoodsController extends BaseController
             } else {
                 $list[$key]['link'] = yzAppFullUrl('goods/' . $item['id']);
             }
-            $list[$key]['mplink'] = 'pages/shopping/detail/details?goods_id=' . $item['id'];
+
         }
 
         //$pager = PaginationHelper::show($list->total(), $list->currentPage(), $list->perPage());
