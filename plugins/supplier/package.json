@@ -1,0 +1,10 @@
+{
+  "name": "supplier",
+  "version": "1.0.237",
+  "title": "供应商",
+  "description": "供应商申请向平台供货，由平台统一对外销售，供应商具有独立的商品管理、订单管理、结算管理后台",
+  "author": "芸众",
+  "url": "http://www.yunzshop.com",
+  "namespace": "Yunshop\\Supplier",
+  "config": "config.tpl"
+}

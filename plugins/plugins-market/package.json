@@ -1,0 +1,9 @@
+{
+  "name": "plugins-market",
+  "version": "1.0.24",
+  "title": "插件市场",
+  "description": "商城插件市场",
+  "author": "芸众",
+  "namespace": "Yunshop\\PluginsMarket",
+  "config": "config.tpl"
+}

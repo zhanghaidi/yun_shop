@@ -1,0 +1,10 @@
+{
+  "name": "recharge-code",
+  "version": "1.0.11",
+  "title": "充值码",
+  "description": "充值码",
+  "author": "芸众",
+  "url": "http://www.yunzshop.com",
+  "namespace": "Yunshop\\RechargeCode",
+  "config": "config.tpl"
+}

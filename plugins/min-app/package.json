@@ -1,0 +1,10 @@
+{
+  "name": "min-app",
+  "version": "1.0.50",
+  "title": "小程序",
+  "description": "微信小程序",
+  "author": "",
+  "url": "",
+  "namespace": "Yunshop\\MinApp",
+  "config": "config.tpl"
+}

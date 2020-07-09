@@ -1,0 +1,10 @@
+{
+  "name": "diyform",
+  "version": "1.0.31",
+  "title": "自定义表单",
+  "description": "自定义表单",
+  "author": "",
+  "url": "",
+  "namespace": "Yunshop\\Diyform",
+  "config": "config.tpl"
+}

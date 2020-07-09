@@ -1,0 +1,10 @@
+{
+  "name": "article",
+  "version": "1.0.52",
+  "title": "文章营销",
+  "description": "可发布带广告的文章，用户转发文章后可以获得积分、余额奖励，同时将首次访问商城的会员锁定为下线会员。",
+  "author": "芸众",
+  "url": "http://www.yunzshop.com/",
+  "namespace": "Yunshop\\Article",
+  "config": "config.tpl"
+}

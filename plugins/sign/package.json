@@ -1,0 +1,10 @@
+{
+  "name": "sign",
+  "version": "1.0.32",
+  "title": "签到",
+  "description": "签到插件",
+  "author": "芸众",
+  "url": "http://www.yunzshop.com",
+  "namespace": "Yunshop\\Sign",
+  "config": "config.tpl"
+}

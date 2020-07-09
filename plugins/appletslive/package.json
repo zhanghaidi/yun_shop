@@ -1,0 +1,10 @@
+{
+  "name": "appletslive",
+  "version": "1.0.7",
+  "title": "小程序直播",
+  "description": "小程序直播",
+  "author": "",
+  "url": "",
+  "namespace": "Yunshop\\Appletslive",
+  "config": "config.tpl"
+}

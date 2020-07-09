@@ -1,0 +1,10 @@
+{
+  "name": "clock-in",
+  "version": "1.0.30",
+  "title": "早起打卡",
+  "description": "早起打卡",
+  "author": "",
+  "url": "",
+  "namespace": "Yunshop\\ClockIn",
+  "config": "config.tpl"
+}

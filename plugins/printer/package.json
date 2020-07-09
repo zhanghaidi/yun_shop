@@ -1,0 +1,10 @@
+{
+  "name": "printer",
+  "version": "1.0.17",
+  "title": "打印机",
+  "description": "打印机",
+  "author": "芸众",
+  "url": "http://www.yunzshop.com",
+  "namespace": "Yunshop\\Printer",
+  "config": "config.tpl"
+}

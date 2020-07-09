@@ -1,0 +1,10 @@
+{
+  "name": "alipay-onekey-login",
+  "version": "1.0.8",
+  "title": "支付宝登录",
+  "description": "支付宝授权登录",
+  "author": "芸众blank",
+  "url": "http://www.yunzshop.com",
+  "namespace": "Yunshop\\AlipayOnekeyLogin",
+  "config": "config.tpl"
+}

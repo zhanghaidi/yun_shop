@@ -1,0 +1,10 @@
+{
+  "name": "jd-supply",
+  "version": "1.0.46",
+  "title": "聚合供应链",
+  "description": "",
+  "author": "blank",
+  "url": "https://www.yunzshop.com/",
+  "namespace": "Yunshop\\JdSupply",
+  "config": "config.tpl"
+}

@@ -1,0 +1,10 @@
+{
+  "name": "exhelper",
+  "version": "1.0.32",
+  "title": "快递助手",
+  "description": "快速打印快递单、发货单，一件发货",
+  "author": "芸众",
+  "url": "http://www.yunzshop.com",
+  "namespace": "Yunshop\\Exhelper",
+  "config": "config.tpl"
+}

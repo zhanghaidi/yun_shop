@@ -1,0 +1,10 @@
+{
+  "name": "designer",
+  "version": "1.0.155",
+  "title": "店铺装修",
+  "description": "使用公告、轮播、标题、搜索框、辅助线、辅助空白、店招、商品组、富文本、按钮组、单图、图片组合等DIY元素自定义设计商城首页、专题页。",
+  "author": "芸众",
+  "url": "https://www.yunzshop.com/",
+  "namespace": "Yunshop\\Designer",
+  "config": "config.tpl"
+}

@@ -1,0 +1,10 @@
+{
+  "name": "commission",
+  "version": "1.0.226",
+  "title": "分销",
+  "description": "会员满足一定条件后成为平台分销商，下线会员消费后，其可获得相应的佣金奖励，最多可以获得下两级会员消费佣金。",
+  "author": "",
+  "url": "http://www.yunzshop.com",
+  "namespace": "Yunshop\\Commission",
+  "config": "config.tpl"
+}

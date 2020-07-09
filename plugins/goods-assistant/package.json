@@ -1,0 +1,10 @@
+{
+  "name": "goods-assistant",
+  "version": "1.0.30",
+  "title": "商品助手",
+  "description": "通过链接一键抓取淘宝（含天猫）、1688商品到商城。",
+  "author": "芸众",
+  "url": "http://www.yunzshop.com/",
+  "namespace": "Yunshop\\GoodsAssistant",
+  "config": "config.tpl"
+}

@@ -1,0 +1,10 @@
+{
+  "name": "poster",
+  "version": "1.0.78",
+  "title": "超级海报",
+  "description": "用户通过关键词生成带参数二维码的海报图片，将海报分享给好友，好友扫码关注后即可获得积分、余额、红包、优惠券奖励，同时可以将好友锁定为自己的客户，获得分销佣金、分红等收入。",
+  "author": "芸众",
+  "url": "https://www.yunzshop.com/",
+  "namespace": "Yunshop\\Poster",
+  "config": "config.tpl"
+}

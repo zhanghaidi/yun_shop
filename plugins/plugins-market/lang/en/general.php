@@ -1,0 +1,5 @@
+<?php
+return [
+    "name" => "Plugins Market (Unofficial)",
+    "description" => "An unofficial plugins market."
+];

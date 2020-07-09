@@ -1,0 +1,11 @@
+{
+  "name": "help-center",
+  "version": "1.0.8",
+  "title": "帮助中心",
+  "description": "帮助中心",
+  "author": "芸众",
+  "url": "http://www.yunzshop.com",
+  "namespace": "Yunshop\\HelpCenter",
+  "config": "config.tpl"
+
+}
