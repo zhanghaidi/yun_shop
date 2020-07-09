@@ -31,4 +31,6 @@ target/
 .DS_Store
 Thumbs.db
 
-vendor
+vendor/
+
+.gitignore
