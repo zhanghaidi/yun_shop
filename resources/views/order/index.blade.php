@@ -427,6 +427,8 @@
                                                         <label class='label label-default'>发票申请待审核</label>
                                                     @elseif ($order['invoice_status'] == 2)
                                                         <label class='label label-success'>已开具发票</label>
+                                                    @elseif ($order['invoice_status'] == 3)
+                                                        <label class='label label-danger'>发票申请被驳回</label>
                                                     @endif
                                                 @else
                                                     @include($include_ops)

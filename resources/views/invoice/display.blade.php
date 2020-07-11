@@ -81,7 +81,7 @@
                     @elseif(2==$order['invoice_status'])
                         <span class="label label-success">已开票</span>
                     @elseif(3==$order['invoice_status'])
-                        <span class="label label-danger">申请被驳回:{{$order['invoice_error']}}</span>
+                        <span class="label label-danger">申请被驳回 :{{$order['invoice_error']}}</span>
                     @endif
                 </p>
             </div>
