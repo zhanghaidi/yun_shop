@@ -64,6 +64,15 @@
         @endif
 
         <div class="form-group">
+            <label class="col-xs-12 col-sm-3 col-md-2 control-label">用户邮箱 :</label>
+            <div class="col-sm-9 col-xs-12">
+                <p class="form-control-static">
+                    {{$order['invoice_send_to_email']}}
+                </p>
+            </div>
+        </div>
+
+        <div class="form-group">
             <label class="col-xs-12 col-sm-3 col-md-2 control-label">状态 :</label>
             <div class="col-sm-9 col-xs-12">
                 <p class="form-control-static">
