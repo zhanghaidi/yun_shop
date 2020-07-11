@@ -69,12 +69,31 @@
                 <p class="form-control-static">
                     @if(1==$order['invoice_status'])
                         <span class="label label-default">待审核</span>
-                        <button name='' onclick="sub('invoice')" class='btn btn-default'>同意开票</button>
                     @elseif(2==$order['invoice_status'])
                         <span class="label label-success">已开票</span>
+                    @elseif(3==$order['invoice_status'])
+                        <span class="label label-danger">申请被驳回:{{$order['invoice_error']}}</span>
                     @endif
                 </p>
             </div>
         </div>
+
+        @if(1==$order['invoice_status'])
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label">上传发票</label>
+                <div class="col-sm-9 col-xs-12">
+                    {!! app\common\helpers\ImageHelper::tplFormFieldImage('basic-detail[invoice]', $order['invoice']) !!}
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
+                <div class="col-sm-9 col-xs-12">
+                    <br/>
+                    <button name='' class="btn btn-default" onclick="sub('invoice')">同意开票</button>
+                    <button name='' class="btn btn-danger" onclick="$('#modal-invoice-refuse').find(':input[name=order_id]').val('{{$order['id']}}')"
+                        data-toggle="modal" data-target="#modal-invoice-refuse">驳回申请</button>
+                </div>
+            </div>
+        @endif
     </div>
 </div>

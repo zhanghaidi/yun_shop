@@ -183,7 +183,32 @@ class OperationController extends BaseController
             throw new AppException("未找到该订单".request()->input('order_id'));
         }
 
+        $invoice = trim(request()->input('invoice'));
+        if (empty($invoice)) {
+            throw new AppException("请上传发票图片");
+        }
+
+        $order->invoice = $invoice;
         $order->invoice_status = 2;
+        $order->save();
+        echo json_encode(["data" => '', "result" => 1]);
+    }
+
+    public function invoiceRefuse()
+    {
+        $order = Order::find(request()->input('order_id'));
+
+        if(!$order){
+            throw new AppException("未找到该订单".request()->input('order_id'));
+        }
+
+        $invoice_error = trim(request()->input('invoice_error'));
+        if (empty($invoice_error)) {
+            throw new AppException("请填写驳回原因");
+        }
+
+        $order->invoice_status = 3;
+        $order->invoice_error = $invoice_error;
         $order->save();
         echo json_encode(["data" => '', "result" => 1]);
     }

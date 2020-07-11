@@ -23,12 +23,23 @@
 
             // 保存备注
             if (url_status == 'remark') {
-                data.remark = $('#remark').val();
+                var remark = $('#remark').val().trim(); // 获取备注信息
+                if (remark == '') {
+                    alert('请填写备注');
+                    return false;
+                }
+                data.remark = remark;
                 url = "{!! yzWebUrl('order.operation.remarks') !!}";
             }
 
             // 审核发票
             if (url_status == 'invoice') {
+                var invoice = $("[name='basic-detail[invoice]']").val().trim(); // 获取发票图片地址
+                if (invoice == '') {
+                    alert('请上传发票图片');
+                    return false;
+                }
+                data.invoice = invoice;
                 url = "{!! yzWebUrl('order.operation.invoice') !!}";
             }
 
@@ -36,6 +47,8 @@
                 var json = $.parseJSON(json);
                 if (json.result == 1) {
                     window.location.reload();
+                } else {
+                    alert('非法操作');
                 }
             });
         }
