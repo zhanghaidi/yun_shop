@@ -210,6 +210,6 @@ class OperationController extends BaseController
         $order->invoice_status = 3;
         $order->invoice_error = $invoice_error;
         $order->save();
-        echo json_encode(["data" => '', "result" => 1]);
+        return $this->message('操作成功');
     }
 }
