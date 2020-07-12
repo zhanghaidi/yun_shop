@@ -2333,6 +2333,18 @@ class Menu
                                         'item'       => 'order_operation_revoice',
                                         'parents'    => ['Order', 'order_list', 'order_handel'],
                                     ],
+
+                                    'order_operation_revoiceRefuse' => [
+                                        'name'       => '驳回发票申请',
+                                        'url'        => 'order.operation.invoiceRefuse',
+                                        'url_params' => '',
+                                        'permit'     => 1,
+                                        'menu'       => 0,
+                                        'icon'       => '',
+                                        'sort'       => 1,
+                                        'item'       => 'order_operation_revoiceRefuse',
+                                        'parents'    => ['Order', 'order_list', 'order_handel'],
+                                    ],
                                 ],
                             ],
                         ],
