@@ -74,7 +74,7 @@ class BuyerMessage extends Message
                 ['name' => '运费', 'value' => $this->order['dispatch_price']],
                 ['name' => '商品详情（含规格）', 'value' => $this->goods_title],
             ];
-            // $this->transfer($temp_id, $params);
+            $this->transfer($temp_id, $params);
         }
 
 
@@ -90,7 +90,7 @@ class BuyerMessage extends Message
             'keyword4'=>['value'=> $this->order['price']],//  订单金额
             'keyword5'=>['value'=> $this->goods_title],//  商品信息
         ];
-        // $this->miniSendToShops($is_open->template_id,$msg);
+        $this->miniSendToShops($is_open->template_id,$msg);
     }
 
     public function paid()
