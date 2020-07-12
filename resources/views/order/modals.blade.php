@@ -6,6 +6,24 @@
     }
 </style>
 
+<!-- 上传发票提示 -->
+<div id="modal-invoice-notice" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" style="width:600px;margin:0px auto;">
+    <div class="form-horizontal form">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+                    <h3>请上传发票图片</h3>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="sub('invoice')">确定</button>
+                    <a href="#" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- 驳回发票申请 -->
 <div id="modal-invoice-refuse" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" style="width:600px;margin:0px auto;">
     <form class="form-horizontal form" action="{!! yzWebUrl('order.operation.invoiceRefuse') !!}" method="post" enctype="multipart/form-data">

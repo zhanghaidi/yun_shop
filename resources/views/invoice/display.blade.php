@@ -98,11 +98,26 @@
                 <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
                 <div class="col-sm-9 col-xs-12">
                     <br/>
-                    <button name='' class="btn btn-default" onclick="sub('invoice')">同意开票</button>
+                    <button id="btnAcceptInvoice" name='' class="btn btn-default" data-toggle="modal" data-target="#modal-invoice-notice">同意开票</button>
                     <button name='' class="btn btn-danger" onclick="$('#modal-invoice-refuse').find(':input[name=order_id]').val('{{$order['id']}}')"
                         data-toggle="modal" data-target="#modal-invoice-refuse">驳回申请</button>
                 </div>
             </div>
+
+            <script language='javascript'>
+                $(function () {
+                    $('#btnAcceptInvoice').on('click', function () {
+                        var invoice = $("[name='basic-detail[invoice]']").val().trim(); // 获取发票图片地址
+                        if (invoice == '') {
+                            $('#modal-invoice-notice').find('h3').html('请上传发票图片');
+                            $('#modal-invoice-notice').find('button').hide();
+                        } else {
+                            $('#modal-invoice-notice').find('h3').html('确定同意开票吗');
+                            $('#modal-invoice-notice').find('button').show();
+                        }
+                    });
+                });
+            </script>
         @endif
     </div>
 </div>

@@ -179,7 +179,7 @@ class OperationController extends BaseController
     {
         $order = Order::find(request()->input('order_id'));
         
-        if(!$order){
+        if (!$order) {
             throw new AppException("未找到该订单".request()->input('order_id'));
         }
 
@@ -198,7 +198,7 @@ class OperationController extends BaseController
     {
         $order = Order::find(request()->input('order_id'));
 
-        if(!$order){
+        if (!$order) {
             throw new AppException("未找到该订单".request()->input('order_id'));
         }
 

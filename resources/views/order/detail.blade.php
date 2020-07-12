@@ -35,10 +35,6 @@
             // 审核发票
             if (url_status == 'invoice') {
                 var invoice = $("[name='basic-detail[invoice]']").val().trim(); // 获取发票图片地址
-                if (invoice == '') {
-                    alert('请上传发票图片');
-                    return false;
-                }
                 data.invoice = invoice;
                 url = "{!! yzWebUrl('order.operation.invoice') !!}";
             }
