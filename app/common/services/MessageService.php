@@ -249,7 +249,7 @@ class MessageService
         FormId::where('id',$scene['id'])->delete();//删除formid减少消耗
     }
 
-    public static function notice($templateId, $data, $uid, $uniacid = '', $url = 'https://www.aijuyi.net/addons/yun_shop/?menu#/home?i=39',$miniApp = ['appid' => 'wxcaa8acf49f845662', 'pagepath' => '/pages/template/community/community'])
+    public static function notice($templateId, $data, $uid, $uniacid = '', $url = 'https://www.aijuyi.net/addons/yun_shop/?menu#/home?i=39',$miniApp = ['miniprogram' => ['appid' => 'wxcaa8acf49f845662', 'pagepath' => 'pages/template/rumours/index']])
     {
         if (\Setting::get('shop.notice.toggle') == false) {
             return false;
