@@ -32,7 +32,7 @@ class ShopMessage extends Message
         //客服发送消息通知
 
         foreach (\Setting::get('shop.notice.salers') as $saler) {
-                $this->notice($this->templateId, $this->msg, $saler['uid'],'',$this->news_link);
+                $this->notice($this->templateId, $this->msg, $saler['uid'],'',$this->news_link,$this->pagepath);
         }
     }
     protected function miniSendToShops($templateId,$msg)
@@ -55,6 +55,8 @@ class ShopMessage extends Message
 
         $news_link = MessageTemp::find($temp_id)->news_link;
         $this->news_link = $news_link ?:'';
+        $pagepath = MessageTemp::find($temp_id)->pagepath;
+        $this->pagepath = $pagepath ? :'pages/template/rumours/index';
 
         $this->templateId = MessageTemp::$template_id;
         $this->sendToShops();
@@ -217,8 +219,10 @@ class ShopMessage extends Message
                 }
                 $news_link = MessageTemp::find($temp_id)->news_link;
                 $news_link = $news_link ?:'';
+                $pagepath = MessageTemp::find($temp_id)->pagepath;
+                $pagepath = $pagepath ? :'pages/user/order/order';
                 $template_id = MessageTemp::$template_id;
-                $this->notice($template_id, $msg, $goods_notice->uid,'',$news_link);
+                $this->notice($template_id, $msg, $goods_notice->uid,'',$news_link, $pagepath);
             }
 
             //小程序消息通知

@@ -51,9 +51,10 @@ class MessageEvent extends Event
      */
     public $uniacid;
 
+    public $pagepath; //小程序页面
 
 
-    public function __construct($member_id, $template_id, array $params, $url='')
+    public function __construct($member_id, $template_id, array $params, $url='', $pagepath='')
     {
         $this->template_id = $template_id;
 
@@ -66,6 +67,8 @@ class MessageEvent extends Event
 
         $this->url = $url;
 
+
+        $this->pagepath = $pagepath; //增加小程序路径zhd 7.23
 
         $this->uniacid = \YunShop::app()->uniacid;
     }

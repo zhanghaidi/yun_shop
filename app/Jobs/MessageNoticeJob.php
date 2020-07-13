@@ -33,7 +33,8 @@ class MessageNoticeJob implements  ShouldQueue
     protected $openId;
     protected $url;
     protected $uniacid;
-    protected $miniApp;
+    protected $pagepath; //小程序页面路径
+    protected $miniApp; //消息发送小程序参数
 
     /**
      * MessageNoticeJob constructor.

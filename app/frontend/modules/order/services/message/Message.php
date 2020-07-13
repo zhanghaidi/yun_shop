@@ -25,6 +25,7 @@ class Message extends MessageService
     protected $formId;
     protected $title;
     protected $news_link;
+    protected $pagepath; //小程序页面
     function __construct($order,$formId = '',$type = 1,$title)
     {
         $this->order = $order;

@@ -27,7 +27,8 @@ class MessageJob extends Job
             $this->event->template_id,
             $this->event->params,
             $this->event->url,
-            $this->event->uniacid
+            $this->event->uniacid,
+            $this->event->pagepath  //增加小程序路径zhd
         );
     }
 
