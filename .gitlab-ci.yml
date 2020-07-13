@@ -1,0 +1,12 @@
+stages:
+  - build
+  - test
+  - deploy
+job1:
+  stage: test
+  tags:
+    - codebackup
+  only:
+    - master
+  script:
+    - cd /www/data_codebak/$CI_PROJECT_NAME && git pull
