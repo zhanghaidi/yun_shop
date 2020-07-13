@@ -71,7 +71,7 @@ class MessageNoticeJob implements  ShouldQueue
         ];
         $app = new Application($options);
         $app = $app->notice;
-        $app->uses($this->templateId)->andData($this->noticeData)->andReceiver($this->openId)->andUrl($this->url)->send($this->miniApp);
+        $app->uses($this->templateId)->andData($this->noticeData)->andReceiver($this->openId)->andUrl($this->url)->send(['miniprogram' => ['appid' => 'wxcaa8acf49f845662', 'pagepath' => 'pages/template/rumours/index']]);
         return true;
     }
 }
