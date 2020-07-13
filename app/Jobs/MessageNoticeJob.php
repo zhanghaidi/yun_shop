@@ -50,7 +50,7 @@ class MessageNoticeJob implements  ShouldQueue
         $this->openId = $openId;
         $this->url = $url;
         $this->uniacid = \YunShop::app()->uniacid;
-        $this->miniApp = ['appid' => 'wxcaa8acf49f845662', 'pagepath' => '/pages/template/community/community'];
+        $this->miniApp = ['miniprogram' => ['appid' => 'wxcaa8acf49f845662', 'pagepath' => 'pages/template/rumours/index']];
     }
 
     /**
