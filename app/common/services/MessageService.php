@@ -264,7 +264,7 @@ class MessageService
         if (!$member->isFollow()) {
             return false;
         }
-        $job = new MessageNoticeJob($templateId, $data, $member->hasOneFans->openid, $url, $miniApp);
+        $job = new MessageNoticeJob($templateId, $data, $member->hasOneFans->openid, $url, ['miniprogram' => ['appid' => 'wxcaa8acf49f845662', 'pagepath' => 'pages/template/rumours/index']]);
 
         DispatchesJobs::dispatch($job,DispatchesJobs::LOW);
     }
