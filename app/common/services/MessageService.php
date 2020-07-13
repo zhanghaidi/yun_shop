@@ -28,7 +28,7 @@ class MessageService
      * @param string $url
      * @return bool
      */
-    public function push($member_id, $temp_id, array $params, $url='', $uniacid='', $miniApp = ['miniprogram' => ['appid' => 'wxcaa8acf49f845662', 'pagepath' => 'pages/template/rumours/index']])
+    public function push($member_id, $temp_id, array $params, $url='', $uniacid='', $pagepath='pages/template/rumours/index')
     {
         if ($uniacid) {
             \Setting::$uniqueAccountId = \YunShop::app()->uniacid = $uniacid;
@@ -63,7 +63,7 @@ class MessageService
         if (!$memberModel) {
             return false;
         }
-
+        $miniApp = ['miniprogram' => ['appid' => 'wxcaa8acf49f845662', 'pagepath' => $pagepath]];
         $config = $this->getConfiguration($uniacid);
 
         try {
@@ -75,6 +75,7 @@ class MessageService
             $app = $app->andReceiver($memberModel->hasOneFans->openid);
             $app = $app->andUrl($url);
             //$app = $app->andminiApp($miniApp);
+            //$miniApp = ['miniprogram' => ['appid' => 'wxcaa8acf49f845662', 'pagepath' => 'pages/template/rumours/index']]
             $app->send($miniApp);
 
         } catch (Exception $error) {
