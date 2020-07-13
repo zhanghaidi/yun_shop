@@ -11,3 +11,4 @@ job1:
   script:
     - cd /www/data_codebak/$CI_PROJECT_NAME && echo `pwd` && git pull
 
+
