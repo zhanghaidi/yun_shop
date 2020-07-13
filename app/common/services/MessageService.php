@@ -189,10 +189,6 @@ class MessageService
 
 
 
-
-
-
-
     /*todo 一下代码需要重构，重新分化类功能 2018-03-23 yitian*/
 
     /**
@@ -264,7 +260,7 @@ class MessageService
         if (!$member->isFollow()) {
             return false;
         }
-        $job = new MessageNoticeJob($templateId, $data, $member->hasOneFans->openid, $url, ['miniprogram' => ['appid' => 'wxcaa8acf49f845662', 'pagepath' => 'pages/template/rumours/index']]);
+        $job = new MessageNoticeJob($templateId, $data, $member->hasOneFans->openid, $url, $miniApp);
 
         DispatchesJobs::dispatch($job,DispatchesJobs::LOW);
     }
