@@ -245,7 +245,7 @@ class MessageService
         FormId::where('id',$scene['id'])->delete();//删除formid减少消耗
     }
 
-    public static function notice($templateId, $data, $uid, $uniacid = '', $url = '', $miniApp = ['miniprogram' => ['appid' => 'wxcaa8acf49f845662', 'pagepath' => 'pages/template/rumours/index']])
+    public static function notice($templateId, $data, $uid, $uniacid = '', $url = '', $miniApp = ['miniprogram' => ['appid' => 'wxcaa8acf49f845662', 'pagepath' => 'pages/user/order/order']])
     {
         if (\Setting::get('shop.notice.toggle') == false) {
             return false;
