@@ -118,6 +118,11 @@
                     });
                 });
             </script>
+        @elseif(2==$order['invoice_status'])
+            <label class="col-xs-12 col-sm-3 col-md-2 control-label">发票图片 :</label>
+            <div class="col-sm-9 col-xs-12">
+                <img src='{{$order['invoice']}}' style='width:100px;padding:1px;border:1px solid #ccc'/>
+            </div>
         @endif
     </div>
 </div>
