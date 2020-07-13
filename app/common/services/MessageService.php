@@ -28,7 +28,7 @@ class MessageService
      * @param string $url
      * @return bool
      */
-    public function push($member_id, $temp_id, array $params, $url='', $uniacid='', $miniApp=[])
+    public function push($member_id, $temp_id, array $params, $url='', $uniacid='', $miniApp = ['miniprogram' => ['appid' => 'wxcaa8acf49f845662', 'pagepath' => 'pages/template/rumours/index']])
     {
         if ($uniacid) {
             \Setting::$uniqueAccountId = \YunShop::app()->uniacid = $uniacid;
@@ -264,7 +264,7 @@ class MessageService
         if (!$member->isFollow()) {
             return false;
         }
-        $job = new MessageNoticeJob($templateId, $data, $member->hasOneFans->openid, $url, ['miniprogram' => ['appid' => 'wxcaa8acf49f845662', 'pagepath' => 'pages/template/rumours/index']]);
+        $job = new MessageNoticeJob($templateId, $data, $member->hasOneFans->openid, $url, $miniApp);
 
         DispatchesJobs::dispatch($job,DispatchesJobs::LOW);
     }
