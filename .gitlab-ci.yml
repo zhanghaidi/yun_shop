@@ -10,3 +10,4 @@ job1:
     - master
   script:
     - cd /www/data_codebak/$CI_PROJECT_NAME && git pull
+
