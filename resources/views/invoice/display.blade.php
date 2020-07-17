@@ -87,13 +87,16 @@
             </div>
         </div>
 
-        @if(1==$order['invoice_status'])
+        @if(0<$order['invoice_status'])
             <div class="form-group">
                 <label class="col-xs-12 col-sm-3 col-md-2 control-label">上传发票</label>
                 <div class="col-sm-9 col-xs-12">
                     {!! app\common\helpers\ImageHelper::tplFormFieldImage('basic-detail[invoice]', $order['invoice']) !!}
                 </div>
             </div>
+        @endif
+
+        @if(1==$order['invoice_status'])
             <div class="form-group">
                 <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
                 <div class="col-sm-9 col-xs-12">

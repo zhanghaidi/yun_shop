@@ -1443,6 +1443,7 @@ class GoodsController extends GoodsApiController
 
     public function getDiscountGoods()
     {
+        $user_id = intval(\YunShop::request()->user_id);
         $list = Goods::uniacid()
             ->select('id', 'id as goods_id', 'title', 'thumb', 'price', 'market_price')
             ->where('is_discount', '1')
@@ -1453,8 +1454,10 @@ class GoodsController extends GoodsApiController
         if (!$list->isEmpty()) {
             $list = set_medias($list->toArray(), 'thumb');
         }
-
-        return $this->successJson('获取促销商品成功', $list);
+        $user_data=Db::table('yz_member')->where(['member_id'=>$user_id])->first();
+        $data['list']=$list;
+        $data['level']=$user_data['level_id'];
+        return $this->successJson('获取促销商品成功', $data);
     }
 
 }
