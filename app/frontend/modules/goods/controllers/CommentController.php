@@ -71,6 +71,7 @@ class CommentController extends ApiController
         //用户禁言
         $user = DB::table('diagnostic_service_user')->where('ajy_uid',  $member->uid)->first();
 
+        var_dump($user);die;
         if($user->is_black == 1){
             return $this->errorJson('评论失败!您已被禁言');
         }
