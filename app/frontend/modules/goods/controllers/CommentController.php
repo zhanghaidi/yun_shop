@@ -68,6 +68,12 @@ class CommentController extends ApiController
         if (!$member) {
             return $this->errorJson('评论失败!未检测到会员数据!');
         }
+        //用户禁言
+        $user = DB::table('diagnostic_service_user')->where('ajy_uid',  $member->uid)->first();
+
+        if($user->is_black == 1){
+            return $this->errorJson('评论失败!您已被禁言');
+        }
         $commentStatus = '1';
 
         $comment = [
