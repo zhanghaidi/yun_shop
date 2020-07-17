@@ -288,7 +288,7 @@ class Privilege extends BaseModel
         if (!in_array($member->yzMember->level_id, $buy_levels)) {
             $ordinaryMember = in_array('0', $buy_levels)? '普通会员 ':'';
 
-            throw new AppException('商品(' . $this->goods->title . ')仅限' . $ordinaryMember.$level_names . '购买');
+            throw new AppException('该商品仅限' . $ordinaryMember.$level_names . '购买');
         }
     }
 
@@ -308,7 +308,7 @@ class Privilege extends BaseModel
             return;
         }
         if (!in_array($member->yzMember->group_id, $buy_groups)) {
-            throw new AppException('(' . $this->goods->title . ')该商品仅限[' . $group_names . ']购买');
+            throw new AppException('该商品仅限[' . $group_names . ']购买');
         }
     }
 
@@ -356,7 +356,7 @@ class Privilege extends BaseModel
         }
 
         if (!in_array($member->level_id, $show_levels)) {
-            throw new AppException('商品(' . $goodsModel->title . ')仅限' . $ordinary_name . implode(',', $level_names) . '浏览');
+            throw new AppException('该商品仅限' . $ordinary_name . implode(',', $level_names) . '浏览');
         }
     }
 
@@ -376,7 +376,7 @@ class Privilege extends BaseModel
             return;
         }
         if (!in_array($member->group_id, $show_groups)) {
-            throw new AppException('(' . $goodsModel->title . ')该商品仅限[' . $group_names . ']浏览');
+            throw new AppException('该商品仅限[' . $group_names . ']浏览');
         }
     }
 
