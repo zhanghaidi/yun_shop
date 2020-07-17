@@ -260,7 +260,8 @@ class Privilege extends BaseModel
         if ($this->total_buy_limit > 0) {
             $history_num = $member->orderGoods()->where('goods_id', $this->goods_id)->sum('total');
             if ($history_num + $num > $this->total_buy_limit)
-                throw new AppException('您已购买' . $history_num . '件商品(' . $this->goods->title . '),最多可购买' . $this->total_buy_limit . '件');
+                // throw new AppException('您已购买' . $history_num . '件商品(' . $this->goods->title . '),最多可购买' . $this->total_buy_limit . '件');
+                throw new AppException('您已购买' . $history_num . '件商品,最多可购买' . $this->total_buy_limit . '件');
         }
     }
 
