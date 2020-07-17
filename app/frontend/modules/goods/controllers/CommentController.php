@@ -72,7 +72,7 @@ class CommentController extends ApiController
         $user = DB::table('diagnostic_service_user')->where('ajy_uid',  $member->uid)->first();
 
         if($user['is_black'] == 1){
-            return $this->errorJson('评论失败!您已被禁言');
+            return $this->errorJson('您已被禁言,截止时间：'.$user['black_end_time']);
         }
         $commentStatus = '1';
 
