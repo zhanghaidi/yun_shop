@@ -71,8 +71,17 @@ class CommentController extends ApiController
         //用户禁言
         $user = DB::table('diagnostic_service_user')->where('ajy_uid',  $member->uid)->first();
         if($user['is_black'] == 1){
-            return $this->errorJson('您已被禁言,截止时间至：'.date('Y-m-d H:i:s',$user['black_end_time']));
+
+            if($user['black_end_time']-TIMESTAMP >1){
+                return $this->errorJson('您已被禁言,截止时间至：'.date('Y-m-d H:i:s',$user['black_end_time']));
+            }else{
+                //pdo_update('diagnostic_service_user',array('is_black' => 0, 'black_content' => '时间到期,自然解禁'), array('ajy_uid' => $user_id));
+                DB::table('diagnostic_service_user')
+                    ->where('ajy_uid', $member->uid)
+                    ->update(['is_black' => 0,'black_content' => '时间到期,自然解禁']);
+            }
         }
+
         $commentStatus = '1';
 
         $comment = [
@@ -137,7 +146,15 @@ class CommentController extends ApiController
         //用户禁言
         $user = DB::table('diagnostic_service_user')->where('ajy_uid',  $member->uid)->first();
         if($user['is_black'] == 1){
-            return $this->errorJson('您已被禁言,截止时间至：'.date('Y-m-d H:i:s',$user['black_end_time']));
+
+            if($user['black_end_time']-TIMESTAMP >1){
+                return $this->errorJson('您已被禁言,截止时间至：'.date('Y-m-d H:i:s',$user['black_end_time']));
+            }else{
+                //pdo_update('diagnostic_service_user',array('is_black' => 0, 'black_content' => '时间到期,自然解禁'), array('ajy_uid' => $user_id));
+                DB::table('diagnostic_service_user')
+                    ->where('ajy_uid', $member->uid)
+                    ->update(['is_black' => 0,'black_content' => '时间到期,自然解禁']);
+            }
         }
         $commentStatus = '2';
         $id = \YunShop::request()->id;
@@ -194,7 +211,15 @@ class CommentController extends ApiController
         //用户禁言
         $user = DB::table('diagnostic_service_user')->where('ajy_uid',  $member->uid)->first();
         if($user['is_black'] == 1){
-            return $this->errorJson('您已被禁言,截止时间：'.date('Y-m-d H:i:s',$user['black_end_time']));
+
+            if($user['black_end_time']-TIMESTAMP >1){
+                return $this->errorJson('您已被禁言,截止时间至：'.date('Y-m-d H:i:s',$user['black_end_time']));
+            }else{
+                //pdo_update('diagnostic_service_user',array('is_black' => 0, 'black_content' => '时间到期,自然解禁'), array('ajy_uid' => $user_id));
+                DB::table('diagnostic_service_user')
+                    ->where('ajy_uid', $member->uid)
+                    ->update(['is_black' => 0,'black_content' => '时间到期,自然解禁']);
+            }
         }
         $id = \YunShop::request()->id;
         $reply = $commentModel::find($id);
