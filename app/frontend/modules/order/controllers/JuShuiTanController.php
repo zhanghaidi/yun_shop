@@ -23,7 +23,7 @@ class JuShuiTanController extends ApiController
 
     }
 
-
+   //发送聚水潭接口
     public function index()
     {
         $now_time = time();
@@ -66,7 +66,7 @@ class JuShuiTanController extends ApiController
 
     }
 
-
+    //发送聚水潭子方法
     public function jushuitan($order_data, $province = '', $city = '', $district = '', $address = '', $array)
     {
         $params = array(
@@ -111,7 +111,7 @@ class JuShuiTanController extends ApiController
 
     }
 
-
+   //聚水潭返回物流信息方法
     public function sendorder()
     {
         file_put_contents('ceshi.txt',print_r($this->param,true));
@@ -167,7 +167,7 @@ class JuShuiTanController extends ApiController
 
     }
 
-
+    //聚水潭发送日志
     public function ju_log($query = '', $type = '')
     {
         if ($type == 1) {
@@ -186,7 +186,7 @@ class JuShuiTanController extends ApiController
         fclose($logFile);
     }
 
-
+   //退货信息修改
     public function refund_order()
     {
         $refund_sn = $this->param['outer_as_id'];
