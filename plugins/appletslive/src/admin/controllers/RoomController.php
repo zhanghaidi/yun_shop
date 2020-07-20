@@ -22,7 +22,9 @@
 namespace Yunshop\Appletslive\admin\controllers;
 
 use Illuminate\Support\Facades\DB;
+use app\common\exceptions\AppException;
 use app\common\components\BaseController;
+use app\common\helpers\Cache;
 use app\common\facades\Setting;
 use Yunshop\Appletslive\common\services\BaseService;
 
@@ -87,5 +89,24 @@ class RoomController extends BaseController
         return view('Yunshop\Appletslive::admin.replay_list', [
             'list' => $result,
         ])->render();
+    }
+
+
+    private function getToken()
+    {
+        $set = Setting::get('plugin.appletslive');
+        $appId = $set['appId'];
+        $secret = $set['secret'];
+
+        if (empty($appId) || empty($secret)) {
+            throw new AppException('请填写appId和secret');
+        }
+
+        $result = (new BaseService())->getToken($appId, $secret);
+        if ($result['errcode'] != 0) {
+            throw new AppException('appId或者secret错误'.$result['errmsg']);
+        }
+
+        return $result['access_token'];
     }
 }
