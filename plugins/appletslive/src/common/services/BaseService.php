@@ -29,7 +29,7 @@ class BaseService
 
     public function getRooms($token)
     {
-        $url = 'http://api.weixin.qq.com/wxa/business/getliveinfo?access_token=' . $token;
+        $url = 'https://api.weixin.qq.com/wxa/business/getliveinfo?access_token=' . $token;
 
         $post_data = [
             'start' => 0,
@@ -43,7 +43,7 @@ class BaseService
 
     public function getReplays($token, $rid)
     {
-        $url = 'http://api.weixin.qq.com/wxa/business/getliveinfo?access_token=' . $token;
+        $url = 'https://api.weixin.qq.com/wxa/business/getliveinfo?access_token=' . $token;
 
         $post_data = [
             'action' => 'get_replay',

@@ -23,9 +23,10 @@ class JuShuiTanController extends ApiController
 
     }
 
-
+   //发送聚水潭接口
     public function index()
     {
+        //宝塔后台有定时任务   每分钟都执行，每次执行10单
         $now_time = time();
         $ret = DB::table('yz_order as o')
             // ->join('yz_order_goods as s', 'o.id', '=', 's.order_id')
@@ -39,6 +40,7 @@ class JuShuiTanController extends ApiController
 
         if (!empty($ret)) {
             foreach ($ret as $k => $v) {
+                //发送大于5分钟的订单
                 if ($now_time - $v['pay_time'] > 300) {
                     $addres = explode(" ", $v['address']);
                     $order_goods = Db::table('yz_order_goods')->where(['order_id' => $v['id']])->get();
@@ -66,7 +68,7 @@ class JuShuiTanController extends ApiController
 
     }
 
-
+    //发送聚水潭子方法
     public function jushuitan($order_data, $province = '', $city = '', $district = '', $address = '', $array)
     {
         $params = array(
@@ -111,9 +113,10 @@ class JuShuiTanController extends ApiController
 
     }
 
-
+   //聚水潭返回物流信息方法
     public function sendorder()
     {
+        //↓↓↓↓↓这个是物流回调地址，追加打印的数据，聚水潭发货以后这个接口接收，芸众根目录可查看发过来的订单数据（正式上线删除）
         file_put_contents('ceshi.txt',print_r($this->param,true));
         $order_sn = $this->param['so_id'];
         if (!empty($order_sn) && $order_sn) {
@@ -167,7 +170,7 @@ class JuShuiTanController extends ApiController
 
     }
 
-
+    //聚水潭发送日志
     public function ju_log($query = '', $type = '')
     {
         if ($type == 1) {
@@ -186,7 +189,7 @@ class JuShuiTanController extends ApiController
         fclose($logFile);
     }
 
-
+   //退货信息修改
     public function refund_order()
     {
         $refund_sn = $this->param['outer_as_id'];
