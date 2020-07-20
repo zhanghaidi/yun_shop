@@ -81,27 +81,28 @@ class RoomController extends BaseController
                     }
                 }
 
-                Cache::put($cache_key, $result['room_info'], 3);
+                Cache::put($cache_key, $result['room_info'], 10);
                 $room_list = Cache::get($cache_key);
             }
         }
 
         if ($type == 1) { // 录播
             if (empty($room_list)) {
-                $result = DB::table('appletslive_room')->where('type', 1)->get();
+                // $result = DB::table('appletslive_room')->where('type', 1)->get();
+                $result = [
+                    ['id' => 1, 'title' => '录播房间1', 'cover_img' => 'https://attachment-1300631469.file.myqcloud.com/image/f0593e5fc43740f2081dc7650bf3614a.jpg',
+                        'view_num' => 1234, 'comment_num' => 321],
+                    ['id' => 2, 'title' => '录播房间2', 'cover_img' => 'https://attachment-1300631469.file.myqcloud.com/image/f0593e5fc43740f2081dc7650bf3614a.jpg',
+                        'view_num' => 2345, 'comment_num' => 567],
+                ];
 
                 foreach ($result as &$room) {
-                    $room['start_time'] = date('Y-m-d H:i:s', $room['start_time']);
-                    $room['end_time'] = date('Y-m-d H:i:s', $room['end_time']);
                     if (strexists($room['cover_img'], 'http')) {
                         $room['cover_img'] = str_replace('http', 'https', $room['cover_img']);
                     }
-                    if (strexists($room['share_img'], 'http')) {
-                        $room['share_img'] = str_replace('http', 'https', $room['share_img']);
-                    }
                 }
 
-                Cache::put($cache_key, $result['room_info'], 3);
+                Cache::put($cache_key, $result, 10);
                 $room_list = Cache::get($cache_key);
             }
         }
@@ -156,7 +157,7 @@ class RoomController extends BaseController
                 }
             }
 
-            Cache::put('live_room_replay_list_' . $room_id, $result['live_replay'], 3);
+            Cache::put('live_room_replay_list_' . $room_id, $result['live_replay'], 10);
             $replay_list = Cache::get('live_room_replay_list_' . $room_id);
         }
 
@@ -164,7 +165,6 @@ class RoomController extends BaseController
             'replay_list' => $replay_list,
         ])->render();
     }
-
 
     private function getToken()
     {

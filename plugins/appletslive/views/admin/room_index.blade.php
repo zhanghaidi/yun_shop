@@ -11,10 +11,10 @@
     <div class="panel panel-info">
         <ul class="add-shopnav">
             <li @if($type=='0') class="active" @endif>
-                <a href="">直播</a>
+                <a href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.index')}}">直播</a>
             </li>
-            <li  @if($type=='1') class="active" @endif>
-                <a href="">录播</a>
+            <li @if($type=='1') class="active" @endif>
+                <a href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.index', ['type' => 1])}}">录播</a>
             </li>
         </ul>
     </div>
@@ -52,7 +52,7 @@
                         <td>{{$row['start_time']}}</td>
                         <td>{{$row['end_time']}}</td>
                         <td>999</td>
-                        <td>{{$row['live_status']}}</td>
+                        <td>{{$row['live_status_text']}}</td>
                         <td style="overflow:visible;">
                             <a class='btn btn-default'
                                href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.set', ['type' => 0, 'roomid' => $row['roomid']])}}"
