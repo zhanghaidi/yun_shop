@@ -1,11 +1,11 @@
 [
   {
     "name": "顺丰速运",
-    "value": "SF"
+    "value": "shunfeng"
   },
   {
     "name": "百世快递",
-    "value": "HTKY"
+    "value": "huitongkuaidi"
   },
   {
     "name": "中通快递",
@@ -13,7 +13,7 @@
   },
   {
     "name": "申通快递",
-    "value": "STO"
+    "value": "shentong"
   },
   {
     "name": "圆通速递",
@@ -25,7 +25,7 @@
   },
   {
     "name": "邮政快递包裹",
-    "value": "YZPY"
+    "value": "youzhengguonei"
   },
   {
     "name": "EMS",
@@ -33,11 +33,7 @@
   },
   {
     "name": "天天快递",
-    "value": "HHTT"
-  },
-  {
-    "name": "京东快递",
-    "value": "JD"
+    "value": "tiantian"
   },
   {
     "name": "优速快递",
@@ -657,7 +653,7 @@
   },
   {
     "name": "壹米滴答",
-    "value": "YMDD"
+    "value": "yimidida"
   },
   {
     "name": "邮政国内标快",

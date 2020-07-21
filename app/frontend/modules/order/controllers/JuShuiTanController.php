@@ -147,9 +147,6 @@ class JuShuiTanController extends ApiController
                 } elseif ($lc_id == 'DBL') {
                     $data['express_code'] = 'debangwuliu';//德邦物流
                     $data['express_company_name'] = '德邦物流';
-                } elseif ($lc_id == 'JD') {
-                    $data['express_code'] = 'debangwuliu';//京东快递
-                    $data['express_company_name'] = '京东快递';
                 } else {
                     $data['express_code'] = $lc_id;
                     $data['express_company_name'] = '自提自送';
