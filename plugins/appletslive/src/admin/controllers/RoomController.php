@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\DB;
 use app\common\exceptions\AppException;
 use app\common\components\BaseController;
 use app\common\helpers\Cache;
+use app\common\helpers\Url;
 use app\common\facades\Setting;
 use Yunshop\Appletslive\common\services\BaseService;
 
@@ -52,61 +53,112 @@ class RoomController extends BaseController
             if (empty($room_list)) {
                 $result = (new BaseService())->getRooms($this->getToken());
 
-                foreach ($result['room_info'] as &$room) {
+                $dbroom = DB::table('appletslive_room')->where('type', 0)->get();
+                $insert = [];
+                $present = $result['room_info'];
+                foreach ($present as $psk => $psv) {
+                    $exist = false;
+                    foreach ($dbroom as $drk => $drv) {
+                        if ($drv['roomid'] == $psv['roomid']) {
+                            $present[$psk]['id'] = $drv['id'];
+                            // 房间信息在数据库中存在，实时更新数据
+                            DB::table('appletslive_room')->where('id', $drv['id'])->update([
+                                'name' => $psv['name'],
+                                'anchor_name' => $psv['anchor_name'],
+                                'cover_img' => $psv['cover_img'],
+                                'share_img' => $psv['share_img'],
+                                'start_time' => $psv['start_time'],
+                                'end_time' => $psv['end_time'],
+                                'live_status' => $psv['live_status'],
+                            ]);
+                            $exist = true;
+                            break;
+                        }
+                    }
+                    // 房间信息在数据库中不存在，实时记录数据
+                    if (!$exist) {
+                        array_push($insert, [
+                            'type' => 0,
+                            'roomid' => $room['roomid'],
+                            'name' => $room['name'],
+                            'anchor_name' => $room['anchor_name'],
+                            'cover_img' => $room['cover_img'],
+                            'share_img' => $room['share_img'],
+                            'start_time' => $room['start_time'],
+                            'end_time' => $room['end_time'],
+                            'live_status' => $room['live_status'],
+                            'create_time' => time(),
+                        ]);
+                    }
+                }
+                // 添加新增的直播间
+                if ($insert) {
+                    DB::table('appletslive_room')->insert($insert);
+                }
+                // 移除删掉的直播间
+                foreach ($dbroom as $drk => $drv) {
+                    foreach ($present as $psv) {
+                        if ($drv['roomid'] == $psv['roomid']) {
+                            $dbroom[$drk] = null;
+                        }
+                    }
+                }
+                $todel = array_filter($dbroom);
+                if ($todel) {
+                    DB::table('appletslive_room')->where('id', 'in', array_column($todel, 'id'))->delete();
+                }
+
+                foreach ($present as &$room) {
                     $room['start_time'] = date('Y-m-d H:i:s', $room['start_time']);
                     $room['end_time'] = date('Y-m-d H:i:s', $room['end_time']);
-                    if (strexists($room['cover_img'], 'http')) {
-                        $room['cover_img'] = str_replace('http', 'https', $room['cover_img']);
+                    if (strexists($room['cover_img'], 'http://')) {
+                        $room['cover_img'] = str_replace('http://', 'https://', $room['cover_img']);
                     }
-                    if (strexists($room['share_img'], 'http')) {
-                        $room['share_img'] = str_replace('http', 'https', $room['share_img']);
+                    if (strexists($room['share_img'], 'http://')) {
+                        $room['share_img'] = str_replace('http://', 'https://', $room['share_img']);
                     }
                     switch ($room['live_status']) {
                         case 101:
                             $room['live_status_text'] = '直播中';
+                            break;
                         case 102:
                             $room['live_status_text'] = '未开始';
+                            break;
                         case 103:
                             $room['live_status_text'] = '已结束';
+                            break;
                         case 104:
                             $room['live_status_text'] = '禁播';
+                            break;
                         case 105:
                             $room['live_status_text'] = '暂停';
+                            break;
                         case 106:
                             $room['live_status_text'] = '异常';
+                            break;
                         case 107:
                             $room['live_status_text'] = '已过期';
+                            break;
                         default:
                             $room['live_status_text'] = '未知';
+                            break;
                     }
                 }
 
-                Cache::put($cache_key, $result['room_info'], 10);
+                Cache::put($cache_key, $present, 3);
                 $room_list = Cache::get($cache_key);
             }
         }
 
         if ($type == 1) { // 录播
-            if (empty($room_list)) {
-                // $result = DB::table('appletslive_room')->where('type', 1)->get();
-                $result = [
-                    ['id' => 1, 'title' => '录播房间1', 'cover_img' => 'https://attachment-1300631469.file.myqcloud.com/image/f0593e5fc43740f2081dc7650bf3614a.jpg',
-                        'view_num' => 1234, 'comment_num' => 321],
-                    ['id' => 2, 'title' => '录播房间2', 'cover_img' => 'https://attachment-1300631469.file.myqcloud.com/image/f0593e5fc43740f2081dc7650bf3614a.jpg',
-                        'view_num' => 2345, 'comment_num' => 567],
-                ];
-
-                foreach ($result as &$room) {
-                    if (strexists($room['cover_img'], 'http')) {
-                        $room['cover_img'] = str_replace('http', 'https', $room['cover_img']);
-                    }
+            $result = DB::table('appletslive_room')->where('type', 1)->get();
+            foreach ($result as &$room) {
+                if (strexists($room['cover_img'], 'http://')) {
+                    $room['cover_img'] = str_replace('http://', 'https://', $room['cover_img']);
                 }
-
-                Cache::put($cache_key, $result, 10);
-                $room_list = Cache::get($cache_key);
             }
+            $room_list = $result;
         }
-
 
         return view('Yunshop\Appletslive::admin.room_index', [
             'type' => $type,
@@ -117,19 +169,26 @@ class RoomController extends BaseController
     // 房间设置
     public function set()
     {
-        $form_data = request()->form_data;
-        if ($form_data) {
-            return $this->successJson('保存成功', $form_data);
+        if (request()->isMethod('post')) {
+            $id = request()->post('id', 0);
+            $desc = request()->post('desc', '');
+            $room = DB::table('appletslive_room')->where('id', $id)->first();
+            if (!$room) {
+                throw new AppException('无效的房间ID');
+            }
+            DB::table('appletslive_room')->where('id', $id)->update(['desc', $desc]);
+            return $this->message('保存成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.index', ['type' => $room['type']]));
         }
 
-        $roomid = request()->get('roomid', 0);
-        $info = DB::table('appletslive_room')->where('roomid', $roomid)->first();
+        $rid = request()->get('rid', 0);
+        $info = DB::table('appletslive_room')->where('id', $rid)->first();
 
         if (!$info) {
-            throw new AppException('房间号不存在');
+            throw new AppException('房间不存在');
         }
 
         return view('Yunshop\Appletslive::admin.room_set', [
+            'rid' => $rid,
             'info' => $info,
         ])->render();
     }
@@ -137,31 +196,56 @@ class RoomController extends BaseController
     // 回看列表
     public function replaylist()
     {
-        $room_id = request()->get('room_id', 0);
-        $replay_list = Cache::get('live_room_replay_list_' . $room_id);
-        if (empty($replay_list)) {
-            $result = (new BaseService())->getReplays($this->getToken(), $room_id);
+        $rid = request()->get('rid', 0);
+        $room = DB::table('appletslive_room')->where('id', $rid)->first();
+        $type = $room['type'];
+        $cache_key = 'live_room_replay_list_' . $type . '_' . $rid;
+        $replay_list = Cache::get($cache_key);
 
-            if (!$result || $result['errcode'] != 0) {
-                if (is_array($result)) {
-                    throw new AppException('获取回看列表失败【' . $result['errmsg'] . '】');
+        if ($type == 0) { // 直播回看列表
+            if (empty($replay_list)) {
+                $result = (new BaseService())->getReplays($this->getToken(), $room_id);
+
+                if (!$result || $result['errcode'] != 0) {
+                    if (is_array($result)) {
+                        throw new AppException('获取回看列表失败【' . $result['errmsg'] . '】');
+                    }
+                    throw new AppException('获取回看列表失败');
                 }
-                throw new AppException('获取回看列表失败');
+
+                foreach ($result['live_replay'] as &$replay) {
+                    $replay['create_time'] = date('Y-m-d H:i:s', $replay['create_time']);
+                    $replay['expire_time'] = date('Y-m-d H:i:s', $replay['expire_time']);
+                    if (strexists($replay['media_url'], 'http://')) {
+                        $replay['media_url'] = str_replace('http://', 'https://', $replay['media_url']);
+                    }
+                }
+
+                Cache::put($cache_key, $result['live_replay'], 3);
+                $replay_list = Cache::get($cache_key);
+            }
+        }
+
+        if ($type == 1) { // 上传录播列表
+            $result = [
+                ['id' => 2, 'title' => '知识点2', 'cover_img' => 'https://attachment-1300631469.file.myqcloud.com/image/f0593e5fc43740f2081dc7650bf3614a.jpg',
+                    'create_time' => date('Y-m-d H:i:s'), 'expire_time' => '2099-12-31 23:59:59'],
+                ['id' => 1, 'title' => '知识点1', 'cover_img' => 'https://attachment-1300631469.file.myqcloud.com/image/f0593e5fc43740f2081dc7650bf3614a.jpg',
+                    'create_time' => date('Y-m-d H:i:s'), 'expire_time' => '2099-12-31 23:59:59'],
+            ];
+
+            foreach ($result as &$room) {
+                if (strexists($room['cover_img'], 'http://')) {
+                    $room['cover_img'] = str_replace('http://', 'https://', $room['cover_img']);
+                }
             }
 
-            foreach ($result['live_replay'] as &$replay) {
-                $replay['create_time'] = date('Y-m-d H:i:s', $replay['create_time']);
-                $replay['expire_time'] = date('Y-m-d H:i:s', $replay['expire_time']);
-                if (strexists($replay['media_url'], 'http://')) {
-                    $replay['media_url'] = str_replace('http://', 'https://', $replay['media_url']);
-                }
-            }
-
-            Cache::put('live_room_replay_list_' . $room_id, $result['live_replay'], 10);
-            $replay_list = Cache::get('live_room_replay_list_' . $room_id);
+            $replay_list = $result;
         }
 
         return view('Yunshop\Appletslive::admin.replay_list', [
+            'rid' => $rid,
+            'type' => $type,
             'replay_list' => $replay_list,
         ])->render();
     }

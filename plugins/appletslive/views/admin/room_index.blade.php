@@ -31,8 +31,9 @@
             <table class="table table-hover" style="overflow:visible;">
                 <thead>
                 <tr>
-                    <th style='width:7%;'>ID</th>
-                    <th style='width:8%;'>封面</th>
+                    <th style='width:5%;'>ID</th>
+                    <th style='width:5%;'>房间号</th>
+                    <th style='width:5%;'>封面</th>
                     <th style='width:15%;'>标题</th>
                     <th style='width:15%;'>开始时间</th>
                     <th style='width:15%;'>结束时间</th>
@@ -44,6 +45,7 @@
                 <tbody>
                 @foreach($room_list as $row)
                     <tr>
+                        <td>{{$row['id']}}</td>
                         <td>{{$row['roomid']}}</td>
                         <td>
                             <img src="{{$row['cover_img']}}" style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
@@ -55,11 +57,11 @@
                         <td>{{$row['live_status_text']}}</td>
                         <td style="overflow:visible;">
                             <a class='btn btn-default'
-                               href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.set', ['type' => 0, 'roomid' => $row['roomid']])}}"
+                               href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.set', ['rid' => $row['id']])}}"
                                title='房间设置'><i class='fa fa-edit'></i>房间设置
                             </a>
                             <a class='btn btn-default'
-                               href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.replaylist', ['type' => 0, 'room_id' => $row['roomid']])}}"
+                               href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.replaylist', ['rid' => $row['id']])}}"
                                title='回看列表'><i class='fa fa-list'></i>回看列表
                             </a>
                         </td>
@@ -74,6 +76,12 @@
     @if($type=='1')
     <div class='panel panel-default'>
         <div class='panel-body'>
+
+            <div class="clearfix panel-heading">
+                <a id="" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;"
+                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.add')}}">添加录播房间</a>
+            </div>
+
             <table class="table table-hover" style="overflow:visible;">
                 <thead>
                 <tr>
@@ -92,16 +100,16 @@
                         <td>
                             <img src="{{$row['cover_img']}}" style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
                         </td>
-                        <td>{{$row['title']}}</td>
+                        <td>{{$row['name']}}</td>
                         <td>{{$row['view_num']}}</td>
                         <td>{{$row['comment_num']}}</td>
                         <td style="overflow:visible;">
                             <a class='btn btn-default'
-                               href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.set', ['type' => 1, 'roomid' => $row['id']])}}"
+                               href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.set', ['rid' => $row['id']])}}"
                                title='房间设置'><i class='fa fa-edit'></i>房间设置
                             </a>
                             <a class='btn btn-default'
-                               href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.replaylist', ['type' => 1, 'room_id' => $row['id']])}}"
+                               href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.replaylist', ['rid' => $row['id']])}}"
                                title='录播列表'><i class='fa fa-list'></i>录播列表
                             </a>
                         </td>

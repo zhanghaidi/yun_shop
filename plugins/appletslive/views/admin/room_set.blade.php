@@ -1,6 +1,19 @@
 @extends('layouts.base')
-@section('title', "房间设置")
+@section('title', trans('房间设置'))
 @section('content')
+
+    <div class="right-titpos">
+        <ul class="add-snav">
+            <li class="active"><a href="#">房间设置</a></li>
+        </ul>
+    </div>
+
+    <div class='panel panel-default'>
+        <div class="clearfix panel-heading">
+            <a id="" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;"
+               href="javascript:history.go(-1);">返回</a>
+        </div>
+    </div>
 
     <div class="w1200 m0a">
         <div class="rightlist">
@@ -8,12 +21,13 @@
                 <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-1 control-label">房间介绍</label>
                     <div class="col-sm-9 col-xs-12 col-md-11">
-                        {!! yz_tpl_ueditor('room_info[desc]', $room_info['desc']) !!}
+                        {!! yz_tpl_ueditor('desc', $info['desc']) !!}
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
                     <div class="col-sm-9 col-xs-12">
+                        <input type="hidden" name="id" value="{{$rid}}" />
                         <input type="submit" name="submit" value="提交" class="btn btn-success"/>
                     </div>
                 </div>
