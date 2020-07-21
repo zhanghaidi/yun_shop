@@ -34,14 +34,14 @@ class JuShuiTanController extends ApiController
             ->select('o.price', 'o.note', 'o.goods_total', 'o.create_time', 'o.order_sn', 'o.id', 'p.address', 'p.mobile', 'p.realname', 'o.pay_time')
             ->where('o.status', 1)
             ->where('o.jushuitan_status', 0)
-            ->orderBy('o.create_time', 'DESC')
+            ->orderBy('o.create_time', 'ASC')
             ->take(10)
             ->get();
 
         if (!empty($ret)) {
             foreach ($ret as $k => $v) {
                 //发送大于5分钟的订单
-                if ($now_time - $v['pay_time'] > 300) {
+                if ($now_time - $v['pay_time'] > 1800) {
                     $addres = explode(" ", $v['address']);
                     $order_goods = Db::table('yz_order_goods')->where(['order_id' => $v['id']])->get();
                     $array = [];
