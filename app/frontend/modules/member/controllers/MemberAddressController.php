@@ -186,9 +186,14 @@ class MemberAddressController extends ApiController
         //if (!preg_match("/^1\d{10}$/",$mobile)) {
            // return $this->errorJson('手机号格式不正确');
         //}
-        if (!preg_match("/^[0-9]*$/",$mobile)) {
+       /* if (!preg_match("/^[0-9]*$/",$mobile)) {
 
             return $this->errorJson('请输入数字');
+        }*/
+
+        if (!preg_match("/^1[34578]{1}\d{9}$/", $mobile)) {
+
+            return $this->errorJson('手机号格式不正确');
         }
 
         if ($this->needRegion()) {
@@ -274,10 +279,19 @@ class MemberAddressController extends ApiController
         if (!$mobile) {
             return $this->errorJson('手机号不能为空');
         }
+        $requestAddress = \YunShop::request();
+        $is_ad= Address::where('areaname',$requestAddress['district'])->value('id');
+        if(empty($is_ad)){
+            return $this->errorJson('填写地址暂未收录，请重新填写');
+        }
 
-        if (!preg_match("/^[0-9]*$/",$mobile)) {
+        /*if (!preg_match("/^[0-9]*$/",$mobile)) {
 
             return $this->errorJson('请输入数字');
+        }*/
+        if (!preg_match("/^1[34578]{1}\d{9}$/", $mobile)) {
+
+            return $this->errorJson('手机号格式不正确');
         }
 
         if ($this->needRegion()) {
