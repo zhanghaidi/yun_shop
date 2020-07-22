@@ -18,6 +18,39 @@
     <div class="w1200 m0a">
         <div class="rightlist">
             <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+
+                @if($info['type']=='0')
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">房间名称</label>
+                        <div class="col-sm-9 col-xs-12 col-md-11">
+                            <span class="form-control">{{ $info['name'] }}</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">房间封面</label>
+                        <div class="col-sm-9 col-xs-12 col-md-10">
+                            <div class="input-group " style="margin-top:.5em;">
+                                <img src="{!! tomedia($info['cover_img']) !!}" onerror="this.src='/addons/yun_shop/static/resource/images/nopic.jpg'; this.title='图片未找到.'" class="img-responsive img-thumbnail" width="150">
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
+                @if($info['type']=='1')
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">房间名称</label>
+                        <div class="col-sm-9 col-xs-12 col-md-11">
+                            <input name="name" type="text" class="form-control" value="{{ $info['name'] }}" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">房间封面</label>
+                        <div class="col-sm-9 col-xs-12 col-md-10">
+                            {!! app\common\helpers\ImageHelper::tplFormFieldImage('cover_img', $info['cover_img']) !!}
+                        </div>
+                    </div>
+                @endif
+
                 <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-1 control-label">房间介绍</label>
                     <div class="col-sm-9 col-xs-12 col-md-11">

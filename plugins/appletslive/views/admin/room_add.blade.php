@@ -1,10 +1,10 @@
 @extends('layouts.base')
-@section('title', trans('视频设置'))
+@section('title', trans('添加录播房间'))
 @section('content')
 
     <div class="right-titpos">
         <ul class="add-snav">
-            <li class="active"><a href="#">视频设置</a></li>
+            <li class="active"><a href="#">添加录播房间</a></li>
         </ul>
     </div>
 
@@ -19,38 +19,27 @@
         <div class="rightlist">
             <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
                 <div class="form-group">
-                    <label class="col-xs-12 col-sm-3 col-md-1 control-label">标题</label>
+                    <label class="col-xs-12 col-sm-3 col-md-1 control-label">房间名称</label>
                     <div class="col-sm-9 col-xs-12 col-md-11">
-                        <input name="title" type="text" class="form-control" value="{{ $info['title'] }}" />
+                        <input name="name" type="text" class="form-control" value="" />
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-xs-12 col-sm-3 col-md-1 control-label">预览图片</label>
+                    <label class="col-xs-12 col-sm-3 col-md-1 control-label">房间封面</label>
+                    <div class="col-sm-9 col-xs-12 col-md-10">
+                        {!! app\common\helpers\ImageHelper::tplFormFieldImage('cover_img', '') !!}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-1 control-label">房间介绍</label>
                     <div class="col-sm-9 col-xs-12 col-md-11">
-                        <input name="title" type="text" class="form-control" value="{{ $info['title'] }}" />
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span >*</span>预览图片</label>
-                    <div class="col-sm-9 col-xs-12 col-md-6 detail-logo">
-                        {!! app\common\helpers\ImageHelper::tplFormFieldImage('cover_img', $info['cover_img']) !!}
-                        @if (!empty($info['cover_img']))
-                            <a href='{{yz_tomedia($info['cover_img'])}}' target='_blank'>
-                                <img src="{{yz_tomedia($info['cover_img'])}}" style='width:100px;border:1px solid #ccc;padding:1px' />
-                            </a>
-                        @endif
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">内容概述</label>
-                    <div class="col-sm-9 col-xs-12">
-                        <textarea name="intro" rows="5" class="form-control">{{ $info['intro'] }}</textarea>
+                        {!! yz_tpl_ueditor('desc', $info['desc']) !!}
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
                     <div class="col-sm-9 col-xs-12">
-                        <input type="hidden" name="id" value="{{ $info['id'] }}" />
+                        <input type="hidden" name="id" value="{{$rid}}" />
                         <input type="submit" name="submit" value="提交" class="btn btn-success"/>
                     </div>
                 </div>
