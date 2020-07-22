@@ -12,4 +12,4 @@ job1:
     - echo whoami
     - echo `pwd`
 
-#    - sh -x /opt/rsync_yun_shop.sh
+    - sh -x /opt/rsync_yun_shop.sh
