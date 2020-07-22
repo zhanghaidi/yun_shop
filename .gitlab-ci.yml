@@ -9,4 +9,7 @@ job1:
   only:
     - dev
   script:
-    - sh -x /opt/rsync_yun_shop.sh
+    - echo whoami
+    - echo `pwd`
+
+#    - sh -x /opt/rsync_yun_shop.sh
