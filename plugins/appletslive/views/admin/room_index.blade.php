@@ -48,7 +48,7 @@
                         <td>{{$row['id']}}</td>
                         <td>{{$row['roomid']}}</td>
                         <td>
-                            <img src="{{$row['cover_img']}}" style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
+                            <img src="{!! tomedia($row['cover_img']) !!}" style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
                         </td>
                         <td>{{$row['name']}}</td>
                         <td>{{$row['start_time']}}</td>
@@ -98,7 +98,7 @@
                     <tr>
                         <td>{{$row['id']}}</td>
                         <td>
-                            <img src="{{$row['cover_img']}}" style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
+                            <img src="{!! tomedia($row['cover_img']) !!}" style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
                         </td>
                         <td>{{$row['name']}}</td>
                         <td>{{$row['view_num']}}</td>

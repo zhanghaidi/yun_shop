@@ -26,19 +26,19 @@
             <table class="table table-hover" style="overflow:visible;">
                 <thead>
                 <tr>
-                    <th style='width:8%;'>ID</th>
-                    <th style='width:20%;'>预览图</th>
-                    <th style='width:22%;'>概述</th>
-                    <th style='width:10%;'>创建时间</th>
-                    <th style='width:10%;'>过期时间</th>
+                    <th style='width:5%;'>ID</th>
+                    <th style='width:10%;'>预览图</th>
+                    <th style='width:20%;'>概述</th>
+                    <th style='width:15%;'>创建时间</th>
+                    <th style='width:15%;'>过期时间</th>
                     <th style='width:20%;'>链接地址</th>
-                    <th style='width:10%;'>操作</th>
+                    <th style='width:15%;'>操作</th>
                 </tr>
                 </thead>
                 <tbody>
                 @foreach($replay_list as $row)
                     <tr>
-                        <td>0</td>
+                        <td>{{$row['id']}}</td>
                         <td>
                             <img src="{{$row['cover_img']}}" style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
                         </td>
@@ -48,7 +48,7 @@
                         <td>{{$row['media_url']}}</td>
                         <td style="overflow:visible;">
                             <a class='btn btn-default'
-                               href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.replayedit', ['replayid' => $row['id']])}}"
+                               href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.replayedit', ['id' => $row['id']])}}"
                                title='视频设置'><i class='fa fa-edit'></i>设置
                             </a>
                         </td>
@@ -73,30 +73,30 @@
             <table class="table table-hover" style="overflow:visible;">
                 <thead>
                 <tr>
-                    <th style='width:8%;'>ID</th>
-                    <th style='width:20%;'>预览图</th>
-                    <th style='width:22%;'>概述</th>
-                    <th style='width:10%;'>创建时间</th>
-                    <th style='width:10%;'>过期时间</th>
+                    <th style='width:5%;'>ID</th>
+                    <th style='width:10%;'>预览图</th>
+                    <th style='width:20%;'>概述</th>
+                    <th style='width:15%;'>创建时间</th>
+                    <th style='width:15%;'>过期时间</th>
                     <th style='width:20%;'>链接地址</th>
-                    <th style='width:10%;'>操作</th>
+                    <th style='width:15%;'>操作</th>
                 </tr>
                 </thead>
                 <tbody>
-                @foreach($room_list as $row)
+                @foreach($replay_list as $row)
                     <tr>
-                        <td>0</td>
+                        <td>{{$row['id']}}</td>
                         <td>
                             <img src="{{$row['cover_img']}}" style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
                         </td>
-                        <td>这里是概述</td>
-                        <td>{{date('Y-m-d H:i:s',$row['start_time'])}}</td>
-                        <td>{{date('Y-m-d H:i:s',$row['expire_time'])}}</td>
-                        <td>$row['media_url']</td>
+                        <td>{{$row['title']}}</td>
+                        <td>{{$row['create_time']}}</td>
+                        <td>{{$row['expire_time']}}</td>
+                        <td>{{$row['media_url']}}</td>
                         <td style="overflow:visible;">
                             <a class='btn btn-default'
-                               href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.replayedit', ['replayid' => $row['id']])}}"
-                               title='房间设置'><i class='fa fa-edit'></i>设置
+                               href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.replayedit', ['id' => $row['id']])}}"
+                               title='视频设置'><i class='fa fa-edit'></i>设置
                             </a>
                         </td>
                     </tr>
