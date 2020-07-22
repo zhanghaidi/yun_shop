@@ -5,10 +5,10 @@ stages:
 job1:
   stage: test
   tags:
-    - codebackup
+    - rsync_test
   only:
-    - master
+    - dev
   script:
-    - cd /www/data_codebak/$CI_PROJECT_NAME && echo `pwd` && whoami && git pull
+    - sh -x /opt/rsync_yun_shop.sh
 
 
