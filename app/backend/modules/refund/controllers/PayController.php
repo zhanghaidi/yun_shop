@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use app\frontend\modules\order\services\OrderService;
 
 
+
 class PayController extends BaseController
 {
     private $refundApply;   
@@ -41,6 +42,32 @@ class PayController extends BaseController
     public function index()
     {
         $request = request()->input();
+        /**
+         * @author luyang
+         * date:2020 07 21
+         * 小程序消息推送添加
+         * 用户申请退货，发送聚水潭
+         */
+        $refund_order = Db::table('yz_order_refund')->where(['id' => $request['refund_id']])->first();
+        if(!empty($refund_order)){
+            $order = Db::table('yz_order')->where(['id' => $refund_order['order_id']])->first();
+            if($order['status']==1 && $order['jushuitan_status']==1){
+                $params = array(
+                    [
+                        "shop_id" => 10820686,
+                        "so_id"=>$order['order_sn'],
+                        "remark"=>'用户退单'
+                    ]
+                );
+                $result = OrderService::post($params, 'jushuitan.orders.cancel');
+
+                if (empty($result) || $result['code'] != 0) {
+                    throw new ShopException('退款失败！');
+                }
+            }
+            OrderService::orderMess($order['order_sn'],$order,2);
+        }
+
         $this->validate([
             'refund_id' => 'required'
         ]);
@@ -64,12 +91,7 @@ class PayController extends BaseController
         if (is_array($result) && isset($result['action']) && isset($result['input'])) {
            echo $this->formPost($result);exit();
         }
-        //陆洋添加，退款消息通知
-        $refund_order = Db::table('yz_order_refund')->where(['id' => $request['refund_id']])->first();
-        if(!empty($refund_order)){
-            $order = Db::table('yz_order')->where(['id' => $refund_order['order_id']])->first();
-            OrderService::orderMess($order['order_sn'],$order,2);
-        }
+
         RefundMessageService::passMessage($this->refundApply);//通知买家
         return $this->message('操作成功');
 
