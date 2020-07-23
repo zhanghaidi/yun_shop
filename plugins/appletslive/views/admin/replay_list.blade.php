@@ -28,7 +28,7 @@
                 <tr>
                     <th style='width:5%;'>ID</th>
                     <th style='width:10%;'>预览图</th>
-                    <th style='width:20%;'>概述</th>
+                    <th style='width:20%;'>标题</th>
                     <th style='width:15%;'>创建时间</th>
                     <th style='width:15%;'>过期时间</th>
                     <th style='width:20%;'>链接地址</th>
@@ -40,7 +40,7 @@
                     <tr>
                         <td>{{$row['id']}}</td>
                         <td>
-                            <img src="{{$row['cover_img']}}" style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
+                            <img src="{!! tomedia($row['cover_img']) !!}" style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
                         </td>
                         <td>{{$row['title']}}</td>
                         <td>{{$row['create_time']}}</td>

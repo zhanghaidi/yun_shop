@@ -21,13 +21,13 @@
                 <div class="form-group">
                     <label class="col-md-2 col-sm-3 col-xs-12 control-label">标题</label>
                     <div class="col-md-10 col-sm-9 col-xs-12">
-                        <input name="title" type="text" class="form-control" value="" />
+                        <input name="title" type="text" class="form-control" value="" required />
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-md-2 col-sm-3 col-xs-12 control-label">链接地址</label>
                     <div class="col-md-10 col-sm-9 col-xs-12">
-                        <input name="media_url" type="text" class="form-control" value="" />
+                        <input name="media_url" type="text" class="form-control" value="" required />
                     </div>
                 </div>
                 <div class="form-group">

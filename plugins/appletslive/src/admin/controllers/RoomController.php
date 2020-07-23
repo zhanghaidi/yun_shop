@@ -181,13 +181,13 @@ class RoomController extends BaseController
         if (request()->isMethod('post')) {
             $upd_data = [];
             $param = request()->all();
-            if (array_key_exists($param, 'name')) { // 房间名
+            if (array_key_exists('name', $param)) { // 房间名
                 $upd_data['name'] = $param['name'] ? $param['name'] : '';
             }
-            if (array_key_exists($param, 'cover_img')) { // 房间封面
+            if (array_key_exists('cover_img', $param)) { // 房间封面
                 $upd_data['cover_img'] = $param['cover_img'] ? $param['cover_img'] : '';
             }
-            if (array_key_exists($param, 'desc')) { // 房间介绍
+            if (array_key_exists('desc', $param)) { // 房间介绍
                 $upd_data['desc'] = $param['desc'] ? $param['desc'] : '';
             }
             $id = $param['id'] ? $param['id'] : 0;
@@ -218,17 +218,17 @@ class RoomController extends BaseController
         if (request()->isMethod('post')) {
             $ist_data = ['type' => 1];
             $param = request()->all();
-            if (array_key_exists($param, 'name')) { // 房间名
+            if (array_key_exists('name', $param)) { // 房间名
                 $ist_data['name'] = $param['name'] ? $param['name'] : '';
             }
-            if (array_key_exists($param, 'cover_img')) { // 房间封面
+            if (array_key_exists('cover_img', $param)) { // 房间封面
                 $ist_data['cover_img'] = $param['cover_img'] ? $param['cover_img'] : '';
             }
-            if (array_key_exists($param, 'desc')) { // 房间介绍
+            if (array_key_exists('desc', $param)) { // 房间介绍
                 $ist_data['desc'] = $param['desc'] ? $param['desc'] : '';
             }
             DB::table('appletslive_room')->insert($ist_data);
-            return $this->message('保存成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.index', ['type' => $room['type']]));
+            return $this->message('保存成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.index', ['type' => 1]));
         }
 
         return view('Yunshop\Appletslive::admin.room_add')->render();
@@ -249,9 +249,9 @@ class RoomController extends BaseController
 
                 if (!$result || $result['errcode'] != 0) {
                     if (is_array($result)) {
-                        throw new AppException('获取回看列表失败【' . $result['errmsg'] . '】');
+                        return $this->message('获取回看列表失败【' . $result['errmsg'] . '】', Url::absoluteWeb(''), 'danger');
                     }
-                    throw new AppException('获取回看列表失败');
+                    return $this->message('获取回看列表失败', Url::absoluteWeb(''), 'danger');
                 }
 
                 foreach ($result['live_replay'] as &$replay) {
@@ -267,22 +267,12 @@ class RoomController extends BaseController
             }
         }
 
-        if ($type == 1) { // 上传录播列表
-            $result = [
-                ['id' => 2, 'title' => '知识点2', 'cover_img' => 'https://attachment-1300631469.file.myqcloud.com/image/f0593e5fc43740f2081dc7650bf3614a.jpg',
-                    'create_time' => time(), 'expire_time' => strtotime('2099-12-31 23:59:59')],
-                ['id' => 1, 'title' => '知识点1', 'cover_img' => 'https://attachment-1300631469.file.myqcloud.com/image/f0593e5fc43740f2081dc7650bf3614a.jpg',
-                    'create_time' => time(), 'expire_time' => strtotime('2099-12-31 23:59:59')],
-            ];
-
-            foreach ($result as &$replay) {
-                $replay['create_time'] = date('Y-m-d H:i:s', $replay['create_time']);
-                $replay['expire_time'] = date('Y-m-d H:i:s', $replay['expire_time']);
-                if (strexists($replay['cover_img'], 'http://')) {
-                    $replay['cover_img'] = str_replace('http://', 'https://', $replay['cover_img']);
-                }
-            }
-
+        if ($type == 1) { // 录播列表
+            $result = DB::table('appletslive_room_replay')->where('rid', $rid)->get()->toArray();
+            array_walk($result, function (&$item) {
+                $item['create_time'] = date('Y-m-d H:i:s', $item['create_time']);
+                $item['expire_time'] = date('Y-m-d H:i:s', $item['expire_time']);
+            });
             $replay_list = $result;
         }
 
@@ -307,21 +297,20 @@ class RoomController extends BaseController
             if (!$replay) {
                 return $this->message('无效的回放或视频ID', Url::absoluteWeb(''), 'danger');
             }
-            echo '<br>id<br/>';var_dump($id);
-            echo '<br>upd_data<br/>';var_dump($upd_data);exit;
             DB::table('appletslive_room_replay')->where('id', $id)->update($upd_data);
             return $this->message('保存成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.replaylist', ['rid' => $replay['rid']]));
         }
 
         $id = request()->get('id', 0);
         $info = DB::table('appletslive_room_replay')->where('id', $id)->first();
-
         if (!$info) {
             return $this->message('回放或视频不存在', Url::absoluteWeb(''), 'danger');
         }
 
+        $room = DB::table('appletslive_room')->where('id', $info['rid'])->first();
         return view('Yunshop\Appletslive::admin.replay_edit', [
             'id' => $id,
+            'room' => $room,
             'info' => $info,
         ])->render();
     }
@@ -331,18 +320,21 @@ class RoomController extends BaseController
     {
         if (request()->isMethod('post')) {
             $param = request()->all();
-            $rid = $param['rid'] ? $param['rid'] : 0;
-            $title = $param['title'] ? $param['title'] : '';
-            $cover_img = $param['cover_img'] ? $param['cover_img'] : '';
-            $media_url = $param['media_url'] ? $param['media_url'] : '';
-            $intro = $param['intro'] ? $param['intro'] : '';
-            DB::table('appletslive_room_replay')->insert([
+            $rid = $param['rid'] ? intval($param['rid']) : 0;
+            $room = DB::table('appletslive_room')->where('id', $rid)->first();
+            if (!$room) {
+                return $this->message('房间不存在', Url::absoluteWeb(''), 'danger');
+            }
+            $ist_data = [
                 'rid' => $rid,
-                'title' => $title,
-                'cover_img' => $cover_img,
-                'media_url' => $media_url,
-                'intro' => $intro,
-            ]);
+                'title' => $param['title'] ? $param['title'] : '',
+                'cover_img' => $param['cover_img'] ? $param['cover_img'] : '',
+                'media_url' => $param['media_url'] ? $param['media_url'] : '',
+                'intro' => $param['intro'] ? $param['intro'] : '',
+                'create_time' => time(),
+                'expire_time' => strtotime('2099-12-31 23:59:59'),
+            ];
+            DB::table('appletslive_room_replay')->insert($ist_data);
             return $this->message('保存成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.replaylist', ['rid' => $rid]));
         }
 
