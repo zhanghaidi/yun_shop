@@ -57,9 +57,9 @@ class RoomController extends BaseController
                     ->orderBy('id', 'desc')
                     ->get();
                 $result = (new BaseService())->getRooms($this->getToken());
-                $insert = [];
 
-                $present = $result['room_info'];
+                $insert = [];
+                $present = array_reverse($result['room_info']);
                 foreach ($present as $psk => $psv) {
                     $exist = false;
                     foreach ($dbroom as $drk => $drv) {
@@ -113,7 +113,7 @@ class RoomController extends BaseController
                     }
                 }
                 if ($todel) {
-                    DB::table('appletslive_room')->where('id', 'in', $todel)->delete();
+                    DB::table('appletslive_room')->whereIn('id', $todel)->delete();
                 }
 
                 if ($todel || $insert) {
@@ -239,14 +239,30 @@ class RoomController extends BaseController
     {
         $rid = request()->get('rid', 0);
         $room = DB::table('appletslive_room')->where('id', $rid)->first();
+        if (!$room) {
+            return $this->message('房间不存在', Url::absoluteWeb(''), 'danger');
+        }
         $type = $room['type'];
-        $cache_key = 'live_room_replay_list_' . $type . '_' . $rid;
-        $replay_list = Cache::get($cache_key);
+
+        $replay_total_cache_key = 'live_room_replay_total_' . $rid;
+        $replay_total = Cache::get($replay_total_cache_key);
+        $replay_list_cache_key = 'live_room_replay_list_' . $rid;
+        $replay_list = Cache::get($replay_list_cache_key);
 
         if ($type == 0) { // 直播回看列表
+
+            // 同步房间列表
+            $tag = request()->get('tag', '');
+            if ($tag == 'refresh') {
+                Cache::forget($replay_list_cache_key);
+                $replay_list = Cache::get($replay_list_cache_key);
+            }
+
+            // 缓存失效，刷新缓存
             if (empty($replay_list)) {
                 $result = (new BaseService())->getReplays($this->getToken(), $room['roomid']);
 
+                // 获取缓存失败
                 if (!$result || $result['errcode'] != 0) {
                     if (is_array($result)) {
                         return $this->message('获取回看列表失败【' . $result['errmsg'] . '】', Url::absoluteWeb(''), 'danger');
@@ -254,21 +270,51 @@ class RoomController extends BaseController
                     return $this->message('获取回看列表失败', Url::absoluteWeb(''), 'danger');
                 }
 
-                foreach ($result['live_replay'] as &$replay) {
-                    $replay['create_time'] = date('Y-m-d H:i:s', $replay['create_time']);
-                    $replay['expire_time'] = date('Y-m-d H:i:s', $replay['expire_time']);
-                    if (strexists($replay['media_url'], 'http://')) {
-                        $replay['media_url'] = str_replace('http://', 'https://', $replay['media_url']);
+                // 查询数据库获取已保存的回看列表
+                $stored = DB::table('appletslive_room_replay')
+                    ->where('rid', $rid)
+                    ->orderBy('id', 'desc')
+                    ->get()->toArray();
+
+                // 回看总数变动，更新数据
+                if ($result['total'] != $replay_total) {
+                    // 查询数据库
+                    $new = [];
+                    $present = $result['live_replay'];
+                    $new_count = count($present) - count($stored);
+                    $present = array_reverse(array_slice($present, 0, $new_count));
+                    for ($i = 0; $i < $new_count; $i++) {
+                        array_push($new, [
+                            'rid' => $rid,
+                            'room_id' => $room['roomid'],
+                            'create_time' => strtotime($present[$i]['create_time']),
+                            'expire_time' => strtotime($present[$i]['expire_time']),
+                            'media_url' => $present[$i]['media_url'],
+                        ]);
                     }
+                    DB::table('appletslive_room_replay')->insert($new);
+                    $stored = DB::table('appletslive_room_replay')
+                        ->where('rid', $rid)
+                        ->orderBy('id', 'desc')
+                        ->get()->toArray();
                 }
 
-                Cache::put($cache_key, $result['live_replay'], 3);
-                $replay_list = Cache::get($cache_key);
+                array_walk($stored, function (&$item) {
+                    $item['create_time'] = date('Y-m-d H:i:s', $item['create_time']);
+                    $item['expire_time'] = date('Y-m-d H:i:s', $item['expire_time']);
+                });
+
+                Cache::put($replay_total_cache_key, $result['total'], 60);
+                Cache::put($replay_list_cache_key, $stored, 60);
+                $replay_list = Cache::get($replay_list_cache_key);
             }
         }
 
         if ($type == 1) { // 录播列表
-            $result = DB::table('appletslive_room_replay')->where('rid', $rid)->get()->toArray();
+            $result = DB::table('appletslive_room_replay')
+                ->where('rid', $rid)
+                ->orderBy('id', 'desc')
+                ->get()->toArray();
             array_walk($result, function (&$item) {
                 $item['create_time'] = date('Y-m-d H:i:s', $item['create_time']);
                 $item['expire_time'] = date('Y-m-d H:i:s', $item['expire_time']);
@@ -298,6 +344,10 @@ class RoomController extends BaseController
                 return $this->message('无效的回放或视频ID', Url::absoluteWeb(''), 'danger');
             }
             DB::table('appletslive_room_replay')->where('id', $id)->update($upd_data);
+
+            $replay_list_cache_key = 'live_room_replay_list_' . $replay['rid'];
+            Cache::forget($replay_list_cache_key);
+
             return $this->message('保存成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.replaylist', ['rid' => $replay['rid']]));
         }
 
