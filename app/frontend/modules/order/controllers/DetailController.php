@@ -45,6 +45,15 @@ class DetailController extends ApiController
             return $this->errorJson('未找到数据', []);
         }
         $data = $order->toArray();
+        if($data['refund_id'] !=0){
+            $refund_data=Db::table('yz_order_refund')->where(['id'=>$data['refund_id']])->first();
+            if($refund_data['status']==6){
+                $data['refund_create_time']=date('Y-m-d h:i:s',$refund_data['create_time']);
+                $data['refund_update_time']=date('Y-m-d h:i:s',$refund_data['updated_at']);
+            }else{
+                $data['refund_create_time']=date('Y-m-d h:i:s',$refund_data['create_time']);
+            }
+        }
         $invoice->invoice = ("0" != $invoice->invoice) ? 1 : 0;
         $data['invoice_type'] = $invoice->invoice_type;
         $data['rise_type'] = $invoice->rise_type;
