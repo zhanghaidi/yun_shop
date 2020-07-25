@@ -1,10 +1,10 @@
 @extends('layouts.base')
-@section('title', trans('房间管理'))
+@section('title', trans('课程管理'))
 @section('content')
 
     <div class="right-titpos">
         <ul class="add-snav">
-            <li class="active"><a href="#">房间管理</a></li>
+            <li class="active"><a href="#">课程管理</a></li>
         </ul>
     </div>
 
@@ -25,14 +25,14 @@
 
             <div class="clearfix panel-heading">
                 <a id="btn-room-refresh" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;"
-                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.index', ['tag' => 'refresh'])}}">同步房间列表</a>
+                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.index', ['tag' => 'refresh'])}}">同步课程列表</a>
             </div>
 
             <table class="table table-hover" style="overflow:visible;">
                 <thead>
                 <tr>
                     <th style='width:5%;'>ID</th>
-                    <th style='width:5%;'>房间号</th>
+                    <th style='width:5%;'>课程号</th>
                     <th style='width:5%;'>封面</th>
                     <th style='width:15%;'>标题</th>
                     <th style='width:15%;'>开始时间</th>
@@ -58,11 +58,7 @@
                         <td style="overflow:visible;">
                             <a class='btn btn-default'
                                href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.set', ['rid' => $row['id']])}}"
-                               title='房间设置'><i class='fa fa-edit'></i>房间设置
-                            </a>
-                            <a class='btn btn-default'
-                               href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.replaylist', ['rid' => $row['id']])}}"
-                               title='回看列表'><i class='fa fa-list'></i>回看列表
+                               title='课程设置'><i class='fa fa-edit'></i>课程设置
                             </a>
                         </td>
                     </tr>
@@ -79,7 +75,7 @@
 
             <div class="clearfix panel-heading">
                 <a id="" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;"
-                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.add')}}">添加录播房间</a>
+                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.add')}}">添加录播课程</a>
             </div>
 
             <table class="table table-hover" style="overflow:visible;">
@@ -106,7 +102,7 @@
                         <td style="overflow:visible;">
                             <a class='btn btn-default'
                                href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.set', ['rid' => $row['id']])}}"
-                               title='房间设置'><i class='fa fa-edit'></i>房间设置
+                               title='课程设置'><i class='fa fa-edit'></i>课程设置
                             </a>
                             <a class='btn btn-default'
                                href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.replaylist', ['rid' => $row['id']])}}"

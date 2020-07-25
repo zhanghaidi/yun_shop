@@ -1,10 +1,10 @@
 @extends('layouts.base')
-@section('title', trans('房间设置'))
+@section('title', trans('课程设置'))
 @section('content')
 
     <div class="right-titpos">
         <ul class="add-snav">
-            <li class="active"><a href="#">房间设置</a></li>
+            <li class="active"><a href="#">课程设置</a></li>
         </ul>
     </div>
 
@@ -21,13 +21,13 @@
 
                 @if($info['type']=='0')
                     <div class="form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">房间名称</label>
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">课程名称</label>
                         <div class="col-sm-9 col-xs-12 col-md-11">
                             <span class="form-control">{{ $info['name'] }}</span>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">房间封面</label>
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">课程封面</label>
                         <div class="col-sm-9 col-xs-12 col-md-10">
                             <div class="input-group " style="margin-top:.5em;">
                                 <img src="{!! tomedia($info['cover_img']) !!}" onerror="this.src='/addons/yun_shop/static/resource/images/nopic.jpg'; this.title='图片未找到.'" class="img-responsive img-thumbnail" width="150">
@@ -38,13 +38,13 @@
 
                 @if($info['type']=='1')
                     <div class="form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">房间名称</label>
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">课程名称</label>
                         <div class="col-sm-9 col-xs-12 col-md-11">
                             <input name="name" type="text" class="form-control" value="{{ $info['name'] }}" />
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">房间封面</label>
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">课程封面</label>
                         <div class="col-sm-9 col-xs-12 col-md-10">
                             {!! app\common\helpers\ImageHelper::tplFormFieldImage('cover_img', $info['cover_img']) !!}
                         </div>
@@ -52,7 +52,7 @@
                 @endif
 
                 <div class="form-group">
-                    <label class="col-xs-12 col-sm-3 col-md-1 control-label">房间介绍</label>
+                    <label class="col-xs-12 col-sm-3 col-md-1 control-label">课程介绍</label>
                     <div class="col-sm-9 col-xs-12 col-md-11">
                         {!! yz_tpl_ueditor('desc', $info['desc']) !!}
                     </div>

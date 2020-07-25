@@ -21,7 +21,20 @@
                 <div class="form-group">
                     <label class="col-md-2 col-sm-3 col-xs-12 control-label">标题</label>
                     <div class="col-md-10 col-sm-9 col-xs-12">
-                        <input name="title" type="text" class="form-control" value="{{ $info['title'] }}" required />
+                        @if($room['type']=='0')
+                            <span class="form-control">{{ $info['title'] }}</span>
+                        @else
+                            <input name="title" type="text" class="form-control" value="{{ $info['title'] }}" required />
+                        @endif
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 col-sm-3 col-xs-12 control-label">类型</label>
+                    <div class="col-md-10 col-sm-9 col-xs-12">
+                        <select name="type" class="form-control">
+                            <option value="1" @if($info['type']=='1') selected="selected" @endif>本地上传</option>
+                            <option value="2" @if($info['type']=='2') selected="selected" @endif>腾讯视频</option>
+                        </select>
                     </div>
                 </div>
                 <div class="form-group">
@@ -37,7 +50,13 @@
                 <div class="form-group">
                     <label class="col-md-2 col-sm-3 col-xs-12 control-label">预览图片</label>
                     <div class="col-md-9 col-sm-9 col-xs-12 detail-logo">
-                        {!! app\common\helpers\ImageHelper::tplFormFieldImage('cover_img', $info['cover_img']) !!}
+                        @if($room['type']=='0')
+                            <div class="input-group " style="margin-top:.5em;">
+                                <img src="{!! tomedia($info['cover_img']) !!}" onerror="this.src='/addons/yun_shop/static/resource/images/nopic.jpg'; this.title='图片未找到.'" class="img-responsive img-thumbnail" width="150">
+                            </div>
+                        @else
+                            {!! app\common\helpers\ImageHelper::tplFormFieldImage('cover_img', $info['cover_img']) !!}
+                        @endif
                     </div>
                 </div>
                 <div class="form-group">

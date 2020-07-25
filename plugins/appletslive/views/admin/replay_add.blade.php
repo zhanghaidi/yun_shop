@@ -25,6 +25,15 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label class="col-md-2 col-sm-3 col-xs-12 control-label">类型</label>
+                    <div class="col-md-10 col-sm-9 col-xs-12">
+                        <select name="type" class="form-control">
+                            <option value="1" selected>本地上传</option>
+                            <option value="2">腾讯视频</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label class="col-md-2 col-sm-3 col-xs-12 control-label">链接地址</label>
                     <div class="col-md-10 col-sm-9 col-xs-12">
                         <input name="media_url" type="text" class="form-control" value="" required />
