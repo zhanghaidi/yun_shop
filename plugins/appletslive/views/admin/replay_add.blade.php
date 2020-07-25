@@ -40,6 +40,25 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label class="col-md-2 col-sm-3 col-xs-12 control-label">视频时长</label>
+                    <div class="col-md-10 col-sm-9 col-xs-12 form-inline">
+                        <div class="input-group form-group col-sm-3" style="padding: 0">
+                            <input type="number" name="minute" class="form-control" value="0" required />
+                            <span class="input-group-addon">分钟</span>
+                        </div>
+                        <div class="input-group form-group col-sm-3" style="padding: 0">
+                            <input type="number" name="second" class="form-control" value="0" required />
+                            <span class="input-group-addon">秒</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 col-sm-3 col-xs-12 control-label">发布时间</label>
+                    <div class="col-md-10 col-sm-9 col-xs-12">
+                        {!! tpl_form_field_date('publish_time', date('Y-m-d H:i', time()), true) !!}
+                    </div>
+                </div>
+                <div class="form-group">
                     <label class="col-md-2 col-sm-3 col-xs-12 control-label">预览图片</label>
                     <div class="col-md-9 col-sm-9 col-xs-12 detail-logo">
                         {!! app\common\helpers\ImageHelper::tplFormFieldImage('cover_img', '') !!}

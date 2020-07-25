@@ -298,6 +298,8 @@ class RoomController extends BaseController
             $upd_data['title'] = $param['title'] ? $param['title'] : '';
             $upd_data['cover_img'] = $param['cover_img'] ? $param['cover_img'] : '';
             $upd_data['intro'] = $param['intro'] ? $param['intro'] : '';
+            $upd_data['time_long'] = ((intval($param['minute']) * 60) + intval($param['minute']));
+            $upd_data['publish_time'] = strtotime($param['publish_time']) <= time() ? time() : strtotime($param['publish_time']);
             $replay = DB::table('appletslive_replay')->where('id', $id)->first();
             if (!$replay) {
                 return $this->message('无效的回放或视频ID', Url::absoluteWeb(''), 'danger');
@@ -338,6 +340,8 @@ class RoomController extends BaseController
                 'intro' => $param['intro'] ? $param['intro'] : '',
                 'create_time' => time(),
                 'expire_time' => strtotime('2099-12-31 23:59:59'),
+                'time_long' => ((intval($param['minute']) * 60) + intval($param['minute'])),
+                'publish_time' => strtotime($param['publish_time']) <= time() ? time() : strtotime($param['publish_time']),
             ];
             DB::table('appletslive_replay')->insert($ist_data);
             return $this->message('保存成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.replaylist', ['rid' => $rid]));
