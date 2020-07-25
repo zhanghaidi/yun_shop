@@ -53,7 +53,7 @@
                         <td>{{$row['name']}}</td>
                         <td>{{$row['start_time']}}</td>
                         <td>{{$row['end_time']}}</td>
-                        <td>999</td>
+                        <td>{{$row['subscription_num']}}</td>
                         <td>{{$row['live_status_text']}}</td>
                         <td style="overflow:visible;">
                             <a class='btn btn-default'
