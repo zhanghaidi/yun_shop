@@ -206,7 +206,7 @@ class RoomController extends BaseController
             return $this->message('房间不存在', Url::absoluteWeb(''), 'danger');
         }
 
-        return view('Yunshop\Appletslive::admin.room_set', [
+        return view('Yunshop\Appletslive::admin.room_edit', [
             'rid' => $rid,
             'info' => $info,
         ])->render();
