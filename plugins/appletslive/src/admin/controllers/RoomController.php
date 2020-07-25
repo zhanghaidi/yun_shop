@@ -175,8 +175,8 @@ class RoomController extends BaseController
         ])->render();
     }
 
-    // 房间设置
-    public function set()
+    // 房间编辑
+    public function edit()
     {
         if (request()->isMethod('post')) {
             $upd_data = [];
