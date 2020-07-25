@@ -37,7 +37,7 @@
                     <th style='width:15%;'>标题</th>
                     <th style='width:15%;'>开始时间</th>
                     <th style='width:15%;'>结束时间</th>
-                    <th style='width:10%;'>报名人数</th>
+                    <th style='width:10%;'>订阅人数</th>
                     <th style='width:10%;'>直播状态</th>
                     <th style='width:20%;'>操作</th>
                 </tr>
@@ -53,11 +53,11 @@
                         <td>{{$row['name']}}</td>
                         <td>{{$row['start_time']}}</td>
                         <td>{{$row['end_time']}}</td>
-                        <td>999</td>
+                        <td>{{$row['subscription_num']}}</td>
                         <td>{{$row['live_status_text']}}</td>
                         <td style="overflow:visible;">
                             <a class='btn btn-default'
-                               href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.set', ['rid' => $row['id']])}}"
+                               href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.edit', ['rid' => $row['id']])}}"
                                title='课程设置'><i class='fa fa-edit'></i>课程设置
                             </a>
                         </td>
@@ -101,7 +101,7 @@
                         <td>{{$row['comment_num']}}</td>
                         <td style="overflow:visible;">
                             <a class='btn btn-default'
-                               href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.set', ['rid' => $row['id']])}}"
+                               href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.edit', ['rid' => $row['id']])}}"
                                title='课程设置'><i class='fa fa-edit'></i>课程设置
                             </a>
                             <a class='btn btn-default'

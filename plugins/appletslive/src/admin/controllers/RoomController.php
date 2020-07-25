@@ -216,7 +216,7 @@ class RoomController extends BaseController
     public function add()
     {
         if (request()->isMethod('post')) {
-            $ist_data = ['type' => 1];
+            $ist_data = ['type' => 1, 'live_status' => 255];
             $param = request()->all();
             if (array_key_exists('name', $param)) { // 房间名
                 $ist_data['name'] = $param['name'] ? $param['name'] : '';
@@ -233,7 +233,6 @@ class RoomController extends BaseController
 
         return view('Yunshop\Appletslive::admin.room_add')->render();
     }
-
 
     /**
      * 回看列表
@@ -274,7 +273,7 @@ class RoomController extends BaseController
         }
 
         if ($type == 1) { // 录播列表
-            $result = DB::table('appletslive_room_replay')->where('rid', $rid)->get()->toArray();
+            $result = DB::table('appletslive_replay')->where('rid', $rid)->get()->toArray();
             array_walk($result, function (&$item) {
                 $item['create_time'] = date('Y-m-d H:i:s', $item['create_time']);
                 $item['expire_time'] = date('Y-m-d H:i:s', $item['expire_time']);
@@ -299,16 +298,16 @@ class RoomController extends BaseController
             $upd_data['title'] = $param['title'] ? $param['title'] : '';
             $upd_data['cover_img'] = $param['cover_img'] ? $param['cover_img'] : '';
             $upd_data['intro'] = $param['intro'] ? $param['intro'] : '';
-            $replay = DB::table('appletslive_room_replay')->where('id', $id)->first();
+            $replay = DB::table('appletslive_replay')->where('id', $id)->first();
             if (!$replay) {
                 return $this->message('无效的回放或视频ID', Url::absoluteWeb(''), 'danger');
             }
-            DB::table('appletslive_room_replay')->where('id', $id)->update($upd_data);
+            DB::table('appletslive_replay')->where('id', $id)->update($upd_data);
             return $this->message('保存成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.replaylist', ['rid' => $replay['rid']]));
         }
 
         $id = request()->get('id', 0);
-        $info = DB::table('appletslive_room_replay')->where('id', $id)->first();
+        $info = DB::table('appletslive_replay')->where('id', $id)->first();
         if (!$info) {
             return $this->message('回放或视频不存在', Url::absoluteWeb(''), 'danger');
         }
@@ -340,7 +339,7 @@ class RoomController extends BaseController
                 'create_time' => time(),
                 'expire_time' => strtotime('2099-12-31 23:59:59'),
             ];
-            DB::table('appletslive_room_replay')->insert($ist_data);
+            DB::table('appletslive_replay')->insert($ist_data);
             return $this->message('保存成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.replaylist', ['rid' => $rid]));
         }
 

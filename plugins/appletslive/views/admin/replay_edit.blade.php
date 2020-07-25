@@ -48,6 +48,30 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label class="col-md-2 col-sm-3 col-xs-12 control-label">视频时长</label>
+                    <div class="col-md-10 col-sm-9 col-xs-12 form-inline">
+                        <div class="input-group form-group col-sm-3">
+                            <input type="number" name="minute" class="form-control" value="{{ $info['minute'] }}" required />
+                            <span class="input-group-addon">分钟</span>
+                        </div>
+                        <div class="input-group form-group col-sm-3">
+                            <input type="number" name="second" class="form-control" value="{{ $info['second'] }}" required />
+                            <span class="input-group-addon">秒</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 col-sm-3 col-xs-12 control-label">发布时间</label>
+                    <div class="col-md-10 col-sm-9 col-xs-12">
+                        {!! app\common\helpers\DateRange::tplFormFieldDate('publish_time', [
+                        'starttime' => date('Y-m-d H:i', ($info['publish_time'] ? $info['publish_time'] : time())),
+                        'endtime' => date('Y-m-d 23:59:59', strtotime('+1 month')),
+                        'start' => 0,
+                        'end' => 0
+                        ], true) !!}
+                    </div>
+                </div>
+                <div class="form-group">
                     <label class="col-md-2 col-sm-3 col-xs-12 control-label">预览图片</label>
                     <div class="col-md-9 col-sm-9 col-xs-12 detail-logo">
                         @if($room['type']=='0')
