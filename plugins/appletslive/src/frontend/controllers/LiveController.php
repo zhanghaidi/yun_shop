@@ -23,7 +23,8 @@ namespace Yunshop\Appletslive\frontend\controllers;
 use app\common\exceptions\AppException;
 use app\common\facades\Setting;
 use app\common\helpers\Cache;
-use Yunshop\Appletslive\common\services\NumService;
+use Illuminate\Support\Facades\DB;
+use Yunshop\Appletslive\common\services\CacheService;
 
 /**
  * Class LiveController
@@ -57,7 +58,7 @@ class LiveController extends BaseController
             $page_val = $cache_val[$page_key];
         }
 
-        $numdata = NumService::getRoomNum(array_column($page_val, 'id'));
+        $numdata = CacheService::getRoomNum(array_column($page_val, 'id'));
         foreach ($page_val as $k => $v) {
             $key = 'key_' . $v['id'];
             $page_val[$k]['hot_num'] = $numdata[$key]['hot_num'];
@@ -87,7 +88,7 @@ class LiveController extends BaseController
             $cache_val = $result;
         }
 
-        $numdata = NumService::getRoomNum($room_id);
+        $numdata = CacheService::getRoomNum($room_id);
         $cache_val['hot_num'] = $numdata['hot_num'];
         $cache_val['subscription_num'] = $numdata['subscription_num'];
         $cache_val['view_num'] = $numdata['view_num'];
@@ -102,6 +103,16 @@ class LiveController extends BaseController
      */
     public function roomcommentlist()
     {
+        $room_id = request()->get('room_id', 0);
+        $page = request()->get('page', 1);
+        $limit = 20;
+        $offset = ($page - 1) * $limit;
+
+        $cache_val = CacheService::getRoomComment($room_id);
+        return $this->successJson('获取成功', [
+            'total' => $cache_val['total'],
+            'list' => array_slice($cache_val, $offset, $limit),
+        ]);
     }
 
     /**
