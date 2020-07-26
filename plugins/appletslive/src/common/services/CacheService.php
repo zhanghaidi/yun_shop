@@ -30,7 +30,7 @@ use Illuminate\Support\Facades\DB;
  */
 class CacheService
 {
-    protected $uniacid = 45;
+    protected static $uniacid = 45;
 
     /**
      * 获取课程订阅数、观看数、评论数
@@ -147,7 +147,7 @@ class CacheService
     {
         $cache_key = "api_live_room_comment|$room_id";
         $comment = DB::table('appletslive_room_comment')
-            ->where('uniacid', $this->uniacid)
+            ->where('uniacid', self::uniacid)
             ->where('room_id', $room_id)
             ->get()->toArray();
         if (empty($comment)) {
