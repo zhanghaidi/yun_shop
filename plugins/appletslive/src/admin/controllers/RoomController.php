@@ -319,6 +319,8 @@ class RoomController extends BaseController
         if (!$info) {
             return $this->message('回放或视频不存在', Url::absoluteWeb(''), 'danger');
         }
+        $info['minute'] = floor($info['time_long'] / 60);
+        $info['second'] = $info['time_long'] % 60;
 
         $room = DB::table('appletslive_room')->where('id', $info['rid'])->first();
         return view('Yunshop\Appletslive::admin.replay_edit', [
