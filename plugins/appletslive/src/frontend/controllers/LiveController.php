@@ -237,11 +237,41 @@ class LiveController extends BaseController
         $limit = 20;
         $offset = ($page - 1) * $limit;
 
-        $cache_val = CacheService::getRoomComment($room_id);
-        return $this->successJson('获取成功', [
-            'total' => $cache_val['total'],
-            'list' => array_slice($cache_val, $offset, $limit),
-        ]);
+        $cache_key = "api_live_replay_list|$room_id";
+        $cache_val = Cache::get($cache_key);
+
+        if (!$cache_val) {
+            $record = DB::table('appletslive_replay')
+                ->where('id', $room_id)
+                ->orderBy('id', 'desc')
+                ->get()->toArray();
+            if (empty($record)) {
+                Cache::forever($cache_key, []);
+            } else {
+                array_walk($record, function (&$item) {
+                    $item['publish_status'] = 1;
+                    if ($item['publish_time'] > time()) {
+                        $item['publish_status'] = 0;
+                        $item['media_url'] = '';
+                    }
+                    $item['minute'] = floor($item['time_long'] / 60);
+                    $item['second'] = $item['time_long'] % 60;
+                    $item['create_time'] = date('Y-m-d H:i:s', $item['create_time']);
+                    $item['publish_time'] = date('Y-m-d H:i:s', $item['publish_time']);
+                });
+            }
+            Cache::put($cache_key, $record);
+            $cache_val = $record;
+        }
+
+        $numdata = CacheService::getReplayNum(array_column($cache_val, 'id'));
+        foreach ($cache_val as $k => $v) {
+            $key = 'key_' . $v['id'];
+            $cache_val[$k]['view_num'] = $numdata[$key]['view_num'];
+            $cache_val[$k]['comment_num'] = $numdata[$key]['comment_num'];
+        }
+
+        return $this->successJson('获取成功', array_slice($cache_val, $offset, $limit));
     }
 
     /**

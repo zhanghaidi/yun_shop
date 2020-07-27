@@ -147,7 +147,7 @@ class CacheService
     {
         $cache_key = "api_live_room_comment|$room_id";
         $comment = DB::table('appletslive_room_comment')
-            ->where('uniacid', self::uniacid)
+            ->where('uniacid', self::$uniacid)
             ->where('room_id', $room_id)
             ->orderBy('id', 'desc')
             ->get()->toArray();
@@ -211,7 +211,7 @@ class CacheService
     {
         $cache_key = "api_live_room_subscription|$room_id";
         $subscription = DB::table('appletslive_room_subscription')
-            ->where('uniacid', self::uniacid)
+            ->where('uniacid', self::$uniacid)
             ->where('room_id', $room_id)
             ->orderBy('id', 'desc')
             ->pluck('create_time', 'user_id');
@@ -259,7 +259,7 @@ class CacheService
     {
         $cache_key = "api_live_user_subscription|$user_id";
         $subscription_room_id_list = DB::table('appletslive_room_subscription')
-            ->where('uniacid', self::uniacid)
+            ->where('uniacid', self::$uniacid)
             ->where('user_id', $user_id)
             ->pluck('room_id');
         if ($room_id && array_search($room_id, $subscription_room_id_list) === false) {
@@ -379,7 +379,7 @@ class CacheService
     {
         $cache_key = "api_live_replay_comment|$replay_id";
         $comment = DB::table('appletslive_replay_comment')
-            ->where('uniacid', self::uniacid)
+            ->where('uniacid', self::$uniacid)
             ->where('room_id', $replay_id)
             ->orderBy('id', 'desc')
             ->get()->toArray();
