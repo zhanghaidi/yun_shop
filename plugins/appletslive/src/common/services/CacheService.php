@@ -380,7 +380,7 @@ class CacheService
         $cache_key = "api_live_replay_comment|$replay_id";
         $comment = DB::table('appletslive_replay_comment')
             ->where('uniacid', self::$uniacid)
-            ->where('room_id', $replay_id)
+            ->where('replay_id', $replay_id)
             ->orderBy('id', 'desc')
             ->get()->toArray();
         if (empty($comment)) {
