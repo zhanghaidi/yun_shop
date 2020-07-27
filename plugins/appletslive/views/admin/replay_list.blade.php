@@ -74,12 +74,12 @@
                 <thead>
                 <tr>
                     <th style='width:5%;'>ID</th>
-                    <th style='width:10%;'>预览图</th>
+                    <th style='width:8%;'>预览图</th>
                     <th style='width:20%;'>标题</th>
-                    <th style='width:15%;'>创建时间</th>
-                    <th style='width:15%;'>发布时间</th>
+                    <th style='width:11%;'>创建时间</th>
+                    <th style='width:11%;'>发布时间</th>
                     <th style='width:5%;'>类型</th>
-                    <th style='width:15%;'>链接地址</th>
+                    <th style='width:25%;'>链接地址</th>
                     <th style='width:15%;'>操作</th>
                 </tr>
                 </thead>
