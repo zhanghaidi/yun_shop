@@ -23,7 +23,7 @@ namespace Yunshop\Appletslive\frontend\controllers;
 use app\common\components\ApiController;
 use app\common\exceptions\AppException;
 
-class BaseController extends \app\common\components\BaseController
+class BaseController extends ApiController
 {
     public function __construct()
     {

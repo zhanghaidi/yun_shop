@@ -36,12 +36,19 @@ class LiveController extends BaseController
     protected $user_id = 0;
     protected $uniacid = 45;
 
+    /**
+     * LiveController constructor.
+     */
     public function __construct()
     {
         parent::__construct();
         $this->user_id = \YunShop::app()->getMemberId();
     }
 
+    /**
+     * @return mixed
+     * @throws AppException
+     */
     private function getToken()
     {
         $set = Setting::get('plugin.appletslive');
@@ -76,12 +83,13 @@ class LiveController extends BaseController
         $page_val = null;
 
         if (!$cache_val || !array_key_exists($cache_val, $page_key)) {
+            Cache::forget($cache_key);
             $record = DB::table('appletslive_room')
-                ->orderBy('live_status', 'asc')->offset($offset)->limit($limit)->get()
+                ->orderBy('live_status', 'asc')
+                ->orderBy('view_num', 'desc')
+                ->offset($offset)->limit($limit)->get()
                 ->toArray();
-            $page_val = $record;
-            $cache_val = [$page_key => $page_val];
-            Cache::put($cache_key, $cache_val, 30);
+            Cache::put($cache_key, [$page_key => $page_val], 30);
         } else {
             $page_val = $cache_val[$page_key];
         }
@@ -97,7 +105,7 @@ class LiveController extends BaseController
             $page_val[$k]['has_subscription'] = (array_search($v['id'], $my_subscription) === false) ? false : true;
         }
 
-        return $this->successJson('获取成功', $page_val);
+        return $this->successJson('获取成功【user_id:' . $this->user_id . '】', $page_val);
     }
 
     /**
