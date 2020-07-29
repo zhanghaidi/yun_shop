@@ -20,8 +20,8 @@
  */
 namespace Yunshop\Appletslive\common\services;
 
-use app\common\helpers\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * 接口数据缓存服务类
