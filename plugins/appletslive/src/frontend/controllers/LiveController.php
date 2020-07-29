@@ -43,6 +43,7 @@ class LiveController extends BaseController
     {
         parent::__construct();
         $this->user_id = \YunShop::app()->getMemberId();
+        Cache::flush();
     }
 
     /**
@@ -83,7 +84,6 @@ class LiveController extends BaseController
         $page_val = null;
 
         if (!$cache_val || !array_key_exists($page_key, $cache_val)) {
-            Cache::forget($cache_key);
             $page_val = DB::table('appletslive_room')
                 ->select('id', 'type', 'roomid', 'name', 'anchor_name', 'cover_img', 'start_time', 'end_time', 'live_status', 'desc')
                 ->orderBy('live_status', 'asc')
@@ -94,6 +94,12 @@ class LiveController extends BaseController
         } else {
             $page_val = $cache_val[$page_key];
         }
+
+        return $this->successJson('获取成功', [
+            'list' => $page_val,
+            'numdata' => CacheService::getRoomNum(array_column($page_val, 'id')),
+            'my_subscription' => CacheService::getUserSubscription($this->user_id),
+        ]);
 
         if (!empty($page_val)) {
             $numdata = CacheService::getRoomNum(array_column($page_val, 'id'));
@@ -139,7 +145,7 @@ class LiveController extends BaseController
         }
 
         CacheService::setRoomNum($room_id, 'view_num');
-        $numdata = CacheService::getRoomNum($room_id);
+        $numdata = CacheService::getRoomNum($room_id);dd($numdata);
         $subscription = CacheService::getRoomSubscription($room_id);
         $my_subscription = CacheService::getUserSubscription($this->user_id);
         $cache_val['hot_num'] = $numdata['hot_num'];
@@ -153,7 +159,7 @@ class LiveController extends BaseController
             $cache_val['end_time'] = date('Y-m-d H:i', $cache_val['end_time']);
         }
 
-        return $this->successJson('获取成功', $cache_val);
+        return $this->successJson('获取成功', ['roominfo' => $cache_val, 'numdata' => $numdata]);
     }
 
     /**
@@ -200,7 +206,10 @@ class LiveController extends BaseController
         $offset = ($page - 1) * $limit;
 
         $cache_val = CacheService::getRoomComment($room_id);
-        return $this->successJson('获取成功', $cache_val);
+        return $this->successJson('获取成功', [
+            'total' => $cache_val['total'],
+            'list' => array_slice($cache_val, $offset, $limit),
+        ]);
     }
 
     /**
@@ -339,7 +348,10 @@ class LiveController extends BaseController
         $offset = ($page - 1) * $limit;
 
         $cache_val = CacheService::getReplayComment($replay_id);
-        return $this->successJson('获取成功', $cache_val);
+        return $this->successJson('获取成功', [
+            'total' => $cache_val['total'],
+            'list' => array_slice($cache_val, $offset, $limit),
+        ]);
     }
 
     /**
