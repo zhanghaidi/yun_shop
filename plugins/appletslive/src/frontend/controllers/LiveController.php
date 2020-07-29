@@ -86,13 +86,6 @@ class LiveController extends BaseController
         $cache_key = "api_live_room_list";
         $cache_val = Cache::get($cache_key);
         $page_key = "$limit|$page";
-        $page_val = null;
-
-        return $this->successJson('获取成功', [
-            'cache_key' => $cache_key,
-            'cache_val' => $cache_val,
-        ]);
-
         if (!$cache_val || !array_key_exists($page_key, $cache_val)) {
             $page_val = DB::table('appletslive_room')
                 ->select('id', 'type', 'roomid', 'name', 'anchor_name', 'cover_img', 'start_time', 'end_time', 'live_status', 'desc')
@@ -154,6 +147,15 @@ class LiveController extends BaseController
             Cache::put($cache_key, $cache_val, 30);
         }
 
+        DB::table('appletslive_room')->where('id', 5)->increment('view_num');
+        $record = DB::table('appletslive_room')->where('id', 5)->first();
+        return $this->successJson('获取成功', [
+            'cache_val' => $cache_val,
+            'record' => $record,
+            'std_view_num' => $record->view_num,
+            'arr_view_num' => $record['view_num'],
+        ]);
+
         CacheService::setRoomNum($room_id, 'view_num');
         $numdata = CacheService::getRoomNum($room_id);
         $subscription = CacheService::getRoomSubscription($room_id);
@@ -169,7 +171,7 @@ class LiveController extends BaseController
             $cache_val['end_time'] = date('Y-m-d H:i', $cache_val['end_time']);
         }
 
-        return $this->successJson('获取成功', ['roominfo' => $cache_val, 'numdata' => $numdata]);
+        return $this->successJson('获取成功', $cache_val);
     }
 
     /**
