@@ -22,8 +22,8 @@ namespace Yunshop\Appletslive\frontend\controllers;
 
 use app\common\exceptions\AppException;
 use app\common\facades\Setting;
-use app\common\helpers\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Yunshop\Appletslive\common\services\CacheService;
 use Yunshop\Appletslive\common\services\BaseService;
 

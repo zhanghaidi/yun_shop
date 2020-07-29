@@ -49,6 +49,9 @@ class RoomController extends BaseController
             if ($tag == 'refresh') {
                 Cache::forget($cache_key);
                 $cache_val = Cache::get($cache_key);
+
+                // 刷新课程列表接口数据缓存
+                Cache::forget("api_live_room_list");
             }
 
             // 缓存失效，重新查询并同步房间列表
@@ -197,6 +200,11 @@ class RoomController extends BaseController
                 return $this->message('无效的房间ID', Url::absoluteWeb(''), 'danger');
             }
             DB::table('appletslive_room')->where('id', $id)->update($upd_data);
+
+            // 刷新课程详情和课程列表接口数据缓存
+            Cache::forget("api_live_room_info|$id");
+            Cache::forget("api_live_room_list");
+
             return $this->message('保存成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.index', ['type' => $room['type']]));
         }
 
@@ -229,6 +237,10 @@ class RoomController extends BaseController
                 $ist_data['desc'] = $param['desc'] ? $param['desc'] : '';
             }
             DB::table('appletslive_room')->insert($ist_data);
+
+            // 刷新课程列表接口数据缓存
+            Cache::forget("api_live_room_list");
+
             return $this->message('保存成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.index', ['type' => 1]));
         }
 
@@ -311,6 +323,11 @@ class RoomController extends BaseController
                 return $this->message('无效的回放或视频ID', Url::absoluteWeb(''), 'danger');
             }
             DB::table('appletslive_replay')->where('id', $id)->update($upd_data);
+
+            // 刷新录播详情和录播列表接口数据缓存
+            Cache::forget("api_live_replay_info|$id");
+            Cache::forget("api_live_replay_list|" . $replay->rid);
+
             return $this->message('保存成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.replaylist', ['rid' => $replay['rid']]));
         }
 
@@ -352,6 +369,10 @@ class RoomController extends BaseController
                 'publish_time' => strtotime($param['publish_time']) <= time() ? time() : strtotime($param['publish_time']),
             ];
             DB::table('appletslive_replay')->insert($ist_data);
+
+            // 刷新录播列表接口数据缓存
+            Cache::forget("api_live_replay_list|$rid");
+
             return $this->message('保存成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.replaylist', ['rid' => $rid]));
         }
 
