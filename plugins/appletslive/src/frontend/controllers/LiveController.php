@@ -123,9 +123,6 @@ class LiveController extends BaseController
      */
     public function roominfo()
     {
-        $user = Auth::user();
-        $this->user_id = $user['uid'];
-
         $room_id = request()->get('room_id', 0);
         $cache_key = "api_live_room_info|$room_id";
         $cache_val = Cache::get($cache_key);
