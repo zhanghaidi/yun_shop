@@ -123,6 +123,9 @@ class LiveController extends BaseController
      */
     public function roominfo()
     {
+        $user = Auth::user();
+        $this->user_id = $user['uid'];
+
         $room_id = request()->get('room_id', 0);
         $cache_key = "api_live_room_info|$room_id";
         $cache_val = Cache::get($cache_key);
@@ -140,16 +143,18 @@ class LiveController extends BaseController
 
         CacheService::setRoomNum($room_id, 'view_num');
         $numdata = CacheService::getRoomNum($room_id);
+        $subscription = CacheService::getRoomSubscription($room_id);
+        $my_subscription = CacheService::getUserSubscription($this->user_id);
         $cache_val['hot_num'] = $numdata['hot_num'];
         $cache_val['subscription_num'] = $numdata['subscription_num'];
         $cache_val['view_num'] = $numdata['view_num'];
         $cache_val['comment_num'] = $numdata['comment_num'];
-
-        $subscription = CacheService::getRoomSubscription($room_id);
         $cache_val['subscription'] = $subscription;
-
-        $my_subscription = CacheService::getUserSubscription($this->user_id);
         $cache_val['has_subscription'] = (array_search($room_id, $my_subscription) === false) ? false : true;
+        if ($cache_val['type'] == 0) {
+            $cache_val['start_time'] = date('Y-m-d H:i', $cache_val['start_time']);
+            $cache_val['end_time'] = date('Y-m-d H:i', $cache_val['end_time']);
+        }
 
         return $this->successJson('获取成功', $cache_val);
     }
