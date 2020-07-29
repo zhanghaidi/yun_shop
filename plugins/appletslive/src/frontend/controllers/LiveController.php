@@ -98,28 +98,20 @@ class LiveController extends BaseController
             $page_val = $cache_val[$page_key];
         }
 
-        return $this->successJson('获取成功', [
-            'list' => $page_val,
-            'numdata' => CacheService::getRoomNum(array_column($page_val, 'id')),
-            'my_subscription' => CacheService::getUserSubscription($this->user_id),
-        ]);
-
         if (!empty($page_val)) {
             $numdata = CacheService::getRoomNum(array_column($page_val, 'id'));
             $my_subscription = CacheService::getUserSubscription($this->user_id);
             foreach ($page_val as $k => $v) {
-                $temp = (array) $v;
-                $key = 'key_' . $temp['id'];
-                $temp['hot_num'] = $numdata[$key]['hot_num'];
-                $temp['subscription_num'] = $numdata[$key]['subscription_num'];
-                $temp['view_num'] = $numdata[$key]['view_num'];
-                $temp['comment_num'] = $numdata[$key]['comment_num'];
-                $temp['has_subscription'] = (array_search($temp['id'], $my_subscription) === false) ? false : true;
-                if ($temp['type'] == 0) {
-                    $temp['start_time'] = date('Y-m-d H:i', $temp['start_time']);
-                    $temp['end_time'] = date('Y-m-d H:i', $temp['end_time']);
+                $key = 'key_' . $v['id'];
+                $page_val[$k]['hot_num'] = $numdata[$key]['hot_num'];
+                $page_val[$k]['subscription_num'] = $numdata[$key]['subscription_num'];
+                $page_val[$k]['view_num'] = $numdata[$key]['view_num'];
+                $page_val[$k]['comment_num'] = $numdata[$key]['comment_num'];
+                $page_val[$k]['has_subscription'] = (array_search($page_val[$k]['id'], $my_subscription) === false) ? false : true;
+                if ($page_val[$k]['type'] == 0) {
+                    $page_val[$k]['start_time'] = date('Y-m-d H:i', $page_val[$k]['start_time']);
+                    $page_val[$k]['end_time'] = date('Y-m-d H:i', $page_val[$k]['end_time']);
                 }
-                $page_val[$k] = $temp;
             }
         }
 
@@ -143,18 +135,9 @@ class LiveController extends BaseController
             if (!$cache_val) {
                 return $this->errorJson('课程不存在');
             }
-            $cache_val = (array) $cache_val;
+            $cache_val = $cache_val;
             Cache::put($cache_key, $cache_val, 30);
         }
-
-        DB::table('appletslive_room')->where('id', 5)->increment('view_num');
-        $record = DB::table('appletslive_room')->where('id', 5)->first();
-        return $this->successJson('获取成功', [
-            'cache_val' => $cache_val,
-            'record' => $record,
-            'std_view_num' => $record->view_num,
-            'arr_view_num' => $record['view_num'],
-        ]);
 
         CacheService::setRoomNum($room_id, 'view_num');
         $numdata = CacheService::getRoomNum($room_id);
@@ -220,7 +203,7 @@ class LiveController extends BaseController
         $cache_val = CacheService::getRoomComment($room_id);
         return $this->successJson('获取成功', [
             'total' => $cache_val['total'],
-            'list' => array_slice($cache_val, $offset, $limit),
+            'list' => array_slice($cache_val['list'], $offset, $limit),
         ]);
     }
 
@@ -362,7 +345,7 @@ class LiveController extends BaseController
         $cache_val = CacheService::getReplayComment($replay_id);
         return $this->successJson('获取成功', [
             'total' => $cache_val['total'],
-            'list' => array_slice($cache_val, $offset, $limit),
+            'list' => array_slice($cache_val['list'], $offset, $limit),
         ]);
     }
 
@@ -401,9 +384,9 @@ class LiveController extends BaseController
         if (array_key_exists('parent_id', $input) && $input['parent_id'] > 0) {
             $parent = DB::table('appletslive_replay_comment')->where('id', $input['parent_id'])->first();
             if ($parent) {
-                $insert_data['parent_id'] = $parent->id;
+                $insert_data['parent_id'] = $parent['id'];
                 $insert_data['is_reply'] = 1;
-                $insert_data['rele_user_id'] = $parent->user_id;
+                $insert_data['rele_user_id'] = $parent['user_id'];
             }
         }
 
