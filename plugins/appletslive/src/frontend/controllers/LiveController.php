@@ -68,6 +68,11 @@ class LiveController extends BaseController
         return $result['access_token'];
     }
 
+    public function test()
+    {
+        return $this->successJson('ok', 'test');
+    }
+
     /**
      * 分页获取课程列表
      * @return \Illuminate\Http\JsonResponse
@@ -82,6 +87,11 @@ class LiveController extends BaseController
         $cache_val = Cache::get($cache_key);
         $page_key = "$limit|$page";
         $page_val = null;
+
+        return $this->successJson('获取成功', [
+            'cache_key' => $cache_key,
+            'cache_val' => $cache_val,
+        ]);
 
         if (!$cache_val || !array_key_exists($page_key, $cache_val)) {
             $page_val = DB::table('appletslive_room')
@@ -145,7 +155,7 @@ class LiveController extends BaseController
         }
 
         CacheService::setRoomNum($room_id, 'view_num');
-        $numdata = CacheService::getRoomNum($room_id);dd($numdata);
+        $numdata = CacheService::getRoomNum($room_id);
         $subscription = CacheService::getRoomSubscription($room_id);
         $my_subscription = CacheService::getUserSubscription($this->user_id);
         $cache_val['hot_num'] = $numdata['hot_num'];
