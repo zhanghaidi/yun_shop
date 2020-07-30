@@ -48,8 +48,8 @@ class DetailController extends ApiController
         if($data['refund_id'] !=0){
             $refund_data=Db::table('yz_order_refund')->where(['id'=>$data['refund_id']])->first();
             if($refund_data['status']==6){
-                $data['refund_create_time']=date('Y-m-d h:i:s',$refund_data['create_time']);
-                $data['refund_update_time']=date('Y-m-d h:i:s',$refund_data['updated_at']);
+                $data['refund_create_time']=date('Y-m-d H:i:s',$refund_data['create_time']);
+                $data['refund_update_time']=date('Y-m-d H:i:s',$refund_data['updated_at']);
             }else{
                 $data['refund_create_time']=date('Y-m-d h:i:s',$refund_data['create_time']);
             }
