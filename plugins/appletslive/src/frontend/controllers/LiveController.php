@@ -43,7 +43,6 @@ class LiveController extends BaseController
     {
         parent::__construct();
         $this->user_id = \YunShop::app()->getMemberId();
-        Cache::flush();
     }
 
     /**
@@ -66,11 +65,6 @@ class LiveController extends BaseController
         }
 
         return $result['access_token'];
-    }
-
-    public function test()
-    {
-        return $this->successJson('ok', 'test');
     }
 
     /**
@@ -135,7 +129,6 @@ class LiveController extends BaseController
             if (!$cache_val) {
                 return $this->errorJson('课程不存在');
             }
-            $cache_val = $cache_val;
             Cache::put($cache_key, $cache_val, 30);
         }
 
@@ -242,16 +235,16 @@ class LiveController extends BaseController
         if (array_key_exists('parent_id', $input) && $input['parent_id'] > 0) {
             $parent = DB::table('appletslive_room_comment')->where('id', $input['parent_id'])->first();
             if ($parent) {
-                $insert_data['parent_id'] = $parent->id;
+                $insert_data['parent_id'] = $parent['id'];
                 $insert_data['is_reply'] = 1;
-                $insert_data['rele_user_id'] = $parent->user_id;
+                $insert_data['rele_user_id'] = $parent['user_id'];
             }
         }
 
         DB::table('appletslive_room_comment')->insert($insert_data);
         CacheService::setRoomNum($input['room_id'], 'comment_num');
         CacheService::setRoomComment($input['room_id']);
-        return $this->successJson('评论成功', $insert_data);
+        return $this->successJson('评论成功');
     }
 
     /**
@@ -271,14 +264,13 @@ class LiveController extends BaseController
         if (!$cache_val) {
             $cache_val = DB::table('appletslive_replay')
                 ->select('id', 'rid', 'type', 'title', 'intro', 'cover_img', 'media_url', 'publish_time', 'time_long')
-                ->where('id', $room_id)
+                ->where('rid', $room_id)
                 ->orderBy('id', 'desc')
                 ->get()->toArray();
             if (empty($cache_val)) {
                 Cache::forever($cache_key, []);
             } else {
                 array_walk($cache_val, function (&$item) {
-                    $item = (array) $item;
                     $item['publish_status'] = 1;
                     if ($item['publish_time'] > time()) {
                         $item['publish_status'] = 0;
@@ -287,6 +279,7 @@ class LiveController extends BaseController
                     $item['minute'] = floor($item['time_long'] / 60);
                     $item['second'] = $item['time_long'] % 60;
                     $item['publish_time'] = date('Y-m-d H:i:s', $item['publish_time']);
+                    unset($item['rid']);
                 });
             }
             Cache::put($cache_key, $cache_val);
@@ -299,7 +292,10 @@ class LiveController extends BaseController
             $cache_val[$k]['comment_num'] = $numdata[$key]['comment_num'];
         }
 
-        return $this->successJson('获取成功', array_slice($cache_val, $offset, $limit));
+        return $this->successJson('获取成功', [
+            'total' => count($cache_val),
+            'list' => array_slice($cache_val, $offset, $limit),
+        ]);
     }
 
     /**
@@ -319,7 +315,8 @@ class LiveController extends BaseController
             if (!$cache_val) {
                 return $this->errorJson('视频不存在');
             }
-            $cache_val = (array) $cache_val;
+            $cache_val['publish_time'] = date('Y-m-d H:i:s', $cache_val['publish_time']);
+            unset($cache_val['rid']);
             Cache::put($cache_key, $cache_val, 30);
         }
 
@@ -393,6 +390,6 @@ class LiveController extends BaseController
         DB::table('appletslive_replay_comment')->insert($insert_data);
         CacheService::setReplayNum($input['replay_id'], 'comment_num');
         CacheService::setReplayComment($input['replay_id']);
-        return $this->successJson('评论成功', $insert_data);
+        return $this->successJson('评论成功');
     }
 }

@@ -284,6 +284,9 @@ class CacheService
                     if ($v['parent_id'] == $item['id']) {
                         $temp = array_merge($v, ['user' => $user['ajy_uid_' . $v['user_id']]]);
                         $temp['create_time'] = date('Y-m-d H:i:s', $temp['create_time']);
+                        unset($temp['user_id']);
+                        unset($temp['parent_id']);
+                        unset($temp['is_reply']);
                         array_push($reply_for_this_comment, $temp);
                         $reply[$k] = null;
                     }
@@ -292,6 +295,9 @@ class CacheService
                 $item['create_time'] = date('Y-m-d H:i:s', $item['create_time']);
                 $item['user'] = $user['ajy_uid_' . $item['user_id']];
                 $item['reply'] = ['total' => count($reply_for_this_comment), 'list' => $reply_for_this_comment];
+                unset($item['user_id']);
+                unset($item['parent_id']);
+                unset($item['is_reply']);
             });
             Cache::forever($cache_key, ['total' => count($comment), 'list' => $comment]);
         }
@@ -410,6 +416,7 @@ class CacheService
     {
         $cache_key = "api_live_replay_comment|$replay_id";
         $comment = DB::table('appletslive_replay_comment')
+            ->select('id', 'user_id', 'content', 'create_time', 'parent_id', 'is_reply')
             ->where('uniacid', self::$uniacid)
             ->where('replay_id', $replay_id)
             ->orderBy('id', 'desc')
@@ -441,6 +448,9 @@ class CacheService
                     if ($v['parent_id'] == $item['id']) {
                         $temp = array_merge($v, ['user' => $user['ajy_uid_' . $v['user_id']]]);
                         $temp['create_time'] = date('Y-m-d H:i:s', $temp['create_time']);
+                        unset($temp['user_id']);
+                        unset($temp['parent_id']);
+                        unset($temp['is_reply']);
                         array_push($reply_for_this_comment, $temp);
                         $reply[$k] = null;
                     }
@@ -449,6 +459,9 @@ class CacheService
                 $item['create_time'] = date('Y-m-d H:i:s', $item['create_time']);
                 $item['user'] = $user['ajy_uid_' . $item['user_id']];
                 $item['reply'] = ['total' => count($reply_for_this_comment), 'list' => $reply_for_this_comment];
+                unset($item['user_id']);
+                unset($item['parent_id']);
+                unset($item['is_reply']);
             });
             Cache::forever($cache_key, ['total' => count($comment), 'list' => $comment]);
         }
