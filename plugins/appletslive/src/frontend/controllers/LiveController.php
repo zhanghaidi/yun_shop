@@ -26,6 +26,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use Yunshop\Appletslive\common\services\CacheService;
 use Yunshop\Appletslive\common\services\BaseService;
+use app\common\models\AccountWechats;
+use EasyWeChat\Foundation\Application;
+use app\common\models\notice\MessageTemp;
 
 /**
  * Class LiveController
@@ -43,6 +46,45 @@ class LiveController extends BaseController
     {
         parent::__construct();
         $this->user_id = \YunShop::app()->getMemberId();
+    }
+
+    /**
+     *
+     */
+    public function testsendliveremindmsg()
+    {
+        $start_time = implode('.', array_reverse(explode(' ', substr(microtime(), 2))));
+        $account = AccountWechats::getAccountByUniacid(39);
+        $options = [
+            'app_id' => $account['key'],
+            'secret' => $account['secret'],
+        ];
+        $app = new Application($options);
+        $app = $app->notice;
+
+        $tempid = '121JxM8yyYPeCYSqPEgVPmcuLVOjx88qYtQ_cR0oTho';
+        $params = [
+            ['name' => '商城名称', 'value' => '测试商城'],
+            ['name' => '昵称', 'value' => '测试昵称'],
+            ['name' => '时间', 'value' => date('Y-m-d H:i', time())],
+            ['name' => '余额变动金额', 'value' => '10000.00'],
+            ['name' => '余额变动类型', 'value' => '加钱'],
+            ['name' => '变动后余额数值', 'value' => '10000.00'],
+        ];
+        $noticedata = MessageTemp::getSendMsg($tempid, $params);
+
+        $openid = 'owVKQwWK2G_K6P22he4Fb2nLI6HI';
+        $app->uses($tempid)
+            ->andData($noticedata)
+            ->andReceiver($openid)
+            ->send();
+
+        $end_time = implode('.', array_reverse(explode(' ', substr(microtime(), 2))));
+        return [
+            'start_time' => $start_time,
+            'end_time' => $end_time,
+            'cost' => bcsub($end_time, $start_time, 8),
+        ];
     }
 
     /**
