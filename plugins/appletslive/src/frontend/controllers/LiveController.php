@@ -74,14 +74,14 @@ class LiveController extends BaseController
 
         $openid = 'owVKQwWK2G_K6P22he4Fb2nLI6HI';
         $app->uses($tempid)->andData($params)->andReceiver($openid)->andUrl('')->send();
-        $openid = 'owVKQwYFPuDQ6aajgsjf5O12WQdE';
-        $app->uses($tempid)->andData($params)->andReceiver($openid)->andUrl('')->send();
-        $openid = 'owVKQwWovCGMi5aV9PxtcVaa0lHc';
-        $app->uses($tempid)->andData($params)->andReceiver($openid)->andUrl('')->send();
-        $openid = 'owVKQwRYT7PMiNjR2_hbCBbLbD3A';
-        $app->uses($tempid)->andData($params)->andReceiver($openid)->andUrl('')->send();
-        $openid = 'owVKQwVZZ8t8vvvjQZ07KX1_64xE';
-        $app->uses($tempid)->andData($params)->andReceiver($openid)->andUrl('')->send();
+        // $openid = 'owVKQwYFPuDQ6aajgsjf5O12WQdE';
+        // $app->uses($tempid)->andData($params)->andReceiver($openid)->andUrl('')->send();
+        // $openid = 'owVKQwWovCGMi5aV9PxtcVaa0lHc';
+        // $app->uses($tempid)->andData($params)->andReceiver($openid)->andUrl('')->send();
+        // $openid = 'owVKQwRYT7PMiNjR2_hbCBbLbD3A';
+        // $app->uses($tempid)->andData($params)->andReceiver($openid)->andUrl('')->send();
+        // $openid = 'owVKQwVZZ8t8vvvjQZ07KX1_64xE';
+        // $app->uses($tempid)->andData($params)->andReceiver($openid)->andUrl('')->send();
 
         $end_time = implode('.', array_reverse(explode(' ', substr(microtime(), 2))));
         return $this->successJson('发送成功', [
