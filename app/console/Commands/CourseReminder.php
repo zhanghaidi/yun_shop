@@ -71,23 +71,23 @@ class CourseReminder extends Command
                         ->pluck('openid')->toArray();
                     foreach ($to_user_openid as $openid) {
                         $job = new CourseRemindMsgJob($openid, $rela_room, $replay);
-                        dispatch($job);
+                        $dispatch = dispatch($job);
+                        Log::info("New CourseRemindMsgJob Dispatched to queue.", ['job' => $job, 'dispatch' => $dispatch]);
                     }
                 }
             }
         }
 
-        $room = ['id' => 1, 'name' => '测试课程'];
-        $replay = ['id' => 1, 'title' => '测试录播视频', 'publish_time' => strtotime('+15 minutes')];
-        $openid_list = ['owVKQwWK2G_K6P22he4Fb2nLI6HI', 'owVKQwYFPuDQ6aajgsjf5O12WQdE', 'owVKQwWovCGMi5aV9PxtcVaa0lHc',
-            'owVKQwRYT7PMiNjR2_hbCBbLbD3A', 'owVKQwVZZ8t8vvvjQZ07KX1_64xE'];
-        foreach ($openid_list as $openid) {
-            for ($i = 0; $i < 5; $i++) {
-                $job = new CourseRemindMsgJob($openid, $room, $replay);
-                $dispatch = dispatch($job);
-                Log::info("New CourseRemindMsgJob Dispatched to queue.", ['job' => $job, 'dispatch' => $dispatch]);
-            }
-        }
+        // $room = ['id' => 1, 'name' => '测试课程'];
+        // $replay = ['id' => 1, 'title' => '测试录播视频', 'publish_time' => strtotime('+15 minutes')];
+        // $openid_list = ['owVKQwWK2G_K6P22he4Fb2nLI6HI', 'owVKQwYFPuDQ6aajgsjf5O12WQdE', 'owVKQwWovCGMi5aV9PxtcVaa0lHc'];
+        // foreach ($openid_list as $openid) {
+        //     for ($i = 0; $i < 5; $i++) {
+        //         $job = new CourseRemindMsgJob($openid, $room, $replay);
+        //         $dispatch = dispatch($job);
+        //         Log::info("New CourseRemindMsgJob Dispatched to queue.", ['job' => $job, 'dispatch' => $dispatch]);
+        //     }
+        // }
 
         Log::info("------------------------ LOG END -------------------------------\n");
     }
