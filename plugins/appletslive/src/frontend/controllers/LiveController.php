@@ -72,16 +72,13 @@ class LiveController extends BaseController
             'remark' => ['value' => '详情请进入会员中心-余额变更记录进行查询!', 'color' => '#173177'],
         ];
 
-        $openid = 'owVKQwWK2G_K6P22he4Fb2nLI6HI';
-        $app->uses($tempid)->andData($params)->andReceiver($openid)->andUrl('')->send();
-        // $openid = 'owVKQwYFPuDQ6aajgsjf5O12WQdE';
-        // $app->uses($tempid)->andData($params)->andReceiver($openid)->andUrl('')->send();
-        // $openid = 'owVKQwWovCGMi5aV9PxtcVaa0lHc';
-        // $app->uses($tempid)->andData($params)->andReceiver($openid)->andUrl('')->send();
-        // $openid = 'owVKQwRYT7PMiNjR2_hbCBbLbD3A';
-        // $app->uses($tempid)->andData($params)->andReceiver($openid)->andUrl('')->send();
-        // $openid = 'owVKQwVZZ8t8vvvjQZ07KX1_64xE';
-        // $app->uses($tempid)->andData($params)->andReceiver($openid)->andUrl('')->send();
+        $openid_list = ['owVKQwWK2G_K6P22he4Fb2nLI6HI', 'owVKQwYFPuDQ6aajgsjf5O12WQdE', 'owVKQwWovCGMi5aV9PxtcVaa0lHc',
+            'owVKQwRYT7PMiNjR2_hbCBbLbD3A', 'owVKQwVZZ8t8vvvjQZ07KX1_64xE'];
+        foreach ($openid_list as $openid) {
+            for ($i = 0; $i < 2; $i++) {
+                $app->uses($tempid)->andData($params)->andReceiver($openid)->andUrl('')->send();
+            }
+        }
 
         $end_time = implode('.', array_reverse(explode(' ', substr(microtime(), 2))));
         return $this->successJson('发送成功', [
@@ -120,7 +117,7 @@ class LiveController extends BaseController
     public function roomlist()
     {
         $page = request()->get('page', 1);
-        $limit = 20;
+        $limit = 10;
         $offset = ($page - 1) * $limit;
 
         $cache_key = "api_live_room_list";
@@ -236,7 +233,7 @@ class LiveController extends BaseController
     {
         $room_id = request()->get('room_id', 0);
         $page = request()->get('page', 1);
-        $limit = 20;
+        $limit = 10;
         $offset = ($page - 1) * $limit;
 
         $cache_val = CacheService::getRoomComment($room_id);
@@ -308,7 +305,7 @@ class LiveController extends BaseController
     {
         $room_id = request()->get('room_id', 0);
         $page = request()->get('page', 1);
-        $limit = 20;
+        $limit = 10;
         $offset = ($page - 1) * $limit;
 
         $cache_key = "api_live_replay_list|$room_id";
@@ -393,7 +390,7 @@ class LiveController extends BaseController
     {
         $replay_id = request()->get('replay_id', 0);
         $page = request()->get('page', 1);
-        $limit = 20;
+        $limit = 10;
         $offset = ($page - 1) * $limit;
 
         $cache_val = CacheService::getReplayComment($replay_id);
