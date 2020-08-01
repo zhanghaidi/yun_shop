@@ -21,15 +21,19 @@ class CourseRemindMsgJob implements ShouldQueue
 
     public function __construct($openid, $room, $replay)
     {
+        // TODO 暂时使用余额变动提醒，后续替换为视频发布提醒模板消息
         $this->config = [
             'tempId' => '121JxM8yyYPeCYSqPEgVPmcuLVOjx88qYtQ_cR0oTho',
             'noticeData' => [
                 'first' => ['value' => '尊敬的用户,您订阅的课程【' . $room['name'] . '】有新视频要发布啦~', 'color' => '#173177'],
-                'keyword1' => ['value' => date('Y-m-d H:i'), 'color' => '#173177'],
+                'keyword1' => ['value' => '测试的^.^', 'color' => '#173177'],
                 'keyword2' => ['value' => '测试的^.^', 'color' => '#173177'],
                 'keyword3' => ['value' => '测试的^.^', 'color' => '#173177'],
                 'keyword4' => ['value' => '测试的^.^', 'color' => '#173177'],
-                'remark' => ['value' => '最新视频【' . $replay['title'] . '】将在' . date('Y-m-d H:i') . '震撼发布!', 'color' => '#173177'],
+                'remark' => [
+                    'value' => '最新视频【' . $replay['title'] . '】将在' . date('Y-m-d H:i', $replay['publish_time']) . '震撼发布!',
+                    'color' => '#173177',
+                ],
             ],
             'openid' => $openid,
             'miniApp' => ['miniprogram' => [
