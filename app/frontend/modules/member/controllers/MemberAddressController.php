@@ -452,7 +452,7 @@ class MemberAddressController extends ApiController
         $serviceUser = DB::table('diagnostic_service_user')->where('ajy_uid',$memberId)->first();
         $mcMember = DB::table('mc_members')->where('uid',$memberId)->first();
         print_r($mcMember);
-        return $serviceUser;
+        print_r($serviceUser);die;
         //DB::table('mc_memebers')->where('uid', $memberId)->update(['mobile' => $addressModel->mobile, 'realname' => $addressModel->username]);
     }
 
