@@ -29,7 +29,7 @@
 
 <!-- 手动退款 -->
 <div id="modal-manual-refund" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" style="width:600px;margin:0px auto;">
-    <form class="form-horizontal form "  action="{!! yzWebUrl('order.operation.manualRefund') !!}" method="post" enctype="multipart/form-data" onsubmit="return checkRefundCloseOrder()">
+    <form class="form-horizontal form "  action="{!! yzWebUrl('order.operation.manualRefund') !!}" method="post" enctype="multipart/form-data">
         <input type="hidden" name="route" value="order.operation.manualRefund">
         <input type='hidden' name='order_id' value=''/>
         <div class="modal-dialog">
@@ -44,7 +44,7 @@
                     <div id="module-menus"></div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" name="close" value="yes">退款</button>
+                    <button type="submit" class="btn btn-primary" name="close" value="yes" onclick="checkText()">退款操作</button>
                     <a href="#" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</a>
                 </div>
             </div>
@@ -184,13 +184,11 @@
 
 <script language='javascript'>
 
-    function checkRefundCloseOrder() {
+    function checkText() {
         //var reson = $.trim($(this);
-        var reson  = $.trim($('textarea[name="reson"]').val());
-        console.log(reson);
-        if(!reson){
-            return false;
-        }
+        console.log(111);
+        alert(333);
+        return false;
     }
 
     function changePrice(orderid) {
