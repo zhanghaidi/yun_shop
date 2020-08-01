@@ -459,6 +459,7 @@ class MemberAddressController extends ApiController
         if($mcMember->mobile == ''){
              //DB::table('mc_memebers')->where('uid', $memberId)->update(['mobile' => $mobile, 'realname' => $username]);
             $mcMember->mobile = $mobile;
+            $mcMember->realname = $username;
             $mcMember->save();
         }
     }
