@@ -12,6 +12,7 @@ use app\common\components\ApiController;
 use app\common\models\member\Address;
 use app\common\models\Street;
 use app\frontend\repositories\MemberAddressRepository;
+use app\frontend\models\Member;
 use Illuminate\Support\Facades\DB;
 class MemberAddressController extends ApiController
 {
@@ -449,10 +450,12 @@ class MemberAddressController extends ApiController
     private function updateMobile($memberId,$mobile,$username){
 
         $serviceUser = DB::table('diagnostic_service_user')->where('ajy_uid',$memberId)->first();
-        $mcMember = DB::table('mc_members')->where('uid',$memberId)->first();
+        //$mcMember = DB::table('mc_members')->where('uid',$memberId)->first();
+        $mcMember = Member::find($memberId);
         if($serviceUser['is_verify'] == 0 && $serviceUser['telephone'] == ''){
            DB::table('diagnostic_service_user')->where('ajy_uid',$memberId)->update(['telephone' => $mobile, 'real_name' => $username]);
         }
+        var_dump($mcMember);die;
         if($mcMember['mobile'] == ''){
              DB::table('mc_memebers')->where('uid', $memberId)->update(['mobile' => $mobile, 'realname' => $username]);
         }
