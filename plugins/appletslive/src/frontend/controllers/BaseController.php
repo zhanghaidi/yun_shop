@@ -18,15 +18,17 @@
  *      ___)( )(___
  *     (((__) (__)))     梦之所想,心之所向.
  */
+
 namespace Yunshop\Appletslive\frontend\controllers;
 
-use Illuminate\Routing\Controller;
 use app\common\exceptions\AppException;
 
-class BaseController extends Controller
+class BaseController extends \app\common\components\BaseController
 {
     public function __construct()
     {
+        parent::__construct();
+
         $this->validatePlugin();
     }
 
