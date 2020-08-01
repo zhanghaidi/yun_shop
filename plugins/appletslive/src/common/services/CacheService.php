@@ -278,7 +278,8 @@ class CacheService
                 }
             }
             $comment = array_values(array_filter($comment));
-            array_walk($comment, function (&$item) use ($reply, $user) {
+            for ($i = 0; $i < count($comment); $i++) {
+                $item = $comment[$i];
                 $reply_for_this_comment = [];
                 foreach ($reply as $k => $v) {
                     if ($v['parent_id'] == $item['id']) {
@@ -298,7 +299,8 @@ class CacheService
                 unset($item['user_id']);
                 unset($item['parent_id']);
                 unset($item['is_reply']);
-            });
+                $comment[$i] = $item;
+            }
             Cache::forever($cache_key, ['total' => count($comment), 'list' => $comment]);
         }
     }
@@ -366,6 +368,7 @@ class CacheService
             foreach ($record as $item) {
                 $key = 'key_' . $item['id'];
                 $val = [
+                    'hot_num' => $item['view_num'] + $item['comment_num'],
                     'view_num' => $item['view_num'],
                     'comment_num' => $item['comment_num'],
                 ];
@@ -379,6 +382,7 @@ class CacheService
         } else {
             $key = 'key_' . $replay_id;
             $val = [
+                'hot_num' => $record['view_num'] + $record['comment_num'],
                 'view_num' => $record['view_num'],
                 'comment_num' => $record['comment_num'],
             ];
@@ -441,8 +445,8 @@ class CacheService
                 }
             }
             $comment = array_values(array_filter($comment));
-            array_walk($comment, function (&$item) use ($reply, $user) {
-                $item = (array) $item;
+            for ($i = 0; $i < count($comment); $i++) {
+                $item = $comment[$i];
                 $reply_for_this_comment = [];
                 foreach ($reply as $k => $v) {
                     if ($v['parent_id'] == $item['id']) {
@@ -462,7 +466,8 @@ class CacheService
                 unset($item['user_id']);
                 unset($item['parent_id']);
                 unset($item['is_reply']);
-            });
+                $comment[$i] = $item;
+            }
             Cache::forever($cache_key, ['total' => count($comment), 'list' => $comment]);
         }
     }

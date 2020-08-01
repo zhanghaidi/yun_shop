@@ -45,6 +45,7 @@ class LiveController extends BaseController
     {
         parent::__construct();
         $this->user_id = \YunShop::app()->getMemberId();
+        Cache::flush();
     }
 
     /**
@@ -63,7 +64,7 @@ class LiveController extends BaseController
 
         $tempid = '121JxM8yyYPeCYSqPEgVPmcuLVOjx88qYtQ_cR0oTho';
         $params = [
-            'first' => ['value' => '尊敬的用户,你的账户发生变动', 'color' => '#173177'],
+            'first' => ['value' => '尊敬的用户,你的账户发生变动（测试）', 'color' => '#173177'],
             'keyword1' => ['value' => date('Y-m-d H:i'), 'color' => '#173177'],
             'keyword2' => ['value' => '消费扣减', 'color' => '#173177'],
             'keyword3' => ['value' => '111元', 'color' => '#173177'],
@@ -72,18 +73,22 @@ class LiveController extends BaseController
         ];
 
         $openid = 'owVKQwWK2G_K6P22he4Fb2nLI6HI';
-        $app->uses($tempid)
-            ->andData($params)
-            ->andReceiver($openid)
-            ->andUrl('')
-            ->send();
+        $app->uses($tempid)->andData($params)->andReceiver($openid)->andUrl('')->send();
+        $openid = 'owVKQwYFPuDQ6aajgsjf5O12WQdE';
+        $app->uses($tempid)->andData($params)->andReceiver($openid)->andUrl('')->send();
+        $openid = 'owVKQwWovCGMi5aV9PxtcVaa0lHc';
+        $app->uses($tempid)->andData($params)->andReceiver($openid)->andUrl('')->send();
+        $openid = 'owVKQwRYT7PMiNjR2_hbCBbLbD3A';
+        $app->uses($tempid)->andData($params)->andReceiver($openid)->andUrl('')->send();
+        $openid = 'owVKQwVZZ8t8vvvjQZ07KX1_64xE';
+        $app->uses($tempid)->andData($params)->andReceiver($openid)->andUrl('')->send();
 
         $end_time = implode('.', array_reverse(explode(' ', substr(microtime(), 2))));
-        return [
+        return $this->successJson('发送成功', [
             'start_time' => $start_time,
             'end_time' => $end_time,
             'cost' => bcsub($end_time, $start_time, 8),
-        ];
+        ]);
     }
 
     /**
@@ -267,6 +272,9 @@ class LiveController extends BaseController
             return $this->errorJson('评论内容包含敏感词', $sensitive_check);
         }
         $content = $wxapp_base_service->textCheck($content);
+
+        // 组装插入数据
+        $comment_num_inc = false;
         $insert_data = [
             'uniacid' => $this->uniacid,
             'room_id' => $input['room_id'],
@@ -277,6 +285,7 @@ class LiveController extends BaseController
         if (array_key_exists('parent_id', $input) && $input['parent_id'] > 0) {
             $parent = DB::table('appletslive_room_comment')->where('id', $input['parent_id'])->first();
             if ($parent) {
+                $comment_num_inc = true;
                 $insert_data['parent_id'] = $parent['id'];
                 $insert_data['is_reply'] = 1;
                 $insert_data['rele_user_id'] = $parent['user_id'];
@@ -284,7 +293,9 @@ class LiveController extends BaseController
         }
 
         DB::table('appletslive_room_comment')->insert($insert_data);
-        CacheService::setRoomNum($input['room_id'], 'comment_num');
+        if ($comment_num_inc) {
+            CacheService::setRoomNum($input['room_id'], 'comment_num');
+        }
         CacheService::setRoomComment($input['room_id']);
         return $this->successJson('评论成功');
     }
@@ -330,6 +341,7 @@ class LiveController extends BaseController
         $numdata = CacheService::getReplayNum(array_column($cache_val, 'id'));
         foreach ($cache_val as $k => $v) {
             $key = 'key_' . $v['id'];
+            $cache_val[$k]['hot_num'] = $numdata[$key]['hot_num'];
             $cache_val[$k]['view_num'] = $numdata[$key]['view_num'];
             $cache_val[$k]['comment_num'] = $numdata[$key]['comment_num'];
         }
@@ -366,6 +378,7 @@ class LiveController extends BaseController
 
         CacheService::setReplayNum($replay_id, 'view_num');
         $numdata = CacheService::getReplayNum($replay_id);
+        $cache_val['hot_num'] = $numdata['hot_num'];
         $cache_val['view_num'] = $numdata['view_num'];
         $cache_val['comment_num'] = $numdata['comment_num'];
 
@@ -416,6 +429,9 @@ class LiveController extends BaseController
             return $this->errorJson('评论内容包含敏感词', $sensitive_check);
         }
         $content = $wxapp_base_service->textCheck($content);
+
+        // 组装插入数据
+        $comment_num_inc = false;
         $insert_data = [
             'uniacid' => $this->uniacid,
             'replay_id' => $input['replay_id'],
@@ -426,6 +442,7 @@ class LiveController extends BaseController
         if (array_key_exists('parent_id', $input) && $input['parent_id'] > 0) {
             $parent = DB::table('appletslive_replay_comment')->where('id', $input['parent_id'])->first();
             if ($parent) {
+                $comment_num_inc = true;
                 $insert_data['parent_id'] = $parent['id'];
                 $insert_data['is_reply'] = 1;
                 $insert_data['rele_user_id'] = $parent['user_id'];
@@ -433,7 +450,9 @@ class LiveController extends BaseController
         }
 
         DB::table('appletslive_replay_comment')->insert($insert_data);
-        CacheService::setReplayNum($input['replay_id'], 'comment_num');
+        if ($comment_num_inc) {
+            CacheService::setReplayNum($input['replay_id'], 'comment_num');
+        }
         CacheService::setReplayComment($input['replay_id']);
         return $this->successJson('评论成功');
     }
