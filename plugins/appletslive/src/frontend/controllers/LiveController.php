@@ -49,7 +49,7 @@ class LiveController extends BaseController
     }
 
     /**
-     *
+     * 测试发送微信公众号模板消息
      */
     public function testsendliveremindmsg()
     {
@@ -411,8 +411,9 @@ class LiveController extends BaseController
         // 评论内容敏感词过滤
         $content = trim($input['content']);
         $wxapp_base_service = new BaseService();
-        if (!$wxapp_base_service->msgSecCheck($content, $this->getToken())) {
-            return $this->errorJson('评论内容包含敏感词');
+        $sensitive_check = $wxapp_base_service->msgSecCheck($content, $this->getToken());
+        if (!is_bool($sensitive_check) || $sensitive_check === false) {
+            return $this->errorJson('评论内容包含敏感词', $sensitive_check);
         }
         $content = $wxapp_base_service->textCheck($content);
         $insert_data = [
