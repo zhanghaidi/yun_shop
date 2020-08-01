@@ -55,50 +55,24 @@ class LiveController extends BaseController
     public function testsendliveremindmsg()
     {
         $result = [];
-        $room = ['id' => 1, 'name' => '测试课程'];
-        $replay = ['id' => 1, 'title' => '测试录播视频', 'publish_time' => strtotime('+15 minutes')];
-        $openid_list = ['owVKQwWK2G_K6P22he4Fb2nLI6HI', 'owVKQwYFPuDQ6aajgsjf5O12WQdE', 'owVKQwWovCGMi5aV9PxtcVaa0lHc',
-            'owVKQwRYT7PMiNjR2_hbCBbLbD3A', 'owVKQwVZZ8t8vvvjQZ07KX1_64xE'];
-        foreach ($openid_list as $openid) {
-            for ($i = 0; $i < 5; $i++) {
-                $job = new CourseRemindMsgJob($openid, $room, $replay);
-                $dispatch = dispatch($job);
-                array_push($result, ['job' => $job, 'dispatch' => $dispatch]);
-            }
-        }
-        return $this->successJson('课程提醒队列测试', $result);
-
         $start_time = implode('.', array_reverse(explode(' ', substr(microtime(), 2))));
-        $account = AccountWechats::getAccountByUniacid(39);
-        $options = [
-            'app_id' => $account['key'],
-            'secret' => $account['secret'],
-        ];
-        $app = new Application($options);
-        $app = $app->notice;
-
-        $tempid = '121JxM8yyYPeCYSqPEgVPmcuLVOjx88qYtQ_cR0oTho';
-        $params = [
-            'first' => ['value' => '尊敬的用户,你的账户发生变动（测试）', 'color' => '#173177'],
-            'keyword1' => ['value' => date('Y-m-d H:i'), 'color' => '#173177'],
-            'keyword2' => ['value' => '消费扣减', 'color' => '#173177'],
-            'keyword3' => ['value' => '111元', 'color' => '#173177'],
-            'keyword4' => ['value' => '500元', 'color' => '#173177'],
-            'remark' => ['value' => '详情请进入会员中心-余额变更记录进行查询!', 'color' => '#173177'],
-        ];
-        $openid_list = ['owVKQwWK2G_K6P22he4Fb2nLI6HI', 'owVKQwYFPuDQ6aajgsjf5O12WQdE', 'owVKQwWovCGMi5aV9PxtcVaa0lHc',
-            'owVKQwRYT7PMiNjR2_hbCBbLbD3A', 'owVKQwVZZ8t8vvvjQZ07KX1_64xE'];
-        foreach ($openid_list as $openid) {
-            for ($i = 0; $i < 2; $i++) {
-                $app->uses($tempid)->andData($params)->andReceiver($openid)->andUrl('')->send();
-            }
-        }
-
+        // $room = ['id' => 1, 'name' => '测试课程'];
+        // $replay = ['id' => 1, 'title' => '测试录播视频', 'publish_time' => strtotime('+15 minutes')];
+        // $openid_list = ['owVKQwWK2G_K6P22he4Fb2nLI6HI', 'owVKQwYFPuDQ6aajgsjf5O12WQdE', 'owVKQwWovCGMi5aV9PxtcVaa0lHc',
+        //     'owVKQwRYT7PMiNjR2_hbCBbLbD3A', 'owVKQwVZZ8t8vvvjQZ07KX1_64xE'];
+        // foreach ($openid_list as $openid) {
+        //     for ($i = 0; $i < 5; $i++) {
+        //         $job = new CourseRemindMsgJob($openid, $room, $replay);
+        //         $dispatch = dispatch($job);
+        //         array_push($result, ['job' => $job, 'dispatch' => $dispatch]);
+        //     }
+        // }
         $end_time = implode('.', array_reverse(explode(' ', substr(microtime(), 2))));
-        return $this->successJson('发送成功', [
+        return $this->successJson('课程提醒队列测试', [
             'start_time' => $start_time,
             'end_time' => $end_time,
-            'cost' => bcsub($end_time, $start_time, 8),
+            'cost' => bcsub($end_time, $start_time, 8) . ' seconds',
+            'result' => $result,
         ]);
     }
 
@@ -359,12 +333,14 @@ class LiveController extends BaseController
             Cache::put($cache_key, $cache_val);
         }
 
-        $numdata = CacheService::getReplayNum(array_column($cache_val, 'id'));
-        foreach ($cache_val as $k => $v) {
-            $key = 'key_' . $v['id'];
-            $cache_val[$k]['hot_num'] = $numdata[$key]['hot_num'];
-            $cache_val[$k]['view_num'] = $numdata[$key]['view_num'];
-            $cache_val[$k]['comment_num'] = $numdata[$key]['comment_num'];
+        if (!empty($page_val)) {
+            $numdata = CacheService::getReplayNum(array_column($cache_val, 'id'));
+            foreach ($cache_val as $k => $v) {
+                $key = 'key_' . $v['id'];
+                $cache_val[$k]['hot_num'] = $numdata[$key]['hot_num'];
+                $cache_val[$k]['view_num'] = $numdata[$key]['view_num'];
+                $cache_val[$k]['comment_num'] = $numdata[$key]['comment_num'];
+            }
         }
 
         return $this->successJson('获取成功', [
