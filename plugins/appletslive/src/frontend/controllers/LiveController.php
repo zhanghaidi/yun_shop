@@ -271,7 +271,7 @@ class LiveController extends BaseController
         $content = $wxapp_base_service->textCheck($content);
 
         // 组装插入数据
-        $comment_num_inc = false;
+        $comment_num_inc = true;
         $insert_data = [
             'uniacid' => $this->uniacid,
             'room_id' => $input['room_id'],
@@ -282,7 +282,7 @@ class LiveController extends BaseController
         if (array_key_exists('parent_id', $input) && $input['parent_id'] > 0) {
             $parent = DB::table('appletslive_room_comment')->where('id', $input['parent_id'])->first();
             if ($parent) {
-                $comment_num_inc = true;
+                $comment_num_inc = false;
                 $insert_data['parent_id'] = $parent['id'];
                 $insert_data['is_reply'] = 1;
                 $insert_data['rele_user_id'] = $parent['user_id'];
@@ -428,7 +428,7 @@ class LiveController extends BaseController
         $content = $wxapp_base_service->textCheck($content);
 
         // 组装插入数据
-        $comment_num_inc = false;
+        $comment_num_inc = true;
         $insert_data = [
             'uniacid' => $this->uniacid,
             'replay_id' => $input['replay_id'],
@@ -439,7 +439,7 @@ class LiveController extends BaseController
         if (array_key_exists('parent_id', $input) && $input['parent_id'] > 0) {
             $parent = DB::table('appletslive_replay_comment')->where('id', $input['parent_id'])->first();
             if ($parent) {
-                $comment_num_inc = true;
+                $comment_num_inc = false;
                 $insert_data['parent_id'] = $parent['id'];
                 $insert_data['is_reply'] = 1;
                 $insert_data['rele_user_id'] = $parent['user_id'];
