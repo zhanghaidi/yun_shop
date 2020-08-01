@@ -34,7 +34,7 @@ class CourseRemindMsgJob implements ShouldQueue
             'openid' => $openid,
             'miniApp' => ['miniprogram' => [
                 'appid' => 'wxcaa8acf49f845662',
-                'pagepath' => '$this->pagepath',
+                'pagepath' => 'pages/CouRse/index?room_id=' . $room['id'],
             ]],
         ];
     }
