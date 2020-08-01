@@ -4,7 +4,7 @@
 </style>
 <!-- 关闭订单 -->
 <div id="modal-close" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" style="width:600px;margin:0px auto;">
-    <form class="form-horizontal form" action="{!! yzWebUrl('order.operation.close') !!}" method="post" enctype="multipart/form-data">
+    <form class="form-horizontal form "  action="{!! yzWebUrl('order.operation.close') !!}" method="post" enctype="multipart/form-data" >
         <input type="hidden" name="route" value="order.operation.close">
         <input type='hidden' name='order_id' value=''/>
         <div class="modal-dialog">
@@ -29,7 +29,7 @@
 
 <!-- 手动退款 -->
 <div id="modal-manual-refund" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" style="width:600px;margin:0px auto;">
-    <form class="form-horizontal form" action="{!! yzWebUrl('order.operation.manualRefund') !!}" method="post" enctype="multipart/form-data">
+    <form class="form-horizontal form "  action="{!! yzWebUrl('order.operation.manualRefund') !!}" method="post" enctype="multipart/form-data" onsubmit="return checkRefundCloseOrder()">
         <input type="hidden" name="route" value="order.operation.manualRefund">
         <input type='hidden' name='order_id' value=''/>
         <div class="modal-dialog">
@@ -40,7 +40,7 @@
                 </div>
                 <div class="modal-body">
                     <label>退款原因</label>
-                    <textarea style="height:150px;" class="form-control" name="reson" autocomplete="off"></textarea>
+                    <textarea style="height:150px;"  class="form-control" name="reson" autocomplete="off"></textarea>
                     <div id="module-menus"></div>
                 </div>
                 <div class="modal-footer">
@@ -184,6 +184,14 @@
 
 <script language='javascript'>
 
+    function checkRefundCloseOrder() {
+        //var reson = $.trim($(this);
+        var reson  = $.trim($('textarea[name="reson"]').val());
+        console.log(reson);
+        if(!reson){
+            return false;
+        }
+    }
 
     function changePrice(orderid) {
         $.post("{!! yzWebUrl('order.change-order-price') !!}", {order_id: orderid}, function (html) {
