@@ -64,6 +64,7 @@ class BaseService
         $post_data = ['content' => $content];
         $result = self::curlPost($url, json_encode($post_data), []);
         if (!$result || !is_array($result) || $result['errcode'] != 0) {
+            return $result;
             return false;
         }
         return true;
