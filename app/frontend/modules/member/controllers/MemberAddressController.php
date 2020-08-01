@@ -455,9 +455,11 @@ class MemberAddressController extends ApiController
         if($serviceUser['is_verify'] == 0 && $serviceUser['telephone'] == ''){
            DB::table('diagnostic_service_user')->where('ajy_uid',$memberId)->update(['telephone' => $mobile, 'real_name' => $username]);
         }
-        var_dump($mcMember);die;
-        if($mcMember['mobile'] == ''){
-             DB::table('mc_memebers')->where('uid', $memberId)->update(['mobile' => $mobile, 'realname' => $username]);
+
+        if($mcMember->mobile == ''){
+             //DB::table('mc_memebers')->where('uid', $memberId)->update(['mobile' => $mobile, 'realname' => $username]);
+            $mcMember->mobile = $mobile;
+            $mcMember->save();
         }
     }
 
