@@ -28,6 +28,7 @@ use Yunshop\Appletslive\common\services\CacheService;
 use Yunshop\Appletslive\common\services\BaseService;
 use app\common\models\AccountWechats;
 use EasyWeChat\Foundation\Application;
+use app\Jobs\CourseRemindMsgJob;
 
 /**
  * Class LiveController
@@ -53,6 +54,15 @@ class LiveController extends BaseController
      */
     public function testsendliveremindmsg()
     {
+        $room = ['id' => 1, 'name' => '测试课程'];
+        $replay = ['id' => 1, 'title' => '测试录播视频', 'publish_time' => strtotime('+15 minutes')];
+        $openid = 'owVKQwWK2G_K6P22he4Fb2nLI6HI';
+        $job = new CourseRemindMsgJob($openid, $room, $replay);
+        $res = dispatch($job);
+        return $this->successJson('课程提醒队列测试', [
+            'job' => $job, 'res' => $res,
+        ]);
+
         $start_time = implode('.', array_reverse(explode(' ', substr(microtime(), 2))));
         $account = AccountWechats::getAccountByUniacid(39);
         $options = [
