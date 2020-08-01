@@ -28,7 +28,6 @@ use Yunshop\Appletslive\common\services\CacheService;
 use Yunshop\Appletslive\common\services\BaseService;
 use app\common\models\AccountWechats;
 use EasyWeChat\Foundation\Application;
-use app\common\models\notice\MessageTemp;
 
 /**
  * Class LiveController
@@ -64,19 +63,19 @@ class LiveController extends BaseController
 
         $tempid = '121JxM8yyYPeCYSqPEgVPmcuLVOjx88qYtQ_cR0oTho';
         $params = [
-            ['name' => '商城名称', 'value' => '测试商城'],
-            ['name' => '昵称', 'value' => '测试昵称'],
-            ['name' => '时间', 'value' => date('Y-m-d H:i', time())],
-            ['name' => '余额变动金额', 'value' => '10000.00'],
-            ['name' => '余额变动类型', 'value' => '加钱'],
-            ['name' => '变动后余额数值', 'value' => '10000.00'],
+            'first' => ['value' => '尊敬的用户,你的账户发生变动', 'color' => '#173177'],
+            'keyword1' => ['value' => date('Y-m-d H:i'), 'color' => '#173177'],
+            'keyword2' => ['value' => '消费扣减', 'color' => '#173177'],
+            'keyword3' => ['value' => '111元', 'color' => '#173177'],
+            'keyword4' => ['value' => '500元', 'color' => '#173177'],
+            'remark' => ['value' => '详情请进入会员中心-余额变更记录进行查询!', 'color' => '#173177'],
         ];
-        $noticedata = MessageTemp::getSendMsg($tempid, $params);
 
         $openid = 'owVKQwWK2G_K6P22he4Fb2nLI6HI';
         $app->uses($tempid)
-            ->andData($noticedata)
+            ->andData($params)
             ->andReceiver($openid)
+            ->andUrl('')
             ->send();
 
         $end_time = implode('.', array_reverse(explode(' ', substr(microtime(), 2))));
