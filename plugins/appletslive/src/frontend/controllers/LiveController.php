@@ -71,7 +71,6 @@ class LiveController extends BaseController
             'keyword4' => ['value' => '500元', 'color' => '#173177'],
             'remark' => ['value' => '详情请进入会员中心-余额变更记录进行查询!', 'color' => '#173177'],
         ];
-
         $openid_list = ['owVKQwWK2G_K6P22he4Fb2nLI6HI', 'owVKQwYFPuDQ6aajgsjf5O12WQdE', 'owVKQwWovCGMi5aV9PxtcVaa0lHc',
             'owVKQwRYT7PMiNjR2_hbCBbLbD3A', 'owVKQwVZZ8t8vvvjQZ07KX1_64xE'];
         foreach ($openid_list as $openid) {
@@ -178,13 +177,13 @@ class LiveController extends BaseController
         CacheService::setRoomNum($room_id, 'view_num');
         $numdata = CacheService::getRoomNum($room_id);
         $subscription = CacheService::getRoomSubscription($room_id);
-        $my_subscription = CacheService::getUserSubscription($this->user_id);
+        $my_subscription = ($this->user_id ? CacheService::getUserSubscription($this->user_id) : []);
         $cache_val['hot_num'] = $numdata['hot_num'];
         $cache_val['subscription_num'] = $numdata['subscription_num'];
         $cache_val['view_num'] = $numdata['view_num'];
         $cache_val['comment_num'] = $numdata['comment_num'];
         $cache_val['subscription'] = $subscription;
-        $cache_val['has_subscription'] = (array_search($room_id, $my_subscription) === false) ? false : true;
+        $cache_val['has_subscription'] = ($this->user_id ? ((array_search($room_id, $my_subscription) === false) ? false : true) : false);
         if ($cache_val['type'] == 0) {
             $cache_val['start_time'] = date('Y-m-d H:i', $cache_val['start_time']);
             $cache_val['end_time'] = date('Y-m-d H:i', $cache_val['end_time']);
@@ -200,7 +199,12 @@ class LiveController extends BaseController
     public function roomsubscription()
     {
         if (!$this->user_id) {
-            return $this->errorJson('会员未登陆');
+            response()->json([
+                'result' => 41009,
+                'msg' => '请登录',
+                'data' => null,
+            ], 200, ['charset' => 'utf-8'])->send();
+            exit;
         }
         $input = request()->all();
         if (!array_key_exists('room_id', $input)) {
@@ -251,7 +255,12 @@ class LiveController extends BaseController
     public function roomcommentadd()
     {
         if (!$this->user_id) {
-            return $this->errorJson('会员未登陆');
+            response()->json([
+                'result' => 41009,
+                'msg' => '请登录',
+                'data' => null,
+            ], 200, ['charset' => 'utf-8'])->send();
+            exit;
         }
         $input = request()->all();
         if (!array_key_exists('room_id', $input) || !array_key_exists('content', $input)) {
@@ -408,7 +417,12 @@ class LiveController extends BaseController
     public function replaycommentadd()
     {
         if (!$this->user_id) {
-            return $this->errorJson('会员未登陆');
+            response()->json([
+                'result' => 41009,
+                'msg' => '请登录',
+                'data' => null,
+            ], 200, ['charset' => 'utf-8'])->send();
+            exit;
         }
         $input = request()->all();
         if (!array_key_exists('replay_id', $input) || !array_key_exists('content', $input)) {

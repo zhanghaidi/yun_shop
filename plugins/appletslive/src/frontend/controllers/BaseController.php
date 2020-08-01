@@ -20,15 +20,13 @@
  */
 namespace Yunshop\Appletslive\frontend\controllers;
 
-use app\common\components\ApiController;
+use Illuminate\Routing\Controller;
 use app\common\exceptions\AppException;
 
-class BaseController extends ApiController
+class BaseController extends Controller
 {
     public function __construct()
     {
-        parent::__construct();
-
         $this->validatePlugin();
     }
 
