@@ -59,6 +59,6 @@ class CourseRemindMsgJob implements ShouldQueue
             ->andReceiver($this->config['openid'])
             ->andUrl('')
             ->send($this->config['miniApp']);
-        Log::info('发送课程提醒模板消息:', $result);
+        Log::info('发送课程提醒模板消息:', ['notice' => $this->config, 'result' => $result]);
     }
 }
