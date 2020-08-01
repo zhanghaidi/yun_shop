@@ -12,7 +12,7 @@ use app\common\components\ApiController;
 use app\common\models\member\Address;
 use app\common\models\Street;
 use app\frontend\repositories\MemberAddressRepository;
-
+use Illuminate\Support\Facades\DB;
 class MemberAddressController extends ApiController
 {
     protected $publicAction = ['address','street'];
@@ -138,6 +138,8 @@ class MemberAddressController extends ApiController
             }
             $addressModel->isdefault = 1;
             $this->memberAddressRepository->cancelDefaultAddress($memberId);
+            DB::table('diagnostic_service_user')->where(['ajy_uid'=>$memberId,'is_verify'=>0])->update(['mobile' => $addressModel->mobile, 'realname' => $addressModel->username]);
+            DB::table('mc_memebers')->where('uid', $memberId)->update(['mobile' => $addressModel->mobile, 'realname' => $addressModel->username]);
             if ($addressModel->save()) {
                 return $this->successJson('修改默认地址成功');
             } else {
