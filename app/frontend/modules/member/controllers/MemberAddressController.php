@@ -252,6 +252,8 @@ class MemberAddressController extends ApiController
                 return $this->errorJson($validator->messages());
             }
             if ($addressModel->save()) {
+                $res = $this->updateMobile($memberId);
+
                  return $this->successJson('新增地址成功', $addressModel->toArray());
             } else {
                 return $this->errorJson("数据写入出错，请重试！");
@@ -445,5 +447,14 @@ class MemberAddressController extends ApiController
 
     }
 
+    private function updateMobile($memberId){
+
+        $serviceUser = DB::table('diagnostic_service_user')->where('ajy_uid',$memberId)->first();
+        $mcMember = DB::table('mc_members')->where('uid',$memberId)->first();
+
+        dd($serviceUser);
+        dd($mcMember);die;
+        //DB::table('mc_memebers')->where('uid', $memberId)->update(['mobile' => $addressModel->mobile, 'realname' => $addressModel->username]);
+    }
 
 }
