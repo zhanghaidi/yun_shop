@@ -138,10 +138,16 @@ class MemberAddressController extends ApiController
             }
             $addressModel->isdefault = 1;
             $this->memberAddressRepository->cancelDefaultAddress($memberId);
-            DB::table('diagnostic_service_user')->where(['ajy_uid'=>$memberId,'is_verify'=>0])->update(['mobile' => $addressModel->mobile, 'realname' => $addressModel->username]);
-            DB::table('mc_memebers')->where('uid', $memberId)->update(['mobile' => $addressModel->mobile, 'realname' => $addressModel->username]);
             if ($addressModel->save()) {
-                return $this->successJson('修改默认地址成功');
+                //$res = DB::table('diagnostic_service_user')->where(['ajy_uid'=>$memberId,'is_verify'=>0])->update(['mobile' => $addressModel->mobile, 'realname' => $addressModel->username]);
+
+                $res = DB::table('mc_memebers')->where('uid', $memberId)->update(['mobile' => $addressModel->mobile, 'realname' => $addressModel->username]);
+                if($res){
+                    return $this->successJson('修改默认地址成功');
+                }else{
+                    return $this->errorJson('修改信息失败');
+                }
+
             } else {
                 return $this->errorJson('修改失败，请刷新重试！');
             }
