@@ -62,11 +62,11 @@
                 </div>
                 <div class="modal-body">
                     <label>关闭订单原因</label>
-                    <textarea style="height:150px;" class="form-control" name="reson" autocomplete="off"></textarea>
+                    <textarea style="height:150px;" class="form-control" name="reson" id="reson_close" autocomplete="off"></textarea>
                     <div id="module-menus"></div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" name="close" value="yes" onclick="closeOrder()">关闭订单</button>
+                    <button type="submit" class="btn btn-primary" name="close" value="yes" onclick="return closeOrder()">关闭订单</button>
                     <a href="#" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</a>
                 </div>
             </div>
@@ -87,7 +87,7 @@
                 </div>
                 <div class="modal-body">
                     <label>退款原因</label>
-                    <textarea style="height:150px;" class="form-control" name="reson" autocomplete="off"></textarea>
+                    <textarea style="height:150px;" class="form-control" name="reson" id="reson_drawback" autocomplete="off"></textarea>
                     <div id="module-menus"></div>
                 </div>
                 <div class="modal-footer">
@@ -201,14 +201,16 @@
 <script language='javascript'>
     //订单退款关闭内容校验
     function drawback() {
-        var reson = $(this)
-        console.log(reson);
-        alert(333);
+        var reson_drawback = $("#reson_drawback").val();
+        console.log(reson_drawback);
+        alert(reson_drawback);
         return false;
     }
     //关闭订单内容校验
-    function closeOrder(txt) {
-        alert('tuile');
+    function closeOrder() {
+        var reson_close = $("#reson_close").val();
+        console.log(reson_close);
+        alert(reson_close);
         return false;
     }
 
