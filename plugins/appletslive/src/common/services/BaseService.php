@@ -62,9 +62,9 @@ class BaseService
         // 文本检测
         $url = 'https://api.weixin.qq.com/wxa/msg_sec_check?access_token=' . $token;
         $post_data = ['content' => $content];
-        $result = self::curlPost($url, json_encode($post_data), []);
+        $result = json_decode(self::curlPost($url, json_encode($post_data), []), true);
         if (!$result || !is_array($result) || $result['errcode'] != 0) {
-            return false;
+            return $result;
         }
         return true;
     }
