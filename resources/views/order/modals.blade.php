@@ -203,6 +203,7 @@
     function drawback() {
         var reson_drawback = $.trim($("#reson_drawback").val());
         if(!reson_drawback){
+            alert('请详细输入退款原因,检查无误后再操作')
             return false;
         }else{
             $("#reson_drawback").val("")
@@ -214,7 +215,7 @@
     function closeOrder() {
         var reson_close = $.trim($("#reson_close").val());
         if(!reson_close){
-
+            alert('请详细输入关闭订单原因,检查无误后再操作')
             return false;
         }else{
             $("#reson_close").val()
