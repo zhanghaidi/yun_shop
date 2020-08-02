@@ -205,7 +205,7 @@
         if(!reson_drawback){
             return false;
         }else{
-            reson_drawback.val('')
+            $("#reson_drawback").val("")
             return true;
         }
 
@@ -217,7 +217,7 @@
 
             return false;
         }else{
-            reson_drawback.val('')
+            $("#reson_close").val()
             return true;
         }
     }
