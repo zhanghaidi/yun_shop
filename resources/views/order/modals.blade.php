@@ -203,10 +203,9 @@
     function drawback() {
         var reson_drawback = $.trim($("#reson_drawback").val());
         if(!reson_drawback){
-            console.log(reson_drawback);
             return false;
         }else{
-            console.log(reson_drawback);
+            reson_drawback.val('')
             return true;
         }
 
@@ -215,10 +214,10 @@
     function closeOrder() {
         var reson_close = $.trim($("#reson_close").val());
         if(!reson_close){
-            console.log(reson_close);
+
             return false;
         }else{
-            console.log(reson_close);
+            reson_drawback.val('')
             return true;
         }
     }
