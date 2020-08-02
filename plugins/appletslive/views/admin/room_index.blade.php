@@ -84,8 +84,7 @@
                     <th style='width:15%;'>ID</th>
                     <th style='width:20%;'>封面</th>
                     <th style='width:30%;'>标题</th>
-                    <th style='width:10%;'>浏览量</th>
-                    <th style='width:10%;'>评论量</th>
+                    <th style='width:20%;'>订阅人数</th>
                     <th style='width:20%;'>操作</th>
                 </tr>
                 </thead>
@@ -97,8 +96,7 @@
                             <img src="{!! tomedia($row['cover_img']) !!}" style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
                         </td>
                         <td>{{$row['name']}}</td>
-                        <td>{{$row['view_num']}}</td>
-                        <td>{{$row['comment_num']}}</td>
+                        <td>{{$row['subscription_num']}}</td>
                         <td style="overflow:visible;">
                             <a class='btn btn-default'
                                href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.edit', ['rid' => $row['id']])}}"
