@@ -183,14 +183,6 @@
 @include('refund.modal')
 
 <script language='javascript'>
-
-    function checkText() {
-        //var reson = $.trim($(this);
-        console.log(111);
-        alert(333);
-        return false;
-    }
-
     function changePrice(orderid) {
         $.post("{!! yzWebUrl('order.change-order-price') !!}", {order_id: orderid}, function (html) {
             if (html == -1) {
