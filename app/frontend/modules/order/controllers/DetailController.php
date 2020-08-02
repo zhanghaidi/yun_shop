@@ -63,6 +63,7 @@ class DetailController extends ApiController
         $data['pay_time']=$invoice->pay_time;
         $data['send_time']=$invoice->send_time;
         $data['created_at']=$invoice->created_at;
+        $data['finish_time']=$invoice->finish_time;
         $backups_button = $data['button_models'];
 
         $data['address_info'] = OrderAddress::select('address', 'mobile', 'realname')->where('order_id', $order['id'])->first() ?: [];
