@@ -201,17 +201,22 @@
 <script language='javascript'>
     //订单退款关闭内容校验
     function drawback() {
-        var reson_drawback = $("#reson_drawback").val();
-        console.log(reson_drawback);
-        alert(reson_drawback);
-        return false;
+        var reson_drawback = $.trim($("#reson_drawback").val());
+        if(!reson_drawback){
+            return false;
+        }else{
+            return true;
+        }
+
     }
     //关闭订单内容校验
     function closeOrder() {
-        var reson_close = $("#reson_close").val();
-        console.log(reson_close);
-        alert(reson_close);
-        return false;
+        var reson_close = $.trim($("#reson_close").val());
+        if(!reson_close){
+            return false;
+        }else{
+            return true;
+        }
     }
 
     function changePrice(orderid) {
