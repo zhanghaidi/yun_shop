@@ -66,7 +66,7 @@
                     <div id="module-menus"></div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" name="close" value="yes">关闭订单</button>
+                    <button type="submit" class="btn btn-primary" name="close" value="yes" onclick="closeorder()">关闭订单</button>
                     <a href="#" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</a>
                 </div>
             </div>
@@ -76,7 +76,7 @@
 
 <!-- 手动退款 -->
 <div id="modal-manual-refund" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" style="width:600px;margin:0px auto;">
-    <form class="form-horizontal form" action="{!! yzWebUrl('order.operation.manualRefund') !!}" method="post" enctype="multipart/form-data">
+    <form class="form-horizontal form" action="{!! yzWebUrl('order.operation.manualRefund') !!}" method="post" enctype="multipart/form-data" >
         <input type="hidden" name="route" value="order.operation.manualRefund">
         <input type='hidden' name='order_id' value=''/>
         <div class="modal-dialog">
@@ -91,7 +91,7 @@
                     <div id="module-menus"></div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" name="close" value="yes">退款</button>
+                    <button type="submit" class="btn btn-primary" name="close" value="yes" onclick="drawback()">退款</button>
                     <a href="#" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</a>
                 </div>
             </div>
@@ -199,7 +199,13 @@
 @include('refund.modal')
 
 <script language='javascript'>
-
+    //订单退款关闭内容校验
+    function drawback() {
+        var reson = $(this)
+        console.log(reson);
+        alert(333);
+        return false;
+    }
 
     function changePrice(orderid) {
         $.post("{!! yzWebUrl('order.change-order-price') !!}", {order_id: orderid}, function (html) {
