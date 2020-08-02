@@ -66,7 +66,7 @@
                     <div id="module-menus"></div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" name="close" value="yes" onclick="closeorder()">关闭订单</button>
+                    <button type="submit" class="btn btn-primary" name="close" value="yes" onclick="closeOrder()">关闭订单</button>
                     <a href="#" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</a>
                 </div>
             </div>
@@ -91,7 +91,7 @@
                     <div id="module-menus"></div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" name="close" value="yes" onclick="drawback()">退款</button>
+                    <button type="submit" class="btn btn-primary" name="close" value="yes" onclick="return drawback()">退款</button>
                     <a href="#" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</a>
                 </div>
             </div>
@@ -204,6 +204,11 @@
         var reson = $(this)
         console.log(reson);
         alert(333);
+        return false;
+    }
+    //关闭订单内容校验
+    function closeOrder(txt) {
+        alert('tuile');
         return false;
     }
 
