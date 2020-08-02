@@ -66,7 +66,7 @@
                     <div id="module-menus"></div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" name="close" value="yes" onclick="closeOrder()">关闭订单</button>
+                    <button type="submit" class="btn btn-primary" name="close" value="yes" onclick="return closeOrder()">关闭订单</button>
                     <a href="#" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</a>
                 </div>
             </div>
