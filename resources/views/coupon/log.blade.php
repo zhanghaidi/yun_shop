@@ -111,7 +111,7 @@
                             {{$row['logno']}}
                         </td>
                         <td>
-                            {{date('Y-m-d H:i', $row['createtime'])}}
+                            {{date('Y-m-d H:i:s', $row['createtime'])}}
                         </td>
                     </tr>
                 </tbody>
