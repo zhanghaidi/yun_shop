@@ -26,8 +26,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use Yunshop\Appletslive\common\services\CacheService;
 use Yunshop\Appletslive\common\services\BaseService;
-use app\common\models\AccountWechats;
-use EasyWeChat\Foundation\Application;
 use app\Jobs\CourseRemindMsgJob;
 
 /**
@@ -38,6 +36,7 @@ class LiveController extends BaseController
 {
     protected $user_id = 0;
     protected $uniacid = 45;
+    protected $is_follow_account = false;
 
     /**
      * LiveController constructor.
@@ -46,34 +45,60 @@ class LiveController extends BaseController
     {
         parent::__construct();
         $this->user_id = \YunShop::app()->getMemberId();
+        $this->is_follow_account = $this->checkIsFollowAccount();
         Cache::flush();
     }
 
     /**
-     * 测试发送微信公众号模板消息
+     * 检测是否关注了商城公众号(只有关注了公众号的用户才能发模板消息)
+     * @return bool
      */
-    public function testsendliveremindmsg()
+    private function checkIsFollowAccount()
     {
-        $result = [];
-        $start_time = implode('.', array_reverse(explode(' ', substr(microtime(), 2))));
-        // $room = ['id' => 1, 'name' => '测试课程'];
-        // $replay = ['id' => 1, 'title' => '测试录播视频', 'publish_time' => strtotime('+15 minutes')];
-        // $openid_list = ['owVKQwWK2G_K6P22he4Fb2nLI6HI', 'owVKQwYFPuDQ6aajgsjf5O12WQdE', 'owVKQwWovCGMi5aV9PxtcVaa0lHc',
-        //     'owVKQwRYT7PMiNjR2_hbCBbLbD3A', 'owVKQwVZZ8t8vvvjQZ07KX1_64xE'];
-        // foreach ($openid_list as $openid) {
-        //     for ($i = 0; $i < 5; $i++) {
-        //         $job = new CourseRemindMsgJob($openid, $room, $replay);
-        //         $dispatch = dispatch($job);
-        //         array_push($result, ['job' => $job, 'dispatch' => $dispatch]);
-        //     }
-        // }
-        $end_time = implode('.', array_reverse(explode(' ', substr(microtime(), 2))));
-        return $this->successJson('课程提醒队列测试', [
-            'start_time' => $start_time,
-            'end_time' => $end_time,
-            'cost' => bcsub($end_time, $start_time, 8) . ' seconds',
-            'result' => $result,
-        ]);
+        if (!$this->user_id) {
+            return false;
+        }
+        $wxapp_user = DB::table('diagnostic_service_user')->where('ajy_uid', $this->user_id)->first();
+        if ($wxapp_user) {
+            $wechat_fan_info = DB::table('mc_mapping_fans')
+                ->where('uniacid', 39)
+                ->where('unionid', $wxapp_user['unionid'])
+                ->first();
+            if (!empty($wechat_fan_info) && $wechat_fan_info['follow'] == 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 需要登录
+     */
+    private function needLogin()
+    {
+        if (!$this->user_id) {
+            response()->json([
+                'result' => 41009,
+                'msg' => '请登录',
+                'data' => null,
+            ], 200, ['charset' => 'utf-8'])->send();
+            exit;
+        }
+    }
+
+    /**
+     * 需要关注公众号
+     */
+    private function needFollowAccount()
+    {
+        if (!$this->is_follow_account) {
+            response()->json([
+                'result' => 41010,
+                'msg' => '您还没有关注公众号',
+                'data' => null,
+            ], 200, ['charset' => 'utf-8'])->send();
+            exit;
+        }
     }
 
     /**
@@ -96,6 +121,34 @@ class LiveController extends BaseController
         }
 
         return $result['access_token'];
+    }
+
+    /**
+     * 测试发送微信公众号模板消息
+     */
+    public function testsendliveremindmsg()
+    {
+        $result = [];
+        $start_time = implode('.', array_reverse(explode(' ', substr(microtime(), 2))));
+        $room = ['id' => 1, 'name' => '测试课程'];
+        $replay = ['id' => 1, 'title' => '测试录播视频', 'publish_time' => strtotime('+15 minutes')];
+        $openid_list = ['owVKQwWK2G_K6P22he4Fb2nLI6HI', 'owVKQwYFPuDQ6aajgsjf5O12WQdE', 'owVKQwWovCGMi5aV9PxtcVaa0lHc',
+            'owVKQwRYT7PMiNjR2_hbCBbLbD3A', 'owVKQwVZZ8t8vvvjQZ07KX1_64xE'];
+        foreach ($openid_list as $openid) {
+            for ($i = 0; $i < 1; $i++) {
+                $job = new CourseRemindMsgJob($openid, $room, $replay);
+                $dispatch = dispatch($job);
+                array_push($result, ['job' => $job, 'dispatch' => $dispatch]);
+            }
+            break;
+        }
+        $end_time = implode('.', array_reverse(explode(' ', substr(microtime(), 2))));
+        return $this->successJson('课程提醒队列测试', [
+            'start_time' => $start_time,
+            'end_time' => $end_time,
+            'cost' => bcsub($end_time, $start_time, 8) . ' seconds',
+            'result' => $result,
+        ]);
     }
 
     /**
@@ -187,14 +240,9 @@ class LiveController extends BaseController
      */
     public function roomsubscription()
     {
-        if (!$this->user_id) {
-            response()->json([
-                'result' => 41009,
-                'msg' => '请登录',
-                'data' => null,
-            ], 200, ['charset' => 'utf-8'])->send();
-            exit;
-        }
+        $this->needLogin();
+        $this->needFollowAccount();
+
         $input = request()->all();
         if (!array_key_exists('room_id', $input)) {
             return $this->errorJson('缺少参数');
