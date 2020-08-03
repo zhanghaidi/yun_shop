@@ -318,6 +318,7 @@ class RoomController extends BaseController
             $upd_data['cover_img'] = $param['cover_img'] ? $param['cover_img'] : '';
             $upd_data['media_url'] = $param['media_url'] ? $param['media_url'] : '';
             $upd_data['intro'] = $param['intro'] ? $param['intro'] : '';
+            $upd_data['doctor'] = $param['doctor'] ? $param['doctor'] : '';
             $upd_data['time_long'] = ((intval($param['minute']) * 60) + intval($param['second']));
             $upd_data['publish_time'] = strtotime($param['publish_time']) <= time() ? time() : strtotime($param['publish_time']);
             $replay = DB::table('appletslive_replay')->where('id', $id)->first();
@@ -366,6 +367,7 @@ class RoomController extends BaseController
                 'cover_img' => $param['cover_img'] ? $param['cover_img'] : '',
                 'media_url' => $param['media_url'] ? $param['media_url'] : '',
                 'intro' => $param['intro'] ? $param['intro'] : '',
+                'doctor' => $param['doctor'] ? $param['doctor'] : '',
                 'create_time' => time(),
                 'expire_time' => strtotime('2099-12-31 23:59:59'),
                 'time_long' => ((intval($param['minute']) * 60) + intval($param['second'])),

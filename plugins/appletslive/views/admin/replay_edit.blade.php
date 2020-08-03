@@ -48,6 +48,12 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label class="col-md-2 col-sm-3 col-xs-12 control-label">主讲人</label>
+                    <div class="col-md-10 col-sm-9 col-xs-12">
+                        <input name="doctor" type="text" class="form-control" value="{{ $info['doctor'] }}" placeholder="艾居益" required />
+                    </div>
+                </div>
+                <div class="form-group">
                     <label class="col-md-2 col-sm-3 col-xs-12 control-label">视频时长</label>
                     <div class="col-md-10 col-sm-9 col-xs-12 form-inline">
                         <div class="input-group form-group col-sm-3" style="padding: 0">
@@ -79,7 +85,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-md-2 col-sm-3 col-xs-12 control-label">内容概述</label>
+                    <label class="col-md-2 col-sm-3 col-xs-12 control-label">内容提示</label>
                     <div class="col-md-10 col-sm-9 col-xs-12">
                         <textarea name="intro" rows="5" class="form-control">{{ $info['intro'] }}</textarea>
                     </div>
