@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\Cache;
 use Yunshop\Appletslive\common\services\CacheService;
 use Yunshop\Appletslive\common\services\BaseService;
 use app\Jobs\CourseRemindMsgJob;
+use Carbon\Carbon;
 
 /**
  * Class LiveController
@@ -132,11 +133,11 @@ class LiveController extends BaseController
         $start_time = implode('.', array_reverse(explode(' ', substr(microtime(), 2))));
         $room = ['id' => 1, 'name' => '测试课程'];
         $replay = ['id' => 1, 'title' => '测试录播视频', 'publish_time' => strtotime('+15 minutes')];
-        $openid_list = ['owVKQwWK2G_K6P22he4Fb2nLI6HI', 'owVKQwYFPuDQ6aajgsjf5O12WQdE', 'owVKQwWovCGMi5aV9PxtcVaa0lHc',
-            'owVKQwRYT7PMiNjR2_hbCBbLbD3A', 'owVKQwVZZ8t8vvvjQZ07KX1_64xE'];
+        $openid_list = ['owVKQwWK2G_K6P22he4Fb2nLI6HI', 'owVKQwYFPuDQ6aajgsjf5O12WQdE', 'owVKQwWovCGMi5aV9PxtcVaa0lHc'];
         foreach ($openid_list as $openid) {
             for ($i = 0; $i < 1; $i++) {
-                $job = new CourseRemindMsgJob($openid, $room, $replay);
+                $job = (new CourseRemindMsgJob($openid, $room, $replay))
+                    ->delay(Carbon::now()->addMinutes(10));
                 $dispatch = dispatch($job);
                 array_push($result, ['job' => $job, 'dispatch' => $dispatch]);
             }
@@ -381,7 +382,7 @@ class LiveController extends BaseController
             Cache::put($cache_key, $cache_val);
         }
 
-        if (!empty($page_val)) {
+        if (!empty($cache_val)) {
             $numdata = CacheService::getReplayNum(array_column($cache_val, 'id'));
             foreach ($cache_val as $k => $v) {
                 $key = 'key_' . $v['id'];
