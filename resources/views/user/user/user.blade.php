@@ -64,6 +64,7 @@
             <table class="table">
                 <thead>
                 <tr>
+                    <th>操作员ID</th>
                     <th>操作员账号</th>
                     <th>角色</th>
                     <th>姓名</th>
@@ -74,7 +75,7 @@
                 </thead>
                 <tbody>
                 @foreach($userList->items() as $key => $user)
-                    <tr>
+                    <tr><td>{{ $user->uid }}</td>
                         <td>{{ $user->username }}</td>
                         <td>{{ $user->userRole->role->name or "无" }}</td>
                         <td>{{ $user->userProfile->realname or '' }}</td>
