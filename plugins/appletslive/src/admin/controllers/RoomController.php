@@ -313,6 +313,7 @@ class RoomController extends BaseController
             $upd_data = [];
             $param = request()->all();
             $id = $param['id'] ? $param['id'] : 0;
+            $upd_data['type'] = intval($param['type']);
             $upd_data['title'] = $param['title'] ? $param['title'] : '';
             $upd_data['cover_img'] = $param['cover_img'] ? $param['cover_img'] : '';
             $upd_data['media_url'] = $param['media_url'] ? $param['media_url'] : '';
@@ -360,6 +361,7 @@ class RoomController extends BaseController
             }
             $ist_data = [
                 'rid' => $rid,
+                'type' => intval($param['type']),
                 'title' => $param['title'] ? $param['title'] : '',
                 'cover_img' => $param['cover_img'] ? $param['cover_img'] : '',
                 'media_url' => $param['media_url'] ? $param['media_url'] : '',
