@@ -131,18 +131,23 @@ class LiveController extends BaseController
     {
         $result = [];
         $start_time = implode('.', array_reverse(explode(' ', substr(microtime(), 2))));
-        $room = ['id' => 1, 'name' => '测试课程'];
-        $replay = ['id' => 1, 'title' => '测试录播视频', 'publish_time' => strtotime('+15 minutes')];
-        $openid_list = ['owVKQwWK2G_K6P22he4Fb2nLI6HI', 'owVKQwYFPuDQ6aajgsjf5O12WQdE', 'owVKQwWovCGMi5aV9PxtcVaa0lHc'];
-        foreach ($openid_list as $openid) {
-            for ($i = 0; $i < 1; $i++) {
-                $job = (new CourseRemindMsgJob($openid, $room, $replay))
-                    ->delay(Carbon::now()->addMinutes(10));
-                $dispatch = dispatch($job);
-                array_push($result, ['job' => $job, 'dispatch' => $dispatch]);
-            }
-            break;
-        }
+        // $room = ['id' => 1, 'name' => '测试课程'];
+        // $replay = ['id' => 1, 'title' => '测试录播视频', 'publish_time' => strtotime('+15 minutes')];
+        // $openid_list = ['owVKQwWK2G_K6P22he4Fb2nLI6HI', 'owVKQwYFPuDQ6aajgsjf5O12WQdE', 'owVKQwWovCGMi5aV9PxtcVaa0lHc'];
+        // foreach ($openid_list as $openid) {
+        //     for ($i = 0; $i < 1; $i++) {
+        //         $job = (new CourseRemindMsgJob($openid, $room, $replay))
+        //             ->delay(Carbon::now()->addMinutes(10));
+        //         $dispatch = dispatch($job);
+        //         array_push($result, ['job' => $job, 'dispatch' => $dispatch]);
+        //     }
+        //     break;
+        // }
+
+        $account_api = AccountWechats::getAccountByUniacid(45);
+        $access_token = $account_api->getAccessToken();
+        array_push($result, ['access_token' => $access_token]);
+
         $end_time = implode('.', array_reverse(explode(' ', substr(microtime(), 2))));
         return $this->successJson('课程提醒队列测试', [
             'start_time' => $start_time,
@@ -168,6 +173,7 @@ class LiveController extends BaseController
         if (!$cache_val || !array_key_exists($page_key, $cache_val)) {
             $page_val = DB::table('appletslive_room')
                 ->select('id', 'type', 'roomid', 'name', 'anchor_name', 'cover_img', 'start_time', 'end_time', 'live_status', 'desc')
+                ->where('type', 1)
                 ->orderBy('live_status', 'asc')
                 ->orderBy('view_num', 'desc')
                 ->offset($offset)->limit($limit)->get()
