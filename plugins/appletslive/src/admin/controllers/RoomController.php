@@ -315,6 +315,7 @@ class RoomController extends BaseController
             $id = $param['id'] ? $param['id'] : 0;
             $upd_data['title'] = $param['title'] ? $param['title'] : '';
             $upd_data['cover_img'] = $param['cover_img'] ? $param['cover_img'] : '';
+            $upd_data['media_url'] = $param['media_url'] ? $param['media_url'] : '';
             $upd_data['intro'] = $param['intro'] ? $param['intro'] : '';
             $upd_data['time_long'] = ((intval($param['minute']) * 60) + intval($param['second']));
             $upd_data['publish_time'] = strtotime($param['publish_time']) <= time() ? time() : strtotime($param['publish_time']);
