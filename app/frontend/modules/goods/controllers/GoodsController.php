@@ -194,7 +194,7 @@ class GoodsController extends GoodsApiController
 
         //判断用户已购买总数 2020/8/03  zhd add line 1
 
-        $goodsModel->member_history_num = Member::current()->orderGoods()->where('goods_id', $this->goods_id)->sum('total');
+        $goodsModel->member_history_num = Member::current()->orderGoods()->where('goods_id', $id)->sum('total');
 
         // 商品详情挂件
         if (\app\common\modules\shop\ShopConfig::current()->get('goods_detail')) {
