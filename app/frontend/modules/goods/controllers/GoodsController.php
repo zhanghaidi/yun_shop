@@ -191,6 +191,8 @@ class GoodsController extends GoodsApiController
 
         //商品是否开启领优惠卷
         $goodsModel->availability = $this->couponsMemberLj($member);
+        //判断用户已购买总数 2020/8/03  zhd add line 1
+        $goodsModel->member_history_num = $member->orderGoods()->where('goods_id', $id)->sum('total');
 
         // 商品详情挂件
         if (\app\common\modules\shop\ShopConfig::current()->get('goods_detail')) {
