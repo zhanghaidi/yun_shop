@@ -8,7 +8,8 @@ use app\common\helpers\PaginationHelper;
 use app\common\helpers\Url;
 use Illuminate\Support\Facades\DB;
 use app\common\models\MemberMiniAppModel;
-use app\common\helpers\Cache;
+use Illuminate\Support\Facades\Cache;
+
 /**
  * Created by PhpStorm.
  * Author: 芸众商城 www.yunzshop.com
@@ -27,7 +28,6 @@ class SmallProgramNotice
          * 请在此处填写你的小程序 APPID和秘钥
          */
         $set = \Setting::get('plugin.min_app');
-        $getTokenUrl = "https://api.weixin.qq.com/cgi-bin/token?"; //获取token的url
         $WXappid     =  $set['key']; //APPID
         $WXsecret    = $set['secret']; //secret
 
@@ -40,17 +40,19 @@ class SmallProgramNotice
     /**
      * 微信获取 AccessToken
      */
-    public function getAccessToken(){
-        $access_token = Cache::remember('token', 120, function (){
+    public function getAccessToken()
+    {
+        $cache_key = 'miniprogram|' . $this->app_id . '|token';
+        $cache_val = Cache::get($cache_key);
+        if (!$cache_val) {
             $access_token = $this->opGetAccessToken();
-            return $access_token;
-        });
-
-        if(!$access_token){
-            $this->return_err('获取access_token时异常，微信内部错误');
-        }else{
-            $this->return_data(['access_token'=>$access_token]);
+            if (!$access_token) {
+                $this->return_err('获取access_token时异常，微信内部错误');
+            }
+            Cache::put($cache_key, $access_token, 120);
+            $cache_val = $access_token;
         }
+        $this->return_data(['access_token' => $cache_val]);
     }
 
     /**
@@ -144,39 +146,39 @@ class SmallProgramNotice
         return MemberMiniAppModel::getFansById($memberId)->openid;
     }
 
-//    public function sendTemplatePaySuccess(\Illuminate\Http\Request $request){
-//        if ($request->isMethod('post')){
-//                $openId =$this->getOpenid(\YunShop::request()['member']);//接受人open_id
-//                $url = \YunShop::request()['url'];    //跳转路径
-//                $form_id = \YunShop::request()['form_id'];  //类型
-//                /*-------------------此为项目的特定业务处理---------------------------*/
-//                $order_sn = '';
-//                $orderModel = new OrderModel();
-//                $sendTemplateData = $orderModel->getSendTemplateData($order_sn);
-//                /*-----------以上数据 $sendTemplateData 可根据自己的实际业务进行获取-----*/
-//                $rawPost = [
-//                    'touser' => $openId ,
-//                    'template_id' => 'yASr1SdzgV7_gRzKgqYI3t7um-3pIGXrpCcHUHVIJz4',
-//                    'page'=>$url,
-//                    'form_id' => $form_id,
-//                    'data' => [
-//                        'keyword1' => ['value' => $sendTemplateData['order_sn']],
-//                        'keyword2' => ['value' => $sendTemplateData['pay_time']],
-//                        'keyword3' => ['value' => $sendTemplateData['goodsMsg']],
-//                        'keyword4' => ['value' => $sendTemplateData['order_amount']],
-//                        'keyword5' => ['value' => $sendTemplateData['addressMsg']],
-//                        'keyword6' => ['value' => $sendTemplateData['tipMsg']],
-//                    ]
-//                ];
-//
-//            $this->sendTemplate($rawPost,'sendTemplatePaySuccess');
-//        }else{
-//            return $this->return_err('Sorry,请求不合法');
-//        }
-//
-//    }
-
-
+    /**
+     * 发送订阅消息
+     * @param $template_id
+     * @param $notice_data
+     * @param $openid
+     * @param string $page
+     * @return mixed
+     */
+    public function sendSubscribeMessage($template_id, $notice_data, $openid, $page = '')
+    {
+        $url = "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=" . $this->getAccessToken();
+        $post_data = [
+            'touser' => $openid,
+            'template_id' => $template_id,
+            'page' => $page,
+            'data' => $notice_data,
+        ];
+        $response = $this->curl_post($url, $post_data);
+        if ($response === false) {
+            Log::error('小程序模板消息接口调用失败:false');
+        }
+        $result = json_decode($response, true);
+        if (!$result || !is_array($result)) {
+            Log::error('小程序模板消息发送失败:', ['config' => [
+                'template_id' => $template_id, 'notice_data' => $notice_data, 'openid' => $openid,
+            ], 'result' => $result]);
+        } else {
+            Log::info('小程序模板消息接口调用成功:', ['config' => [
+                'template_id' => $template_id, 'notice_data' => $notice_data, 'openid' => $openid,
+            ], 'result' => $result]);
+        }
+        return $result;
+    }
 
     /**
      * 错误返回提示
