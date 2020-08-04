@@ -60,11 +60,11 @@ class SmallProgramNotice
      */
     public function opGetAccessToken()
     {
-        $get_token_url = sprintf($this->get_token_url, $this->app_id, $this->app_secret);
-        $response = self::curl_get($get_token_url);
+        $url = sprintf($this->get_token_url, $this->app_id, $this->app_secret);
+        $response = self::curl_get($url);
         $result = json_decode($response,true);
 
-        exit(json_encode(['response' => $response, 'result' => $result]));
+        exit(json_encode(['url' => $url, 'response' => $response, 'result' => $result]));
 
         if (empty($result)) {
             return false;
