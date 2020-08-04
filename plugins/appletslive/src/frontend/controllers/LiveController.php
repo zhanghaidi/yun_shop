@@ -178,7 +178,8 @@ class LiveController extends BaseController
             'thing2' => ['value' => '【和大师一起学艾灸】', 'color' => '#173177'],
             'time3' => ['value' => date('Y-m-d H:i', strtotime('+15 minutes')), 'color' => '#173177'],
         ];
-        $openid = 'oP9ym5Bxp6D_sERpj340uIxuaUIo';
+        // $openid = 'oP9ym5Bxp6D_sERpj340uIxuaUIo';
+        $openid = 'oP9ym5I6yH5ODXxk0iOK3XeZ_n7M';
         $page = 'pages/template/rumours/index?room_id=5';
         $send = $service->sendSubscribeMessage($template_id, $notice_data, $openid, $page);
         $result['wxapp'] = ['service' => $service, 'send' => $send];
