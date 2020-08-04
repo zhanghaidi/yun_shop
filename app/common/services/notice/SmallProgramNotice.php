@@ -30,46 +30,63 @@ class SmallProgramNotice
     }
 
     /**
-     * 微信获取 AccessToken
-     */
-    public function getAccessToken()
-    {
-        $cache_key = 'miniprogram|' . $this->app_id . '|token';
-        $cache_val = Cache::get($cache_key);
-        if (!$cache_val) {
-            $access_token = self::opGetAccessToken();
-            if (!$access_token) {
-                exit('获取 access_token 时异常，微信内部错误');
-            }
-            Cache::put($cache_key, $access_token, 120);
-            $cache_val = $access_token;
-        }
-        return $cache_val;
-    }
-
-    /**
      * 提取公共方法 - 获取 AccessToken
      * @return bool
      */
     public function opGetAccessToken()
     {
-        $setting = Setting::get('plugin.min_app');
-        $appid = $setting['key']; // "wxbe88683bd339aaf5";
-        $secret = $setting['secret']; // "fcf189d2a18002a463e7b675cea86c87";
-
-        $url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s';
-        $response = self::curl_get(sprintf($url, $appid, $secret));
-        $result = json_decode($response,true);
-
-        exit(json_encode(['setting' => $setting, 'url' => $url, 'response' => $response, 'result' => $result]));
-
-        if (empty($result)) {
-            return false;
-        } else {
-            $access_token = $result['access_token'];
-            return $access_token;
+        $cache_key = 'miniprogram|' . $this->app_id . '|token';
+        $cache_val = Cache::get($cache_key);
+        if (!$cache_val) {
+            $url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s';
+            $response = self::curl_get(sprintf($url, $this->app_id, $this->app_secret));
+            $result = json_decode($response,true);
+            if (!is_array($result) || !array_key_exists('access_token', $result)) {
+                Log::error('小程序获取access_token失败:', $result);
+                return false;
+            }
+            $cache_val = $result['access_token'];
+            Cache::put($cache_key, $cache_val, 120);
         }
+        return $cache_val;
     }
+
+    /**
+     * 发送订阅消息
+     * @param $template_id
+     * @param $notice_data
+     * @param $openid
+     * @param string $page
+     * @return mixed
+     */
+    public function sendSubscribeMessage($template_id, $notice_data, $openid, $page = '')
+    {
+        $access_token = $this->opGetAccessToken();
+        $url = "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=" . ($access_token ? $access_token : '');
+        $post_data = [
+            'touser' => $openid,
+            'template_id' => $template_id,
+            'page' => $page,
+            'data' => $notice_data,
+        ];
+        $response = $this->curl_post($url, $post_data);
+        if ($response === false) {
+            Log::error('小程序模板消息接口调用失败:false');
+        }
+        $result = json_decode($response, true);
+        if (!$result || !is_array($result)) {
+            Log::error('小程序模板消息发送失败:', ['config' => [
+                'template_id' => $template_id, 'notice_data' => $notice_data, 'openid' => $openid,
+            ], 'result' => $result]);
+        } else {
+            Log::info('小程序模板消息接口调用成功:', ['config' => [
+                'template_id' => $template_id, 'notice_data' => $notice_data, 'openid' => $openid,
+            ], 'result' => $result]);
+        }
+        return $result;
+    }
+
+
     /**
      * 获取小程序模板库标题列表
      * TODO 没必要使用，小程序账号后台可以视图查看
@@ -147,40 +164,6 @@ class SmallProgramNotice
 
     public function getOpenid($memberId){
         return MemberMiniAppModel::getFansById($memberId)->openid;
-    }
-
-    /**
-     * 发送订阅消息
-     * @param $template_id
-     * @param $notice_data
-     * @param $openid
-     * @param string $page
-     * @return mixed
-     */
-    public function sendSubscribeMessage($template_id, $notice_data, $openid, $page = '')
-    {
-        $url = "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=" . $this->getAccessToken();
-        $post_data = [
-            'touser' => $openid,
-            'template_id' => $template_id,
-            'page' => $page,
-            'data' => $notice_data,
-        ];
-        $response = $this->curl_post($url, $post_data);
-        if ($response === false) {
-            Log::error('小程序模板消息接口调用失败:false');
-        }
-        $result = json_decode($response, true);
-        if (!$result || !is_array($result)) {
-            Log::error('小程序模板消息发送失败:', ['config' => [
-                'template_id' => $template_id, 'notice_data' => $notice_data, 'openid' => $openid,
-            ], 'result' => $result]);
-        } else {
-            Log::info('小程序模板消息接口调用成功:', ['config' => [
-                'template_id' => $template_id, 'notice_data' => $notice_data, 'openid' => $openid,
-            ], 'result' => $result]);
-        }
-        return $result;
     }
 
     /**
