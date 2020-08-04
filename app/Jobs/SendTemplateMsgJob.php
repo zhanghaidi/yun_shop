@@ -40,6 +40,7 @@ class SendTemplateMsgJob implements ShouldQueue
     public function handle()
     {
         if ($this->config['type'] == 'wechat') {
+            Log::info("------------------------ 发送公众号模板消息 BEGIN -------------------------------");
             $miniprogram = [];
             if ($this->config['page'] != '') {
                 $miniprogram = ['miniprogram' => [
@@ -55,8 +56,10 @@ class SendTemplateMsgJob implements ShouldQueue
                 ->andReceiver($this->config['openid'])
                 ->andUrl($this->config['url'])
                 ->send($miniprogram);
-            Log::info('发送模板消息:', ['config' => $this->config, 'result' => $result]);
+            Log::info('发送模板消息成功:', ['config' => $this->config, 'result' => $result]);
+            Log::info("------------------------ 发送公众号模板消息 END -------------------------------\n");
         } elseif ($this->config['type'] == 'wxapp') {
+            Log::info("------------------------ 发送小程序订阅模板消息 BEGIN -------------------------------");
             $template_id = 'UKXQY-ReJezg0EHKvmp3yUQg-t644GNOaEIlV-Pqy84';
             $notice_data = [
                 'thing1' => ['value' => '课程更新', 'color' => '#173177'],
@@ -71,6 +74,7 @@ class SendTemplateMsgJob implements ShouldQueue
             // $page = $this->config['page'];
             $service = new SmallProgramNotice();
             $service->sendSubscribeMessage($template_id, $notice_data, $openid, $page);
+            Log::info("------------------------ 发送小程序订阅模板消息 END -------------------------------\n");
         }
     }
 }
