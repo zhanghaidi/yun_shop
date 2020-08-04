@@ -9,6 +9,9 @@ use app\common\helpers\Url;
 use Illuminate\Support\Facades\DB;
 use app\common\models\MemberMiniAppModel;
 use Illuminate\Support\Facades\Cache;
+use app\common\facades\Setting;
+use Illuminate\Support\Facades\Log;
+
 
 /**
  * Created by PhpStorm.
@@ -27,14 +30,10 @@ class SmallProgramNotice
         /**
          * 请在此处填写你的小程序 APPID和秘钥
          */
-        $set = \Setting::get('plugin.min_app');
-        $WXappid     =  $set['key']; //APPID
-        $WXsecret    = $set['secret']; //secret
-
-        $this->app_id =  $WXappid;      //"wxbe88683bd339aaf5";
-        $this->app_secret = $WXsecret;   //"fcf189d2a18002a463e7b675cea86c87";
-        $this->get_token_url = 'https://api.weixin.qq.com/cgi-bin/token?'
-            .'grant_type=client_credential&appid=%s&secret=%s';
+        $setting = Setting::get('plugin.min_app');
+        $this->app_id = $setting['key']; // "wxbe88683bd339aaf5";
+        $this->app_secret = $setting['secret']; // "fcf189d2a18002a463e7b675cea86c87";
+        $this->get_token_url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s';
     }
 
     /**
@@ -45,14 +44,14 @@ class SmallProgramNotice
         $cache_key = 'miniprogram|' . $this->app_id . '|token';
         $cache_val = Cache::get($cache_key);
         if (!$cache_val) {
-            $access_token = $this->opGetAccessToken();
+            $access_token = self::opGetAccessToken();
             if (!$access_token) {
-                $this->return_err('获取access_token时异常，微信内部错误');
+                exit('获取 access_token 时异常，微信内部错误');
             }
             Cache::put($cache_key, $access_token, 120);
             $cache_val = $access_token;
         }
-        $this->return_data(['access_token' => $cache_val]);
+        return $cache_val;
     }
 
     /**
@@ -60,12 +59,12 @@ class SmallProgramNotice
      * @return bool
      */
     public function opGetAccessToken(){
-        $get_token_url = sprintf($this->get_token_url, $this->app_id,$this->app_secret);
+        $get_token_url = sprintf($this->get_token_url, $this->app_id, $this->app_secret);
         $result = self::curl_get($get_token_url);
         $wxResult = json_decode($result,true);
-        if(empty($wxResult)){
+        if (empty($wxResult)) {
             return false;
-        }else{
+        } else {
             $access_token = $wxResult['access_token'];
             return $access_token;
         }
@@ -126,22 +125,25 @@ class SmallProgramNotice
      * @param string $opUrl
      * @param array $rawPost
      * @param string $method
+     * @return mixed|string
      */
-    public function opTemplateData($opUrl = '',$rawPost = [],$method = ''){
+    public function opTemplateData($opUrl = '', $rawPost = [], $method = '')
+    {
         $access_token = self::opGetAccessToken();
-        if(!$access_token){
+        if (!$access_token) {
             return '获取 access_token 时异常，微信内部错误';
-        }else{
+        } else {
             $templateUrl = sprintf($opUrl,$access_token);
             $listRes = self::curl_post($templateUrl,$rawPost);
             $wxResult = json_decode($listRes,true);
-            if($wxResult['errcode']){
+            if ($wxResult['errcode']) {
                 return ($method.' - Failed!:'.$wxResult);
-            }else{
+            } else {
                 return $wxResult;
             }
         }
     }
+
     public function getOpenid($memberId){
         return MemberMiniAppModel::getFansById($memberId)->openid;
     }

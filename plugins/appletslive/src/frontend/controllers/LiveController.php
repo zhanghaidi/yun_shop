@@ -144,8 +144,6 @@ class LiveController extends BaseController
         //     break;
         // }
 
-        $result = [];
-
         $account = AccountWechats::getAccountByUniacid(39);
         $options = [
             'app_id' => $account['key'],
