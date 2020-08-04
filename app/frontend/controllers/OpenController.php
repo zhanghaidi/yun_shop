@@ -38,11 +38,7 @@ class OpenController extends BaseController
                 'secret' => $account['secret'],
             ];
         } elseif ($type == 'wxapp') {
-            $account = \Setting::get('plugin.min_app');
-            $options = [
-                'app_id' => $account['key'],
-                'secret' => $account['secret'],
-            ];
+            $options = [];
         }
         return $options;
     }
