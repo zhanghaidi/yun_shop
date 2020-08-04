@@ -58,14 +58,18 @@ class SmallProgramNotice
      * 提取公共方法 - 获取 AccessToken
      * @return bool
      */
-    public function opGetAccessToken(){
+    public function opGetAccessToken()
+    {
         $get_token_url = sprintf($this->get_token_url, $this->app_id, $this->app_secret);
-        $result = self::curl_get($get_token_url);
-        $wxResult = json_decode($result,true);
-        if (empty($wxResult)) {
+        $response = self::curl_get($get_token_url);
+        $result = json_decode($response,true);
+
+        exit(json_encode(['response' => $response, 'result' => $result]));
+
+        if (empty($result)) {
             return false;
         } else {
-            $access_token = $wxResult['access_token'];
+            $access_token = $result['access_token'];
             return $access_token;
         }
     }
