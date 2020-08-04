@@ -19,11 +19,11 @@ class SendTemplateMsgJob implements ShouldQueue
 
     protected $config;
 
-    public function __construct($type, $option, $template_id, $notice_data, $openid, $url = '', $page = '')
+    public function __construct($type, $options, $template_id, $notice_data, $openid, $url = '', $page = '')
     {
         $this->config = [
             'type' => $type,
-            'option' => $option,
+            'options' => $options,
             'template_id' => $template_id,
             'notice_data' => $notice_data,
             'openid' => $openid,
