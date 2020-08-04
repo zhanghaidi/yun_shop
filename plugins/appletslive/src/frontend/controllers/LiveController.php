@@ -184,7 +184,12 @@ class LiveController extends BaseController
         ];
         $openid = 'oP9ym5Bxp6D_sERpj340uIxuaUIo';
         $page = 'pages/template/rumours/index?room_id=5';
-        $send = $service->sendSubscribeMessage($this->config['template_id'], $this->config['notice_data'], $this->config['openid']);
+        $send = $service->sendSubscribeMessage($template_id, $notice_data, $openid, $page);
+        $result['wxapp'] = [
+            'service' => $service,
+            'send' => $send,
+        ];
+
         $end_time = implode('.', array_reverse(explode(' ', substr(microtime(), 2))));
         return $this->successJson('课程提醒队列测试', [
             'start_time' => $start_time,
