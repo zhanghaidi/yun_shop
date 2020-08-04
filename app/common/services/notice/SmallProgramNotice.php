@@ -1,12 +1,6 @@
 <?php
 namespace app\common\services\notice;
 
-use app\backend\modules\goods\models\Brand;
-use app\backend\modules\goods\services\BrandService;
-use app\common\components\BaseController;
-use app\common\helpers\PaginationHelper;
-use app\common\helpers\Url;
-use Illuminate\Support\Facades\DB;
 use app\common\models\MemberMiniAppModel;
 use Illuminate\Support\Facades\Cache;
 use app\common\facades\Setting;
@@ -33,7 +27,6 @@ class SmallProgramNotice
         $setting = Setting::get('plugin.min_app');
         $this->app_id = $setting['key']; // "wxbe88683bd339aaf5";
         $this->app_secret = $setting['secret']; // "fcf189d2a18002a463e7b675cea86c87";
-        $this->get_token_url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s';
     }
 
     /**
@@ -60,11 +53,15 @@ class SmallProgramNotice
      */
     public function opGetAccessToken()
     {
-        $url = sprintf($this->get_token_url, $this->app_id, $this->app_secret);
-        $response = self::curl_get($url);
+        $setting = Setting::get('plugin.min_app');
+        $appid = $setting['key']; // "wxbe88683bd339aaf5";
+        $secret = $setting['secret']; // "fcf189d2a18002a463e7b675cea86c87";
+
+        $url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s';
+        $response = self::curl_get(sprintf($url, $appid, $secret));
         $result = json_decode($response,true);
 
-        exit(json_encode(['url' => $url, 'response' => $response, 'result' => $result]));
+        exit(json_encode(['setting' => $setting, 'url' => $url, 'response' => $response, 'result' => $result]));
 
         if (empty($result)) {
             return false;
