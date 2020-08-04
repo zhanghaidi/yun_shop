@@ -26,8 +26,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use Yunshop\Appletslive\common\services\CacheService;
 use Yunshop\Appletslive\common\services\BaseService;
-use app\Jobs\CourseRemindMsgJob;
-use Carbon\Carbon;
+use app\common\models\AccountWechats;
+use EasyWeChat\Foundation\Application;
+use app\common\services\notice\sendSubscribeMessage;
 
 /**
  * Class LiveController
@@ -129,7 +130,6 @@ class LiveController extends BaseController
      */
     public function testsendliveremindmsg()
     {
-        $result = [];
         $start_time = implode('.', array_reverse(explode(' ', substr(microtime(), 2))));
         // $room = ['id' => 1, 'name' => '测试课程'];
         // $replay = ['id' => 1, 'title' => '测试录播视频', 'publish_time' => strtotime('+15 minutes')];
@@ -144,10 +144,47 @@ class LiveController extends BaseController
         //     break;
         // }
 
-        $account_api = AccountWechats::getAccountByUniacid(45);
-        $access_token = $account_api->getAccessToken();
-        array_push($result, ['access_token' => $access_token]);
+        $result = [];
 
+        $account = AccountWechats::getAccountByUniacid(45);
+        $options = [
+            'app_id' => $account['key'],
+            'secret' => $account['secret'],
+        ];
+        $app = new Application($options);
+        $app = $app->notice;
+        $notice_data = [
+            'first' => ['value' => '尊敬的用户,您订阅的课程【和大师一起学艾灸】有新视频要发布啦~', 'color' => '#173177'],
+            'keyword1' => ['value' => '测试的^.^', 'color' => '#173177'],
+            'keyword2' => ['value' => '测试的^.^', 'color' => '#173177'],
+            'keyword3' => ['value' => '测试的^.^', 'color' => '#173177'],
+            'remark' => [
+                'value' => '最新视频【每次艾灸几个穴位合适】将在' . date('Y-m-d H:i', strtotime('+15 minutes')) . '震撼发布!',
+                'color' => '#173177',
+            ],
+        ];
+        $send = $app
+            ->uses('c-tYzcbVnoqT33trwq6ckW_lquLDPmqySXvntFJEMhE')
+            ->andData($notice_data)
+            ->andReceiver('owVKQwWK2G_K6P22he4Fb2nLI6HI')
+            ->andUrl('')
+            ->send([]);
+        $result['wechat'] = [
+            'easywechat_app' => $app,
+            'send' => $send,
+        ];
+
+        $service = new SmallProgramNotice();
+        $template_id = 'ABepy-L03XH_iU0tPd03VUV9KQ_Vjii5mClL7Qp8_jc';
+        $notice_data = [
+            'thing1' => ['value' => '课程更新', 'color' => '#173177'],
+            'thing2' => ['value' => '【和大师一起学艾灸】', 'color' => '#173177'],
+            'name3' => ['value' => '艾居益灸师', 'color' => '#173177'],
+            'thing4' => ['value' => '最新视频【每次艾灸几个穴位合适】将在' . date('Y-m-d H:i', strtotime('+15 minutes')) . '震撼发布!', 'color' => '#173177'],
+        ];
+        $openid = 'oP9ym5Bxp6D_sERpj340uIxuaUIo';
+        $page = 'pages/template/rumours/index?room_id=5';
+        $send = $service->sendSubscribeMessage($this->config['template_id'], $this->config['notice_data'], $this->config['openid']);
         $end_time = implode('.', array_reverse(explode(' ', substr(microtime(), 2))));
         return $this->successJson('课程提醒队列测试', [
             'start_time' => $start_time,
@@ -512,5 +549,15 @@ class LiveController extends BaseController
         }
         CacheService::setReplayComment($input['replay_id']);
         return $this->successJson('评论成功');
+    }
+
+    /**
+     * 获取关联公众号关注链接
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function followlink()
+    {
+        $setting = Setting::get('plugin.min_app');
+        return $this->successJson('获取成功', $setting['follow_link']);
     }
 }
