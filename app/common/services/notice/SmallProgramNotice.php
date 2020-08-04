@@ -37,15 +37,18 @@ class SmallProgramNotice
         $cache_key = 'miniprogram|' . $this->app_id . '|token';
         $cache_val = Cache::get($cache_key);
         if (!$cache_val) {
+            $setting = Setting::get('plugin.min_app');
+            $appid = $setting['key'];
+            $secret = $setting['secret'];
             $url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s';
-            $response = self::curl_get(sprintf($url, $this->app_id, $this->app_secret));
+            $response = self::curl_get(sprintf($url, $appid, $secret));
             $result = json_decode($response,true);
             if (!is_array($result) || !array_key_exists('access_token', $result)) {
                 Log::error('小程序获取access_token失败:', [
                     'setting' => Setting::get('plugin.min_app'),
-                    'app_id' => $this->app_id,
-                    'app_secret' => $this->app_secret,
-                    'url' => $url,
+                    'appid' => $appid,
+                    'secret' => $secret,
+                    'url' => sprintf($url, $appid, $secret),
                     'result' => $result,
                 ]);
                 return false;
