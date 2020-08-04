@@ -14,6 +14,10 @@ use Illuminate\Support\Facades\Log;
  */
 class OpenController extends BaseController
 {
+    /**
+     * 检测apikey是否正确
+     * @param $api_key
+     */
     private function checkAccess($api_key)
     {
         $access = [
@@ -30,6 +34,11 @@ class OpenController extends BaseController
         }
     }
 
+    /**
+     * 获取公众号配置
+     * @param $type
+     * @return array
+     */
     private function getWeOptions($type)
     {
         if ($type == 'wechat') {
@@ -64,9 +73,11 @@ class OpenController extends BaseController
 
         if ($input['type'] == 'wechat') {
             $job = new SendTemplateMsgJob('wechat', $options, $input['template_id'], $input['notice_data'], $input['openid'], $url, $page);
+            $dispatch = dispatch($job);
             Log::info("队列已添加:发送公众号模板消息");
         } elseif ($input['type'] == 'wxapp') {
             $job = new SendTemplateMsgJob('wxapp', $options, $input['template_id'], $input['notice_data'], $input['openid'], $url, $page);
+            $dispatch = dispatch($job);
             Log::info("队列已添加:发送小程序订阅模板消息");
         } else {
             $job = null;
@@ -74,7 +85,6 @@ class OpenController extends BaseController
             return $this->errorJson('队列未添加:无法识别的任务', ['input' => $input]);
         }
 
-        $dispatch = dispatch($job);
         return $this->successJson('ok', ['input' => $input, 'job' => $job, 'dispatcht' => $dispatch]);
     }
 }
