@@ -32,7 +32,7 @@ class OpenController extends BaseController
     private function getWeOptions($type)
     {
         if ($type == 'wechat') {
-            $account = AccountWechats::getAccountByUniacid(45);
+            $account = AccountWechats::getAccountByUniacid(39);
             $options = [
                 'app_id' => $account['key'],
                 'secret' => $account['secret'],
