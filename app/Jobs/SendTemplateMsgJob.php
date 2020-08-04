@@ -8,7 +8,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 use EasyWeChat\Foundation\Application;
-use app\common\services\notice\sendSubscribeMessage;
+use app\common\services\notice\SmallProgramNotice;
 
 class SendTemplateMsgJob implements ShouldQueue
 {
@@ -57,11 +57,8 @@ class SendTemplateMsgJob implements ShouldQueue
                 ->send($miniprogram);
             Log::info('发送模板消息:', ['config' => $this->config, 'result' => $result]);
         } elseif ($this->config['type'] == 'wxapp') {
-            if ($this->config['page'] != '') {
-                $this->config['notice_data']['page'] = $this->config['page'];
-            }
-            $service = new sendSubscribeMessage();
-            $service->sendSubscribeMessage($this->config['template_id'], $this->config['notice_data'], $this->config['openid']);
+            $service = new SmallProgramNotice();
+            $service->sendSubscribeMessage($this->config['template_id'], $this->config['notice_data'], $this->config['openid'], $this->config['page']);
         }
     }
 }
