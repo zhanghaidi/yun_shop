@@ -27,8 +27,8 @@ use Illuminate\Support\Facades\Cache;
 use Yunshop\Appletslive\common\services\CacheService;
 use Yunshop\Appletslive\common\services\BaseService;
 use app\common\models\AccountWechats;
-use EasyWeChat\Foundation\Application;
 use app\common\services\notice\SmallProgramNotice;
+use app\Jobs\SendTemplateMsgJob;
 
 /**
  * Class LiveController
