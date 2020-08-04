@@ -29,6 +29,7 @@ use Yunshop\Appletslive\common\services\BaseService;
 use app\common\models\AccountWechats;
 use EasyWeChat\Foundation\Application;
 use app\common\services\notice\SmallProgramNotice;
+use app\Jobs\SendTemplateMsgJob;
 
 /**
  * Class LiveController
@@ -141,14 +142,14 @@ class LiveController extends BaseController
         // $app = $app->notice;
         $template_id = 'c-tYzcbVnoqT33trwq6ckW_lquLDPmqySXvntFJEMhE';
         $notice_data = [
-            'first' => ['value' => '尊敬的用户,您订阅的课程【和大师一起学艾灸】有新视频要发布啦~', 'color' => '#173177'],
-            'keyword1' => ['value' => '测试的^.^', 'color' => '#173177'],
-            'keyword2' => ['value' => '测试的^.^', 'color' => '#173177'],
-            'keyword3' => ['value' => '测试的^.^', 'color' => '#173177'],
-            'remark' => [
-                'value' => '最新视频【每次艾灸几个穴位合适】将在' . date('Y-m-d H:i', strtotime('+15 minutes')) . '震撼发布!',
-                'color' => '#173177',
-            ],
+            'first' => ['value' => '尊敬的用户,您订阅的课程有新视频要发布啦~', 'color' => '#173177'],
+                'keyword1' => ['value' => '【和大师一起学艾灸】', 'color' => '#173177'],
+                'keyword2' => ['value' => '长期有效', 'color' => '#173177'],
+                'keyword3' => ['value' => '更新中', 'color' => '#173177'],
+                'remark' => [
+                    'value' => '最新视频【每次艾灸几个穴位合适】将于2020-08-05 12:00震撼发布!',
+                    'color' => '#173177',
+                ],
         ];
         $openid = 'owVKQwWK2G_K6P22he4Fb2nLI6HI';
         // $send = $app
