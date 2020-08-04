@@ -128,29 +128,18 @@ class LiveController extends BaseController
     /**
      * 测试发送微信公众号模板消息
      */
-    public function testsendliveremindmsg()
+    public function commonsendtemplatemsg()
     {
         $start_time = implode('.', array_reverse(explode(' ', substr(microtime(), 2))));
-        // $room = ['id' => 1, 'name' => '测试课程'];
-        // $replay = ['id' => 1, 'title' => '测试录播视频', 'publish_time' => strtotime('+15 minutes')];
-        // $openid_list = ['owVKQwWK2G_K6P22he4Fb2nLI6HI', 'owVKQwYFPuDQ6aajgsjf5O12WQdE', 'owVKQwWovCGMi5aV9PxtcVaa0lHc'];
-        // foreach ($openid_list as $openid) {
-        //     for ($i = 0; $i < 1; $i++) {
-        //         $job = (new CourseRemindMsgJob($openid, $room, $replay))
-        //             ->delay(Carbon::now()->addMinutes(10));
-        //         $dispatch = dispatch($job);
-        //         array_push($result, ['job' => $job, 'dispatch' => $dispatch]);
-        //     }
-        //     break;
-        // }
 
         $account = AccountWechats::getAccountByUniacid(39);
         $options = [
             'app_id' => $account['key'],
             'secret' => $account['secret'],
         ];
-        $app = new Application($options);
-        $app = $app->notice;
+        // $app = new Application($options);
+        // $app = $app->notice;
+        $template_id = 'c-tYzcbVnoqT33trwq6ckW_lquLDPmqySXvntFJEMhE';
         $notice_data = [
             'first' => ['value' => '尊敬的用户,您订阅的课程【和大师一起学艾灸】有新视频要发布啦~', 'color' => '#173177'],
             'keyword1' => ['value' => '测试的^.^', 'color' => '#173177'],
@@ -161,18 +150,23 @@ class LiveController extends BaseController
                 'color' => '#173177',
             ],
         ];
-        $send = $app
-            ->uses('c-tYzcbVnoqT33trwq6ckW_lquLDPmqySXvntFJEMhE')
-            ->andData($notice_data)
-            ->andReceiver('owVKQwWK2G_K6P22he4Fb2nLI6HI')
-            ->andUrl('')
-            ->send([]);
-        $result['wechat'] = [
-            'easywechat_app' => $app,
-            'send' => $send,
-        ];
+        $openid = 'owVKQwWK2G_K6P22he4Fb2nLI6HI';
+        // $send = $app
+        //     ->uses($template_id)
+        //     ->andData($notice_data)
+        //     ->andReceiver($openid)
+        //     ->andUrl('')
+        //     ->send([]);
+        // $result['wechat'] = [
+        //     'easywechat_app' => $app,
+        //     'send' => $send,
+        // ];
 
-        $service = new SmallProgramNotice();
+        $job = new SendTemplateMsgJob('wechat', $options, $template_id, $notice_data, $openid, '', '');
+        $dispatch = dispatch($job);
+        $result['wechat'] = ['job' => $job, 'dispatch' => $dispatch];
+
+        // $service = new SmallProgramNotice();
         // $template_id = 'ABepy-L03XH_iU0tPd03VUV9KQ_Vjii5mClL7Qp8_jc';
         $template_id = 'UKXQY-ReJezg0EHKvmp3yUQg-t644GNOaEIlV-Pqy84';
         // $notice_data = [
@@ -187,12 +181,16 @@ class LiveController extends BaseController
             'time3' => ['value' => date('Y-m-d H:i', strtotime('+15 minutes')), 'color' => '#173177'],
         ];
         $openid = 'oP9ym5Bxp6D_sERpj340uIxuaUIo';
-        $page = 'pages/template/rumours/index?room_id=5';
-        $send = $service->sendSubscribeMessage($template_id, $notice_data, $openid, $page);
-        $result['wxapp'] = [
-            'service' => $service,
-            'send' => $send,
-        ];
+        // $page = 'pages/template/rumours/index?room_id=5';
+        // $send = $service->sendSubscribeMessage($template_id, $notice_data, $openid, $page);
+        // $result['wxapp'] = [
+        //     'service' => $service,
+        //     'send' => $send,
+        // ];
+
+        $job = new SendTemplateMsgJob('wxapp', [], $template_id, $notice_data, $openid, '', '');
+        $dispatch = dispatch($job);
+        $result['wxapp'] = ['job' => $job, 'dispatch' => $dispatch];
 
         $end_time = implode('.', array_reverse(explode(' ', substr(microtime(), 2))));
         return $this->successJson('课程提醒队列测试', [
