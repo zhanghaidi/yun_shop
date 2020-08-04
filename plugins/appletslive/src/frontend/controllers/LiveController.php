@@ -149,16 +149,6 @@ class LiveController extends BaseController
             ],
         ];
         $openid = 'owVKQwWK2G_K6P22he4Fb2nLI6HI';
-        // $send = $app
-        //     ->uses($template_id)
-        //     ->andData($notice_data)
-        //     ->andReceiver($openid)
-        //     ->andUrl('')
-        //     ->send([]);
-        // $result['wechat'] = [
-        //     'easywechat_app' => $app,
-        //     'send' => $send,
-        // ];
 
         $job = new SendTemplateMsgJob('wechat', $options, $template_id, $notice_data, $openid, '', '');
         $dispatch = dispatch($job);
