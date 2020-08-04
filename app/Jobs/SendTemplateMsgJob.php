@@ -75,6 +75,8 @@ class SendTemplateMsgJob implements ShouldQueue
             $service = new SmallProgramNotice();
             $service->sendSubscribeMessage($template_id, $notice_data, $openid, $page);
             Log::info("------------------------ 发送小程序订阅模板消息 END -------------------------------\n");
+        } else {
+            Log::info('未知的任务:');
         }
     }
 }
