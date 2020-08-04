@@ -166,20 +166,19 @@ class LiveController extends BaseController
 
         $service = new SmallProgramNotice();
         // $template_id = 'ABepy-L03XH_iU0tPd03VUV9KQ_Vjii5mClL7Qp8_jc';
-        $template_id = 'UKXQY-ReJezg0EHKvmp3yUQg-t644GNOaEIlV-Pqy84';
         // $notice_data = [
         //     'thing1' => ['value' => '课程更新', 'color' => '#173177'],
         //     'thing2' => ['value' => '【和大师一起学艾灸】', 'color' => '#173177'],
         //     'name3' => ['value' => '艾居益灸师', 'color' => '#173177'],
         //     'thing4' => ['value' => '最新视频【每次艾灸几个穴位合适】将在' . date('Y-m-d H:i', strtotime('+15 minutes')) . '震撼发布!', 'color' => '#173177'],
         // ];
+        $template_id = 'UKXQY-ReJezg0EHKvmp3yUQg-t644GNOaEIlV-Pqy84';
         $notice_data = [
             'thing1' => ['value' => '课程更新', 'color' => '#173177'],
             'thing2' => ['value' => '【和大师一起学艾灸】', 'color' => '#173177'],
             'time3' => ['value' => date('Y-m-d H:i', strtotime('+15 minutes')), 'color' => '#173177'],
         ];
-        // $openid = 'oP9ym5Bxp6D_sERpj340uIxuaUIo';
-        $openid = 'oP9ym5I6yH5ODXxk0iOK3XeZ_n7M';
+        $openid = 'oP9ym5Bxp6D_sERpj340uIxuaUIo';
         $page = 'pages/template/rumours/index?room_id=5';
         $send = $service->sendSubscribeMessage($template_id, $notice_data, $openid, $page);
         $result['wxapp'] = ['service' => $service, 'send' => $send];

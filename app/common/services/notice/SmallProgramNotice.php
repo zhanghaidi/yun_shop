@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Cache;
 use app\common\facades\Setting;
 use Illuminate\Support\Facades\Log;
 
-
 /**
  * Created by PhpStorm.
  * Author: 芸众商城 www.yunzshop.com
@@ -42,7 +41,13 @@ class SmallProgramNotice
             $response = self::curl_get(sprintf($url, $this->app_id, $this->app_secret));
             $result = json_decode($response,true);
             if (!is_array($result) || !array_key_exists('access_token', $result)) {
-                Log::error('小程序获取access_token失败:', $result);
+                Log::error('小程序获取access_token失败:', [
+                    'setting' => Setting::get('plugin.min_app'),
+                    'app_id' => $this->app_id,
+                    'app_secret' => $this->app_secret,
+                    'url' => $url,
+                    'result' => $result,
+                ]);
                 return false;
             }
             $cache_val = $result['access_token'];
