@@ -560,6 +560,7 @@ class LiveController extends BaseController
         $setting = Setting::get('plugin.min_app');
         return $this->successJson('获取成功', [
             'setting_type' => gettype($setting),
+            'setting' => $setting,
             'follow_link' => $setting['follow_link'],
         ]);
     }
