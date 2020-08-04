@@ -38,8 +38,8 @@ class SmallProgramNotice
         $cache_val = Cache::get($cache_key);
         if (!$cache_val) {
             $setting = Setting::get('plugin.min_app');
-            $appid = $setting['key'];
-            $secret = $setting['secret'];
+            $appid = 'wxcaa8acf49f845662';
+            $secret = 'f627c835de1b4ba43fe2cbcb95236c52';
             $url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s';
             $response = self::curl_get(sprintf($url, $appid, $secret));
             $result = json_decode($response,true);
