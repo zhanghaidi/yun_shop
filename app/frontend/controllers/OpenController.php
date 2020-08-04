@@ -3,6 +3,7 @@
 namespace app\frontend\controllers;
 
 use app\common\components\BaseController;
+use app\common\models\AccountWechats;
 use app\Jobs\SendTemplateMsgJob;
 
 /**
