@@ -5,6 +5,7 @@ namespace app\frontend\controllers;
 use app\common\components\BaseController;
 use app\common\models\AccountWechats;
 use app\Jobs\SendTemplateMsgJob;
+use Illuminate\Support\Facades\Log;
 
 /**
  * 公共服务接口类
