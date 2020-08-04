@@ -50,6 +50,7 @@ class OpenController extends BaseController
     public function sendTemplateMsg()
     {
         $input = request()->all();
+        $this->checkAccess($input['apikey']);
         if (!array_key_exists('type', $input) || !in_array($input['type'], ['wechat', 'wxapp'])) {
             return $this->errorJson('type参数有误');
         }
