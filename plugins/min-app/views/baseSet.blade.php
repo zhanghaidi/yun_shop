@@ -140,7 +140,7 @@
                         <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">公众号关注链接</label>
                             <div class="col-sm-9 col-xs-12">
-                                <input type="text" name="min[fllow_link]" class="form-control" value="{{ $set['fllow_link'] }}"/>
+                                <input type="text" name="min[follow_link]" class="form-control" value="{{ $set['follow_link'] }}"/>
                             </div>
                         </div>
                     </div>
