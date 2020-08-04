@@ -133,7 +133,6 @@ class LiveController extends BaseController
     {
         $start_time = implode('.', array_reverse(explode(' ', substr(microtime(), 2))));
 
-        $service = new SmallProgramNotice();
         // $template_id = 'ABepy-L03XH_iU0tPd03VUV9KQ_Vjii5mClL7Qp8_jc';
         // $notice_data = [
         //     'thing1' => ['value' => '课程更新', 'color' => '#173177'],
@@ -149,13 +148,15 @@ class LiveController extends BaseController
         ];
         $openid = 'oP9ym5Bxp6D_sERpj340uIxuaUIo';
         $page = 'pages/template/rumours/index?room_id=5';
+
+        $service = new SmallProgramNotice();
         $send = $service->sendSubscribeMessage($template_id, $notice_data, $openid, $page);
         $result['wxapp'] = [
             'service' => $service,
             'send' => $send,
         ];
 
-        $job = new SendTemplateMsgJob('wxapp', [], $template_id, $notice_data, $openid, '', '');
+        $job = new SendTemplateMsgJob('wxapp', [], $template_id, $notice_data, $openid, '', $page);
         $dispatch = dispatch($job);
         $result['wxapp'] = ['job' => $job, 'dispatch' => $dispatch];
 
