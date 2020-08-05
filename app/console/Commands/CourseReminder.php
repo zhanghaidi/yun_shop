@@ -146,21 +146,28 @@ class CourseReminder extends Command
             Log::info("队列数据组装完成", $job_list);
 
             // 5、添加消息发送任务到消息队列
-            // foreach ($job_list as $job) {
-            //     $job = SendTemplateMsgJob($job['type'], $$job['options'], $job['template_id'], $job['notice_data'],
-            //         $job['openid'], '', $job['page']);
-            //     $dispatch = dispatch($job);
-            //     if ($job['type'] == 'wechat') {
-            //         Log::info("队列已添加:发送公众号模板消息", ['job' => $job, 'dispatch' => $dispatch]);
-            //     } elseif ($job['type'] == 'wxapp') {
-            //         Log::info("队列已添加:发送小程序订阅模板消息", ['job' => $job, 'dispatch' => $dispatch]);
-            //     }
-            // }
+            foreach ($job_list as $job) {
+                $job = SendTemplateMsgJob($job['type'], $$job['options'], $job['template_id'], $job['notice_data'],
+                    $job['openid'], '', $job['page']);
+                $dispatch = dispatch($job);
+                if ($job['type'] == 'wechat') {
+                    Log::info("队列已添加:发送公众号模板消息", ['job' => $job, 'dispatch' => $dispatch]);
+                } elseif ($job['type'] == 'wxapp') {
+                    Log::info("队列已添加:发送小程序订阅模板消息", ['job' => $job, 'dispatch' => $dispatch]);
+                }
+            }
         }
 
         Log::info("------------------------ 课程提醒定时任务 END -------------------------------\n");
     }
 
+    /**
+     * 组装Job任务需要的参数
+     * @param $type
+     * @param $room_name
+     * @param $replay_info
+     * @return array
+     */
     private function makeJobParam($type, $room_name, $replay_info)
     {
         $param = [];
