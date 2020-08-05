@@ -2,6 +2,7 @@
 
 namespace app\frontend\controllers;
 
+use Illuminate\Support\Facades\DB;
 use app\common\components\BaseController;
 use app\common\models\AccountWechats;
 use app\Jobs\SendTemplateMsgJob;
@@ -48,7 +49,14 @@ class OpenController extends BaseController
                 'secret' => $account['secret'],
             ];
         } elseif ($type == 'wxapp') {
-            $options = [];
+            $account = DB::table('account_wxapp')->where('uniacid', 45)->first();
+            $options = $account ? [
+                'app_id' => $account['key'],
+                'secret' => $account['secret'],
+            ] : [
+                'app_id' => 'wxcaa8acf49f845662',
+                'secret' => 'f627c835de1b4ba43fe2cbcb95236c52',
+            ];
         }
         return $options;
     }

@@ -72,7 +72,7 @@ class SendTemplateMsgJob implements ShouldQueue
             // $notice_data = $this->config['notice_data'];
             // $openid = $this->config['openid'];
             // $page = $this->config['page'];
-            $service = new SmallProgramNotice();
+            $service = new SmallProgramNotice($this->config['options']);
             $service->sendSubscribeMessage($template_id, $notice_data, $openid, $page);
             Log::info("------------------------ 发送小程序订阅模板消息 END -------------------------------\n");
         } else {
