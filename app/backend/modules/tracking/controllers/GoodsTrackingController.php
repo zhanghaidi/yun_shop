@@ -11,10 +11,11 @@ class GoodsTrackingController extends BaseController
 {
     public function index(){
         //var_dump(222);
-        /*return view('tracking.goodsTracking.index', [
+        return view('tracking.index', [
             //'list' => $list,
             //'pager' => $pager,
-        ]);*/
-        return view('excelRecharge.page');
+        ]);
+
+        //return view('excelRecharge.page');
     }
 }
