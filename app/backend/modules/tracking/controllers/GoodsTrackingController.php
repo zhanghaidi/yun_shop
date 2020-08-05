@@ -10,7 +10,7 @@ use app\common\components\BaseController;
 class GoodsTrackingController extends BaseController
 {
     public function index(){
-        return view('tracking.goods_tracking.index', [
+        return view('tracking.goodsTracking.index', [
             //'list' => $list,
             //'pager' => $pager,
         ])->render();
