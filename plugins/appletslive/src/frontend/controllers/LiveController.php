@@ -27,7 +27,6 @@ use Illuminate\Support\Facades\Cache;
 use Yunshop\Appletslive\common\services\CacheService;
 use Yunshop\Appletslive\common\services\BaseService;
 use app\common\models\AccountWechats;
-use app\common\services\notice\SmallProgramNotice;
 use app\Jobs\SendTemplateMsgJob;
 
 /**
@@ -234,7 +233,6 @@ class LiveController extends BaseController
             $rela_room = DB::table('appletslive_room')
                 ->whereIn('id', array_unique(array_column($replay_publish_soon, 'rid')))
                 ->pluck('name', 'id')->toArray();
-            $result['rela_room'] = $rela_room;
 
             // 3、查询关注了这些课程的所有小程序用户信息(openid)
             $subscribed_user = DB::table('appletslive_room_subscription')
@@ -246,26 +244,27 @@ class LiveController extends BaseController
             } else {
                 $subscribed_uid = array_unique(array_column($subscribed_user, 'user_id'));
                 // 3.1、存在已关注课程的用户，查询用户openid
-                $wxapp_user_openid = DB::table('diagnostic_service_user')
-                    ->select('ajy_uid', 'openid')
+                $wxapp_user = DB::table('diagnostic_service_user')
+                    ->select('ajy_uid', 'openid', 'unionid')
                     ->whereIn('ajy_uid', $subscribed_uid)
                     ->get()->toArray();
-                $wechat_user_openid = DB::table('mc_mapping_fans')
+                $subscribed_unionid = array_column($wxapp_user, 'unionid');
+                $wechat_user = DB::table('mc_mapping_fans')
                     ->select('uid', 'openid', 'follow')
-                    ->whereIn('uid', $subscribed_uid)
+                    ->whereIn('unionid', $subscribed_unionid)
                     ->get()->toArray();
-                array_walk($subscribed_user, function (&$item) use ($wxapp_user_openid, $wechat_user_openid) {
-                    $item['wxapp_openid'] = '';
-                    foreach ($wxapp_user_openid as $wuo) {
-                        if ($wuo['ajy_uid'] == $item['user_id']) {
-                            $item['wxapp_openid'] = $wuo['openid'];
+                array_walk($subscribed_user, function (&$item) use ($wxapp_user, $wechat_user) {
+                    foreach ($wxapp_user as $user) {
+                        if ($user['ajy_uid'] == $item['user_id']) {
+                            $item['unionid'] = $user['unionid'];
+                            $item['wxapp_openid'] = $user['openid'];
                             break;
                         }
                     }
                     $item['wechat_openid'] = '';
-                    foreach ($wechat_user_openid as $wuo) {
-                        if ($wuo['uid'] == $item['user_id'] && $wuo['follow'] == 1) {
-                            $item['wechat_openid'] = $wuo['openid'];
+                    foreach ($wechat_user as $user) {
+                        if ($user['unionid'] == $item['unionid'] && $user['follow'] == 1) {
+                            $item['wechat_openid'] = $user['openid'];
                             break;
                         }
                     }
