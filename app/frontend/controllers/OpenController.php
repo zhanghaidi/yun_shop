@@ -2,9 +2,11 @@
 
 namespace app\frontend\controllers;
 
+use Illuminate\Support\Facades\DB;
 use app\common\components\BaseController;
 use app\common\models\AccountWechats;
 use app\Jobs\SendTemplateMsgJob;
+use Illuminate\Support\Facades\Log;
 
 /**
  * 公共服务接口类
@@ -13,6 +15,10 @@ use app\Jobs\SendTemplateMsgJob;
  */
 class OpenController extends BaseController
 {
+    /**
+     * 检测apikey是否正确
+     * @param $api_key
+     */
     private function checkAccess($api_key)
     {
         $access = [
@@ -29,6 +35,11 @@ class OpenController extends BaseController
         }
     }
 
+    /**
+     * 获取公众号配置
+     * @param $type
+     * @return array
+     */
     private function getWeOptions($type)
     {
         if ($type == 'wechat') {
@@ -38,7 +49,14 @@ class OpenController extends BaseController
                 'secret' => $account['secret'],
             ];
         } elseif ($type == 'wxapp') {
-            $options = [];
+            $account = DB::table('account_wxapp')->where('uniacid', 45)->first();
+            $options = $account ? [
+                'app_id' => $account['key'],
+                'secret' => $account['secret'],
+            ] : [
+                'app_id' => 'wxcaa8acf49f845662',
+                'secret' => 'f627c835de1b4ba43fe2cbcb95236c52',
+            ];
         }
         return $options;
     }
@@ -60,8 +78,21 @@ class OpenController extends BaseController
         $options = $this->getWeOptions($input['type']);
         $url = array_key_exists('url', $input) ? $input['url'] : '';
         $page = array_key_exists('page', $input) ? $input['page'] : '';
-        $job = new SendTemplateMsgJob($input['type'], $options, $input['template_id'], $input['notice_data'], $input['openid'], $url, $page);
-        $dispatch = dispatch($job);
+
+        if ($input['type'] == 'wechat') {
+            $job = new SendTemplateMsgJob('wechat', $options, $input['template_id'], $input['notice_data'], $input['openid'], $url, $page);
+            $dispatch = dispatch($job);
+            Log::info("队列已添加:发送公众号模板消息");
+        } elseif ($input['type'] == 'wxapp') {
+            $job = new SendTemplateMsgJob('wxapp', $options, $input['template_id'], $input['notice_data'], $input['openid'], $url, $page);
+            $dispatch = dispatch($job);
+            Log::info("队列已添加:发送小程序订阅模板消息");
+        } else {
+            $job = null;
+            Log::info("队列未添加:无法识别的任务");
+            return $this->errorJson('队列未添加:无法识别的任务', ['input' => $input]);
+        }
+
         return $this->successJson('ok', ['input' => $input, 'job' => $job, 'dispatcht' => $dispatch]);
     }
 }

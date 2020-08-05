@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Cache;
 use app\common\facades\Setting;
 use Illuminate\Support\Facades\Log;
 
-
 /**
  * Created by PhpStorm.
  * Author: 芸众商城 www.yunzshop.com
@@ -19,14 +18,20 @@ class SmallProgramNotice
     protected $app_secret;
     protected $get_token_url;
 
-    public function __construct()
+    public function __construct($options = [])
     {
-        /**
-         * 请在此处填写你的小程序 APPID和秘钥
-         */
-        $setting = Setting::get('plugin.min_app');
-        $this->app_id = $setting['key']; // "wxbe88683bd339aaf5";
-        $this->app_secret = $setting['secret']; // "fcf189d2a18002a463e7b675cea86c87";
+        // 配置APPID和秘钥
+        if (array_key_exists('app_id', $options)) {
+            $this->app_id = $options['app_id'];
+        }
+        if (array_key_exists('secret', $options)) {
+            $this->app_secret = $options['secret'];
+        }
+        if (empty($options)) {
+            $setting = Setting::get('plugin.min_app');
+            $this->app_id = $setting['key'];
+            $this->app_secret = $setting['secret'];
+        }
     }
 
     /**
@@ -42,7 +47,12 @@ class SmallProgramNotice
             $response = self::curl_get(sprintf($url, $this->app_id, $this->app_secret));
             $result = json_decode($response,true);
             if (!is_array($result) || !array_key_exists('access_token', $result)) {
-                Log::error('小程序获取access_token失败:', $result);
+                Log::error('小程序获取access_token失败:', [
+                    'appid' => $this->app_id,
+                    'secret' => $this->app_secret,
+                    'url' => sprintf($url, $this->app_id, $this->app_secret),
+                    'result' => $result,
+                ]);
                 return false;
             }
             $cache_val = $result['access_token'];

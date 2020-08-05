@@ -40,6 +40,7 @@ class SendTemplateMsgJob implements ShouldQueue
     public function handle()
     {
         if ($this->config['type'] == 'wechat') {
+            Log::info("------------------------ 发送公众号模板消息 BEGIN -------------------------------");
             $miniprogram = [];
             if ($this->config['page'] != '') {
                 $miniprogram = ['miniprogram' => [
@@ -55,22 +56,19 @@ class SendTemplateMsgJob implements ShouldQueue
                 ->andReceiver($this->config['openid'])
                 ->andUrl($this->config['url'])
                 ->send($miniprogram);
-            Log::info('发送模板消息:', ['config' => $this->config, 'result' => $result]);
+            Log::info('发送模板消息成功:', ['config' => $this->config, 'result' => $result]);
+            Log::info("------------------------ 发送公众号模板消息 END -------------------------------\n");
         } elseif ($this->config['type'] == 'wxapp') {
-            $template_id = 'UKXQY-ReJezg0EHKvmp3yUQg-t644GNOaEIlV-Pqy84';
-            // $template_id = $this->config['template_id'];
-            $notice_data = [
-                'thing1' => ['value' => '课程更新', 'color' => '#173177'],
-                'thing2' => ['value' => '【和大师一起学艾灸】', 'color' => '#173177'],
-                'time3' => ['value' => date('Y-m-d H:i', strtotime('+15 minutes')), 'color' => '#173177'],
-            ];
-            // $notice_data = $this->config['notice_data'];
-            $openid = 'oP9ym5Bxp6D_sERpj340uIxuaUIo';
+            Log::info("------------------------ 发送小程序订阅模板消息 BEGIN -------------------------------");
+            $template_id = $this->config['template_id'];
+            $notice_data = $this->config['notice_data'];
             $openid = $this->config['openid'];
-            $page = 'pages/template/rumours/index?room_id=5';
-            // $page = $this->config['page'];
-            $service = new SmallProgramNotice();
+            $page = $this->config['page'];
+            $service = new SmallProgramNotice($this->config['options']);
             $service->sendSubscribeMessage($template_id, $notice_data, $openid, $page);
+            Log::info("------------------------ 发送小程序订阅模板消息 END -------------------------------\n");
+        } else {
+            Log::info('未知的任务:');
         }
     }
 }
