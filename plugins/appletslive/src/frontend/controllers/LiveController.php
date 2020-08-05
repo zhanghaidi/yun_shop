@@ -215,7 +215,7 @@ class LiveController extends BaseController
         $time_check_point = $time_now + 900;
         $time_check_where = [$time_check_point, $time_check_point + 600];
         $replay_publish_soon = DB::table('appletslive_replay')
-            ->select('id', 'rid', 'title', 'publish_time')
+            ->select('id', 'rid', 'title', 'doctor', 'publish_time')
             ->whereBetween('publish_time', $time_check_where)
             ->get()->toArray();
         $result['publish_time_range'] = $time_check_where;
@@ -341,9 +341,9 @@ class LiveController extends BaseController
             $param['template_id'] = 'ABepy-L03XH_iU0tPd03VUV9KQ_Vjii5mClL7Qp8_jc';
             $param['notice_data'] = [
                 'thing1' => ['value' => '课程更新', 'color' => '#173177'],
-                'thing2' => ['value' => '【和大师一起学艾灸】', 'color' => '#173177'],
-                'name3' => ['value' => '艾居益灸师', 'color' => '#173177'],
-                'thing4' => ['value' => '最新视频【每次艾灸几个穴位合适】将在' . date('Y-m-d H:i', strtotime('+15 minutes')) . '震撼发布!', 'color' => '#173177'],
+                'thing2' => ['value' => '【' . $room_name . '】', 'color' => '#173177'],
+                'name3' => ['value' => $replay_info['doctor'], 'color' => '#173177'],
+                'thing4' => ['value' => '最新视频【' . $replay_info['title'] . '】将于' . date('Y-m-d H:i', $replay_info['publish_time']) . '震撼发布!', 'color' => '#173177'],
             ];
         }
         return $param;
