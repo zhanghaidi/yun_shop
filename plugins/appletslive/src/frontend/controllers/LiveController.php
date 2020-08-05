@@ -28,6 +28,7 @@ use Yunshop\Appletslive\common\services\CacheService;
 use Yunshop\Appletslive\common\services\BaseService;
 use app\common\models\AccountWechats;
 use app\Jobs\SendTemplateMsgJob;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Class LiveController
@@ -47,6 +48,7 @@ class LiveController extends BaseController
         parent::__construct();
         $this->user_id = \YunShop::app()->getMemberId();
         $this->is_follow_account = $this->checkIsFollowAccount();
+        Cache::flush();
     }
 
     /**
@@ -188,8 +190,6 @@ class LiveController extends BaseController
     {
         Log::info("------------------------ 测试：课程提醒定时任务 BEGIN -------------------------------");
 
-        $result = [];
-
         // 公众号配置信息
         $wechat_account = DB::table('account_wechats')
             ->select('key', 'secret')
@@ -218,6 +218,7 @@ class LiveController extends BaseController
             ->select('id', 'rid', 'title', 'publish_time')
             ->whereBetween('publish_time', $time_check_where)
             ->get()->toArray();
+        $result['publish_time_range'] = $time_check_where;
         $result['replay_publish_soon'] = $replay_publish_soon;
 
         Log::info('time_now: ' . $time_now);
