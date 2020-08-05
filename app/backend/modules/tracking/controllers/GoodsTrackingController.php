@@ -15,6 +15,7 @@ class GoodsTrackingController extends BaseController
             //'list' => $list,
             //'pager' => $pager,
         ]);*/
-        return view('tracking.index');
+        return view('excelRecharge.records');
+        //return view('tracking.index');
     }
 }
