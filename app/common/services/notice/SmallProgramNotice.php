@@ -36,12 +36,13 @@ class SmallProgramNotice
 
     /**
      * 提取公共方法 - 获取 AccessToken
-     * @return bool
+     * @param bool $force_refresh
+     * @return bool|mixed|null
      */
-    public function opGetAccessToken()
+    public function opGetAccessToken($force_refresh = false)
     {
         $cache_key = 'miniprogram|' . $this->app_id . '|token';
-        $cache_val = Cache::get($cache_key);
+        $cache_val = $force_refresh ? null : Cache::get($cache_key);
         if (!$cache_val) {
             $url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s';
             $response = self::curl_get(sprintf($url, $this->app_id, $this->app_secret));
@@ -89,6 +90,10 @@ class SmallProgramNotice
                 'template_id' => $template_id, 'notice_data' => $notice_data, 'openid' => $openid,
             ], 'result' => $result]);
         } else {
+            if (array_key_exists('errcode', $result) && $result['errcode'] == 40001) {
+                $access_token = $this->opGetAccessToken(true);
+                return $this->sendSubscribeMessage($template_id, $notice_data, $openid, $page);
+            }
             Log::info('小程序模板消息接口调用成功:', ['config' => [
                 'template_id' => $template_id, 'notice_data' => $notice_data, 'openid' => $openid,
             ], 'result' => $result]);
