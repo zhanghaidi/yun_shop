@@ -10,12 +10,11 @@ use app\common\components\BaseController;
 class GoodsTrackingController extends BaseController
 {
     public function index(){
-        var_dump(222);
+        //var_dump(222);
         /*return view('tracking.goodsTracking.index', [
             //'list' => $list,
             //'pager' => $pager,
         ]);*/
-        return view('excelRecharge.records');
-        //return view('tracking.index');
+        return view('excelRecharge.page');
     }
 }
