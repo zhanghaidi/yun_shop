@@ -13,6 +13,6 @@ class GoodsTrackingController extends BaseController
         return view('tracking.goodsTracking.index', [
             //'list' => $list,
             //'pager' => $pager,
-        ])->render();
+        ]);
     }
 }
