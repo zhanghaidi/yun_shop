@@ -1,11 +1,14 @@
 <?php
 namespace app\common\services\notice;
 
+use app\backend\modules\goods\models\Brand;
+use app\backend\modules\goods\services\BrandService;
+use app\common\components\BaseController;
+use app\common\helpers\PaginationHelper;
+use app\common\helpers\Url;
+use Illuminate\Support\Facades\DB;
 use app\common\models\MemberMiniAppModel;
-use Illuminate\Support\Facades\Cache;
-use app\common\facades\Setting;
-use Illuminate\Support\Facades\Log;
-
+use app\common\helpers\Cache;
 /**
  * Created by PhpStorm.
  * Author: 芸众商城 www.yunzshop.com
@@ -18,90 +21,53 @@ class SmallProgramNotice
     protected $app_secret;
     protected $get_token_url;
 
-    public function __construct($options = [])
+    public function __construct()
     {
-        // 配置APPID和秘钥
-        if (array_key_exists('app_id', $options)) {
-            $this->app_id = $options['app_id'];
-        }
-        if (array_key_exists('secret', $options)) {
-            $this->app_secret = $options['secret'];
-        }
-        if (empty($options)) {
-            $setting = Setting::get('plugin.min_app');
-            $this->app_id = $setting['key'];
-            $this->app_secret = $setting['secret'];
+        /**
+         * 请在此处填写你的小程序 APPID和秘钥
+         */
+        $set = \Setting::get('plugin.min_app');
+        $getTokenUrl = "https://api.weixin.qq.com/cgi-bin/token?"; //获取token的url
+        $WXappid     =  $set['key']; //APPID
+        $WXsecret    = $set['secret']; //secret
+
+        $this->app_id =  $WXappid;      //"wxbe88683bd339aaf5";
+        $this->app_secret = $WXsecret;   //"fcf189d2a18002a463e7b675cea86c87";
+        $this->get_token_url = 'https://api.weixin.qq.com/cgi-bin/token?'
+            .'grant_type=client_credential&appid=%s&secret=%s';
+    }
+
+    /**
+     * 微信获取 AccessToken
+     */
+    public function getAccessToken(){
+        $access_token = Cache::remember('token', 120, function (){
+            $access_token = $this->opGetAccessToken();
+            return $access_token;
+        });
+
+        if(!$access_token){
+            $this->return_err('获取access_token时异常，微信内部错误');
+        }else{
+            $this->return_data(['access_token'=>$access_token]);
         }
     }
 
     /**
      * 提取公共方法 - 获取 AccessToken
-     * @param bool $force_refresh
-     * @return bool|mixed|null
+     * @return bool
      */
-    public function opGetAccessToken($force_refresh = false)
-    {
-        $cache_key = 'miniprogram|' . $this->app_id . '|token';
-        $cache_val = $force_refresh ? null : Cache::get($cache_key);
-        if (!$cache_val) {
-            $url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s';
-            $response = self::curl_get(sprintf($url, $this->app_id, $this->app_secret));
-            $result = json_decode($response,true);
-            if (!is_array($result) || !array_key_exists('access_token', $result)) {
-                Log::error('小程序获取access_token失败:', [
-                    'appid' => $this->app_id,
-                    'secret' => $this->app_secret,
-                    'url' => sprintf($url, $this->app_id, $this->app_secret),
-                    'result' => $result,
-                ]);
-                return false;
-            }
-            $cache_val = $result['access_token'];
-            Cache::put($cache_key, $cache_val, 120);
+    public function opGetAccessToken(){
+        $get_token_url = sprintf($this->get_token_url, $this->app_id,$this->app_secret);
+        $result = self::curl_get($get_token_url);
+        $wxResult = json_decode($result,true);
+        if(empty($wxResult)){
+            return false;
+        }else{
+            $access_token = $wxResult['access_token'];
+            return $access_token;
         }
-        return $cache_val;
     }
-
-    /**
-     * 发送订阅消息
-     * @param $template_id
-     * @param $notice_data
-     * @param $openid
-     * @param string $page
-     * @return mixed
-     */
-    public function sendSubscribeMessage($template_id, $notice_data, $openid, $page = '')
-    {
-        $access_token = $this->opGetAccessToken();
-        $url = "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=" . ($access_token ? $access_token : '');
-        $post_data = [
-            'touser' => $openid,
-            'template_id' => $template_id,
-            'page' => $page,
-            'data' => $notice_data,
-        ];
-        $response = $this->curl_post($url, $post_data);
-        if ($response === false) {
-            Log::error('小程序模板消息接口调用失败:false');
-        }
-        $result = json_decode($response, true);
-        if (!$result || !is_array($result)) {
-            Log::error('小程序模板消息发送失败:', ['config' => [
-                'template_id' => $template_id, 'notice_data' => $notice_data, 'openid' => $openid,
-            ], 'result' => $result]);
-        } else {
-            if (array_key_exists('errcode', $result) && $result['errcode'] == 40001) {
-                $access_token = $this->opGetAccessToken(true);
-                return $this->sendSubscribeMessage($template_id, $notice_data, $openid, $page);
-            }
-            Log::info('小程序模板消息接口调用成功:', ['config' => [
-                'template_id' => $template_id, 'notice_data' => $notice_data, 'openid' => $openid,
-            ], 'result' => $result]);
-        }
-        return $result;
-    }
-
-
     /**
      * 获取小程序模板库标题列表
      * TODO 没必要使用，小程序账号后台可以视图查看
@@ -158,28 +124,59 @@ class SmallProgramNotice
      * @param string $opUrl
      * @param array $rawPost
      * @param string $method
-     * @return mixed|string
      */
-    public function opTemplateData($opUrl = '', $rawPost = [], $method = '')
-    {
+    public function opTemplateData($opUrl = '',$rawPost = [],$method = ''){
         $access_token = self::opGetAccessToken();
-        if (!$access_token) {
+        if(!$access_token){
             return '获取 access_token 时异常，微信内部错误';
-        } else {
+        }else{
             $templateUrl = sprintf($opUrl,$access_token);
             $listRes = self::curl_post($templateUrl,$rawPost);
             $wxResult = json_decode($listRes,true);
-            if ($wxResult['errcode']) {
+            if($wxResult['errcode']){
                 return ($method.' - Failed!:'.$wxResult);
-            } else {
+            }else{
                 return $wxResult;
             }
         }
     }
-
     public function getOpenid($memberId){
         return MemberMiniAppModel::getFansById($memberId)->openid;
     }
+
+//    public function sendTemplatePaySuccess(\Illuminate\Http\Request $request){
+//        if ($request->isMethod('post')){
+//                $openId =$this->getOpenid(\YunShop::request()['member']);//接受人open_id
+//                $url = \YunShop::request()['url'];    //跳转路径
+//                $form_id = \YunShop::request()['form_id'];  //类型
+//                /*-------------------此为项目的特定业务处理---------------------------*/
+//                $order_sn = '';
+//                $orderModel = new OrderModel();
+//                $sendTemplateData = $orderModel->getSendTemplateData($order_sn);
+//                /*-----------以上数据 $sendTemplateData 可根据自己的实际业务进行获取-----*/
+//                $rawPost = [
+//                    'touser' => $openId ,
+//                    'template_id' => 'yASr1SdzgV7_gRzKgqYI3t7um-3pIGXrpCcHUHVIJz4',
+//                    'page'=>$url,
+//                    'form_id' => $form_id,
+//                    'data' => [
+//                        'keyword1' => ['value' => $sendTemplateData['order_sn']],
+//                        'keyword2' => ['value' => $sendTemplateData['pay_time']],
+//                        'keyword3' => ['value' => $sendTemplateData['goodsMsg']],
+//                        'keyword4' => ['value' => $sendTemplateData['order_amount']],
+//                        'keyword5' => ['value' => $sendTemplateData['addressMsg']],
+//                        'keyword6' => ['value' => $sendTemplateData['tipMsg']],
+//                    ]
+//                ];
+//
+//            $this->sendTemplate($rawPost,'sendTemplatePaySuccess');
+//        }else{
+//            return $this->return_err('Sorry,请求不合法');
+//        }
+//
+//    }
+
+
 
     /**
      * 错误返回提示
