@@ -38,7 +38,7 @@
                                 <td style="text-align: center;">{{ $list->id }}</td>
                                 <td style="text-align: center;">{{ $list->to_type_id }}</td>
                                 <td style="text-align: center;">{{ $list->resource_id }}</td>
-                                <td style="text-align: center;">{{ $list->goods_id }}</td>
+                                <td style="text-align: center;">{{ $list->goods->title }}</td>
                                 <td style="text-align: center;">{{ $list->user_id }}</td>
                                 <td style="text-align: center;">{{ $list->action }}</td>
                                 <td style="text-align: center;">{{ $list->val }}</td>
