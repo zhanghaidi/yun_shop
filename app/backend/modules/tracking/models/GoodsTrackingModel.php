@@ -49,7 +49,8 @@ class GoodsTrackingModel extends Model
      */
     public function goods()
     {
-        return $this->hasOne('App\backend\modules\goods\models\Goods');
+        //return $this->hasOne('App\backend\modules\goods\models\Goods','goods_id','id');
+        return $this->belongsTo('App\backend\modules\goods\models\Goods');
     }
 
     /**
