@@ -2,7 +2,7 @@
 namespace app\backend\modules\tracking\controllers;
 
 use app\common\components\BaseController;
-use app\backend\modules\tracking\modules\GoodsTrackingModel;
+use app\backend\modules\tracking\models\GoodsTrackingModel;
 
 /**
  * Class GoodsTrackingController
