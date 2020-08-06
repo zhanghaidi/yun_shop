@@ -62,11 +62,11 @@
                 </div>
                 <div class="modal-body">
                     <label>关闭订单原因</label>
-                    <textarea style="height:150px;" class="form-control" name="reson" autocomplete="off"></textarea>
+                    <textarea style="height:150px;" class="form-control" name="reson" id="reson_close" autocomplete="off"></textarea>
                     <div id="module-menus"></div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" name="close" value="yes">关闭订单</button>
+                    <button type="submit" class="btn btn-primary" name="close" value="yes" onclick="return closeOrder()">关闭订单</button>
                     <a href="#" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</a>
                 </div>
             </div>
@@ -76,7 +76,7 @@
 
 <!-- 手动退款 -->
 <div id="modal-manual-refund" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" style="width:600px;margin:0px auto;">
-    <form class="form-horizontal form" action="{!! yzWebUrl('order.operation.manualRefund') !!}" method="post" enctype="multipart/form-data">
+    <form class="form-horizontal form" action="{!! yzWebUrl('order.operation.manualRefund') !!}" method="post" enctype="multipart/form-data" >
         <input type="hidden" name="route" value="order.operation.manualRefund">
         <input type='hidden' name='order_id' value=''/>
         <div class="modal-dialog">
@@ -87,11 +87,11 @@
                 </div>
                 <div class="modal-body">
                     <label>退款原因</label>
-                    <textarea style="height:150px;" class="form-control" name="reson" autocomplete="off"></textarea>
+                    <textarea style="height:150px;" class="form-control" name="reson" id="reson_drawback" autocomplete="off"></textarea>
                     <div id="module-menus"></div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" name="close" value="yes">退款</button>
+                    <button type="submit" class="btn btn-primary" name="close" value="yes" onclick="return drawback()">退款</button>
                     <a href="#" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</a>
                 </div>
             </div>
@@ -199,7 +199,29 @@
 @include('refund.modal')
 
 <script language='javascript'>
+    //订单退款关闭内容校验
+    function drawback() {
+        var reson_drawback = $.trim($("#reson_drawback").val());
+        if(!reson_drawback){
+            alert('请详细输入退款原因,检查无误后再操作')
+            return false;
+        }else{
+            $("#reson_drawback").val("")
+            return true;
+        }
 
+    }
+    //关闭订单内容校验
+    function closeOrder() {
+        var reson_close = $.trim($("#reson_close").val());
+        if(!reson_close){
+            alert('请详细输入关闭订单原因,检查无误后再操作')
+            return false;
+        }else{
+            $("#reson_close").val()
+            return true;
+        }
+    }
 
     function changePrice(orderid) {
         $.post("{!! yzWebUrl('order.change-order-price') !!}", {order_id: orderid}, function (html) {

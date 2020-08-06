@@ -7,6 +7,7 @@ use app\console\Commands\WriteFrame;
 use app\framework\Foundation\Bootstrap\SetRequestForConsole;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use app\console\Commands\CourseReminder;
 
 class Kernel extends ConsoleKernel
 {
@@ -26,6 +27,7 @@ class Kernel extends ConsoleKernel
         'app\console\Commands\MigrateMemberDistributor',
         'app\console\Commands\UpdateInviteCode',
         WriteFrame::class,
+        CourseReminder::class,
     ];
     /**
      * The bootstrap classes for the application.

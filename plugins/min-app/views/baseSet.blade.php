@@ -133,6 +133,19 @@
 {{--                            </div>--}}
 {{--                        </div>--}}
                         <div class="form-group"></div>
+                    </div>
+
+                    <div class='panel-heading'>关联公众号</div>
+                    <div class='panel-body'>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">公众号关注链接</label>
+                            <div class="col-sm-9 col-xs-12">
+                                <input type="text" name="min[follow_link]" class="form-control" value="{{ $set['follow_link'] }}"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class='panel-body'>
                         <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
                             <div class="col-sm-9 col-xs-12">

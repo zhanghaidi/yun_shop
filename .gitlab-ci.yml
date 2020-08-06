@@ -1,0 +1,15 @@
+stages:
+  - build
+  - test
+  - deploy
+job1:
+  stage: test
+  tags:
+    - rsync_test
+  only:
+    - dev
+  script:
+    - echo whoami
+    - echo `pwd`
+
+    - sh -x /opt/rsync_yun_shop.sh

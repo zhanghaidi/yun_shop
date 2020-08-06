@@ -820,7 +820,7 @@ class GoodsController extends BaseController
         }
         $zip->extractTo($destination);//将压缩文件解压到指定的目录下
         $zip->close(); //关闭zip文档
-        return ture;
+        return true;
     }
 
     //ajax 异步上传文件

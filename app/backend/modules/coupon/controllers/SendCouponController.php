@@ -14,6 +14,7 @@ use app\common\models\CouponLog;
 use app\backend\modules\coupon\services\Message;
 use app\common\models\MemberShopInfo;
 use app\backend\modules\coupon\services\MessageNotice;
+use app\common\models\user\User;
 
 
 class SendCouponController extends BaseController
@@ -25,6 +26,7 @@ class SendCouponController extends BaseController
 
     public $failedSend = []; //发送失败时的记录
     public $adminId; //后台操作者的ID
+    public $adminUsername; //后台操作员用户名
 
     public function index()
     {
@@ -41,7 +43,8 @@ class SendCouponController extends BaseController
 
             //获取后台操作者的ID
             $this->adminId = \YunShop::app()->uid;
-
+            $adminUser = User::where('uid', \YunShop::app()->uid)->first();
+            $this->adminUsername = $adminUser->username;
             //获取会员 Member ID
             $sendType = \YunShop::request()->sendtype;
             switch ($sendType) {
@@ -199,10 +202,10 @@ class SendCouponController extends BaseController
 
                 //写入log
                 if ($res) { //发放优惠券成功
-                    $log = '手动发放优惠券成功: 管理员( ID 为 ' . $this->adminId . ' )成功发放 ' . $sendTotal . ' 张优惠券( ID为 ' . $couponModel->id . ' )给用户( Member ID 为 ' . $memberId . ' )';
+                    $log = '手动发放优惠券成功: 管理员['. $this->adminUsername .']( ID 为 ' . $this->adminId . ' )成功发放 ' . $sendTotal . ' 张优惠券( ID为 ' . $couponModel->id . ' )给用户( Member ID 为 ' . $memberId . ' )';
 
                 } else { //发放优惠券失败
-                    $log = '手动发放优惠券失败: 管理员( ID 为 ' . $this->adminId . ' )发放优惠券( ID为 ' . $couponModel->id . ' )给用户( Member ID 为 ' . $memberId . ' )时失败!';
+                    $log = '手动发放优惠券失败: 管理员['. $this->adminUsername .']( ID 为 ' . $this->adminId . ' )发放优惠券( ID为 ' . $couponModel->id . ' )给用户( Member ID 为 ' . $memberId . ' )时失败!';
                     $this->failedSend[] = $log; //失败时, 记录 todo 最后需要展示出来
                     \Log::info($log);
                 }

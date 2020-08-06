@@ -29,6 +29,15 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label class="col-md-2 col-sm-3 col-xs-12 control-label">类型</label>
+                    <div class="col-md-10 col-sm-9 col-xs-12">
+                        <select name="type" class="form-control">
+                            <option value="1" @if($info['type']=='1') selected="selected" @endif>本地上传</option>
+                            <option value="2" @if($info['type']=='2') selected="selected" @endif>腾讯视频</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label class="col-md-2 col-sm-3 col-xs-12 control-label">链接地址</label>
                     <div class="col-md-10 col-sm-9 col-xs-12">
                         @if($room['type']=='0')
@@ -36,6 +45,31 @@
                         @else
                             <input name="media_url" type="text" class="form-control" value="{{ $info['media_url'] }}" required />
                         @endif
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 col-sm-3 col-xs-12 control-label">主讲人</label>
+                    <div class="col-md-10 col-sm-9 col-xs-12">
+                        <input name="doctor" type="text" class="form-control" value="{{ $info['doctor'] }}" placeholder="艾居益" required />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 col-sm-3 col-xs-12 control-label">视频时长</label>
+                    <div class="col-md-10 col-sm-9 col-xs-12 form-inline">
+                        <div class="input-group form-group col-sm-3" style="padding: 0">
+                            <input type="number" name="minute" class="form-control" value="{{ $info['minute'] }}" required />
+                            <span class="input-group-addon">分钟</span>
+                        </div>
+                        <div class="input-group form-group col-sm-3" style="padding: 0">
+                            <input type="number" name="second" class="form-control" value="{{ $info['second'] }}" required />
+                            <span class="input-group-addon">秒</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-md-2 col-sm-3 col-xs-12 control-label">发布时间</label>
+                    <div class="col-md-10 col-sm-9 col-xs-12">
+                        {!! tpl_form_field_date('publish_time', date('Y-m-d H:i', ($info['publish_time'] ? $info['publish_time'] : time())), true) !!}
                     </div>
                 </div>
                 <div class="form-group">
@@ -51,7 +85,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-md-2 col-sm-3 col-xs-12 control-label">内容概述</label>
+                    <label class="col-md-2 col-sm-3 col-xs-12 control-label">内容提示</label>
                     <div class="col-md-10 col-sm-9 col-xs-12">
                         <textarea name="intro" rows="5" class="form-control">{{ $info['intro'] }}</textarea>
                     </div>

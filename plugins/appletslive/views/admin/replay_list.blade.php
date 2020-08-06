@@ -74,11 +74,12 @@
                 <thead>
                 <tr>
                     <th style='width:5%;'>ID</th>
-                    <th style='width:10%;'>预览图</th>
+                    <th style='width:8%;'>预览图</th>
                     <th style='width:20%;'>标题</th>
-                    <th style='width:15%;'>创建时间</th>
-                    <th style='width:15%;'>过期时间</th>
-                    <th style='width:20%;'>链接地址</th>
+                    <th style='width:11%;'>创建时间</th>
+                    <th style='width:11%;'>发布时间</th>
+                    <th style='width:5%;'>类型</th>
+                    <th style='width:25%;'>链接地址</th>
                     <th style='width:15%;'>操作</th>
                 </tr>
                 </thead>
@@ -91,7 +92,11 @@
                         </td>
                         <td>{{$row['title']}}</td>
                         <td>{{$row['create_time']}}</td>
-                        <td>{{$row['expire_time']}}</td>
+                        <td>{{$row['publish_time']}}</td>
+                        <td>
+                            @if($row['type']=='1') 本地上传 @endif
+                            @if($row['type']=='2') 腾讯视频 @endif
+                        </td>
                         <td>{{$row['media_url']}}</td>
                         <td style="overflow:visible;">
                             <a class='btn btn-default'
