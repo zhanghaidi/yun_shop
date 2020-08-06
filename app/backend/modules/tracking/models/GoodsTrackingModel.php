@@ -59,7 +59,7 @@ class GoodsTrackingModel extends Model
      */
     public function user()
     {
-        return $this->hasOne('App\backend\modules\tracking\models\DiagnosticServiceUserModel','user_id','ajy_uid');
+        return $this->belongsTo('App\backend\modules\tracking\models\DiagnosticServiceUserModel','user_id','ajy_uid');
     }
 
 
