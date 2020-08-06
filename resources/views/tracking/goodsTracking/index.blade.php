@@ -39,7 +39,12 @@
                                 <td style="text-align: center;">{{ $list->to_type_id }}</td>
                                 <td style="text-align: center;">{{ $list->resource_id }}</td>
                                 <td style="text-align: center;">{{ $list->goods->title }}</td>
-                                <td style="text-align: center;">{{ $list->user->nickname }}</td>
+                                <td style="text-align: center;">
+                                        <img src='{{$list->user->avatarurl}}'
+                                             style='width:30px;height:30px;padding:1px;border:1px solid #ccc'/><br/>
+                                    {{ $list->user->nickname }}
+
+                                </td>
                                 <td style="text-align: center;">{!! $list->action !!}</td>
                                 <td style="text-align: center;">{{ $list->val}}</td>
                                 <td style="text-align: center;">{{date('Y-m-d H:i:s', $list->create_time)}}</td>
