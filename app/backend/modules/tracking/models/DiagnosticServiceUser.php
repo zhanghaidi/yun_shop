@@ -10,7 +10,7 @@ namespace app\backend\modules\tracking\models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class DiagnosticServiceUserModel extends Model
+class DiagnosticServiceUser extends Model
 {
     //protected $table = 'diagnostic_service_goods_tracking';
 
