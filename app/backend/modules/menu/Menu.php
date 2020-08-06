@@ -1587,7 +1587,8 @@ class Menu
                                         'parents'    => ['Goods', 'discount_set', 'goods_discount_set_all'],
                                         'child'      => []
                                     ],*/
-                                ],
+
+                                    ],
                             ],
 
                             /*'goods_discount_set' => [
