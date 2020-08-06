@@ -2,6 +2,7 @@
 namespace app\backend\modules\tracking\controllers;
 
 use app\common\components\BaseController;
+use app\backend\modules\tracking\modules\GoodsTrackingModel;
 
 /**
  * Class GoodsTrackingController
@@ -11,8 +12,14 @@ class GoodsTrackingController extends BaseController
 {
     public function index(){
 
+        $list = GoodsTrackingModel::get();
+        dd($list);die;
+        /*return view('area.selectcitys', [
+            'citys' => $citys->toArray()
+        ])->render();*/
+
         return view('tracking.goodsTracking.index', [
-            //'list' => $list,
+            //'list' => $list->,
             //'pager' => $pager,
         ]);
 
