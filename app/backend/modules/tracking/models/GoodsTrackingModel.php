@@ -44,6 +44,28 @@ class GoodsTrackingModel extends Model
     }
 
     /**
+     *  获取埋点来源操作.
+     *
+     * @param  string  $value
+     * @return string
+     */
+    public function getActionAttribute($value)
+    {
+        if($value == 1){
+            $value = '查看';
+        }elseif ($value == 2){
+            $value = '收藏';
+        }elseif ($value == 3){
+            $value = '加购';
+        }elseif ($value == 4){
+            $value = '下单';
+        }elseif ($value == 5){
+            $value = '支付';
+        }
+        return $value;
+    }
+
+    /**
      * 获取与上报埋点相关的商品。
      * return $this->hasOne('App\Phone', 'foreign_key', 'local_key');
      */
