@@ -19,7 +19,7 @@ class GoodsTrackingController extends BaseController
         ])->render();*/
 
         return view('tracking.goodsTracking.index', [
-            'list' => $list->toArray(),
+            'list' => $list,
             //'pager' => $pager,
         ]);
 
