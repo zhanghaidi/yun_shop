@@ -14,7 +14,6 @@ class GoodsTrackingController extends BaseController
 
         $list = GoodsTrackingModel::get();
 
-        dd($list);
         /*return view('area.selectcitys', [
             'citys' => $citys->toArray()
         ])->render();*/
