@@ -40,9 +40,11 @@
                                 <td style="text-align: center;">{{ $list->resource_id }}</td>
                                 <td style="text-align: center;">{{ $list->goods->title }}</td>
                                 <td style="text-align: center;">
+                                    <a href="{{yzWebUrl('member.member.index',array('search%5Bmid%5D=' => $list->user_id ))}}">
                                         <img src='{{$list->user->avatarurl}}'
                                              style='width:30px;height:30px;padding:1px;border:1px solid #ccc'/><br/>
-                                    {{ $list->user->nickname }}
+                                        {{ $list->user->nickname }}
+                                    </a>
 
                                 </td>
                                 <td style="text-align: center;">{!! $list->action !!}</td>
