@@ -3,6 +3,7 @@ namespace app\backend\modules\tracking\controllers;
 
 use app\common\components\BaseController;
 use app\backend\modules\tracking\models\GoodsTrackingModel;
+use app\common\helpers\PaginationHelper;
 
 /**
  * Class GoodsTrackingController
@@ -11,16 +12,17 @@ use app\backend\modules\tracking\models\GoodsTrackingModel;
 class GoodsTrackingController extends BaseController
 {
     public function index(){
-
-        $list = GoodsTrackingModel::get();
-
-        /*return view('area.selectcitys', [
+        $pageSize = 20;
+        $list = GoodsTrackingModel::paginate($pageSize)->toArray();
+        $pager = PaginationHelper::show($list['total'], $list['current_page'], $list['per_page']);
+        /*return view('area.selectcitys',
             'citys' => $citys->toArray()
         ])->render();*/
 
         return view('tracking.goodsTracking.index', [
-            'list' => $list,
-            //'pager' => $pager,
+            'list' => $list['data'],
+            'pager' => $pager,
+            'total' => $list['total']
         ]);
 
         //return view('excelRecharge.page');
