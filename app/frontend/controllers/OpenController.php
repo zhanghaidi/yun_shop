@@ -78,13 +78,14 @@ class OpenController extends BaseController
         $options = $this->getWeOptions($input['type']);
         $url = array_key_exists('url', $input) ? $input['url'] : '';
         $page = array_key_exists('page', $input) ? $input['page'] : '';
+        $rmat = array_key_exists('refresh_miniprogram_access_token', $input) ? $input['refresh_miniprogram_access_token'] : false;
 
         if ($input['type'] == 'wechat') {
-            $job = new SendTemplateMsgJob('wechat', $options, $input['template_id'], $input['notice_data'], $input['openid'], $url, $page);
+            $job = new SendTemplateMsgJob('wechat', $options, $input['template_id'], $input['notice_data'], $input['openid'], $url, $page, $rmat);
             $dispatch = dispatch($job);
             Log::info("队列已添加:发送公众号模板消息");
         } elseif ($input['type'] == 'wxapp') {
-            $job = new SendTemplateMsgJob('wxapp', $options, $input['template_id'], $input['notice_data'], $input['openid'], $url, $page);
+            $job = new SendTemplateMsgJob('wxapp', $options, $input['template_id'], $input['notice_data'], $input['openid'], $url, $page, $rmat);
             $dispatch = dispatch($job);
             Log::info("队列已添加:发送小程序订阅模板消息");
         } else {
