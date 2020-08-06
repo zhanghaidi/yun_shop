@@ -12,7 +12,24 @@ use Illuminate\Database\Eloquent\Model;
 
 class GoodsTrackingModel extends Model
 {
-    public $table = 'diagnostic_service_goods_tracking';
+    protected $table = 'diagnostic_service_goods_tracking';
+
+    public $timestamps = false;
+
+    const CREATED_AT = 'create_time';
+    const UPDATED_AT = 'update_time';
+
+
+    /**
+     * 获取与上报埋点相关的商品。
+     * return $this->hasOne('App\Phone', 'foreign_key', 'local_key');
+     */
+    public function goods()
+    {
+        return $this->hasOne('App\backend\modules\goods\models\Goods');
+    }
+
+
 
 
 }
