@@ -13,7 +13,8 @@ class GoodsTrackingController extends BaseController
     public function index(){
 
         //$list = GoodsTrackingModel::get();
-        dd(111);die;
+        $GoodsTrackingModel = new GoodsTrackingModel();
+        dd($GoodsTrackingModel);die;
         /*return view('area.selectcitys', [
             'citys' => $citys->toArray()
         ])->render();*/
