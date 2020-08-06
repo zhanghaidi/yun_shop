@@ -23,25 +23,26 @@
                         <thead class="navbar-inner">
                         <tr>
                             <th style='width:6%; text-align: center;'>主键ID</th>
-                            <th style='width:12%; text-align: center;'>充值时间</th>
-                            <th style='width:12%; text-align: center;'>充值类型</th>
-                            <th style='width:12%; text-align: center;'>充值数量</th>
-                            <th style='width:12%; text-align: center;'>失败数量</th>
-                            <th style='width:12%; text-align: center;'>充值总额</th>
-                            <th style='width:12%; text-align: center;'>成功总额</th>
-                            <th style='width:12%; text-align: center;'>操作</th>
+                            <th style='width:12%; text-align: center;'>来源类型</th>
+                            <th style='width:12%; text-align: center;'>所属资源</th>
+                            <th style='width:12%; text-align: center;'>商品信息</th>
+                            <th style='width:12%; text-align: center;'>操作用户</th>
+                            <th style='width:12%; text-align: center;'>操作动作</th>
+                            <th style='width:12%; text-align: center;'>动作变量</th>
+                            <th style='width:12%; text-align: center;'>报点时间</th>
                         </tr>
                         </thead>
                         <tbody>
                         @foreach($pageList as $list)
                             <tr>
                                 <td style="text-align: center;">{{ $list->id }}</td>
-                                <td style="text-align: center;">{{ $list->created_at }}</td>
-                                <td style="text-align: center;">{{ $list->sourceName }}</td>
-                                <td style="text-align: center;">{{ $list->total }}</td>
-                                <td style="text-align: center;">{{ $list->failure }}</td>
-                                <td style="text-align: center;">{{ $list->amount }}</td>
-                                <td style="text-align: center;">{{ $list->success }}</td>
+                                <td style="text-align: center;">{{ $list->to_type_id }}</td>
+                                <td style="text-align: center;">{{ $list->resource_id }}</td>
+                                <td style="text-align: center;">{{ $list->goods_id }}</td>
+                                <td style="text-align: center;">{{ $list->user_id }}</td>
+                                <td style="text-align: center;">{{ $list->action }}</td>
+                                <td style="text-align: center;">{{ $list->val }}</td>
+                                <td style="text-align: center;">{{date('Y-m-d H:i:s', $list->create_time)}}</td>
                                 <td style="overflow:visible; text-align: center;">
                                     <a class='btn btn-default' href="{{ yzWebUrl('tracking.goods-tracking.index', array('id' => $list->id)) }}" style="margin-bottom: 2px">详细记录</a>
                                 </td>

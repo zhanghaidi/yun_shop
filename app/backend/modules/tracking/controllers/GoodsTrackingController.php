@@ -13,16 +13,15 @@ class GoodsTrackingController extends BaseController
 {
     public function index(){
         $pageSize = 20;
-        $list = GoodsTrackingModel::paginate($pageSize)->toArray();
+        $list = GoodsTrackingModel::paginate($pageSize);
         $pager = PaginationHelper::show($list['total'], $list['current_page'], $list['per_page']);
         /*return view('area.selectcitys',
             'citys' => $citys->toArray()
         ])->render();*/
 
         return view('tracking.goodsTracking.index', [
-            'list' => $list['data'],
+            'pageList' => $list,
             'pager' => $pager,
-            'total' => $list['total']
         ]);
 
         //return view('excelRecharge.page');
