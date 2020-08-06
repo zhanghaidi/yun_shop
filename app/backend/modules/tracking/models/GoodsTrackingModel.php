@@ -6,7 +6,7 @@
  * Time: 下午10:57
  */
 
-namespace app\backend\modules\tracking\modules;
+namespace app\backend\modules\tracking\models;
 
 use Illuminate\Database\Eloquent\Model;
 
