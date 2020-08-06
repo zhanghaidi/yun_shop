@@ -349,29 +349,56 @@ class CacheService
     /**
      * 设置录播视频观看数、评论数（自增1）
      * @param $replay_id
-     * @param $field view_num|comment_num
-     * @return mixed
+     * @param null $field
+     * @param int $user_id
      */
-    public static function setReplayNum($replay_id, $field = null)
+    public static function setReplayNum($replay_id, $field = null, $user_id = 0)
     {
+        $watch_num = 0;
+        $num_table = 'appletslive_replay';
         if (is_array($replay_id)) {
-            $record = DB::table('appletslive_replay')->whereIn('id', $replay_id)->get();
+            $num_record = DB::table($num_table)->whereIn('id', $replay_id)->get();
+            $watch_record = DB::table('appletslive_replay_watch')
+                ->select('replay_id', DB::raw('COUNT(user_id) as watch_num'))
+                ->whereIn('replay_id', $replay_id)
+                ->groupBy('replay_id')
+                ->get()->toArray();
         } else {
-            DB::table('appletslive_replay')->where('id', $replay_id)->increment($field);
-            $record = DB::table('appletslive_replay')->where('id', $replay_id)->first();
+            $watch_table = 'appletslive_replay_watch';
+            if ($field == 'watch_num') {
+                if (!DB::table($watch_table)->where('replay_id', $replay_id)->where('user_id', $user_id)->first()) {
+                    DB::table($watch_table)->insert([
+                        'uniacid' => self::$uniacid,
+                        'replay_id' => $replay_id,
+                        'user_id' => $user_id,
+                        'create_time' => time(),
+                    ]);
+                }
+            } else {
+                DB::table($num_table)->where('id', $replay_id)->increment($field);
+            }
+            $num_record = DB::table($num_table)->where('id', $replay_id)->first();
+            $watch_num = DB::table($watch_table)->where('replay_id', $replay_id)->count();
         }
 
         $cache_key = 'api_live_replay_num';
         $cache_val = Cache::get($cache_key);
 
         if (is_array($replay_id)) {
-            foreach ($record as $item) {
+            foreach ($num_record as $item) {
                 $key = 'key_' . $item['id'];
                 $val = [
                     'hot_num' => $item['view_num'] + $item['comment_num'],
                     'view_num' => $item['view_num'],
                     'comment_num' => $item['comment_num'],
+                    'watch_num' => 0,
                 ];
+                foreach ($watch_record as $wrv) {
+                    if ($wrv['replay_id'] == $item['id']) {
+                        $val['watch_num'] = $wrv['watch_num'];
+                        break;
+                    }
+                }
                 if (!$cache_val) {
                     $cache_val = [$key => $val];
                 } else {
@@ -382,9 +409,10 @@ class CacheService
         } else {
             $key = 'key_' . $replay_id;
             $val = [
-                'hot_num' => $record['view_num'] + $record['comment_num'],
-                'view_num' => $record['view_num'],
-                'comment_num' => $record['comment_num'],
+                'hot_num' => $num_record['view_num'] + $num_record['comment_num'],
+                'view_num' => $num_record['view_num'],
+                'comment_num' => $num_record['comment_num'],
+                'watch_num' => $watch_num,
             ];
             if (!$cache_val) {
                 Cache::forever($cache_key, [$key => $val]);
@@ -392,6 +420,49 @@ class CacheService
                 $cache_val[$key] = $val;
                 Cache::forever($cache_key, $cache_val);
             }
+        }
+    }
+
+    /**
+     * 获取用户看过的视频列表
+     * @param $user_id
+     * @return array
+     */
+    public static function getUserWatch($user_id)
+    {
+        $cache_key = "api_live_user_watch|$user_id";
+        $cache_val = Cache::get($cache_key);
+        if (!$cache_val) {
+            self::setUserWatch($user_id);
+            $cache_val = Cache::get($cache_key);
+        }
+        return $cache_val;
+    }
+
+    /**
+     * 设置用户看过的视频列表
+     * @param $user_id
+     * @param $replay_id
+     */
+    public static function setUserWatch($user_id, $replay_id = 0)
+    {
+        $cache_key = "api_live_user_watch|$user_id";
+        $cache_val = Cache::get($cache_key);
+        $cache_refresh = false;
+        if (!$cache_val) {
+            $cache_refresh = true;
+            $cache_val = DB::table('appletslive_replay_watch')
+                ->where('uniacid', self::$uniacid)
+                ->where('user_id', $user_id)
+                ->pluck('replay_id')->toArray();
+        } else {
+            if ($replay_id && array_search($replay_id, $cache_val) === false) {
+                $cache_refresh = true;
+                $cache_val[] = $replay_id;
+            }
+        }
+        if ($cache_refresh) {
+            Cache::forever($cache_key, $cache_val);
         }
     }
 
