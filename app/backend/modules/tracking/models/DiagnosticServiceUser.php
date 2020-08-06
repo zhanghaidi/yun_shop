@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class DiagnosticServiceUser extends Model
 {
-    //protected $table = 'diagnostic_service_goods_tracking';
+    protected $table = 'diagnostic_service_user';
 
     public $timestamps = false;
 
