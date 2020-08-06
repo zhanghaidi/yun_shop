@@ -64,14 +64,12 @@ class GoodsTrackingModel extends Model
         }
         return $value;
     }
-
     /**
      * 获取与上报埋点相关的商品。
      * return $this->hasOne('App\Phone', 'foreign_key', 'local_key');
      */
     public function goods()
     {
-        //return $this->hasOne('App\backend\modules\goods\models\Goods','goods_id','id');
         return $this->belongsTo('App\backend\modules\goods\models\Goods');
     }
 

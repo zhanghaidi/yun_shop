@@ -18,5 +18,4 @@ class DiagnosticServiceUser extends Model
 
     const CREATED_AT = 'add_time';
     const UPDATED_AT = 'update_time';
-
 }
