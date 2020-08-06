@@ -12,15 +12,15 @@ class GoodsTrackingController extends BaseController
 {
     public function index(){
 
-        //$list = GoodsTrackingModel::get();
-        $GoodsTrackingModel = new GoodsTrackingModel();
-        dd($GoodsTrackingModel);die;
+        $list = GoodsTrackingModel::get();
+
+        dd($list);
         /*return view('area.selectcitys', [
             'citys' => $citys->toArray()
         ])->render();*/
 
         return view('tracking.goodsTracking.index', [
-            //'list' => $list->,
+            'list' => $list->toArray(),
             //'pager' => $pager,
         ]);
 
