@@ -34,7 +34,6 @@ class GoodsTrackingController extends BaseController
             }
         }*/
 
-        var_dump($list);die;
         return view('tracking.goodsTracking.index', [
             'pageList' => $list,
             'pager' => $pager,
