@@ -14,7 +14,8 @@ class GoodsTrackingController extends BaseController
 {
     public function index(){
         $chat = new ChartChartuser();
-        var_dump($chat);die;
+        $user = $chat->get();
+        var_dump($user);die;
         $pageSize = 20;
         $list = GoodsTrackingModel::with(['goods','user','resource'])->paginate($pageSize);
 
