@@ -17,12 +17,12 @@ class GoodsTrackingController extends BaseController
 {
     public function index(){
         $pageSize = 20;
-        $list = GoodsTrackingModel::paginate($pageSize);
+        $list = GoodsTrackingModel::paginate($pageSize)->with('resource')->toArray();
         $pager = PaginationHelper::show($list['total'], $list['current_page'], $list['per_page']);
         /*return view('area.selectcitys',
             'citys' => $citys->toArray()
         ])->render();*/
-        foreach ($list as $k => $v){
+        /*foreach ($list as $k => $v){
             if($v->to_type_id == 1){
                 $list[$k]['res'] = DiagnosticServiceAcupoint::where('id', $v->resource_id)->get();
             }elseif ($v->to_type_id == 3){
@@ -32,7 +32,7 @@ class GoodsTrackingController extends BaseController
             }elseif ($v->to_type_id == 5){
                 $list[$k]['res'] = DiagnosticServiceSomatoType::where('id', $v->resource_id)->get();
             }
-        }
+        }*/
 
         var_dump($list);die;
         return view('tracking.goodsTracking.index', [
