@@ -52,15 +52,15 @@ class GoodsTrackingModel extends Model
     public function getActionAttribute($value)
     {
         if($value == 1){
-            $value = '查看';
+            $value = '<span class="label label-default"> <i class="fa fa-eye"></i> 查看</span>';
         }elseif ($value == 2){
-            $value = '收藏';
+            $value = '<span class="label label-info"> <i class="fa fa-star-half-o"></i> 收藏</span>';
         }elseif ($value == 3){
-            $value = '加购';
+            $value = '<span class="label label-warning"> <i class="fa fa-shopping-cart"></i> 加购</span>';
         }elseif ($value == 4){
-            $value = '下单';
+            $value = '<span class="label label-primary"> <i class="fa fa-cc-visa"></i> 下单</span>';
         }elseif ($value == 5){
-            $value = '支付';
+            $value = '<span class="label label-success"> <i class="fa fa-money"></i> 支付</span>';
         }
         return $value;
     }

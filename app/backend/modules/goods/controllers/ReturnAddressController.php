@@ -126,9 +126,9 @@ class ReturnAddressController extends BaseController
             if (!$requestAddress['district_id']) {
                 return $this->message('请选择区域', Url::absoluteWeb('goods.return-address.edit',['id' => $addressModel->id]));
             }
-            if (!$requestAddress['street_id']) {
-                return $this->message('请选择街道', Url::absoluteWeb('goods.return-address.edit',['id' => $addressModel->id]));
-            }
+//            if (!$requestAddress['street_id']) {
+//                return $this->message('请选择街道', Url::absoluteWeb('goods.return-address.edit',['id' => $addressModel->id]));
+//            }
             //将数据赋值到model
             $addressModel->setRawAttributes($requestAddress);
             //其他字段赋值
