@@ -25,24 +25,17 @@ class GoodsTrackingModel extends Model
      *
      * @param  string  $value
      * @return string
-     * elseif ($value == 2){
-        $value = '病例';
-        }
-     * elseif ($value == 6){
-    $value = '灸师';
-    }
-     *
      */
     public function getToTypeIdAttribute($value)
     {
         $this->type_id = $value;
-       $map = [
+        $map = [
            1 => 'App\backend\modules\tracking\models\DiagnosticServiceAcupoint',
            3 => 'App\backend\modules\tracking\models\DiagnosticServiceArticle',
            4 => 'App\backend\modules\tracking\models\DiagnosticServicePost',
            5 => 'App\backend\modules\tracking\models\DiagnosticServiceSomatoType',
            6 => 'App\backend\modules\tracking\models\ChartChartuser'
-       ];
+        ];
         return $map[$value];
     }
 
@@ -67,6 +60,7 @@ class GoodsTrackingModel extends Model
         }
         return $value;
     }
+
     /**
      * 获取与上报埋点相关的商品。
      * return $this->hasOne('App\Phone', 'foreign_key', 'local_key');
