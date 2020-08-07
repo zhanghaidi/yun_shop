@@ -37,7 +37,7 @@
                             <tr>
                                 <td style="text-align: center;">{{ $list->id }}</td>
                                 <td style="text-align: center;">{{ $list->type_id }}</td>
-                                <td style="text-align: center;">{{ $list->to_type_id }}</td>
+                                {{--<td style="text-align: center;">{{ $list->to_type_id }}</td>--}}
                                 <td style="text-align: center;">{{ $list->resource->title }}</td>
                                 <td style="text-align: center;">
                                     <a href="{{yzWebUrl('goods.goods.index')}}" title="{{ $list->goods->title }}">
