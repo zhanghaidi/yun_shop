@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 class GoodsTrackingModel extends Model
 {
     protected $table = 'diagnostic_service_goods_tracking';
-    protected $appends = ['type_id'];
+    protected $appends = ['type_id','action_id','action_name'];
 
     public $timestamps = false;
 
@@ -47,23 +47,28 @@ class GoodsTrackingModel extends Model
      */
     public function getActionAttribute($value)
     {
+        $this->action_id = $value;
         if($value == 1){
-            $value = '<span class="label label-default"> <i class="fa fa-eye"></i> 查看</span>';
+            $this->action_name = '<span class="label label-default"> <i class="fa fa-eye"></i> 查看</span>';
         }elseif ($value == 2){
-            $value = '<span class="label label-info"> <i class="fa fa-star-half-o"></i> 收藏</span>';
+            $this->action_name = '<span class="label label-info"> <i class="fa fa-star-half-o"></i> 收藏</span>';
         }elseif ($value == 3){
-            $value = '<span class="label label-warning"> <i class="fa fa-shopping-cart"></i> 加购</span>';
+            $this->action_name = '<span class="label label-warning"> <i class="fa fa-shopping-cart"></i> 加购</span>';
         }elseif ($value == 4){
-            $value = '<span class="label label-primary"> <i class="fa fa-cc-visa"></i> 下单</span>';
+            $this->action_name = '<span class="label label-primary"> <i class="fa fa-cc-visa"></i> 下单</span>';
         }elseif ($value == 5){
-            $value = '<span class="label label-success"> <i class="fa fa-money"></i> 付款</span>';
+            $this->action_name = '<span class="label label-success"> <i class="fa fa-money"></i> 付款</span>';
         }
-        return $value;
+        $map =[
+            4 => 'App\backend\modules\order\models\Order',
+            5 => 'App\backend\modules\order\models\Order'
+        ];
+        return $map[$value];
     }
 
     /**
      * 获取与上报埋点相关的商品。
-     * return $this->hasOne('App\Phone', 'foreign_key', 'local_key');
+     * return $this->hasOne('App\Goods', 'foreign_key', 'local_key');
      */
     public function goods()
     {
@@ -72,7 +77,7 @@ class GoodsTrackingModel extends Model
 
     /**
      * 获取与上报埋点相关的用户信息。
-     * return $this->hasOne('App\Phone', 'foreign_key', 'local_key');
+     * return $this->hasOne('App\User', 'foreign_key', 'local_key');
      */
     public function user()
     {
@@ -89,6 +94,15 @@ class GoodsTrackingModel extends Model
         return $this->morphTo('resource','to_type_id','resource_id');
     }
 
+    /**
+     * 取得埋点对应的操作订单。
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     */
+    public function order()
+    {
+        return $this->morphTo('order','action','val');
+    }
 
 
 }
