@@ -270,5 +270,8 @@ class Order extends \app\common\models\Order
         return $this->hasOne('Yunshop\TeamDividend\models\TeamDividendAgencyModel', 'uid', 'uid');
     }
 
+    public function order(){
+        return $this->morphOne('App\backend\modules\tracking\models\GoodsTrackingModel','order');
+    }
 }
 
