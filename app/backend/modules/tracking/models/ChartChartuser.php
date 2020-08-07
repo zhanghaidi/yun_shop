@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ChartChartuser extends Model
 {
-    protected $connection = 'mysql_center';
+    protected $connection = 'mysql_jiushi';
 
     protected $table = 'chat_chatuser';
 
