@@ -13,12 +13,26 @@ use Illuminate\Database\Eloquent\Model;
 class GoodsTrackingModel extends Model
 {
     protected $table = 'diagnostic_service_goods_tracking';
+    protected $appends = ['type_id'];
 
     public $timestamps = false;
 
     const CREATED_AT = 'create_time';
     const UPDATED_AT = 'update_time';
 
+    public function getTypeIdAttribute($value)
+    {
+        /*if($this->to_type_id){
+            $value = '穴位';
+        }elseif ($value == 3){
+            $value = '文章';
+        }elseif ($value == 4){
+            $value = '话题';
+        }elseif ($value == 5){
+            $value = '体质';
+        }*/
+        return $this->to_type_id;
+    }
     /**
      *  获取埋点来源类型.
      *
@@ -34,15 +48,6 @@ class GoodsTrackingModel extends Model
      */
     public function getToTypeIdAttribute($value)
     {
-       /* if($value == 1){
-            $value = '穴位';
-        }elseif ($value == 3){
-            $value = '文章';
-        }elseif ($value == 4){
-            $value = '话题';
-        }elseif ($value == 5){
-            $value = '体质';
-        }*/
        $map = [
            1 => 'App\backend\modules\tracking\models\DiagnosticServiceAcupoint',
            3 => 'App\backend\modules\tracking\models\DiagnosticServiceArticle',
