@@ -111,6 +111,22 @@ return [
 
     ],
 
+        //灸师测试数据库
+    'mysql_center' => [
+        'driver' => 'mysql',
+        'host' => env('DB_HOST_CENTER', '127.0.0.1'),
+        'port' => env('DB_PORT_CENTER', '3306'),
+        'database' => env('DB_DATABASE_CENTER', 'jiushi'),
+        'username' => env('DB_USERNAME_CENTER', 'aijuyi'),
+        'password' => env('DB_PASSWORD_CENTER', 'aijuyi#1688'),
+        'charset' => 'utf8',
+        'collation' => 'utf8_unicode_ci',
+        'prefix' => '',
+        'strict' => false,
+        'engine' => null,
+    ],
+
+
     'pgsql' => [
         'driver' => 'pgsql',
         'host' => env('DB_HOST', '127.0.0.1'),
