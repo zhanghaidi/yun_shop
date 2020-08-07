@@ -17,7 +17,7 @@ class GoodsTrackingController extends BaseController
 {
     public function index(){
         $pageSize = 20;
-        $list = GoodsTrackingModel::paginate($pageSize)->with('resource');
+        $list = GoodsTrackingModel::with('resource')->paginate($pageSize);
         $pager = PaginationHelper::show($list['total'], $list['current_page'], $list['per_page']);
         /*return view('area.selectcitys',
             'citys' => $citys->toArray()
