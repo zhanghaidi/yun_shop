@@ -82,6 +82,16 @@ class GoodsTrackingModel extends Model
         return $this->belongsTo('App\backend\modules\tracking\models\DiagnosticServiceUser','user_id','ajy_uid');
     }
 
+    /**
+     * 取得埋点对应的来源对象。
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     */
+    public function resource()
+    {
+        return $this->morphTo('resource','to_type_id','resource_id');
+    }
+
 
 
 }
