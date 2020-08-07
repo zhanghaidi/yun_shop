@@ -31,7 +31,7 @@ class GoodsTrackingModel extends Model
         }elseif ($value == 5){
             $value = '体质';
         }*/
-        return $this->to_type_id;
+        return $value;
     }
     /**
      *  获取埋点来源类型.
@@ -48,6 +48,7 @@ class GoodsTrackingModel extends Model
      */
     public function getToTypeIdAttribute($value)
     {
+        //$this->type_id = $value;
        $map = [
            1 => 'App\backend\modules\tracking\models\DiagnosticServiceAcupoint',
            3 => 'App\backend\modules\tracking\models\DiagnosticServiceArticle',
