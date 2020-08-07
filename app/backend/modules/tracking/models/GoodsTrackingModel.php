@@ -60,7 +60,7 @@ class GoodsTrackingModel extends Model
         }elseif ($value == 4){
             $value = '<span class="label label-primary"> <i class="fa fa-cc-visa"></i> 下单</span>';
         }elseif ($value == 5){
-            $value = '<span class="label label-success"> <i class="fa fa-money"></i> 支付</span>';
+            $value = '<span class="label label-success"> <i class="fa fa-money"></i> 付款</span>';
         }
         return $value;
     }
@@ -81,6 +81,7 @@ class GoodsTrackingModel extends Model
     {
         return $this->belongsTo('App\backend\modules\tracking\models\DiagnosticServiceUser','user_id','ajy_uid');
     }
+
 
 
 }

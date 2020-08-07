@@ -18,6 +18,7 @@ class GoodsTrackingController extends BaseController
         /*return view('area.selectcitys',
             'citys' => $citys->toArray()
         ])->render();*/
+        var_dump($list);die;
         return view('tracking.goodsTracking.index', [
             'pageList' => $list,
             'pager' => $pager,
