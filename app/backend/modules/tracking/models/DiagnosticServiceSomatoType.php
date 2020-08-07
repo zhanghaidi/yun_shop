@@ -19,7 +19,7 @@ class DiagnosticServiceSomatoType extends Model
     const CREATED_AT = 'create_time';
     const UPDATED_AT = 'update_time';
 
-    /*public function resource(){
+    public function resource(){
         return $this->morphOne('App\backend\modules\tracking\models\GoodsTrackingModel','resource');
-    }*/
+    }
 }
