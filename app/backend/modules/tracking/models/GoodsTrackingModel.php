@@ -48,7 +48,7 @@ class GoodsTrackingModel extends Model
      */
     public function getToTypeIdAttribute($value)
     {
-        //$this->type_id = $value;
+        $this->type_id = $value;
        $map = [
            1 => 'App\backend\modules\tracking\models\DiagnosticServiceAcupoint',
            3 => 'App\backend\modules\tracking\models\DiagnosticServiceArticle',
