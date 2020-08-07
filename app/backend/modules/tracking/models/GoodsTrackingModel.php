@@ -20,19 +20,6 @@ class GoodsTrackingModel extends Model
     const CREATED_AT = 'create_time';
     const UPDATED_AT = 'update_time';
 
-    public function getTypeIdAttribute($value)
-    {
-        /*if($this->to_type_id){
-            $value = '穴位';
-        }elseif ($value == 3){
-            $value = '文章';
-        }elseif ($value == 4){
-            $value = '话题';
-        }elseif ($value == 5){
-            $value = '体质';
-        }*/
-        return $value;
-    }
     /**
      *  获取埋点来源类型.
      *
