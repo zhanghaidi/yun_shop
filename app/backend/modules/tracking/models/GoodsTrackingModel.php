@@ -24,21 +24,24 @@ class GoodsTrackingModel extends Model
      *
      * @param  string  $value
      * @return string
+     * elseif ($value == 2){
+        $value = '病例';
+        }
+     * elseif ($value == 6){
+    $value = '灸师';
+    }
+     *
      */
     public function getToTypeIdAttribute($value)
     {
         if($value == 1){
             $value = '穴位';
-        }elseif ($value == 2){
-            $value = '病例';
         }elseif ($value == 3){
             $value = '文章';
         }elseif ($value == 4){
             $value = '话题';
         }elseif ($value == 5){
             $value = '体质';
-        }elseif ($value == 6){
-            $value = '灸师';
         }
         return $value;
     }
