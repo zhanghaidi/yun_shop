@@ -38,14 +38,19 @@
                                 <td style="text-align: center;">{{ $list->id }}</td>
                                 <td style="text-align: center;">{{ $list->to_type_id }}</td>
                                 <td style="text-align: center;">{{ $list->resource_id }}</td>
-                                <td style="text-align: center;">{{ $list->goods->title }}</td>
+                                <td style="text-align: center;">
+                                    <a href="{{yzWebUrl('goods.goods.index')}}" title="{{ $list->goods->title }}">
+                                        <img src="{{yz_tomedia($list->goods->thumb)}}" style='width:45px;height:45px;padding:1px;border:1px solid #ccc' />
+                                        <br/>
+                                        {{ $list->goods->title }}
+                                    </a>
+                                </td>
                                 <td style="text-align: center;">
                                     <a href="{{yzWebUrl('member.member.index',array('search[mid]' => $list->user_id ))}}">
                                         <img src='{{$list->user->avatarurl}}'
                                              style='width:30px;height:30px;padding:1px;border:1px solid #ccc'/><br/>
                                         {{ $list->user->nickname }}
                                     </a>
-
                                 </td>
                                 <td style="text-align: center;">{!! $list->action !!}</td>
                                 <td style="text-align: center;">{{ $list->val}}</td>
