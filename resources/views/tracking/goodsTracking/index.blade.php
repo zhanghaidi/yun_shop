@@ -52,7 +52,7 @@
                                     @elseif ($list->type_id == 3) {{ $list->resource->title }}
                                     @elseif ($list->type_id == 4) {{ $list->resource->title }}
                                     @elseif ($list->type_id == 5) {{ $list->resource->name }}
-                                    @elseif ($list->type_id == 6) 灸师
+                                    @elseif ($list->type_id == 6) {{ $list->resource->username }}
                                     @endif
                                 </td>
                                 <td style="text-align: center;">
