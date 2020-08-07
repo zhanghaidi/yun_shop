@@ -10,18 +10,18 @@ namespace app\backend\modules\tracking\models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class DiagnosticServiceChartChartuser extends Model
+class ChartChartuser extends Model
 {
-    protected $connection = 'mysql_branch';
+    protected $connection = 'mysql_center';
 
-    protected $table = 'diagnostic_service_acupoint';
+    protected $table = 'chat_chatuser';
 
     public $timestamps = false;
 
-    const CREATED_AT = 'add_time';
+    const CREATED_AT = 'create_time';
     const UPDATED_AT = 'update_time';
 
-    /*public function resource(){
+    public function resource(){
         return $this->morphOne('App\backend\modules\tracking\models\GoodsTrackingModel','resource');
-    }*/
+    }
 }
