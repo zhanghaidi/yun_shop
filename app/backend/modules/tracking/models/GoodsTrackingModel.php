@@ -34,7 +34,7 @@ class GoodsTrackingModel extends Model
      */
     public function getToTypeIdAttribute($value)
     {
-        if($value == 1){
+       /* if($value == 1){
             $value = '穴位';
         }elseif ($value == 3){
             $value = '文章';
@@ -42,8 +42,14 @@ class GoodsTrackingModel extends Model
             $value = '话题';
         }elseif ($value == 5){
             $value = '体质';
-        }
-        return $value;
+        }*/
+       $map = [
+           1 => 'App\backend\modules\tracking\models\DiagnosticServiceAcupoint',
+           3 => 'App\backend\modules\tracking\models\DiagnosticServiceArticle',
+           4 => 'App\backend\modules\tracking\models\DiagnosticServicePost',
+           5 => 'App\backend\modules\tracking\models\DiagnosticServiceSomatoType'
+       ];
+        return $map[$value];
     }
 
     /**
