@@ -181,7 +181,7 @@ class CourseReminder extends Command
                 'keyword2' => ['value' => '长期有效', 'color' => '#173177'],
                 'keyword3' => ['value' => '更新中', 'color' => '#173177'],
                 'remark' => [
-                    'value' => '最新视频【' . $replay_info['title'] . '】将于' . date('Y-m-d H:i', $replay_info['publish_time']) . '震撼发布!',
+                    'value' => '最新视频【' . $replay_info['title'] . '】将于' . date('Y-m-d H:i', $replay_info['publish_time']) . '倾情发布!',
                     'color' => '#173177',
                 ],
             ];
@@ -192,7 +192,7 @@ class CourseReminder extends Command
                 'thing1' => ['value' => '课程更新', 'color' => '#173177'],
                 'thing2' => ['value' => '【' . $room_name . '】', 'color' => '#173177'],
                 'name3' => ['value' => $replay_info['doctor'], 'color' => '#173177'],
-                'thing4' => ['value' => '最新视频【' . $replay_info['title'] . '】将于' . date('Y-m-d H:i', $replay_info['publish_time']) . '震撼发布!', 'color' => '#173177'],
+                'thing4' => ['value' => date('Y-m-d H:i', $replay_info['publish_time']), 'color' => '#173177'],
             ];
         }
         return $param;
