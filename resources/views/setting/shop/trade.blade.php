@@ -14,6 +14,35 @@
 <!-- 新增加右侧顶部三级菜单结束 -->
     <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data" >
         <div class="panel panel-default">
+            <div class="panel-heading">
+				自动发送待付款订单提醒
+			</div>
+			<div class='panel-body'>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">自动发送待付款订单提醒时间</label>
+                    <div class="col-sm-9">
+                        <div class="input-group">
+                            <input type="number" name="trade[not_paid_notice_minutes]" class="form-control" value="{{ $set['not_paid_notice_minutes'] }}" />
+                            <div class="input-group-addon">分钟</div>
+                        </div>
+                        <span class='help-block'>
+                            1.订单下单未付款，n分钟后自动发送提醒，0/空为不自动提醒<br/>
+                        </span>
+                    </div>
+                </div>
+
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">自动发送待付款订单提醒执行间隔时间</label>
+					<div class="col-sm-9">
+						<div class="input-group">
+							<input type="text" name="trade[not_paid_notice_exec_minutes]" class="form-control" value="{{ $set['not_paid_notice_exec_minutes'] }}" />
+							<div class="input-group-addon">分钟</div>
+						</div>
+						<span class='help-block'>执行自动发送待付款订单提醒操作的间隔时间，如果为空默认为每隔 5分钟 执行一次自动发送待付款订单提醒</span>
+					</div>
+				</div>
+			</div>
+
 			<div class="panel-heading">
 				自动关闭未付款订单
 			</div>
