@@ -2819,7 +2819,42 @@ class Template
                 'remark' => '请点击观看！',
             ],
 
-
+            // 订单未支付通知模板
+            'order_not_paid' => [
+                'template_id_short' => 'OPENTM401717201',
+                'title' => '待支付订单提醒',
+                'first_color' => '#000000',
+                'remark_color' => '#000000',
+                'first' => '尊敬的会员，您的订单仍未支付！',
+                'data' => [
+                    0 => [
+                        "keywords" => "keyword1",
+                        "value" => "[商品详情]",
+                        "color" => "#000000",
+                    ],
+                    1 => [
+                        "keywords" => "keyword2",
+                        "value" => "[待付金额]",
+                        "color" => "#000000",
+                    ],
+                    2 => [
+                        "keywords" => "keyword3",
+                        "value" => "[交易单号]",
+                        "color" => "#000000",
+                    ],
+                    3 => [
+                        "keywords" => "keyword4",
+                        "value" => "[交易时间]",
+                        "color" => "#000000",
+                    ],
+                    4 => [
+                        "keywords" => "keyword5",
+                        "value" => "[交易有效期]",
+                        "color" => "#000000",
+                    ],
+                ],
+                'remark' => '请及时支付订单，逾期失效！',
+            ],
         ];
         $plugins = app('plugins')->getEnabledPlugins();
         foreach ($plugins as $plugin) {

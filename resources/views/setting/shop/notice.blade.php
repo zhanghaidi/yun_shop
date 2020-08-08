@@ -484,6 +484,42 @@
                                 </div>
                             </div>
                         @endif
+
+                        @if(YunShop::notice()->getNotSend('order_not_paid'))
+                            <div class="form-group">
+                                <label class="col-xs-12 col-sm-3 col-md-2 control-label">订单未支付通知</label>
+                                <div class="col-sm-8 col-xs-12">
+                                    <select name='yz_notice[order_not_paid]' class='form-control diy-notice'>
+                                        <option
+                                            @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['order_not_paid']))
+                                                value="{{$set['order_not_paid']}}" selected
+                                            @else
+                                                value=""
+                                            @endif
+                                        >默认消息模板
+                                        </option>
+                                        @foreach ($temp_list as $item)
+                                            <option
+                                                value="{{$item['id']}}"
+                                                @if($set['order_not_paid'] == $item['id'])
+                                                    selected
+                                                @endif>{{$item['title']}}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <div class="help-block">通知公众平台模板消息编号:OPENTM401717201</div>
+                                </div>
+                                <div class="col-sm-2 col-xs-6">
+                                    <input
+                                        class="mui-switch mui-switch-animbg" id="order_not_paid" type="checkbox"
+                                        @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['order_not_paid']))
+                                           checked
+                                        @endif
+                                        onclick="message_default(this.id)"/>
+                                </div>
+                            </div>
+                        @endif
+
                         @if(YunShop::notice()->getNotSend('order_cancel'))
                             <div class="form-group">
                                 <label class="col-xs-12 col-sm-3 col-md-2 control-label">订单取消通知</label>
