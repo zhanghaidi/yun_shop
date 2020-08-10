@@ -12,15 +12,45 @@ use app\backend\modules\tracking\models\ChartChartuser;
  */
 class GoodsTrackingController extends BaseController
 {
+    protected $goodsTrackingModels;
+
     public function index(){
-        $pageSize = 20;
-        $list = GoodsTrackingModel::with(['goods','user','resource','order'])->paginate($pageSize);
+        //$pageSize = 20;
+        $this->goodsTrackingModels = $this->pageList();
 
-        $pager = PaginationHelper::show($list['total'], $list['current_page'], $list['per_page']);
+        //$list = GoodsTrackingModel::with(['goods','user','resource','order'])->paginate($pageSize);
 
-        return view('tracking.goodsTracking.index', [
-            'pageList' => $list,
-            'pager' => $pager,
-        ]);
+        return view('tracking.goodsTracking.index', $this->resultData());
+    }
+
+    private function resultData()
+    {
+        return [
+            'page'     => $this->page(),
+            'pageList' => $this->goodsTrackingModels
+        ];
+    }
+
+    private function page()
+    {
+        return PaginationHelper::show($this->goodsTrackingModels->total(), $this->goodsTrackingModels->currentPage(), $this->goodsTrackingModels->perPage());
+    }
+
+    /**
+     * @return RecordsModel
+     */
+    private function pageList()
+    {
+        $records = GoodsTrackingModel::with(['goods','user','resource','order'])->orderBy('created_at', 'desc');
+
+        return $records->paginate('', ['*'], '', $this->pageParam());
+    }
+
+    /**
+     * @return int
+     */
+    private function pageParam()
+    {
+        return (int)request()->page ?: 1;
     }
 }
