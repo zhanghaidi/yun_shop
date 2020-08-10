@@ -170,7 +170,19 @@ class orderListener
                         // todo 使用队列执行
                     });
                 }
-            // todo 预扣库存超过两小时自动加回
+
+                // 待支付订单自动提醒执行间隔时间 默认5分钟
+                $not_paid_notice_exec_minutes = (int)\Setting::get('shop.trade.not_paid_notice_exec_minutes');
+                $not_paid_notice_exec_minutes = $not_paid_notice_exec_minutes ? $not_paid_notice_exec_minutes : 5;
+                if ((int)\Setting::get('shop.trade.not_paid_notice_minutes')) {
+                    // 开启自动关闭时
+                    \Log::info("--待支付订单自动提醒start--");
+                    \Cron::add("OrderNotPaidNotice{$u->uniacid}", '*/' . $not_paid_notice_exec_minutes . ' * * * * ', function () use ($uniacid) {
+                        OrderService::notPaidAutoNotice($uniacid);
+                    });
+                }
+
+                // todo 预扣库存超过两小时自动加回
 
                 // 收银台订单检测 自动收货
 //                \Log::info("--收银台订单自动完成start--");
