@@ -70,9 +70,9 @@
                                     </a>
                                 </td>
                                {{-- <td style="text-align: center;">{!! $list->action_name !!}</td>--}}
-                                <td style="text-align: center;">{{$list->action_id}}</td>
-                                <td style="text-align: center;">{{$list->action}}</td>
-                                <td style="text-align: center;">{{ $list->val}}</td>
+                                <td style="text-align: center;">{{ $list->action_id }}</td>
+                                <td style="text-align: center;">{{ $list->action }}</td>
+                                <td style="text-align: center;">{{ $list->val }}</td>
                                 <td style="text-align: center;">{{date('Y-m-d H:i:s', $list->create_time)}}</td>
                                 <td style="overflow:visible; text-align: center;">
                                     <a class='btn btn-default' href="{{ yzWebUrl('tracking.goods-tracking.index', array('id' => $list->id)) }}" style="margin-bottom: 2px">详细记录</a>
