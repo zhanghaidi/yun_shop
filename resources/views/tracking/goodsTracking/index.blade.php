@@ -29,6 +29,7 @@
                             <th style='width:12%; text-align: center;'>操作用户</th>
                             <th style='width:12%; text-align: center;'>操作动作</th>
                             <th style='width:12%; text-align: center;'>动作变量</th>
+                            <th style='width:12%; text-align: center;'>订单号</th>
                             <th style='width:12%; text-align: center;'>报点时间</th>
                         </tr>
                         </thead>
@@ -69,9 +70,9 @@
                                         {{ $list->user->nickname }}
                                     </a>
                                 </td>
-                                <td style="text-align: center;">{{ $list->action_id }}</td>
-                                <td style="text-align: center;">{{ $list->action }}</td>
+                                <td style="text-align: center;">{{ $list->action_name }}</td>
                                 <td style="text-align: center;">{{ $list->val }}</td>
+                                <td style="text-align: center;">{{ $list->order->order_sn }}</td>
                                 <td style="text-align: center;">{{date('Y-m-d H:i:s', $list->create_time)}}</td>
                                 <td style="overflow:visible; text-align: center;">
                                     <a class='btn btn-default' href="{{ yzWebUrl('tracking.goods-tracking.index', array('id' => $list->id)) }}" style="margin-bottom: 2px">详细记录</a>
