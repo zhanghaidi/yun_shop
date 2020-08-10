@@ -35,7 +35,7 @@
                     <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2 ">
                         <!--<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">ID</label>-->
                         <div class="">
-                            <input type="text" placeholder="商品名/穴位名/" class="form-control" name="search[name]"
+                            <input type="text" placeholder="商品ID/商品名" class="form-control" name="search[name]"
                                    value="{{$request['search']['name']}}"/>
                         </div>
                     </div>

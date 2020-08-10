@@ -105,5 +105,59 @@ class GoodsTrackingModel extends Model
         return $this->morphTo('order','action','val');
     }
 
+    /**
+     * @param $query
+     * @return mixed
+     */
+    public function scopeRecords($query)
+    {
+        return $query->with(['user' => function ($user) {
+                return $user->select('ajy_uid', 'nickname', 'avatarurl');
+            }])
+            ->with(['goods' => function ($goods) {
+                return $goods->select('id','thumb','title','price');
+            }]);
+    }
+
+    //搜索条件
+    public function scopeSearch($query, array $search)
+    {
+        /*if ($search['ordersn']) {
+            $query->where('ordersn', 'like', $search['ordersn'] . '%');
+        }*/
+
+        //搜索来源类型筛选
+        if ($search['type_id']) {
+            $query = $query->where('type_id', $search['type_id']);
+        }
+
+        //操作类型筛选
+        if ($search['action_id']) {
+            $query = $query->where('action_id', $search['action_id']);
+        }
+        //根据用户筛选
+        if ($search['realname']) {
+            $query = $query->whereHas('user', function($user)use($search) {
+                $user = $user->select('ajy_uid', 'nickname','telephone','avatarurl')
+                    ->where('nickname', 'like', '%' . $search['realname'] . '%')
+                    ->orWhere('telephone', 'like', '%' . $search['realname'] . '%')
+                    ->orWhere('ajy_uid', $search['realname']);
+            });
+        }
+        //根据商品筛选
+        if ($search['name']) {
+            $query = $query->whereHas('goods', function($goods)use($search) {
+                $goods = $goods->select('id', 'title','thumb','price')
+                    ->where('title', 'like', '%' . $search['name'] . '%')
+                    ->orWhere('id', $search['name']);
+            });
+        }
+        //根据时间筛选
+        if ($search['searchtime']) {
+            $query = $query->whereBetween('create_time', [strtotime($search['times']['start']),strtotime($search['times']['end'])]);
+        }
+        return $query;
+    }
+
 
 }
