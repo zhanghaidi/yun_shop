@@ -114,6 +114,7 @@ class GoodsTrackingModel extends Model
         return $query->with(['user' => function ($user) {
                 return $user->select('ajy_uid', 'nickname', 'avatarurl');
             }])
+            ->with('resource')
             ->with(['goods' => function ($goods) {
                 return $goods->select('id','thumb','title','price');
             }]);
@@ -128,12 +129,12 @@ class GoodsTrackingModel extends Model
 
         //搜索来源类型筛选
         if ($search['type_id']) {
-            $query = $query->where('type_id', $search['type_id']);
+            $query = $query->where('to_type_id', $search['type_id']);
         }
 
         //操作类型筛选
         if ($search['action_id']) {
-            $query = $query->where('action_id', $search['action_id']);
+            $query = $query->where('action', $search['action_id']);
         }
         //根据用户筛选
         if ($search['realname']) {

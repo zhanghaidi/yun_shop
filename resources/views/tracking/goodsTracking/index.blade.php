@@ -28,7 +28,7 @@
                         <!-- <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">会员信息</label>-->
                         <div class="">
                             <input type="text" class="form-control" name="search[realname]"
-                                   value="{{$request['search']['realname']}}" placeholder="可搜索会员ID/昵称/姓名/手机号"/>
+                                   value="{{$search['realname']}}" placeholder="可搜索会员ID/昵称/姓名/手机号"/>
                         </div>
                     </div>
 
@@ -36,7 +36,7 @@
                         <!--<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">ID</label>-->
                         <div class="">
                             <input type="text" placeholder="商品ID/商品名" class="form-control" name="search[name]"
-                                   value="{{$request['search']['name']}}"/>
+                                   value="{{$search['name']}}"/>
                         </div>
                     </div>
 
@@ -61,27 +61,27 @@
                             <select name='search[type_id]' class='form-control'>
                                 <option value=''>来源类型不限</option>
                                 <option value='1'
-                                        @if($request['search']['type_id']=='1')
+                                        @if($search['type_id']=='1')
                                         selected
                                         @endif>穴位
                                 </option>
                                 <option value='3'
-                                        @if($request['search']['type_id']=='3')
+                                        @if($search['type_id']=='3')
                                         selected
                                         @endif>文章
                                 </option>
                                 <option value='4'
-                                        @if($request['search']['type_id']=='4')
+                                        @if($search['type_id']=='4')
                                         selected
                                         @endif>社区话题
                                 </option>
                                 <option value='5'
-                                        @if($request['search']['type_id']=='5')
+                                        @if($search['type_id']=='5')
                                         selected
                                         @endif>体质
                                 </option>
                                 <option value='6'
-                                        @if($request['search']['type_id']=='6')
+                                        @if($search['type_id']=='6')
                                         selected
                                         @endif>灸师
                                 </option>
@@ -97,33 +97,33 @@
                                 <option value=''>操作动作不限</option>
                                 </option>
                                 <option value='1'
-                                        @if($request['search']['action_id']=='1')
+                                        @if($search['action_id']=='1')
                                         selected
                                         @endif
                                 >查看
                                 </option>
                                 <option value='2'
-                                        @if($request['search']['action_id']=='2')
+                                        @if($search['action_id']=='2')
                                         selected
                                         @endif
                                 >收藏
                                 </option>
                                 <option value='3'
-                                        @if($request['search']['action_id']=='3')
+                                        @if($search['action_id']=='3')
                                         selected
                                         @endif
                                 >加购
                                 </option>
 
                                 <option value='4'
-                                        @if($request['search']['action_id']=='下单')
+                                        @if($search['action_id']=='下单')
                                         selected
                                         @endif
                                 >下单
                                 </option>
 
                                 <option value='5'
-                                        @if($request['search']['action_id']=='支付')
+                                        @if($search['action_id']=='支付')
                                         selected
                                         @endif
                                 >支付
@@ -134,8 +134,8 @@
                     </div>
                         <div class="search-select">
                             {!! app\common\helpers\DateRange::tplFormFieldDateRange('search[times]', [
-                            'starttime'=>date('Y-m-d H:i', $starttime),
-                            'endtime'=>date('Y-m-d H:i',$endtime),
+                            'starttime'=>date('Y-m-d H:i', $search['starttime']),
+                            'endtime'=>date('Y-m-d H:i',$search['endtime']),
                             'start'=>0,
                             'end'=>0
                             ], true) !!}
