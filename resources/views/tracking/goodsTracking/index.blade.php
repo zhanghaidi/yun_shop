@@ -40,7 +40,7 @@
                         </div>
                     </div>
 
-                    <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                    {{--<div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
                         <!-- <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">会员等级</label>-->
                         <div class="">
                             <select name='search[level]' class='form-control'>
@@ -54,7 +54,7 @@
                                 @endforeach
                             </select>
                         </div>
-                    </div>
+                    </div>--}}
                     <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
                         <!--  <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">会员分组</label>-->
                         <div class="">
@@ -94,7 +94,7 @@
                         <!--      <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">是否关注</label>-->
                         <div class="">
                             <select name='search[action_id]' class='form-control'>
-                                <option value=''>不限动作</option>
+                                <option value=''>操作动作不限</option>
                                 </option>
                                 <option value='1'
                                         @if($request['search']['action_id']=='1')
@@ -148,7 +148,6 @@
                             <button type="button" name="export" value="1" id="export" class="btn btn-default">导出
                                 Excel
                             </button>
-
 
                         </div>
                     </div>
