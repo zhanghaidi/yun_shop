@@ -116,7 +116,7 @@ class GoodsTrackingModel extends Model
             }])
             ->with('resource')->with('order')
             ->with(['goods' => function ($goods) {
-                return $goods->select('id','title','thumb','price');
+                return $goods->select('id','thumb','title','price');
             }]);
     }
 
@@ -148,7 +148,7 @@ class GoodsTrackingModel extends Model
         //根据商品筛选
         if ($search['keywords']) {
             $query = $query->whereHas('goods', function($goods)use($search) {
-                $goods = $goods->select('id','title','thumb','price')
+                $goods = $goods->select('id', 'title','thumb','price')
                     ->where('title', 'like', '%' . $search['keywords'] . '%')
                     ->orWhere('id', $search['keywords']);
             });
