@@ -12,45 +12,26 @@ use app\backend\modules\tracking\models\ChartChartuser;
  */
 class GoodsTrackingController extends BaseController
 {
-    protected $goodsTrackingModels;
 
-    public function index(){
-        //$pageSize = 20;
-        $this->goodsTrackingModels = $this->pageList();
-
-        //$list = GoodsTrackingModel::with(['goods','user','resource','order'])->paginate($pageSize);
-
-        return view('tracking.goodsTracking.index', $this->resultData());
-    }
-
-    private function resultData()
+    public function index()
     {
-        return [
-            'page'     => $this->page(),
-            'pageList' => $this->goodsTrackingModels
-        ];
+        $records = GoodsTrackingModel::records();
+
+        $search = \YunShop::request()->search;
+        if ($search) {
+            $records = $records->search($search);
+        }
+
+        $recordList = $records->orderBy('create_time', 'desc')->paginate();
+
+        //dd($recordList);
+        $pager = PaginationHelper::show($recordList->total(), $recordList->currentPage(), $recordList->perPage());
+
+        return view('tracking.goodsTracking.index', [
+            'pageList'    => $recordList,
+            'page'          => $pager,
+            'search'        => $search
+        ])->render();
     }
 
-    private function page()
-    {
-        return PaginationHelper::show($this->goodsTrackingModels->total(), $this->goodsTrackingModels->currentPage(), $this->goodsTrackingModels->perPage());
-    }
-
-    /**
-     * @return RecordsModel
-     */
-    private function pageList()
-    {
-        $records = GoodsTrackingModel::with(['goods','user','resource','order'])->orderBy('create_time', 'desc');
-
-        return $records->paginate('', ['*'], '', $this->pageParam());
-    }
-
-    /**
-     * @return int
-     */
-    private function pageParam()
-    {
-        return (int)request()->page ?: 1;
-    }
 }
