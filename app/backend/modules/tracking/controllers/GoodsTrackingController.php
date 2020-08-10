@@ -41,7 +41,7 @@ class GoodsTrackingController extends BaseController
      */
     private function pageList()
     {
-        $records = GoodsTrackingModel::with(['goods','user','resource','order'])->orderBy('created_at', 'desc');
+        $records = GoodsTrackingModel::with(['goods','user','resource','order'])->orderBy('created_time', 'desc');
 
         return $records->paginate('', ['*'], '', $this->pageParam());
     }
