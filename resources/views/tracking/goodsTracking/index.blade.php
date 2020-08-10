@@ -35,8 +35,8 @@
                     <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2 ">
                         <!--<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">ID</label>-->
                         <div class="">
-                            <input type="text" placeholder="商品ID/商品名" class="form-control" name="search[name]"
-                                   value="{{$search['name']}}"/>
+                            <input type="text" placeholder="商品ID/商品名" class="form-control" name="search[keywords]"
+                                   value="{{$search['keywords']}}"/>
                         </div>
                     </div>
 
@@ -202,6 +202,8 @@
                                 <td style="text-align: center;">
                                     <a href="{{yzWebUrl('goods.goods.index')}}" title="{{ $list->goods->title }}">
                                         <img src="{{yz_tomedia($list->goods->thumb)}}" style='width:45px;height:45px;padding:1px;border:1px solid #ccc' />
+                                        <br/>
+                                        {{ $list->goods_id }}
                                         <br/>
                                         {{ $list->goods->title }}
                                     </a>
