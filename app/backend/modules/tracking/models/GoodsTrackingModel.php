@@ -146,18 +146,17 @@ class GoodsTrackingModel extends Model
             });
         }
         //根据商品筛选
-        if ($search['keywords']) {
+        if ($search['name']) {
             $query = $query->whereHas('goods', function($goods)use($search) {
                 $goods = $goods->select('id', 'title','thumb','price')
-                    ->where('title', 'like', '%' . $search['keywords'] . '%')
-                    ->orWhere('id', $search['keywords']);
+                    ->where('title', 'like', '%' . $search['name'] . '%')
+                    ->orWhere('id', $search['name']);
             });
         }
         //根据时间筛选
-        if ($search['times']) {
+        /*if ($search['searchtime']) {
             $query = $query->whereBetween('create_time', [strtotime($search['times']['start']),strtotime($search['times']['end'])]);
-        }
-
+        }*/
         return $query;
     }
 
