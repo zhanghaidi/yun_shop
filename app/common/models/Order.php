@@ -184,7 +184,7 @@ class Order extends BaseModel
     public static function getInvoice($order)
     {
         //return self ::select('invoice_type','rise_type','call','company_number','invoice')
-        return self::select('invoice_type', 'rise_type', 'collect_name', 'company_number', 'invoice','pay_time','created_at','send_time')
+        return self::select('invoice_type', 'rise_type', 'collect_name', 'company_number', 'invoice','pay_time','created_at','send_time','finish_time')
             ->where('id', $order)
             ->first();
     }

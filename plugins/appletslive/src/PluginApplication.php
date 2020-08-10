@@ -58,7 +58,7 @@ class PluginApplication extends \app\common\services\PluginApplication
                     'child' => []
                 ],
                 'appletslive-room' => [
-                    'name' => '房间管理',
+                    'name' => '课程管理',
                     'url' => 'plugin.appletslive.admin.controllers.room.index',
                     'url_params' => '',
                     'permit' => 1,
@@ -68,7 +68,7 @@ class PluginApplication extends \app\common\services\PluginApplication
                     'parents' => ['appletslive'],
                     'child' => [
                         'appletslive_room_index' => [
-                            'name' => '房间列表',
+                            'name' => '课程列表',
                             'permit' => 1,
                             'menu' => 0,
                             'icon' => '',
@@ -76,17 +76,17 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'url_params' => '',
                             'parents' => ['appletslive', 'appletslive-room'],
                         ],
-                        'appletslive_room_set' => [
-                            'name' => '房间设置',
+                        'appletslive_room_edit' => [
+                            'name' => '课程设置',
                             'permit' => 1,
                             'menu' => 0,
                             'icon' => '',
-                            'url' => 'plugin.appletslive.admin.controllers.room.set',
+                            'url' => 'plugin.appletslive.admin.controllers.room.edit',
                             'url_params' => '',
                             'parents' => ['appletslive', 'appletslive-room'],
                         ],
                         'appletslive_room_add' => [
-                            'name' => '添加房间(录播)',
+                            'name' => '添加课程',
                             'permit' => 1,
                             'menu' => 0,
                             'icon' => '',
@@ -95,7 +95,7 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'parents' => ['appletslive', 'appletslive-room'],
                         ],
                         'appletslive_room_del' => [
-                            'name' => '删除房间(录播)',
+                            'name' => '删除房间',
                             'permit' => 1,
                             'menu' => 0,
                             'icon' => '',
@@ -112,21 +112,21 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'url_params' => '',
                             'parents' => ['appletslive', 'appletslive-room'],
                         ],
-                        'appletslive_room_replayadd' => [
-                            'name' => '添加回看',
-                            'permit' => 1,
-                            'menu' => 0,
-                            'icon' => '',
-                            'url' => 'plugin.appletslive.admin.controllers.room.replayadd',
-                            'url_params' => '',
-                            'parents' => ['appletslive', 'appletslive-room'],
-                        ],
                         'appletslive_room_replayedit' => [
                             'name' => '编辑回看',
                             'permit' => 1,
                             'menu' => 0,
                             'icon' => '',
                             'url' => 'plugin.appletslive.admin.controllers.room.replayedit',
+                            'url_params' => '',
+                            'parents' => ['appletslive', 'appletslive-room'],
+                        ],
+                        'appletslive_room_replayadd' => [
+                            'name' => '添加回看',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'icon' => '',
+                            'url' => 'plugin.appletslive.admin.controllers.room.replayadd',
                             'url_params' => '',
                             'parents' => ['appletslive', 'appletslive-room'],
                         ],

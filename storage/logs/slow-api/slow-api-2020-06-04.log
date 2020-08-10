@@ -1,4 +1,0 @@
-[2020-06-04 09:09:39] production.INFO: 1.2467980384827 {"user":"test","i":"39","type":"2","shop_id":"null","route":"upload.uploadPic","attach":"upload","uid":"125885"} 
-[2020-06-04 09:39:17] production.INFO: 1.0338280200958 {"user":"test","i":"39","type":"2","shop_id":"null","route":"upload.uploadPic","attach":"upload","uid":"125885"} 
-[2020-06-04 11:45:40] production.INFO: 1.2158539295197 {"attach":"upload","i":"39","mid":"125885","type":"1","shop_id":"null","route":"upload.uploadPic"} 
-[2020-06-04 14:12:00] production.INFO: 1.1656079292297 {"url":"https://www.aijuyi.net/addons/yun_shop/?menu#/member?i=39&type=1&mid=125885&shop_id","i":"39","uuid":"0","mid":"125885","type":"1","shop_id":"null","route":"member.member.wxJsSdkConfig"} 

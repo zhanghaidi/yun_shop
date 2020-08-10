@@ -18,9 +18,9 @@
  *      ___)( )(___
  *     (((__) (__)))     梦之所想,心之所向.
  */
-
 namespace Yunshop\Appletslive\common\services;
 
+use Illuminate\Support\Facades\DB;
 
 class BaseService
 {
@@ -55,6 +55,36 @@ class BaseService
         $result = self::curlPost($url, json_encode($post_data), []);
 
         return json_decode($result, true);
+    }
+
+    public function msgSecCheck($content, $token)
+    {
+        // 文本检测
+        $url = 'https://api.weixin.qq.com/wxa/msg_sec_check?access_token=' . $token;
+        $post_data = ['content' => $content];
+        $result = json_decode(self::curlPost($url, json_encode($post_data), []), true);
+        if (!$result || !is_array($result) || $result['errcode'] != 0) {
+            return $result;
+        }
+        return true;
+    }
+
+    public function textCheck($content)
+    {
+        $filterStrs = DB::table('diagnostic_service_sns_filter')->get()->toArray();
+        $keywords = array();
+        foreach ($filterStrs as $k => $v){
+            $filterStrs[$k]['content'] = explode(',' , $v['content']);
+            if(empty($keywords)){
+                $keywords = $filterStrs[$k]['content'];
+            }else{
+                $keywords = array_merge($keywords, $filterStrs[$k]['content']);
+            }
+        }
+        $keywords = array_unique($keywords);
+        $lexicon = array_combine($keywords, array_fill(0, count($keywords), '*')); // 换字符
+        $str = strtr($content, $lexicon);                 // 匹配替换
+        return $str;
     }
 
     public function getToken($appId, $secret)

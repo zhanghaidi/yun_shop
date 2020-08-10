@@ -180,6 +180,7 @@
 <div class="form-group">
     <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span ></span>商品价格</label>
     <div class="col-sm-9 col-xs-12 form-inline">
+        <input type="text" name="goods[sales_one_name]"   class="form-control" value="{{$goods['sales_one_name']}}" />
         <div class="input-group form-group col-sm-3">
             <span class="input-group-addon">现价</span>
             <input type="text" name="goods[price]" id="product_price" class="form-control" value="{{$goods['price'] ? : 0}}" />
@@ -197,6 +198,13 @@
         </div>
         <span class='help-block'>尽量填写完整，有助于于商品销售的数据分析</span>
 
+    </div>
+</div>
+
+<div class="form-group">
+    <label class=" col-sm-3 col-md-2 control-label">促销关键词</label>
+    <div class="col-sm-4 col-xs-12">
+        <input type="text" name="goods[sales_two_name]"  class="form-control" value="{{$goods['sales_two_name']}}" />
     </div>
 </div>
 

@@ -32,5 +32,8 @@ target/
 Thumbs.db
 
 vendor/
+storage/
+bootstrap/cache
+.env
 
 .gitignore
