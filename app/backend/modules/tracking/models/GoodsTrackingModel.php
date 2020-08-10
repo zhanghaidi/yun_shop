@@ -116,7 +116,7 @@ class GoodsTrackingModel extends Model
             }])
             ->with('resource')->with('order')
             ->with(['goods' => function ($goods) {
-                return $goods->select('id','thumb','title','price');
+                return $goods->select('id','title','thumb','price');
             }]);
     }
 
