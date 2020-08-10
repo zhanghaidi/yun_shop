@@ -48,7 +48,7 @@ class GoodsTrackingModel extends Model
     public function getActionAttribute($value)
     {
         $this->action_id = $value;
-        if($value == 1){
+        /*if($value == 1){
             $this->action_name = '<span class="label label-default"> <i class="fa fa-eye"></i> 查看</span>';
         }elseif ($value == 2){
             $this->action_name = '<span class="label label-info"> <i class="fa fa-star-half-o"></i> 收藏</span>';
@@ -58,7 +58,7 @@ class GoodsTrackingModel extends Model
             $this->action_name = '<span class="label label-primary"> <i class="fa fa-cc-visa"></i> 下单</span>';
         }elseif ($value == 5){
             $this->action_name = '<span class="label label-success"> <i class="fa fa-money"></i> 付款</span>';
-        }
+        }*/
         $map =[
             4 => 'App\backend\modules\order\models\Order',
             5 => 'App\backend\modules\order\models\Order'
