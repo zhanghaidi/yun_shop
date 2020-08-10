@@ -14,6 +14,194 @@
                     <span>追踪列表</span>
                 </a>
             </div>
+
+
+            <div class="panel-body">
+                <form action="" method="get" class="form-horizontal" role="form" id="form1">
+                    <input type="hidden" name="c" value="site"/>
+                    <input type="hidden" name="a" value="entry"/>
+                    <input type="hidden" name="m" value="yun_shop"/>
+                    <input type="hidden" name="do" value="member" id="form_do"/>
+                    <input type="hidden" name="route" value="member.member.index" id="route"/>
+                    <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2 ">
+                        <!--<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">ID</label>-->
+                        <div class="">
+                            <input type="text" placeholder="会员ID" class="form-control" name="search[mid]"
+                                   value="{{$request['search']['mid']}}"/>
+                        </div>
+                    </div>
+                    <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                        <!-- <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">会员信息</label>-->
+                        <div class="">
+                            <input type="text" class="form-control" name="search[realname]"
+                                   value="{{$request['search']['realname']}}" placeholder="可搜索昵称/姓名/手机号"/>
+                        </div>
+                    </div>
+                    <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                        <div class="">
+                            <input type="text" class="form-control" name="search[first_count]"
+                                   value="{{$request['search']['first_count']}}" placeholder="一级人数"/>
+                        </div>
+                    </div>
+                    <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                        <div class="">
+                            <input type="text" class="form-control" name="search[second_count]"
+                                   value="{{$request['search']['second_count']}}" placeholder="二级人数"/>
+                        </div>
+                    </div>
+                    <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                        <div class="">
+                            <input type="text" class="form-control" name="search[third_count]"
+                                   value="{{$request['search']['third_count']}}" placeholder="三级人数"/>
+                        </div>
+                    </div>
+                    <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                        <div class="">
+                            <input type="text" class="form-control" name="search[team_count]"
+                                   value="{{$request['search']['team_count']}}" placeholder="团队人数"/>
+                        </div>
+                    </div>
+                    <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                        <div class="">
+                            <input type="text" class="form-control" name="search[custom_value]"
+                                   value="{{$request['search']['custom_value']}}" placeholder="自定义字段"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                        <!-- <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">会员等级</label>-->
+                        <div class="">
+                            <select name='search[level]' class='form-control'>
+                                <option value=''>会员等级不限</option>
+                                @foreach($levels as $level)
+                                    <option value='{{$level['id']}}'
+                                            @if($request['search']['level']==$level['id'])
+                                            selected
+                                            @endif
+                                    >{{$level['level_name']}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                        <!--  <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">会员分组</label>-->
+                        <div class="">
+                            <select name='search[groupid]' class='form-control'>
+                                <option value=''>会员分组不限</option>
+                                @foreach($groups as $group)
+                                    <option value='{{$group['id']}}'
+                                            @if($request['search']['groupid']==$group['id'])
+                                            selected
+                                            @endif
+                                    >{{$group['group_name']}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                        <div class="">
+                            <select name='search[isagent]' class='form-control'>
+                                <option value=''>推广员不限</option>
+                                <option value='0'
+                                        @if($request['search']['isagent']=='0')
+                                        selected
+                                        @endif>否
+                                </option>
+                                <option value='1'
+                                        @if($request['search']['isagent']=='1')
+                                        selected
+                                        @endif>是
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                        <!--      <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">是否关注</label>-->
+                        <div class="">
+                            <select name='search[followed]' class='form-control'>
+                                <option value=''>不限关注</option>
+                                </option>
+                                <option value='1'
+                                        @if($request['search']['followed']=='1')
+                                        selected
+                                        @endif
+                                >已关注
+                                </option>
+                                <option value='0'
+                                        @if($request['search']['followed']=='0')
+                                        selected
+                                        @endif
+                                >未关注
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                        <!--        <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">黑名单</label>-->
+                        <div class="">
+                            <select name='search[isblack]' class='form-control'>
+                                <option value=''>不限黑名单</option>
+                                <option value='0'
+                                        @if($request['search']['isblack']=='0')
+                                        selected
+                                        @endif>否
+                                </option>
+                                <option value='1'
+                                        @if($request['search']['isblack']=='1')
+                                        selected
+                                        @endif>是
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group col-xs-12 col-sm-12 col-md-4 col-lg">
+
+                        <div class="time">
+
+                            <select name='search[searchtime]' class='form-control'>
+                                <option value='0'
+                                        @if($request['search']['searchtime']=='0')
+                                        selected
+                                        @endif>注册时间不限
+                                </option>
+                                <option value='1'
+                                        @if($request['search']['searchtime']=='1')
+                                        selected
+                                        @endif>搜索注册时间
+                                </option>
+                            </select>
+                        </div>
+                        <div class="search-select">
+                            {!! app\common\helpers\DateRange::tplFormFieldDateRange('search[times]', [
+                            'starttime'=>date('Y-m-d H:i', $starttime),
+                            'endtime'=>date('Y-m-d H:i',$endtime),
+                            'start'=>0,
+                            'end'=>0
+                            ], true) !!}
+                        </div>
+                    </div>
+
+                    <div class="form-group  col-xs-12 col-md-12 col-lg-6">
+                        <!--<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label"></label>-->
+                        <div class="">
+                            <button class="btn btn-success "><i class="fa fa-search"></i> 搜索</button>
+                            <button type="button" name="export" value="1" id="export" class="btn btn-default">导出
+                                Excel
+                            </button>
+
+
+                        </div>
+                    </div>
+
+                </form>
+
+            </div>
+
+            
         </div>
         <div class="clearfix">
             <div class="panel panel-default">
