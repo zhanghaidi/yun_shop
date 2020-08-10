@@ -70,7 +70,7 @@
                                         {{ $list->user->nickname }}
                                     </a>
                                 </td>
-                                <td style="text-align: center;">{{ $list->action_name }}</td>
+                                <td style="text-align: center;">{!! $list->action_name !!}</td>
                                 <td style="text-align: center;">{{ $list->val }}</td>
                                 <td style="text-align: center;">{{ $list->order->order_sn }}</td>
                                 <td style="text-align: center;">{{date('Y-m-d H:i:s', $list->create_time)}}</td>
