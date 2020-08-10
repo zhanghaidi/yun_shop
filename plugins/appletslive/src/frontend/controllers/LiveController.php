@@ -535,12 +535,12 @@ class LiveController extends BaseController
             }
         }
 
-        DB::table('appletslive_room_comment')->insert($insert_data);
+        $id = DB::table('appletslive_room_comment')->insertGetId($insert_data);
         if ($comment_num_inc) {
             CacheService::setRoomNum($input['room_id'], 'comment_num');
         }
         CacheService::setRoomComment($input['room_id']);
-        return $this->successJson('评论成功');
+        return $this->successJson('评论成功', $id);
     }
 
     /**
@@ -712,12 +712,12 @@ class LiveController extends BaseController
             }
         }
 
-        DB::table('appletslive_replay_comment')->insert($insert_data);
+        $id = DB::table('appletslive_replay_comment')->insertGetId($insert_data);
         if ($comment_num_inc) {
             CacheService::setReplayNum($input['replay_id'], 'comment_num');
         }
         CacheService::setReplayComment($input['replay_id']);
-        return $this->successJson('评论成功');
+        return $this->successJson('评论成功', $id);
     }
 
     /**
