@@ -132,14 +132,14 @@
                             </select>
                         </div>
                     </div>
-                    <div class="search-select">
+                    {{--<div class="search-select">
                         {!! app\common\helpers\DateRange::tplFormFieldDateRange('search[times]', [
                         'starttime'=>date('Y-m-d H:i', $search['times']['start']),
                         'endtime'=>date('Y-m-d H:i',$search['times']['start']),
                         'start'=>0,
                         'end'=>0
                         ], true) !!}
-                    </div>
+                    </div>--}}
 
                     <div class="form-group  col-xs-12 col-md-12 col-lg-6">
                         <!--<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label"></label>-->
