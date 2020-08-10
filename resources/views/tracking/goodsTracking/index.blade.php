@@ -69,7 +69,7 @@
                                         {{ $list->user->nickname }}
                                     </a>
                                 </td>
-                                <td style="text-align: center;">{!! $list->action_name !!}</td>
+                               {{-- <td style="text-align: center;">{!! $list->action_name !!}</td>--}}
                                 <td style="text-align: center;">{{$list->action_id}}</td>
                                 <td style="text-align: center;">{{$list->action}}</td>
                                 <td style="text-align: center;">{{ $list->val}}</td>
