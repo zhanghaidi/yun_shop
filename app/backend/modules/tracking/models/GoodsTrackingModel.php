@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 class GoodsTrackingModel extends Model
 {
     protected $table = 'diagnostic_service_goods_tracking';
-    public $appends = ['type_id','action_id','action_name'];
+    protected $appends = ['type_id','action_id','action_name'];
 
     public $timestamps = false;
 
@@ -114,7 +114,7 @@ class GoodsTrackingModel extends Model
         return $query->with(['user' => function ($user) {
                 return $user->select('ajy_uid', 'nickname', 'avatarurl');
             }])
-            ->with('resource')
+            ->with('resource')->with('order')
             ->with(['goods' => function ($goods) {
                 return $goods->select('id','thumb','title','price');
             }]);
