@@ -116,14 +116,14 @@
                                 </option>
 
                                 <option value='4'
-                                        @if($search['action_id']=='下单')
+                                        @if($search['action_id']=='4')
                                         selected
                                         @endif
                                 >下单
                                 </option>
 
                                 <option value='5'
-                                        @if($search['action_id']=='支付')
+                                        @if($search['action_id']=='5')
                                         selected
                                         @endif
                                 >支付
