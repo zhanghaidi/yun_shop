@@ -54,6 +54,11 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
+
+        // 每5分钟执行新课程视频发布提醒
+        $schedule->command('command:coursereminder')
+            ->withoutOverlapping()
+            ->everyFiveMinutes();
     }
 
     /**

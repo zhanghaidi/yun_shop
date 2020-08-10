@@ -28,6 +28,7 @@ use Yunshop\Appletslive\common\services\CacheService;
 use Yunshop\Appletslive\common\services\BaseService;
 use app\common\models\AccountWechats;
 use app\Jobs\SendTemplateMsgJob;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Class LiveController
@@ -144,7 +145,7 @@ class LiveController extends BaseController
             'keyword2' => ['value' => '长期有效', 'color' => '#173177'],
             'keyword3' => ['value' => '更新中', 'color' => '#173177'],
             'remark' => [
-                'value' => '最新视频【每次艾灸几个穴位合适】将于2020-08-05 12:00震撼发布!',
+                'value' => '最新视频【每次艾灸几个穴位合适】将于' . date('Y-m-d H:i', strtotime('+15 minutes')) . '震撼发布!',
                 'color' => '#173177',
             ],
         ];
@@ -163,7 +164,7 @@ class LiveController extends BaseController
             'thing1' => ['value' => '课程更新', 'color' => '#173177'],
             'thing2' => ['value' => '【和大师一起学艾灸】', 'color' => '#173177'],
             'name3' => ['value' => '艾居益灸师', 'color' => '#173177'],
-            'thing4' => ['value' => '最新视频【每次艾灸几个穴位合适】将在' . date('Y-m-d H:i', strtotime('+15 minutes')) . '震撼发布!', 'color' => '#173177'],
+            'thing4' => ['value' => date('Y-m-d H:i', strtotime('+15 minutes')), 'color' => '#173177'],
         ];
         $openid = 'oP9ym5Bxp6D_sERpj340uIxuaUIo';
         $page = 'pages/template/rumours/index?room_id=5';
@@ -187,8 +188,6 @@ class LiveController extends BaseController
     public function testcoursereminder()
     {
         Log::info("------------------------ 测试：课程提醒定时任务 BEGIN -------------------------------");
-
-        $result = [];
 
         // 公众号配置信息
         $wechat_account = DB::table('account_wechats')
@@ -215,9 +214,10 @@ class LiveController extends BaseController
         $time_check_point = $time_now + 900;
         $time_check_where = [$time_check_point, $time_check_point + 600];
         $replay_publish_soon = DB::table('appletslive_replay')
-            ->select('id', 'rid', 'title', 'publish_time')
+            ->select('id', 'rid', 'title', 'doctor', 'publish_time')
             ->whereBetween('publish_time', $time_check_where)
             ->get()->toArray();
+        $result['publish_time_range'] = $time_check_where;
         $result['replay_publish_soon'] = $replay_publish_soon;
 
         Log::info('time_now: ' . $time_now);
@@ -340,9 +340,9 @@ class LiveController extends BaseController
             $param['template_id'] = 'ABepy-L03XH_iU0tPd03VUV9KQ_Vjii5mClL7Qp8_jc';
             $param['notice_data'] = [
                 'thing1' => ['value' => '课程更新', 'color' => '#173177'],
-                'thing2' => ['value' => '【和大师一起学艾灸】', 'color' => '#173177'],
-                'name3' => ['value' => '艾居益灸师', 'color' => '#173177'],
-                'thing4' => ['value' => '最新视频【每次艾灸几个穴位合适】将在' . date('Y-m-d H:i', strtotime('+15 minutes')) . '震撼发布!', 'color' => '#173177'],
+                'thing2' => ['value' => '【' . $room_name . '】', 'color' => '#173177'],
+                'name3' => ['value' => $replay_info['doctor'], 'color' => '#173177'],
+                'thing4' => ['value' => '最新视频【' . $replay_info['title'] . '】将于' . date('Y-m-d H:i', $replay_info['publish_time']) . '震撼发布!', 'color' => '#173177'],
             ];
         }
         return $param;
@@ -378,7 +378,7 @@ class LiveController extends BaseController
 
         if (!empty($page_val)) {
             $numdata = CacheService::getRoomNum(array_column($page_val, 'id'));
-            $my_subscription = CacheService::getUserSubscription($this->user_id);
+            $my_subscription = ($this->user_id ? CacheService::getUserSubscription($this->user_id) : []);
             foreach ($page_val as $k => $v) {
                 $key = 'key_' . $v['id'];
                 $page_val[$k]['hot_num'] = $numdata[$key]['hot_num'];
@@ -535,12 +535,12 @@ class LiveController extends BaseController
             }
         }
 
-        DB::table('appletslive_room_comment')->insert($insert_data);
+        $id = DB::table('appletslive_room_comment')->insertGetId($insert_data);
         if ($comment_num_inc) {
             CacheService::setRoomNum($input['room_id'], 'comment_num');
         }
         CacheService::setRoomComment($input['room_id']);
-        return $this->successJson('评论成功');
+        return $this->successJson('评论成功', $id);
     }
 
     /**
@@ -583,11 +583,13 @@ class LiveController extends BaseController
 
         if (!empty($cache_val)) {
             $numdata = CacheService::getReplayNum(array_column($cache_val, 'id'));
+            $my_watch = ($this->user_id ? CacheService::getUserWatch($this->user_id) : []);
             foreach ($cache_val as $k => $v) {
                 $key = 'key_' . $v['id'];
                 $cache_val[$k]['hot_num'] = $numdata[$key]['hot_num'];
                 $cache_val[$k]['view_num'] = $numdata[$key]['view_num'];
                 $cache_val[$k]['comment_num'] = $numdata[$key]['comment_num'];
+                $cache_val[$k]['watch_num'] = $numdata[$key]['watch_num'];
             }
         }
 
@@ -614,6 +616,11 @@ class LiveController extends BaseController
             if (!$cache_val) {
                 return $this->errorJson('视频不存在');
             }
+            $cache_val['publish_status'] = 1;
+            if ($cache_val['publish_time'] > time()) {
+                $cache_val['publish_status'] = 0;
+                $cache_val['media_url'] = '';
+            }
             $cache_val['minute'] = floor($cache_val['time_long'] / 60);
             $cache_val['second'] = $cache_val['time_long'] % 60;
             $cache_val['publish_time'] = date('Y-m-d H:i:s', $cache_val['publish_time']);
@@ -622,10 +629,16 @@ class LiveController extends BaseController
         }
 
         CacheService::setReplayNum($replay_id, 'view_num');
+        if ($this->user_id && $cache_val['media_url'] != '') {
+            CacheService::setReplayNum($replay_id, 'watch_num', $this->user_id);
+            CacheService::setUserWatch($this->user_id, $cache_val['id']);
+        }
         $numdata = CacheService::getReplayNum($replay_id);
+        $my_watch = ($this->user_id ? CacheService::getUserWatch($this->user_id) : []);
         $cache_val['hot_num'] = $numdata['hot_num'];
         $cache_val['view_num'] = $numdata['view_num'];
         $cache_val['comment_num'] = $numdata['comment_num'];
+        $cache_val['watch_num'] = $numdata['watch_num'];
 
         return $this->successJson('获取成功', $cache_val);
     }
@@ -699,12 +712,12 @@ class LiveController extends BaseController
             }
         }
 
-        DB::table('appletslive_replay_comment')->insert($insert_data);
+        $id = DB::table('appletslive_replay_comment')->insertGetId($insert_data);
         if ($comment_num_inc) {
             CacheService::setReplayNum($input['replay_id'], 'comment_num');
         }
         CacheService::setReplayComment($input['replay_id']);
-        return $this->successJson('评论成功');
+        return $this->successJson('评论成功', $id);
     }
 
     /**
