@@ -192,7 +192,7 @@ class MemberAddressController extends ApiController
             return $this->errorJson('请输入数字');
         }*/
 
-        if (!preg_match("/^1[34578]{1}\d{9}$/", $mobile)) {
+        if (!preg_match("/^1[345789]{1}\d{9}$/", $mobile)) {
 
             return $this->errorJson('手机号格式不正确');
         }
@@ -291,7 +291,7 @@ class MemberAddressController extends ApiController
 
             return $this->errorJson('请输入数字');
         }*/
-        if (!preg_match("/^1[34578]{1}\d{9}$/", $mobile)) {
+        if (!preg_match("/^1[345789]{1}\d{9}$/", $mobile)) {
 
             return $this->errorJson('手机号格式不正确');
         }
