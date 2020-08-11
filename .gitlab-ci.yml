@@ -7,7 +7,7 @@ job1:
   tags:
     - rsync_prod
   only:
-    - dev
+    - master
   script:
     - echo `whoami`
     - echo `pwd`
