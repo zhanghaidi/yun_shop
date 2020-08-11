@@ -86,18 +86,18 @@
                 <tbody>
                 @foreach($replay_list as $row)
                     <tr>
-                        <td>{{$row['id']}}</td>
+                        <td>{{ $row['id'] }}</td>
                         <td>
                             <img src="{!! tomedia($row['cover_img']) !!}" style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
                         </td>
-                        <td>{{$row['title']}}</td>
-                        <td>{{$row['create_time']}}</td>
-                        <td>{{$row['publish_time']}}</td>
+                        <td>{{ $row['title'] }}</td>
+                        <td>{{ date('Y-m-d H:i:s', $row['create_time']) }}</td>
+                        <td>{{ date('Y-m-d H:i:s', $row['publish_time']) }}</td>
                         <td>
                             @if($row['type']=='1') 本地上传 @endif
                             @if($row['type']=='2') 腾讯视频 @endif
                         </td>
-                        <td>{{$row['media_url']}}</td>
+                        <td>{{ $row['media_url'] }}</td>
                         <td style="overflow:visible;">
                             <a class='btn btn-default'
                                href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.replayedit', ['id' => $row['id']])}}"
@@ -108,6 +108,7 @@
                 @endforeach
                 </tbody>
             </table>
+            {!! $pager !!}
         </div>
     </div>
     @endif

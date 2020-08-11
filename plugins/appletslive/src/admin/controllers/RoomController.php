@@ -28,6 +28,9 @@ use app\common\components\BaseController;
 use app\common\helpers\Url;
 use app\common\facades\Setting;
 use Yunshop\Appletslive\common\services\BaseService;
+use Yunshop\Appletslive\common\models\Room;
+use Yunshop\Appletslive\common\models\Replay;
+use app\common\helpers\PaginationHelper;
 
 class RoomController extends BaseController
 {
@@ -35,47 +38,43 @@ class RoomController extends BaseController
     public function index()
     {
         $type = request()->get('type', 0);
-        $cache_key = 'live_room_info_' . $type;
         if (!in_array($type, [0, 1])) {
             throw new AppException('房间类型有误');
         }
-        $cache_val = Cache::get($cache_key);
-        $room_list = $cache_val;
+
+        $limit = 10;
 
         if ($type == 0) { // 直播
 
+            $cache_key = 'live_room_list';
+            $cache_val = Cache::get($cache_key);
+
             // 同步房间列表
             $tag = request()->get('tag', '');
-            if ($tag == 'refresh') {
+            if ($tag == 'refresh' || empty($cache_val)) {
                 Cache::forget($cache_key);
-                $cache_val = Cache::get($cache_key);
+                $cache_val = null;
 
                 // 刷新课程列表接口数据缓存
                 Cache::forget("api_live_room_list");
-            }
 
-            // 缓存失效，重新查询并同步房间列表
-            if (empty($cache_val)) {
-                $already_exist_room_in_db = DB::table('appletslive_room')
+                // 重新查询并同步直播间列表
+                $room_from_weixin = (new BaseService())->getRooms($this->getToken());
+                $present = $room_from_weixin['room_info'];
+                Cache::put($cache_key, $present, 600);
+                $stored = DB::table('appletslive_room')
                     ->where('type', 0)
                     ->orderBy('id', 'desc')
                     ->get();
-                $room_from_weixin = (new BaseService())->getRooms($this->getToken());
 
+                // 添加新增的直播间
                 $insert = [];
-                $present = $room_from_weixin['room_info'];
                 foreach ($present as $psk => $psv) {
                     $exist = false;
-                    foreach ($already_exist_room_in_db as $drk => $drv) {
+                    foreach ($stored as $drk => $drv) {
                         if ($drv['roomid'] == $psv['roomid']) {
                             // 房间信息在数据库中存在，实时更新数据
                             DB::table('appletslive_room')->where('id', $drv['id'])->update([
-                                'name' => $psv['name'],
-                                'anchor_name' => $psv['anchor_name'],
-                                'cover_img' => $psv['cover_img'],
-                                'share_img' => $psv['share_img'],
-                                'start_time' => $psv['start_time'],
-                                'end_time' => $psv['end_time'],
                                 'live_status' => $psv['live_status'],
                             ]);
                             $exist = true;
@@ -98,13 +97,13 @@ class RoomController extends BaseController
                         ]);
                     }
                 }
-                // 添加新增的直播间
                 if ($insert) {
                     DB::table('appletslive_room')->insert($insert);
                 }
+
                 // 移除删掉的直播间
                 $todel = [];
-                foreach ($already_exist_room_in_db as $drk => $drv) {
+                foreach ($stored as $drk => $drv) {
                     $match = false;
                     foreach ($present as $psv) {
                         if ($drv['roomid'] == $psv['roomid']) {
@@ -119,63 +118,25 @@ class RoomController extends BaseController
                 if ($todel) {
                     DB::table('appletslive_room')->where('id', 'in', $todel)->delete();
                 }
-
-                // 如果删除或新增了房间，重新查询列表
-                if ($todel || $insert) {
-                    $already_exist_room_in_db = DB::table('appletslive_room')
-                        ->where('type', 0)
-                        ->orderBy('id', 'desc')
-                        ->get()->toArray();
-                }
-
-                // 转换时间和直播状态
-                array_walk($already_exist_room_in_db, function (&$item) {
-                    $item['start_time'] = date('Y-m-d H:i:s', $item['start_time']);
-                    $item['end_time'] = date('Y-m-d H:i:s', $item['end_time']);
-                    switch ($item['live_status']) {
-                        case 101:
-                            $item['live_status_text'] = '直播中';
-                            break;
-                        case 102:
-                            $item['live_status_text'] = '未开始';
-                            break;
-                        case 103:
-                            $item['live_status_text'] = '已结束';
-                            break;
-                        case 104:
-                            $item['live_status_text'] = '禁播';
-                            break;
-                        case 105:
-                            $item['live_status_text'] = '暂停';
-                            break;
-                        case 106:
-                            $item['live_status_text'] = '异常';
-                            break;
-                        case 107:
-                            $item['live_status_text'] = '已过期';
-                            break;
-                        default:
-                            $item['live_status_text'] = '未知';
-                            break;
-                    }
-                });
-
-                Cache::put($cache_key, $already_exist_room_in_db, 3);
-                $room_list = $already_exist_room_in_db;
             }
+
+            $room_list = Room::where('type', 0)
+                ->orderBy('id', 'desc')
+                ->paginate($limit);
         }
 
         if ($type == 1) { // 录播
-            $already_exist_room_in_db = DB::table('appletslive_room')
-                ->where('type', 1)
+            $room_list = Room::where('type', 1)
                 ->orderBy('id', 'desc')
-                ->get();
-            $room_list = $already_exist_room_in_db;
+                ->paginate($limit);
         }
+
+        $pager = PaginationHelper::show($room_list->total(), $room_list->currentPage(), $room_list->perPage());
 
         return view('Yunshop\Appletslive::admin.room_index', [
             'type' => $type,
             'room_list' => $room_list,
+            'pager' => $pager,
         ])->render();
     }
 
@@ -261,6 +222,8 @@ class RoomController extends BaseController
         $cache_key = 'live_room_replay_list_' . $type . '_' . $rid;
         $replay_list = Cache::get($cache_key);
 
+        $limit = 10;
+
         if ($type == 0) { // 直播回看列表
             if (empty($replay_list)) {
                 $result = (new BaseService())->getReplays($this->getToken(), $room['roomid']);
@@ -286,23 +249,19 @@ class RoomController extends BaseController
         }
 
         if ($type == 1) { // 录播列表
-            $result = DB::table('appletslive_replay')
-                ->where('rid', $rid)
+            $result = Replay::where('rid', $rid)
                 ->orderBy('id', 'desc')
-                ->get()->toArray();
-            array_walk($result, function (&$item) {
-                $item['create_time'] = date('Y-m-d H:i:s', $item['create_time']);
-                $item['publish_time'] = date('Y-m-d H:i:s', $item['publish_time']);
-                $item['minute'] = floor($item['time_long'] / 60);
-                $item['second'] = $item['time_long'] % 60;
-            });
+                ->paginate($limit);
             $replay_list = $result;
         }
+
+        $pager = PaginationHelper::show($replay_list->total(), $replay_list->currentPage(), $replay_list->perPage());
 
         return view('Yunshop\Appletslive::admin.replay_list', [
             'rid' => $rid,
             'type' => $type,
             'replay_list' => $replay_list,
+            'pager' => $pager,
         ])->render();
     }
 
