@@ -5,11 +5,11 @@ stages:
 job1:
   stage: test
   tags:
-    - rsync_test
+    - rsync_prod
   only:
     - dev
   script:
-    - echo whoami
+    - echo `whoami`
     - echo `pwd`
 
-    - sh -x /opt/rsync_yun_shop.sh
+    - sh -x /opt/rsync_ajy_yunshop.sh
