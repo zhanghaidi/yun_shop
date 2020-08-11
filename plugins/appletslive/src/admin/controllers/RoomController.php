@@ -22,9 +22,9 @@
 namespace Yunshop\Appletslive\admin\controllers;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use app\common\exceptions\AppException;
 use app\common\components\BaseController;
-use app\common\helpers\Cache;
 use app\common\helpers\Url;
 use app\common\facades\Setting;
 use Yunshop\Appletslive\common\services\BaseService;
