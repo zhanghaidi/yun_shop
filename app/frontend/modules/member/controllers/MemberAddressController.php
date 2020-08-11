@@ -454,7 +454,7 @@ class MemberAddressController extends ApiController
         $serviceUser = DB::table('diagnostic_service_user')->where('ajy_uid',$memberId)->first();
         //$mcMember = DB::table('mc_members')->where('uid',$memberId)->first();
         $mcMember = Member::find($memberId);
-        if($serviceUser['is_verify'] == 0 && $serviceUser['telephone'] == ''){
+        if($serviceUser['telephone'] == '' || $serviceUser['real_name'] == ''){
            DB::table('diagnostic_service_user')->where('ajy_uid',$memberId)->update(['telephone' => $mobile, 'real_name' => $username]);
         }
 
