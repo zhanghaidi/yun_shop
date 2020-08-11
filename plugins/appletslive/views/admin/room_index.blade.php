@@ -45,16 +45,34 @@
                 <tbody>
                 @foreach($room_list as $row)
                     <tr>
-                        <td>{{$row['id']}}</td>
-                        <td>{{$row['roomid']}}</td>
+                        <td>{{ $row['id'] }}</td>
+                        <td>{{ $row['roomid'] }}</td>
                         <td>
                             <img src="{!! tomedia($row['cover_img']) !!}" style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
                         </td>
-                        <td>{{$row['name']}}</td>
-                        <td>{{$row['start_time']}}</td>
-                        <td>{{$row['end_time']}}</td>
-                        <td>{{$row['subscription_num']}}</td>
-                        <td>{{$row['live_status_text']}}</td>
+                        <td>{{ $row['name'] }}</td>
+                        <td>{{ date('Y-m-d H:i:s', $row['create_time']) }}</td>
+                        <td>{{ date('Y-m-d H:i:s', $row['end_time']) }}</td>
+                        <td>{{ $row['subscription_num'] }}</td>
+                        <td>
+                            @if ($row['live_status'] == 101)
+                                直播中
+                            @elseif ($row['live_status'] == 102)
+                                未开始
+                            @elseif ($row['live_status'] == 103)
+                                已结束
+                            @elseif ($row['live_status'] == 104)
+                                禁播
+                            @elseif ($row['live_status'] == 105)
+                                暂停
+                            @elseif ($row['live_status'] == 106)
+                                异常
+                            @elseif ($row['live_status'] == 107)
+                                已过期
+                            @else
+                                未知
+                            @endif
+                        </td>
                         <td style="overflow:visible;">
                             <a class='btn btn-default'
                                href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.edit', ['rid' => $row['id']])}}"
@@ -65,6 +83,7 @@
                 @endforeach
                 </tbody>
             </table>
+            {!! $pager !!}
         </div>
     </div>
     @endif
@@ -91,12 +110,12 @@
                 <tbody>
                 @foreach($room_list as $row)
                     <tr>
-                        <td>{{$row['id']}}</td>
+                        <td>{{ $row['id'] }}</td>
                         <td>
                             <img src="{!! tomedia($row['cover_img']) !!}" style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
                         </td>
-                        <td>{{$row['name']}}</td>
-                        <td>{{$row['subscription_num']}}</td>
+                        <td>{{ $row['name'] }}</td>
+                        <td>{{ $row['subscription_num'] }}</td>
                         <td style="overflow:visible;">
                             <a class='btn btn-default'
                                href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.edit', ['rid' => $row['id']])}}"
@@ -111,6 +130,7 @@
                 @endforeach
                 </tbody>
             </table>
+            {!! $pager !!}
         </div>
     </div>
     @endif
