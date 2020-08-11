@@ -491,14 +491,7 @@ class LiveController extends BaseController
      */
     public function roomcommentadd()
     {
-        if (!$this->user_id) {
-            response()->json([
-                'result' => 41009,
-                'msg' => '请登录',
-                'data' => null,
-            ], 200, ['charset' => 'utf-8'])->send();
-            exit;
-        }
+        $this->needLogin();
         $input = request()->all();
         if (!array_key_exists('room_id', $input) || !array_key_exists('content', $input)) {
             return $this->errorJson('缺少参数');
@@ -541,6 +534,30 @@ class LiveController extends BaseController
         }
         CacheService::setRoomComment($input['room_id']);
         return $this->successJson('评论成功', $id);
+    }
+
+    /**
+     * 课程删除评论
+     * @return \Illuminate\Http\JsonResponse
+     * @throws AppException
+     */
+    public function roomcommentdel()
+    {
+        $this->needLogin();
+        $input = request()->all();
+        if (!array_key_exists('comment_id', $input) || empty(intval($input['comment_id']))) {
+            return $this->errorJson('评论id有误');
+        }
+        $is_mine = DB::table('appletslive_room_comment')
+            ->where('id', $input['comment_id'])
+            ->where('user_id', $this->user_id)
+            ->first();
+        if (!$is_mine) {
+            return $this->errorJson('只能删除自己的评论');
+        }
+        DB::table('appletslive_room_comment')->where('id', $input['comment_id'])->delete();
+        CacheService::setRoomComment($is_mine['room_id']);
+        return $this->successJson('删除成功');
     }
 
     /**
@@ -662,20 +679,13 @@ class LiveController extends BaseController
     }
 
     /**
-     * 播视频添加评论
+     * 录播视频添加评论
      * @return \Illuminate\Http\JsonResponse
      * @throws AppException
      */
     public function replaycommentadd()
     {
-        if (!$this->user_id) {
-            response()->json([
-                'result' => 41009,
-                'msg' => '请登录',
-                'data' => null,
-            ], 200, ['charset' => 'utf-8'])->send();
-            exit;
-        }
+        $this->needLogin();
         $input = request()->all();
         if (!array_key_exists('replay_id', $input) || !array_key_exists('content', $input)) {
             return $this->errorJson('缺少参数');
@@ -718,6 +728,30 @@ class LiveController extends BaseController
         }
         CacheService::setReplayComment($input['replay_id']);
         return $this->successJson('评论成功', $id);
+    }
+
+    /**
+     * 录播视频删除评论
+     * @return \Illuminate\Http\JsonResponse
+     * @throws AppException
+     */
+    public function replaycommentdel()
+    {
+        $this->needLogin();
+        $input = request()->all();
+        if (!array_key_exists('comment_id', $input) || empty(intval($input['comment_id']))) {
+            return $this->errorJson('评论id有误');
+        }
+        $is_mine = DB::table('appletslive_replay_comment')
+            ->where('id', $input['comment_id'])
+            ->where('user_id', $this->user_id)
+            ->first();
+        if (!$is_mine) {
+            return $this->errorJson('只能删除自己的评论');
+        }
+        DB::table('appletslive_replay_comment')->where('id', $input['comment_id'])->delete();
+        CacheService::setReplayComment($is_mine['replay_id']);
+        return $this->successJson('删除成功');
     }
 
     /**
