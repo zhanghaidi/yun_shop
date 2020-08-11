@@ -169,15 +169,15 @@ class RoomController extends BaseController
             return $this->message('保存成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.index', ['type' => $room['type']]));
         }
 
-        $rid = request()->get('rid', 0);
-        $info = DB::table('appletslive_room')->where('id', $rid)->first();
+        $id = request()->get('id', 0);
+        $info = DB::table('appletslive_room')->where('id', $id)->first();
 
         if (!$info) {
             return $this->message('房间不存在', Url::absoluteWeb(''), 'danger');
         }
 
         return view('Yunshop\Appletslive::admin.room_edit', [
-            'rid' => $rid,
+            'id' => $id,
             'info' => $info,
         ])->render();
     }
@@ -206,6 +206,30 @@ class RoomController extends BaseController
         }
 
         return view('Yunshop\Appletslive::admin.room_add')->render();
+    }
+
+    // 录播房间显示/隐藏
+    public function showhide()
+    {
+        $input = request()->all();
+        $id_invalid = false;
+        if (!array_key_exists('id', $input)) { // 房间id
+            $id_invalid = true;
+        }
+        $room = Room::where('id', intval($input['id']))->first();
+        if (empty($room)) {
+            $id_invalid = true;
+        }
+        if (!$id_invalid) {
+            return $this->message('无效的房间ID', Url::absoluteWeb(''), 'danger');
+        }
+        $room->delete_time = ($room->delete_time > 0) ? 0 : time();
+        $room->save();
+
+        // 刷新课程列表接口数据缓存
+        Cache::forget("api_live_room_list");
+
+        return $this->message('操作成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.index', ['type' => $room->type]));
     }
 
     /**
@@ -349,6 +373,30 @@ class RoomController extends BaseController
         return view('Yunshop\Appletslive::admin.replay_add', [
             'rid' => $rid,
         ])->render();
+    }
+
+    // 视频显示/隐藏
+    public function replayshowhide()
+    {
+        $input = request()->all();
+        $id_invalid = false;
+        if (!array_key_exists('id', $input)) { // 房间id
+            $id_invalid = true;
+        }
+        $replay = Replay::where('id', intval($input['id']))->first();
+        if (empty($replay)) {
+            $id_invalid = true;
+        }
+        if (!$id_invalid) {
+            return $this->message('无效的视频ID', Url::absoluteWeb(''), 'danger');
+        }
+        $replay->delete_time = ($replay->delete_time > 0) ? 0 : time();
+        $replay->save();
+
+        // 刷新录播列表接口数据缓存
+        Cache::forget('api_live_replay_list|' . $replay->rid);
+
+        return $this->message('保存成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.replaylist', ['rid' => $replay->rid]));
     }
 
     private function getToken()

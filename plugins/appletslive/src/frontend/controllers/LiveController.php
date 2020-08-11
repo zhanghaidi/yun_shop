@@ -633,16 +633,17 @@ class LiveController extends BaseController
             if (!$cache_val) {
                 return $this->errorJson('视频不存在');
             }
-            $cache_val['publish_status'] = 1;
-            if ($cache_val['publish_time'] > time()) {
-                $cache_val['publish_status'] = 0;
-                $cache_val['media_url'] = '';
-            }
             $cache_val['minute'] = floor($cache_val['time_long'] / 60);
             $cache_val['second'] = $cache_val['time_long'] % 60;
             $cache_val['publish_time'] = date('Y-m-d H:i:s', $cache_val['publish_time']);
             unset($cache_val['rid']);
             Cache::put($cache_key, $cache_val, 30);
+        }
+
+        $cache_val['publish_status'] = 1;
+        if ($cache_val['publish_time'] > time()) {
+            $cache_val['publish_status'] = 0;
+            $cache_val['media_url'] = '';
         }
 
         CacheService::setReplayNum($replay_id, 'view_num');
