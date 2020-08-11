@@ -103,6 +103,17 @@
                                href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.replayedit', ['id' => $row['id']])}}"
                                title='视频设置'><i class='fa fa-edit'></i>设置
                             </a>
+{{--                            @if ($row['delete_time'] > 0)--}}
+{{--                                <a class='btn btn-default btn-success'--}}
+{{--                                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.replayshowhide', ['id' => $row['id']])}}"--}}
+{{--                                   title='显示'>显示--}}
+{{--                                </a>--}}
+{{--                            @else--}}
+{{--                                <a class='btn btn-default btn-danger'--}}
+{{--                                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.replayshowhide', ['id' => $row['id']])}}"--}}
+{{--                                   title='隐藏'>隐藏--}}
+{{--                                </a>--}}
+{{--                            @endif--}}
                         </td>
                     </tr>
                 @endforeach
