@@ -191,6 +191,7 @@
                                 </td>
 
                                 <td style="text-align: center;">
+                                    {{ $list->resource_id }}<br>
                                     @if($list->type_id == 1) {{ $list->resource->name }}
                                     @elseif ($list->type_id == 2) 病例
                                     @elseif ($list->type_id == 3) {{ $list->resource->title }}
