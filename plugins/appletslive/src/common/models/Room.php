@@ -25,4 +25,6 @@ use app\common\models\BaseModel;
 class Room extends BaseModel
 {
     public $table = "appletslive_room";
+
+    public $timestamps = false;
 }

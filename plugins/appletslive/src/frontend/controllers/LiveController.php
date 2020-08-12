@@ -364,31 +364,34 @@ class LiveController extends BaseController
         $cache_val = Cache::get($cache_key);
         $page_key = "$limit|$page";
         if (!$cache_val || !array_key_exists($page_key, $cache_val)) {
-            $page_val = DB::table('appletslive_room')
+            $total = DB::table('appletslive_room')->where('type', 1)->where('delete_time', 0)->count();
+            $list = DB::table('appletslive_room')
                 ->select('id', 'type', 'roomid', 'name', 'anchor_name', 'cover_img', 'start_time', 'end_time', 'live_status', 'desc')
                 ->where('type', 1)
+                ->where('delete_time', 0)
                 ->orderBy('live_status', 'asc')
                 ->orderBy('view_num', 'desc')
                 ->offset($offset)->limit($limit)->get()
                 ->toArray();
+            $page_val = ['total' => $total, 'totalPage' => ceil($total / $limit), 'list' => $list];
             Cache::put($cache_key, [$page_key => $page_val], 30);
         } else {
             $page_val = $cache_val[$page_key];
         }
 
-        if (!empty($page_val)) {
-            $numdata = CacheService::getRoomNum(array_column($page_val, 'id'));
+        if (!empty($page_val['list'])) {
+            $numdata = CacheService::getRoomNum(array_column($page_val['list'], 'id'));
             $my_subscription = ($this->user_id ? CacheService::getUserSubscription($this->user_id) : []);
-            foreach ($page_val as $k => $v) {
+            foreach ($page_val['list'] as $k => $v) {
                 $key = 'key_' . $v['id'];
-                $page_val[$k]['hot_num'] = $numdata[$key]['hot_num'];
-                $page_val[$k]['subscription_num'] = $numdata[$key]['subscription_num'];
-                $page_val[$k]['view_num'] = $numdata[$key]['view_num'];
-                $page_val[$k]['comment_num'] = $numdata[$key]['comment_num'];
-                $page_val[$k]['has_subscription'] = (array_search($page_val[$k]['id'], $my_subscription) === false) ? false : true;
-                if ($page_val[$k]['type'] == 0) {
-                    $page_val[$k]['start_time'] = date('Y-m-d H:i', $page_val[$k]['start_time']);
-                    $page_val[$k]['end_time'] = date('Y-m-d H:i', $page_val[$k]['end_time']);
+                $page_val['list'][$k]['hot_num'] = $numdata[$key]['hot_num'];
+                $page_val['list'][$k]['subscription_num'] = $numdata[$key]['subscription_num'];
+                $page_val['list'][$k]['view_num'] = $numdata[$key]['view_num'];
+                $page_val['list'][$k]['comment_num'] = $numdata[$key]['comment_num'];
+                $page_val['list'][$k]['has_subscription'] = (array_search($page_val['list'][$k]['id'], $my_subscription) === false) ? false : true;
+                if ($page_val['list'][$k]['type'] == 0) {
+                    $page_val['list'][$k]['start_time'] = date('Y-m-d H:i', $page_val['list'][$k]['start_time']);
+                    $page_val['list'][$k]['end_time'] = date('Y-m-d H:i', $page_val['list'][$k]['end_time']);
                 }
             }
         }
@@ -403,35 +406,27 @@ class LiveController extends BaseController
     public function roominfo()
     {
         $room_id = request()->get('room_id', 0);
-        $cache_key = "api_live_room_info|$room_id";
-        $cache_val = Cache::get($cache_key);
-        if (!$cache_val) {
-            $cache_val = DB::table('appletslive_room')
-                ->select('id', 'type', 'roomid', 'name', 'anchor_name', 'cover_img', 'start_time', 'end_time', 'live_status', 'desc')
-                ->where('id', $room_id)
-                ->first();
-            if (!$cache_val) {
-                return $this->errorJson('课程不存在');
-            }
-            Cache::put($cache_key, $cache_val, 30);
+        $room_info = CacheService::getRoomInfo($room_id);
+        if (!$room_info) {
+            return $this->errorJson('课程不存在', $room_info);
         }
 
         CacheService::setRoomNum($room_id, 'view_num');
         $numdata = CacheService::getRoomNum($room_id);
-        $subscription = CacheService::getRoomSubscription($room_id);
+        // $subscription = CacheService::getRoomSubscription($room_id);
+        // $room_info['subscription'] = $subscription;
+        $room_info['hot_num'] = $numdata['hot_num'];
+        $room_info['subscription_num'] = $numdata['subscription_num'];
+        $room_info['view_num'] = $numdata['view_num'];
+        $room_info['comment_num'] = $numdata['comment_num'];
         $my_subscription = ($this->user_id ? CacheService::getUserSubscription($this->user_id) : []);
-        $cache_val['hot_num'] = $numdata['hot_num'];
-        $cache_val['subscription_num'] = $numdata['subscription_num'];
-        $cache_val['view_num'] = $numdata['view_num'];
-        $cache_val['comment_num'] = $numdata['comment_num'];
-        $cache_val['subscription'] = $subscription;
-        $cache_val['has_subscription'] = ($this->user_id ? ((array_search($room_id, $my_subscription) === false) ? false : true) : false);
-        if ($cache_val['type'] == 0) {
-            $cache_val['start_time'] = date('Y-m-d H:i', $cache_val['start_time']);
-            $cache_val['end_time'] = date('Y-m-d H:i', $cache_val['end_time']);
+        $room_info['has_subscription'] = ($this->user_id ? ((array_search($room_id, $my_subscription) === false) ? false : true) : false);
+        if ($room_info['type'] == 0) {
+            $room_info['start_time'] = date('Y-m-d H:i', $room_info['start_time']);
+            $room_info['end_time'] = date('Y-m-d H:i', $room_info['end_time']);
         }
 
-        return $this->successJson('获取成功', $cache_val);
+        return $this->successJson('获取成功', $room_info);
     }
 
     /**
@@ -464,6 +459,47 @@ class LiveController extends BaseController
         }
 
         return $this->errorJson('你已加入课程');
+    }
+
+    /**
+     * 我订阅的课程
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function mysubscription()
+    {
+        $this->needLogin();
+
+        $page = request()->get('page', 1);
+        $limit = 10;
+        $offset = ($page - 1) * $limit;
+
+        $my_subscription = CacheService::getUserSubscription($this->user_id);
+        $list = array_slice($my_subscription, $offset, $limit);
+        foreach ($list as $k => $v) {
+            $list[$k] = CacheService::getRoomInfo($v);
+        }
+
+        if (!empty($list)) {
+            $numdata = CacheService::getRoomNum(array_column($list, 'id'));
+            foreach ($list as $k => $v) {
+                $key = 'key_' . $v['id'];
+                $list[$k]['hot_num'] = $numdata[$key]['hot_num'];
+                $list[$k]['subscription_num'] = $numdata[$key]['subscription_num'];
+                $list[$k]['view_num'] = $numdata[$key]['view_num'];
+                $list[$k]['comment_num'] = $numdata[$key]['comment_num'];
+                if ($list[$k]['type'] == 0) {
+                    $list[$k]['start_time'] = date('Y-m-d H:i', $list[$k]['start_time']);
+                    $list[$k]['end_time'] = date('Y-m-d H:i', $list[$k]['end_time']);
+                }
+            }
+        }
+
+        $total = count($my_subscription);
+        return $this->successJson('获取成功', [
+            'total' => $total,
+            'totalPage' => ceil($total / $limit),
+            'list' => $list,
+        ]);
     }
 
     /**
@@ -578,6 +614,7 @@ class LiveController extends BaseController
             $cache_val = DB::table('appletslive_replay')
                 ->select('id', 'rid', 'type', 'title', 'intro', 'cover_img', 'media_url', 'publish_time', 'time_long')
                 ->where('rid', $room_id)
+                ->where('delete_time', 0)
                 ->orderBy('id', 'desc')
                 ->get()->toArray();
             if (empty($cache_val)) {
