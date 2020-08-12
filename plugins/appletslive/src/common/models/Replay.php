@@ -25,4 +25,6 @@ use app\common\models\BaseModel;
 class Replay extends BaseModel
 {
     public $table = "appletslive_replay";
+
+    public $timestamps = false;
 }
