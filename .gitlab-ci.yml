@@ -14,7 +14,7 @@ job1:
     - echo `pwd`
     - sh -x /opt/rsync_yun_shop.sh
 
-job1:
+job2:
   stage: test
   tags:
     - rsync_prod
