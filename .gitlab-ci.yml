@@ -2,6 +2,7 @@ stages:
   - build
   - test
   - deploy
+
 job1:
   stage: test
   tags:
@@ -11,5 +12,15 @@ job1:
   script:
     - echo `whoami`
     - echo `pwd`
-
     - sh -x /opt/rsync_yun_shop.sh
+
+job1:
+  stage: test
+  tags:
+    - rsync_prod
+  only:
+    - master
+  script:
+    - echo `whoami`
+    - echo `pwd`
+    - sh -x /opt/rsync_ajy_yunshop.sh
