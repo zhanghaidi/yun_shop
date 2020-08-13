@@ -4,10 +4,10 @@ namespace app\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use app\Jobs\SendTemplateMsgJob;
 
 class CourseReminder extends Command
 {
-
     protected $signature = 'command:coursereminder';
 
     /**
@@ -148,7 +148,7 @@ class CourseReminder extends Command
 
             // 5、添加消息发送任务到消息队列
             foreach ($job_list as $job) {
-                $job = SendTemplateMsgJob($job['type'], $$job['options'], $job['template_id'], $job['notice_data'],
+                $job = new SendTemplateMsgJob($job['type'], $job['options'], $job['template_id'], $job['notice_data'],
                     $job['openid'], '', $job['page']);
                 $dispatch = dispatch($job);
                 if ($job['type'] == 'wechat') {
@@ -181,7 +181,7 @@ class CourseReminder extends Command
                 'keyword2' => ['value' => '长期有效', 'color' => '#173177'],
                 'keyword3' => ['value' => '更新中', 'color' => '#173177'],
                 'remark' => [
-                    'value' => '最新视频【' . $replay_info['title'] . '】将于' . date('Y-m-d H:i', $replay_info['publish_time']) . '震撼发布!',
+                    'value' => '最新视频【' . $replay_info['title'] . '】将于' . date('Y-m-d H:i', $replay_info['publish_time']) . '倾情发布!',
                     'color' => '#173177',
                 ],
             ];
@@ -192,7 +192,7 @@ class CourseReminder extends Command
                 'thing1' => ['value' => '课程更新', 'color' => '#173177'],
                 'thing2' => ['value' => '【' . $room_name . '】', 'color' => '#173177'],
                 'name3' => ['value' => $replay_info['doctor'], 'color' => '#173177'],
-                'thing4' => ['value' => '最新视频【' . $replay_info['title'] . '】将于' . date('Y-m-d H:i', $replay_info['publish_time']) . '震撼发布!', 'color' => '#173177'],
+                'thing4' => ['value' => date('Y-m-d H:i', $replay_info['publish_time']), 'color' => '#173177'],
             ];
         }
         return $param;

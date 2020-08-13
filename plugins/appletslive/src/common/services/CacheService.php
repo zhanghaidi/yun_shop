@@ -33,6 +33,39 @@ class CacheService
     protected static $uniacid = 45;
 
     /**
+     * 获取课程基本信息
+     * @param int $room_id
+     * @return mixed|null
+     */
+    public static function getRoomInfo($room_id)
+    {
+        $cache_key = "api_live_room_info|$room_id";
+        $cache_val = Cache::get($cache_key);
+
+        if (!$cache_val) {
+            self::setRoomInfo($room_id);
+            $cache_val = Cache::get($cache_key);
+        }
+
+        return $cache_val;
+    }
+
+    /**
+     * 设置课程基本信息
+     * @param $room_id
+     * @return mixed
+     */
+    public static function setRoomInfo($room_id)
+    {
+        $cache_key = "api_live_room_info|$room_id";
+        $cache_val = DB::table('appletslive_room')
+            ->select('id', 'type', 'roomid', 'name', 'anchor_name', 'cover_img', 'start_time', 'end_time', 'live_status', 'desc')
+            ->where('id', $room_id)
+            ->first();
+        Cache::forever($cache_key, $cache_val);
+    }
+
+    /**
      * 获取课程订阅数、观看数、评论数
      * @param int $room_id
      * @return mixed|null
@@ -44,7 +77,7 @@ class CacheService
 
         if (!$cache_val) {
             self::setRoomNum($room_id);
-            return self::getRoomNum($room_id);
+            $cache_val = Cache::get($cache_key);
         }
 
         if (!$room_id) {
@@ -317,7 +350,7 @@ class CacheService
 
         if (!$cache_val) {
             self::setReplayNum($replay_id);
-            return self::getReplayNum($replay_id);
+            $cache_val = Cache::get($cache_key);
         }
 
         if (!$replay_id) {
