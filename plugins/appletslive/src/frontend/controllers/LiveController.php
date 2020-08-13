@@ -138,7 +138,6 @@ class LiveController extends BaseController
             'owVKQwWK2G_K6P22he4Fb2nLI6HI',
             'owVKQwY67eDMg2d4qkIp1wvd5jEA',
             'owVKQwV0BnkyMWAyfpboHr_ezSd4',
-            'owVKQwXX9lpwoZanxQyvKH9zHrrU',
             'owVKQwWovCGMi5aV9PxtcVaa0lHc',
             'owVKQwRiOFsxd3JmwQ9PJTJ1fRhU',
             'owVKQwUBDf-uw1iM7LSNYOiC0Xtk',
