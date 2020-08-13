@@ -126,6 +126,34 @@ class LiveController extends BaseController
 
     /************************ 测试用代码 BEGIN ************************/
 
+    public function testgroupsendtemplatemsg()
+    {
+        $openid_list = [
+            'owVKQwWK2G_K6P22he4Fb2nLI6HI',
+        ];
+        $account = AccountWechats::getAccountByUniacid(39);
+        $options = [
+            'app_id' => $account['key'],
+            'secret' => $account['secret'],
+        ];
+        $template_id = 'c-tYzcbVnoqT33trwq6ckW_lquLDPmqySXvntFJEMhE';
+        $notice_data = [
+            'first' => ['value' => '尊敬的用户,您订阅的课程有新视频要发布啦~', 'color' => '#173177'],
+            'keyword1' => ['value' => '【和大师一起学艾灸】', 'color' => '#173177'],
+            'keyword2' => ['value' => '长期有效', 'color' => '#173177'],
+            'keyword3' => ['value' => '更新中', 'color' => '#173177'],
+            'remark' => [
+                'value' => '最新视频【每次艾灸几个穴位合适】将于' . date('Y-m-d H:i', strtotime('+15 minutes')) . '震撼发布!',
+                'color' => '#173177',
+            ],
+        ];
+        foreach ($openid_list as $openid) {
+            $job = new SendTemplateMsgJob('wechat', $options, $template_id, $notice_data, $openid, '', '');
+            $dispatch = dispatch($job);
+            Log::info("队列已添加:发送公众号模板消息", ['job' => $job, 'dispatch' => $dispatch]);
+        }
+    }
+
     /**
      * 测试发送微信公众号模板消息
      */
