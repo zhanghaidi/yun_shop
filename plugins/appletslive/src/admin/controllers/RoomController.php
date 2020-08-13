@@ -125,6 +125,15 @@ class RoomController extends BaseController
                 }
             }
 
+            // 处理搜索条件
+            $where = [];
+            if (isset($input->search)) {
+                $search = $input->search;
+                if (isset($search['roomid'])) {
+                    $where[] = ['roomid', '=', $search['roomid']];
+                }
+            }
+
             $room_list = Room::where('type', 0)
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
