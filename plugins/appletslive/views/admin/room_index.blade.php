@@ -20,7 +20,7 @@
     </div>
 
     @if($type=='0')
-        <div class="panel panel-info hide">
+        <div class="panel panel-info">
             <div class="panel-body">
                 <form action="" method="get" class="form-horizontal" role="form" id="form1">
                     <input type="hidden" name="c" value="site"/>
@@ -33,24 +33,9 @@
                             <input type="number" placeholder="直播间ID" class="form-control" name="search[roomid]"
                                    value="{{$request['search']['roomid']}}"/>
                         </div>
-                        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
                             <input type="text" class="form-control" name="search[name]"
                                    value="{{$request['search']['name']}}" placeholder="课程标题"/>
-                        </div>
-                        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                            <select name="search[searchtime]" class="form-control">
-                                <option value="0" @if($request['search']['searchtime']=='0') selected @endif>直播开始时间</option>
-                                <option value='1' @if($request['search']['searchtime']=='1') selected @endif>直播结束时间</option>
-                            </select>
-                        </div>
-                        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
-                            <div class="search-select">
-                                {!! app\common\helpers\DateRange::tplFormFieldDateRange('search[date]', [
-                                'starttime'=>$request['search']?$request['search']['date']['start']:date('Y-m-01',time()),
-                                'endtime'=>$request['search']?$request['search']['date']['end']:date('Y-m-t',time()),
-                                'start'=>0,'end'=>0
-                                ], false) !!}
-                            </div>
                         </div>
                         <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
                             <select name="search[live_status]" class="form-control">
@@ -63,6 +48,22 @@
                                 <option value='106' @if($request['search']['live_status']=='106') selected @endif>异常</option>
                                 <option value='107' @if($request['search']['live_status']=='107') selected @endif>已过期</option>
                             </select>
+                        </div>
+                        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                            <select name="search[searchtime]" class="form-control">
+                                <option value="" selected>请选择时间</option>
+                                <option value="0" @if($request['search']['searchtime']=='0') selected @endif>直播开始时间</option>
+                                <option value='1' @if($request['search']['searchtime']=='1') selected @endif>直播结束时间</option>
+                            </select>
+                        </div>
+                        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                            <div class="search-select">
+                                {!! app\common\helpers\DateRange::tplFormFieldDateRange('search[date]', [
+                                'starttime'=>$request['search']?$request['search']['date']['start']:date('Y-m-01',time()),
+                                'endtime'=>$request['search']?$request['search']['date']['end']:date('Y-m-t',time()),
+                                'start'=>0,'end'=>0
+                                ], false) !!}
+                            </div>
                         </div>
                     </div>
 
@@ -161,7 +162,7 @@
     @endif
 
     @if($type=='1')
-        <div class="panel panel-info hide">
+        <div class="panel panel-info">
             <div class="panel-body">
                 <form action="" method="get" class="form-horizontal" role="form" id="form2">
                     <input type="hidden" name="c" value="site"/>

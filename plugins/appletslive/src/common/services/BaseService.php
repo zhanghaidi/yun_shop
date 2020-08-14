@@ -74,7 +74,7 @@ class BaseService
         $filterStrs = DB::table('diagnostic_service_sns_filter')->get()->toArray();
         $keywords = array();
         foreach ($filterStrs as $k => $v){
-            $filterStrs[$k]['content'] = explode(',' , $v['content']);
+            $filterStrs[$k]['content'] = explode('-' , $v['content']);
             if(empty($keywords)){
                 $keywords = $filterStrs[$k]['content'];
             }else{

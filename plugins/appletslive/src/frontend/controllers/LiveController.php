@@ -48,6 +48,7 @@ class LiveController extends BaseController
         parent::__construct();
         $this->user_id = \YunShop::app()->getMemberId();
         $this->is_follow_account = $this->checkIsFollowAccount();
+        Cache::flush();
     }
 
     /**
@@ -131,6 +132,8 @@ class LiveController extends BaseController
      */
     public function testgroupsendtemplatemsg()
     {
+        $start_time = implode('.', array_reverse(explode(' ', substr(microtime(), 2))));
+
         // $openid_list = DB::table('mc_mapping_fans')
         //     ->where('uniacid', 39)
         //     ->pluck('openid');
@@ -138,9 +141,8 @@ class LiveController extends BaseController
             'owVKQwWK2G_K6P22he4Fb2nLI6HI',
             'owVKQwY67eDMg2d4qkIp1wvd5jEA',
             'owVKQwV0BnkyMWAyfpboHr_ezSd4',
+            'owVKQwXX9lpwoZanxQyvKH9zHrrU',
             'owVKQwWovCGMi5aV9PxtcVaa0lHc',
-            'owVKQwRiOFsxd3JmwQ9PJTJ1fRhU',
-            'owVKQwUBDf-uw1iM7LSNYOiC0Xtk',
         ];
         $account = AccountWechats::getAccountByUniacid(39);
         $options = [
@@ -165,6 +167,13 @@ class LiveController extends BaseController
                 Log::info("队列已添加:发送公众号模板消息", ['job' => $job, 'dispatch' => $dispatch]);
             }
         }
+
+        $end_time = implode('.', array_reverse(explode(' ', substr(microtime(), 2))));
+        return $this->successJson('课程提醒队列测试', [
+            'start_time' => $start_time,
+            'end_time' => $end_time,
+            'cost' => bcsub($end_time, $start_time, 8) . ' seconds',
+        ]);
     }
 
     /**
@@ -610,7 +619,7 @@ class LiveController extends BaseController
             CacheService::setRoomNum($input['room_id'], 'comment_num');
         }
         CacheService::setRoomComment($input['room_id']);
-        return $this->successJson('评论成功', $id);
+        return $this->successJson('评论成功', ['id' => $id, 'content' => $content]);
     }
 
     /**
@@ -806,7 +815,7 @@ class LiveController extends BaseController
             CacheService::setReplayNum($input['replay_id'], 'comment_num');
         }
         CacheService::setReplayComment($input['replay_id']);
-        return $this->successJson('评论成功', $id);
+        return $this->successJson('评论成功', ['id' => $id, 'content' => $content]);
     }
 
     /**
