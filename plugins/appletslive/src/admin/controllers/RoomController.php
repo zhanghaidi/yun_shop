@@ -45,10 +45,6 @@ class RoomController extends BaseController
         $input = \YunShop::request();
         $limit = 10;
 
-        if (isset($input->search)) {
-            dd($input->search);
-        }
-
         if ($type == 0) { // 直播
 
             $cache_key = 'live_room_list';
@@ -126,32 +122,62 @@ class RoomController extends BaseController
             }
 
             // 处理搜索条件
-            $where = [];
+            $where[] = ['type', '=', 0];
             if (isset($input->search)) {
                 $search = $input->search;
-                if (isset($search['roomid'])) {
-                    $where[] = ['roomid', '=', $search['roomid']];
+                if (intval($search['roomid']) > 0) {
+                    $where[] = ['roomid', '=', intval($search['roomid'])];
+                }
+                if (trim($search['name']) !== '') {
+                    $where[] = ['name', 'like', '%' . trim($search['name']) . '%'];
+                }
+                if ($search['searchtime'] !== '') {
+                    $time_field = ($search['searchtime'] === '0') ? 'start_time' : 'end_time';
+                    $where[] = [$time_field, 'between', [strtotime($search['date']['start']), strtotime($search['date']['end'] . ' 23:59:59')]];
+                }
+                if (trim($search['live_status']) !== '') {
+                    $where[] = ['live_status', '=', $search['live_status']];
+                }
+                if (trim($search['status']) !== '') {
+                    if ($search['status'] === '0') {
+                        $where[] = ['delete_time', '>', 0];
+                    } else {
+                        $where[] = ['delete_time', '=', 0];
+                    }
                 }
             }
-
-            $room_list = Room::where('type', 0)
-                ->orderBy('id', 'desc')
-                ->paginate($limit);
         }
 
         if ($type == 1) { // 录播
-            $room_list = Room::where('type', 1)
-                ->orderBy('id', 'desc')
-                ->paginate($limit);
+            // 处理搜索条件
+            $where[] = ['type', '=', 1];
+            if (isset($input->search)) {
+                $search = $input->search;
+                if (intval($search['id']) > 0) {
+                    $where[] = ['id', '=', intval($search['id'])];
+                }
+                if (trim($search['name']) !== '') {
+                    $where[] = ['name', 'like', '%' . trim($search['name']) . '%'];
+                }
+                if (trim($search['status']) !== '') {
+                    if ($search['status'] === '0') {
+                        $where[] = ['delete_time', '>', 0];
+                    } else {
+                        $where[] = ['delete_time', '=', 0];
+                    }
+                }
+            }
         }
 
+        $room_list = Room::where($where)
+            ->orderBy('id', 'desc')
+            ->paginate($limit);
         $pager = PaginationHelper::show($room_list->total(), $room_list->currentPage(), $room_list->perPage());
 
         return view('Yunshop\Appletslive::admin.room_index', [
             'type' => $type,
             'room_list' => $room_list,
             'pager' => $pager,
-            'request' => $input,
         ])->render();
     }
 
@@ -264,10 +290,6 @@ class RoomController extends BaseController
         $input = \YunShop::request();
         $limit = 10;
 
-        if (isset($input->search)) {
-            dd($input->search);
-        }
-
         if ($room_type == 0) { // 直播回看列表
             if (empty($replay_list)) {
                 $result = (new BaseService())->getReplays($this->getToken(), $room['roomid']);
@@ -293,7 +315,28 @@ class RoomController extends BaseController
         }
 
         if ($room_type == 1) { // 录播列表
-            $result = Replay::where('rid', $rid)
+            // 处理搜索条件
+            $where[] = ['rid', '=', $rid];
+            if (isset($input->search)) {
+                $search = $input->search;
+                if (intval($search['id']) > 0) {
+                    $where[] = ['id', '=', intval($search['id'])];
+                }
+                if (trim($search['title']) !== '') {
+                    $where[] = ['title', 'like', '%' . trim($search['title']) . '%'];
+                }
+                if (trim($search['type']) !== '') {
+                    $where[] = ['type', '=', $search['type']];
+                }
+                if (trim($search['status']) !== '') {
+                    if ($search['status'] === '0') {
+                        $where[] = ['delete_time', '>', 0];
+                    } else {
+                        $where[] = ['delete_time', '=', 0];
+                    }
+                }
+            }
+            $result = Replay::where($where)
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
             $replay_list = $result;
@@ -306,7 +349,6 @@ class RoomController extends BaseController
             'room_type' => $room_type,
             'replay_list' => $replay_list,
             'pager' => $pager,
-            'request' => $input,
         ])->render();
     }
 

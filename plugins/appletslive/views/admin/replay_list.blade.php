@@ -61,7 +61,7 @@
     @endif
 
     @if($room_type=='1')
-        <div class="panel panel-info hide">
+        <div class="panel panel-info">
             <div class="panel-body">
                 <form action="" method="get" class="form-horizontal" role="form" id="form2">
                     <input type="hidden" name="c" value="site"/>
