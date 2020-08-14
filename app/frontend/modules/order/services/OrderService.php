@@ -379,33 +379,6 @@ class OrderService
     }
 
     /**
-     * 待支付订单自动提醒
-     * @param $uniacid
-     */
-    public static function notPaidAutoNotice($uniacid)
-    {
-        \YunShop::app()->uniacid = $uniacid;
-        \Setting::$uniqueAccountId = $uniacid;
-        $minutes = (int)\Setting::get('shop.trade.not_paid_notice_minutes');
-        if (!$minutes) {
-            return;
-        }
-        $orders = \app\backend\modules\order\models\Order::waitPay()
-            ->where('create_time', '<', (int)Carbon::now()->addMinutes(-$minutes)->timestamp)
-            ->where('create_time', '>', (int)Carbon::now()->addMinutes(-($minutes * 2))->timestamp)
-            ->normal()->get();
-        if (!$orders->isEmpty()) {
-            $orders->each(function ($order) {
-                try {
-                    \Log::info("待支付订单:{$order->id}自动提醒成功");
-                } catch (\Exception $e) {
-                    \Log::error("待支付订单:{$order->id}自动提醒失败", $e->getMessage());
-                }
-            });
-        }
-    }
-
-    /**
      * @param $order
      * @throws AppException
      */
