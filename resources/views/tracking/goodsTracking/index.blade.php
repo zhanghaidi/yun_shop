@@ -1,5 +1,5 @@
 @extends('layouts.base')
-@section('title','商品追踪列表')
+@section('title','商品埋点列表')
 
 @section('content')
     <div id="member-blade" class="rightlist">
@@ -7,13 +7,156 @@
             <div class="panel-heading">
                 <span>当前位置：</span>
                 <a href="{{yzWebUrl('tracking.goods-tracking.index')}}">
-                    <span>商品追踪</span>
+                    <span>商品埋点</span>
                 </a>
                 <span>>></span>
                 <a href="#">
-                    <span>追踪列表</span>
+                    <span>埋点列表</span>
                 </a>
             </div>
+
+
+            <div class="panel-body">
+                <form action="" method="get" class="form-horizontal" role="form" id="form1">
+                    <input type="hidden" name="c" value="site"/>
+                    <input type="hidden" name="a" value="entry"/>
+                    <input type="hidden" name="m" value="yun_shop"/>
+                    <input type="hidden" name="do" value="tracking" id="form_do"/>
+                    <input type="hidden" name="route" value="tracking.goods-tracking.index" id="route"/>
+
+                    <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                        <!-- <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">会员信息</label>-->
+                        <div class="">
+                            <input type="text" class="form-control" name="search[realname]"
+                                   value="{{$search['realname']}}" placeholder="可搜索会员ID/昵称/姓名/手机号"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2 ">
+                        <!--<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">ID</label>-->
+                        <div class="">
+                            <input type="text" placeholder="商品ID/商品名" class="form-control" name="search[keywords]"
+                                   value="{{$search['keywords']}}"/>
+                        </div>
+                    </div>
+
+                    {{--<div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                        <!-- <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">会员等级</label>-->
+                        <div class="">
+                            <select name='search[level]' class='form-control'>
+                                <option value=''>会员等级不限</option>
+                                @foreach($levels as $level)
+                                    <option value='{{$level['id']}}'
+                                            @if($request['search']['level']==$level['id'])
+                                            selected
+                                            @endif
+                                    >{{$level['level_name']}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>--}}
+                    <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                        <!--  <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">会员分组</label>-->
+                        <div class="">
+                            <select name='search[type_id]' class='form-control'>
+                                <option value=''>来源类型不限</option>
+                                <option value='1'
+                                        @if($search['type_id']=='1')
+                                        selected
+                                        @endif>穴位
+                                </option>
+                                <option value='3'
+                                        @if($search['type_id']=='3')
+                                        selected
+                                        @endif>文章
+                                </option>
+                                <option value='4'
+                                        @if($search['type_id']=='4')
+                                        selected
+                                        @endif>社区话题
+                                </option>
+                                <option value='5'
+                                        @if($search['type_id']=='5')
+                                        selected
+                                        @endif>体质
+                                </option>
+                                <option value='6'
+                                        @if($search['type_id']=='6')
+                                        selected
+                                        @endif>灸师
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                        <!--      <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">是否关注</label>-->
+                        <div class="">
+                            <select name='search[action_id]' class='form-control'>
+                                <option value=''>操作动作不限</option>
+                                </option>
+                                <option value='1'
+                                        @if($search['action_id']=='1')
+                                        selected
+                                        @endif
+                                >查看
+                                </option>
+                                <option value='2'
+                                        @if($search['action_id']=='2')
+                                        selected
+                                        @endif
+                                >收藏
+                                </option>
+                                <option value='3'
+                                        @if($search['action_id']=='3')
+                                        selected
+                                        @endif
+                                >加购
+                                </option>
+
+                                <option value='4'
+                                        @if($search['action_id']=='4')
+                                        selected
+                                        @endif
+                                >下单
+                                </option>
+
+                                <option value='5'
+                                        @if($search['action_id']=='5')
+                                        selected
+                                        @endif
+                                >支付
+                                </option>
+
+                            </select>
+                        </div>
+                    </div>
+                    {{--<div class="search-select">
+                        {!! app\common\helpers\DateRange::tplFormFieldDateRange('search[times]', [
+                        'starttime'=>date('Y-m-d H:i', $search['times']['start']),
+                        'endtime'=>date('Y-m-d H:i',$search['times']['start']),
+                        'start'=>0,
+                        'end'=>0
+                        ], true) !!}
+                    </div>--}}
+
+                    <div class="form-group  col-xs-12 col-md-12 col-lg-6">
+                        <!--<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label"></label>-->
+                        <div class="">
+                            <button class="btn btn-success "><i class="fa fa-search"></i> 搜索</button>
+                            {{--<button type="button" name="export" value="1" id="export" class="btn btn-default">导出
+                                Excel
+                            </button>--}}
+
+                        </div>
+                    </div>
+
+                </form>
+
+            </div>
+
+
         </div>
         <div class="clearfix">
             <div class="panel panel-default">
@@ -29,6 +172,7 @@
                             <th style='width:12%; text-align: center;'>操作用户</th>
                             <th style='width:12%; text-align: center;'>操作动作</th>
                             <th style='width:12%; text-align: center;'>动作变量</th>
+                            <th style='width:12%; text-align: center;'>订单号</th>
                             <th style='width:12%; text-align: center;'>报点时间</th>
                         </tr>
                         </thead>
@@ -36,11 +180,31 @@
                         @foreach($pageList as $list)
                             <tr>
                                 <td style="text-align: center;">{{ $list->id }}</td>
-                                <td style="text-align: center;">{{ $list->to_type_id }}</td>
-                                <td style="text-align: center;">{{ $list->resource_id }}</td>
+                                <td style="text-align: center;">
+                                    @if($list->type_id == 1) 穴位
+                                    @elseif ($list->type_id == 2) 病例
+                                    @elseif ($list->type_id == 3) 文章
+                                    @elseif ($list->type_id == 4) 话题
+                                    @elseif ($list->type_id == 5) 体质
+                                    @elseif ($list->type_id == 6) 灸师
+                                    @endif
+                                </td>
+
+                                <td style="text-align: center;">
+                                    {{ $list->resource_id }}<br>
+                                    @if($list->type_id == 1) {{ $list->resource->name }}
+                                    @elseif ($list->type_id == 2) 病例
+                                    @elseif ($list->type_id == 3) {{ $list->resource->title }}
+                                    @elseif ($list->type_id == 4) {{ $list->resource->title }}
+                                    @elseif ($list->type_id == 5) {{ $list->resource->name }}
+                                    {{--@elseif ($list->type_id == 6) {{ $list->resource->username }}--}}
+                                    @endif
+                                </td>
                                 <td style="text-align: center;">
                                     <a href="{{yzWebUrl('goods.goods.index')}}" title="{{ $list->goods->title }}">
                                         <img src="{{yz_tomedia($list->goods->thumb)}}" style='width:45px;height:45px;padding:1px;border:1px solid #ccc' />
+                                        <br/>
+                                        {{ $list->goods_id }}
                                         <br/>
                                         {{ $list->goods->title }}
                                     </a>
@@ -52,12 +216,13 @@
                                         {{ $list->user->nickname }}
                                     </a>
                                 </td>
-                                <td style="text-align: center;">{!! $list->action !!}</td>
-                                <td style="text-align: center;">{{ $list->val}}</td>
+                                <td style="text-align: center;">{!! $list->action_name !!}</td>
+                                <td style="text-align: center;">{{ $list->val }}</td>
+                                <td style="text-align: center;"><a href="{{yzWebUrl('order.list.index',array('search[ambiguous][field]'=>'order','search[ambiguous][string]'=> $list->order->order_sn))}}">{{ $list->order->order_sn }}</a></td>
                                 <td style="text-align: center;">{{date('Y-m-d H:i:s', $list->create_time)}}</td>
-                                <td style="overflow:visible; text-align: center;">
+                                {{--<td style="overflow:visible; text-align: center;">
                                     <a class='btn btn-default' href="{{ yzWebUrl('tracking.goods-tracking.index', array('id' => $list->id)) }}" style="margin-bottom: 2px">详细记录</a>
-                                </td>
+                                </td>--}}
                             </tr>
                         @endforeach
                         </tbody>

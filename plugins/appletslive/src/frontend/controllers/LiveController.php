@@ -126,10 +126,21 @@ class LiveController extends BaseController
 
     /************************ 测试用代码 BEGIN ************************/
 
+    /**
+     * 测试群发微信公众号模板消息
+     */
     public function testgroupsendtemplatemsg()
     {
+        // $openid_list = DB::table('mc_mapping_fans')
+        //     ->where('uniacid', 39)
+        //     ->pluck('openid');
         $openid_list = [
             'owVKQwWK2G_K6P22he4Fb2nLI6HI',
+            'owVKQwY67eDMg2d4qkIp1wvd5jEA',
+            'owVKQwV0BnkyMWAyfpboHr_ezSd4',
+            'owVKQwWovCGMi5aV9PxtcVaa0lHc',
+            'owVKQwRiOFsxd3JmwQ9PJTJ1fRhU',
+            'owVKQwUBDf-uw1iM7LSNYOiC0Xtk',
         ];
         $account = AccountWechats::getAccountByUniacid(39);
         $options = [
@@ -148,14 +159,16 @@ class LiveController extends BaseController
             ],
         ];
         foreach ($openid_list as $openid) {
-            $job = new SendTemplateMsgJob('wechat', $options, $template_id, $notice_data, $openid, '', '');
-            $dispatch = dispatch($job);
-            Log::info("队列已添加:发送公众号模板消息", ['job' => $job, 'dispatch' => $dispatch]);
+            for ($i = 0; $i < 10; $i++) {
+                $job = new SendTemplateMsgJob('wechat', $options, $template_id, $notice_data, $openid, '', '');
+                $dispatch = dispatch($job);
+                Log::info("队列已添加:发送公众号模板消息", ['job' => $job, 'dispatch' => $dispatch]);
+            }
         }
     }
 
     /**
-     * 测试发送微信公众号模板消息
+     * 测试发送一条微信公众号模板消息
      */
     public function testsendtemplatemsg()
     {

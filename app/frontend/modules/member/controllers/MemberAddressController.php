@@ -341,6 +341,7 @@ class MemberAddressController extends ApiController
             $this->memberAddressRepository->cancelDefaultAddress(\YunShop::app()->getMemberId());
         }
         if ($addressModel->save()) {
+            $this->updateMobile(\YunShop::app()->getMemberId(), $requestAddress['mobile'],$requestAddress['username']);
             return $this->successJson('修改收货地址成功', $addressModel->toArray());
         } else {
             return $this->errorJson("写入数据出错，请重试！");
@@ -440,11 +441,11 @@ class MemberAddressController extends ApiController
         $serviceUser = DB::table('diagnostic_service_user')->where('ajy_uid',$memberId)->first();
         //$mcMember = DB::table('mc_members')->where('uid',$memberId)->first();
         $mcMember = Member::find($memberId);
-        if($serviceUser['is_verify'] == 0 && $serviceUser['telephone'] == ''){
+        if($serviceUser['telephone'] == '' || $serviceUser['real_name'] == ''){
            DB::table('diagnostic_service_user')->where('ajy_uid',$memberId)->update(['telephone' => $mobile, 'real_name' => $username]);
         }
 
-        if($mcMember->mobile == ''){
+        if($mcMember->mobile == '' || $mcMember->realname == ''){
              //DB::table('mc_memebers')->where('uid', $memberId)->update(['mobile' => $mobile, 'realname' => $username]);
             $mcMember->mobile = $mobile;
             $mcMember->realname = $username;

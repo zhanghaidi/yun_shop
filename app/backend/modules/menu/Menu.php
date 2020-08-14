@@ -1530,7 +1530,7 @@ class Menu
 
                     //2020-08-05 add by zhd 新增商品追踪功能
                     'goods_tracking' => [
-                        'name'       => '商品追踪',
+                        'name'       => '商品埋点',
                         'url'        => 'tracking.goods-tracking.index',
                         'url_params' => '',
                         'permit'     => 1,
@@ -1541,7 +1541,7 @@ class Menu
                         'parents'    => ['Goods',],
                         'child'      => [
                             'goods_tracking_history' => [
-                                'name'       => '商品追踪记录',
+                                'name'       => '商品埋点记录',
                                 'url'        => 'tracking.goods-tracking.index',
                                 'url_params' => '',
                                 'permit'     => 1,

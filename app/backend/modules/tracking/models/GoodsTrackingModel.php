@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 class GoodsTrackingModel extends Model
 {
     protected $table = 'diagnostic_service_goods_tracking';
+    protected $appends = ['type_id','action_id','action_name'];
 
     public $timestamps = false;
 
@@ -27,20 +28,15 @@ class GoodsTrackingModel extends Model
      */
     public function getToTypeIdAttribute($value)
     {
-        if($value == 1){
-            $value = '穴位';
-        }elseif ($value == 2){
-            $value = '病例';
-        }elseif ($value == 3){
-            $value = '文章';
-        }elseif ($value == 4){
-            $value = '话题';
-        }elseif ($value == 5){
-            $value = '体质';
-        }elseif ($value == 6){
-            $value = '灸师';
-        }
-        return $value;
+        $this->type_id = $value;
+        $map = [
+           1 => 'App\backend\modules\tracking\models\DiagnosticServiceAcupoint',
+           3 => 'App\backend\modules\tracking\models\DiagnosticServiceArticle',
+           4 => 'App\backend\modules\tracking\models\DiagnosticServicePost',
+           5 => 'App\backend\modules\tracking\models\DiagnosticServiceSomatoType',
+           //6 => 'App\backend\modules\tracking\models\ChartChartuser'
+        ];
+        return $map[$value];
     }
 
     /**
@@ -51,22 +47,29 @@ class GoodsTrackingModel extends Model
      */
     public function getActionAttribute($value)
     {
+        $this->action_id = $value;
         if($value == 1){
-            $value = '<span class="label label-default"> <i class="fa fa-eye"></i> 查看</span>';
+            $this->action_name = '<span class="label label-default"> <i class="fa fa-eye"></i> 查看</span>';
         }elseif ($value == 2){
-            $value = '<span class="label label-info"> <i class="fa fa-star-half-o"></i> 收藏</span>';
+            $this->action_name = '<span class="label label-info"> <i class="fa fa-star-half-o"></i> 收藏</span>';
         }elseif ($value == 3){
-            $value = '<span class="label label-warning"> <i class="fa fa-shopping-cart"></i> 加购</span>';
+            $this->action_name = '<span class="label label-warning"> <i class="fa fa-shopping-cart"></i> 加购</span>';
         }elseif ($value == 4){
-            $value = '<span class="label label-primary"> <i class="fa fa-cc-visa"></i> 下单</span>';
+            $this->action_name = '<span class="label label-primary"> <i class="fa fa-cc-visa"></i> 下单</span>';
         }elseif ($value == 5){
-            $value = '<span class="label label-success"> <i class="fa fa-money"></i> 支付</span>';
+            $this->action_name = '<span class="label label-success"> <i class="fa fa-money"></i> 付款</span>';
         }
-        return $value;
+        $map = [
+            4 => 'App\backend\modules\order\models\Order',
+            5 => 'App\backend\modules\order\models\Order',
+        ];
+        return $map[$value];
+
     }
+
     /**
      * 获取与上报埋点相关的商品。
-     * return $this->hasOne('App\Phone', 'foreign_key', 'local_key');
+     * return $this->hasOne('App\Goods', 'foreign_key', 'local_key');
      */
     public function goods()
     {
@@ -75,11 +78,86 @@ class GoodsTrackingModel extends Model
 
     /**
      * 获取与上报埋点相关的用户信息。
-     * return $this->hasOne('App\Phone', 'foreign_key', 'local_key');
+     * return $this->hasOne('App\User', 'foreign_key', 'local_key');
      */
     public function user()
     {
         return $this->belongsTo('App\backend\modules\tracking\models\DiagnosticServiceUser','user_id','ajy_uid');
+    }
+
+    /**
+     * 取得埋点对应的来源对象。
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     */
+    public function resource()
+    {
+        return $this->morphTo('resource','to_type_id','resource_id');
+    }
+
+    /**
+     * 取得埋点对应的操作订单。
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     */
+    public function order()
+    {
+        return $this->morphTo('order','action','val');
+    }
+
+    /**
+     * @param $query
+     * @return mixed
+     */
+    public function scopeRecords($query)
+    {
+        return $query->with(['user' => function ($user) {
+                return $user->select('ajy_uid', 'nickname', 'avatarurl');
+            }])
+            ->with('resource')->with('order')
+            ->with(['goods' => function ($goods) {
+                return $goods->select('id','title','thumb','price');
+            }]);
+    }
+
+    //搜索条件
+    public function scopeSearch($query, array $search)
+    {
+        /*if ($search['ordersn']) {
+            $query->where('ordersn', 'like', $search['ordersn'] . '%');
+        }*/
+
+        //搜索来源类型筛选
+        if ($search['type_id']) {
+            $query = $query->where('to_type_id', $search['type_id']);
+        }
+
+        //操作类型筛选
+        if ($search['action_id']) {
+            $query = $query->where('action', $search['action_id']);
+        }
+        //根据用户筛选
+        if ($search['realname']) {
+            $query = $query->whereHas('user', function($user)use($search) {
+                $user = $user->select('ajy_uid', 'nickname','telephone','avatarurl')
+                    ->where('nickname', 'like', '%' . $search['realname'] . '%')
+                    ->orWhere('telephone', 'like', '%' . $search['realname'] . '%')
+                    ->orWhere('ajy_uid', $search['realname']);
+            });
+        }
+        //根据商品筛选
+        if ($search['keywords']) {
+            $query = $query->whereHas('goods', function($goods)use($search) {
+                $goods = $goods->select('id', 'title','thumb','price')
+                    ->where('title', 'like', '%' . $search['keywords'] . '%')
+                    ->orWhere('id', $search['keywords']);
+            });
+        }
+        //根据时间筛选
+        /*if ($search['searchtime']) {
+            $query = $query->whereBetween('create_time', [strtotime($search['times']['start']),strtotime($search['times']['end'])]);
+        }*/
+        return $query;
     }
 
 

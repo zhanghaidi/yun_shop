@@ -13,6 +13,13 @@ $default_slave_username = '';
 $default_slave_password = '';
 $default_slave_port     = '';
 
+$jiushi_host     = '';
+$jiushi_port     = '';
+$jiushi_db       = '';
+$jiushi_username = '';
+$jiushi_password = '';
+$jiushi_prefix   = '';
+
 $db_conn_name     = env('DB_CONNECTION', 'mysql');
 
 if (env('APP_Framework',false) != 'platform') {
@@ -37,6 +44,8 @@ if (isset($config)) {
         $default_slave_username = $config['db']['slave'][1]['username'];
         $default_slave_password = $config['db']['slave'][1]['password'];
         $default_slave_port     = $config['db']['slave'][1]['port'];
+
+
     } else {
         $default_host     = $config['db']['host'];
         $default_port     = $config['db']['port'];
@@ -45,6 +54,14 @@ if (isset($config)) {
         $default_password = $config['db']['password'];
         $default_prefix   = $config['db']['tablepre'];
     }
+
+    //灸师数据库链接配置读取 by zhd 2020-08-07
+    $jiushi_host = $config['db']['jiushi']['host'];
+    $jiushi_port = $config['db']['jiushi']['port'];
+    $jiushi_db = $config['db']['jiushi']['database'];
+    $jiushi_username = $config['db']['jiushi']['username'];
+    $jiushi_password = $config['db']['jiushi']['password'];
+    $jiushi_prefix   = $config['db']['jiushi']['tablepre'];
 }
 
 
@@ -143,6 +160,20 @@ return [
         'engine' => null,
         'loggingQueries'=>true,
 
+    ],
+
+    // 灸师数据库配置  add by zhd 2020-08-07
+    'mysql_jiushi' => [
+        'driver' => 'mysql',
+        'host' => env('DB_HOST_JIUSHI', $jiushi_host),
+        'port' => env('DB_PORT_JIUSHI', $jiushi_port),
+        'database' => env('DB_DATABASE_JIUSHI', $jiushi_db),
+        'username' => env('DB_USERNAME_JIUSHI', $jiushi_username),
+        'password' => env('DB_PASSWORD_JIUSHI', $jiushi_password),
+        'charset' => 'utf8',
+        'collation' => 'utf8_unicode_ci',
+        'prefix' => env('DB_PREFIX', $jiushi_prefix),
+        'strict' => false,
     ],
 
 ],
