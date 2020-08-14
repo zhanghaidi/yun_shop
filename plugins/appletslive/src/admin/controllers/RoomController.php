@@ -178,6 +178,7 @@ class RoomController extends BaseController
             'type' => $type,
             'room_list' => $room_list,
             'pager' => $pager,
+            'request' => $input,
         ])->render();
     }
 
@@ -349,6 +350,7 @@ class RoomController extends BaseController
             'room_type' => $room_type,
             'replay_list' => $replay_list,
             'pager' => $pager,
+            'request' => $input,
         ])->render();
     }
 

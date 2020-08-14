@@ -68,7 +68,7 @@
                     <input type="hidden" name="a" value="entry"/>
                     <input type="hidden" name="m" value="yun_shop"/>
                     <input type="hidden" name="do" value="{{ $request['do'] }}"/>
-                    <input type="hidden" name="route" value="plugin.appletslive.admin.controllers.room.index"/>
+                    <input type="hidden" name="route" value="plugin.appletslive.admin.controllers.room.replaylist"/>
                     <input type="hidden" name="rid" value="{{ $request['rid'] }}"/>
                     <div class="form-group">
                         <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
