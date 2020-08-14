@@ -94,12 +94,12 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'url_params' => '',
                             'parents' => ['appletslive', 'appletslive-room'],
                         ],
-                        'appletslive_room_del' => [
-                            'name' => '删除房间',
+                        'appletslive_room_showhide' => [
+                            'name' => '房间显示与隐藏',
                             'permit' => 1,
                             'menu' => 0,
                             'icon' => '',
-                            'url' => 'plugin.appletslive.admin.controllers.room.del',
+                            'url' => 'plugin.appletslive.admin.controllers.room.showhide',
                             'url_params' => '',
                             'parents' => ['appletslive', 'appletslive-room'],
                         ],
@@ -130,12 +130,12 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'url_params' => '',
                             'parents' => ['appletslive', 'appletslive-room'],
                         ],
-                        'appletslive_room_replaydel' => [
-                            'name' => '删除回看',
+                        'appletslive_room_replayshowhide' => [
+                            'name' => '视频显示与隐藏',
                             'permit' => 1,
                             'menu' => 0,
                             'icon' => '',
-                            'url' => 'plugin.appletslive.admin.controllers.room.replaydel',
+                            'url' => 'plugin.appletslive.admin.controllers.room.replayshowhide',
                             'url_params' => '',
                             'parents' => ['appletslive', 'appletslive-room'],
                         ],

@@ -4,10 +4,10 @@ namespace app\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use app\Jobs\SendTemplateMsgJob;
 
 class CourseReminder extends Command
 {
-
     protected $signature = 'command:coursereminder';
 
     /**
@@ -148,7 +148,7 @@ class CourseReminder extends Command
 
             // 5、添加消息发送任务到消息队列
             foreach ($job_list as $job) {
-                $job = SendTemplateMsgJob($job['type'], $$job['options'], $job['template_id'], $job['notice_data'],
+                $job = new SendTemplateMsgJob($job['type'], $job['options'], $job['template_id'], $job['notice_data'],
                     $job['openid'], '', $job['page']);
                 $dispatch = dispatch($job);
                 if ($job['type'] == 'wechat') {
