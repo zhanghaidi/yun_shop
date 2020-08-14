@@ -34,7 +34,7 @@ class GoodsTrackingModel extends Model
            3 => 'App\backend\modules\tracking\models\DiagnosticServiceArticle',
            4 => 'App\backend\modules\tracking\models\DiagnosticServicePost',
            5 => 'App\backend\modules\tracking\models\DiagnosticServiceSomatoType',
-           6 => 'App\backend\modules\tracking\models\ChartChartuser'
+           //6 => 'App\backend\modules\tracking\models\ChartChartuser'
         ];
         return $map[$value];
     }
