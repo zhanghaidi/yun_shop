@@ -117,7 +117,9 @@ class CacheService
         if (is_array($room_id)) {
             $record = DB::table('appletslive_room')->whereIn('id', $room_id)->get();
         } else {
-            DB::table('appletslive_room')->where('id', $room_id)->increment($field);
+            if ($field !== null) {
+                DB::table('appletslive_room')->where('id', $room_id)->increment($field);
+            }
             $record = DB::table('appletslive_room')->where('id', $room_id)->first();
         }
 
