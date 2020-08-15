@@ -39,11 +39,11 @@
                 </div>
                 <div class="form-group">
                     <label class="col-md-2 col-sm-3 col-xs-12 control-label">链接地址</label>
-                    <div class="col-md-10 col-sm-9 col-xs-12">
+                    <div class="col-md-9 col-sm-9 col-xs-12">
                         @if($room['type']=='0')
                             <span class="form-control">{{ $info['media_url'] }}</span>
                         @else
-                            <input name="media_url" type="text" class="form-control" value="{{ $info['media_url'] }}" required />
+                            {!! app\common\helpers\ImageHelper::tplFormFieldVideo('media_url', $info['media_url']) !!}
                         @endif
                     </div>
                 </div>
