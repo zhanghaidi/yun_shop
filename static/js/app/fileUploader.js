@@ -262,7 +262,7 @@
                                     mimeTypes: "video/*"
                                 },
                                 l = 30,
-                                m = 20971520,
+                                m = 50 * 1024 * 1024,
                                 n = l * m,
                                 o = !1,
                             p.options.isWechat && (l = 5, "temp" == p.options.mode ? (k.extensions = "mp4", m = 10485760, n = 52428800) : (m = 20971520, n = 104857600))
