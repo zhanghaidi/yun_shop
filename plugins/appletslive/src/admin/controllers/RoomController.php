@@ -189,7 +189,7 @@ class RoomController extends BaseController
             $upd_data = [];
             $param = request()->all();
             if (array_key_exists('name', $param)) { // 房间名
-                $upd_data['name'] = $param['name'] ? $param['name'] : '';
+                $upd_data['name'] = $param['name'] ? trim($param['name']) : '';
             }
             if (array_key_exists('cover_img', $param)) { // 房间封面
                 $upd_data['cover_img'] = $param['cover_img'] ? $param['cover_img'] : '';
@@ -201,6 +201,9 @@ class RoomController extends BaseController
             $room = DB::table('appletslive_room')->where('id', $id)->first();
             if (!$room) {
                 return $this->message('无效的房间ID', Url::absoluteWeb(''), 'danger');
+            }
+            if (DB::table('appletslive_room')->where('name', $upd_data['name'])->where('id', '<>', $id)->first()) {
+                return $this->message('课程名称已存在', Url::absoluteWeb(''), 'danger');
             }
             DB::table('appletslive_room')->where('id', $id)->update($upd_data);
 
@@ -231,13 +234,16 @@ class RoomController extends BaseController
             $ist_data = ['type' => 1, 'live_status' => 255];
             $param = request()->all();
             if (array_key_exists('name', $param)) { // 房间名
-                $ist_data['name'] = $param['name'] ? $param['name'] : '';
+                $ist_data['name'] = $param['name'] ? trim($param['name']) : '';
             }
             if (array_key_exists('cover_img', $param)) { // 房间封面
                 $ist_data['cover_img'] = $param['cover_img'] ? $param['cover_img'] : '';
             }
             if (array_key_exists('desc', $param)) { // 房间介绍
                 $ist_data['desc'] = $param['desc'] ? $param['desc'] : '';
+            }
+            if (DB::table('appletslive_room')->where('name', $ist_data['name'])->first()) {
+                return $this->message('课程名称已存在', Url::absoluteWeb(''), 'danger');
             }
             DB::table('appletslive_room')->insert($ist_data);
 
@@ -362,7 +368,7 @@ class RoomController extends BaseController
             $param = request()->all();
             $id = $param['id'] ? $param['id'] : 0;
             $upd_data['type'] = intval($param['type']);
-            $upd_data['title'] = $param['title'] ? $param['title'] : '';
+            $upd_data['title'] = $param['title'] ? trim($param['title']) : '';
             $upd_data['cover_img'] = $param['cover_img'] ? $param['cover_img'] : '';
             $upd_data['media_url'] = $param['media_url'] ? $param['media_url'] : '';
             $upd_data['intro'] = $param['intro'] ? $param['intro'] : '';
@@ -372,6 +378,9 @@ class RoomController extends BaseController
             $replay = DB::table('appletslive_replay')->where('id', $id)->first();
             if (!$replay) {
                 return $this->message('无效的回放或视频ID', Url::absoluteWeb(''), 'danger');
+            }
+            if (DB::table('appletslive_replay')->where('title', $upd_data['title'])->where('rid', $replay->rid)->where('id', '<>', $id)->first()) {
+                return $this->message('视频名称已存在', Url::absoluteWeb(''), 'danger');
             }
             DB::table('appletslive_replay')->where('id', $id)->update($upd_data);
 
@@ -411,7 +420,7 @@ class RoomController extends BaseController
             $ist_data = [
                 'rid' => $rid,
                 'type' => intval($param['type']),
-                'title' => $param['title'] ? $param['title'] : '',
+                'title' => $param['title'] ? trim($param['title']) : '',
                 'cover_img' => $param['cover_img'] ? $param['cover_img'] : '',
                 'media_url' => $param['media_url'] ? $param['media_url'] : '',
                 'intro' => $param['intro'] ? $param['intro'] : '',
@@ -421,6 +430,9 @@ class RoomController extends BaseController
                 'time_long' => ((intval($param['minute']) * 60) + intval($param['second'])),
                 'publish_time' => strtotime($param['publish_time']) <= time() ? time() : strtotime($param['publish_time']),
             ];
+            if (DB::table('appletslive_replay')->where('title', $ist_data['title'])->where('rid', $rid)->first()) {
+                return $this->message('视频名称已存在', Url::absoluteWeb(''), 'danger');
+            }
             DB::table('appletslive_replay')->insert($ist_data);
 
             // 刷新录播列表接口数据缓存
