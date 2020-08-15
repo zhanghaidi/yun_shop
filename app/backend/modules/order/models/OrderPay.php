@@ -10,4 +10,7 @@ namespace app\backend\modules\order\models;
 
 class OrderPay extends \app\common\models\OrderPay
 {
+    public function order(){
+        return $this->morphOne('App\backend\modules\tracking\models\GoodsTrackingModel','order');
+    }
 }
