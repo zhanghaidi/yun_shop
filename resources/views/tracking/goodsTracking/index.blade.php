@@ -218,7 +218,13 @@
                                 </td>
                                 <td style="text-align: center;">{!! $list->action_name !!}</td>
                                 <td style="text-align: center;">{{ $list->val }}</td>
-                                <td style="text-align: center;"><a href="{{yzWebUrl('order.list.index',array('search[ambiguous][field]'=>'order','search[ambiguous][string]'=> $list->order->order_sn))}}">{{ $list->order->order_sn }}</a></td>
+                                <td style="text-align: center;">
+                                    @if($list->action_id == 4)
+                                    <a href="{{yzWebUrl('order.list.index',array('search[ambiguous][field]'=>'order','search[ambiguous][string]'=> $list->order->order_sn))}}">{{ $list->order->order_sn }}</a>
+                                    @elseif($list->action_id == 5)
+                                    <a href="{{yzWebUrl('order.list.index',array('search[ambiguous][field]'=>'order','search[ambiguous][string]'=> $list->order->pay_sn))}}">{{ $list->order->pay_sn }}</a>
+                                    @endif
+                                </td>
                                 <td style="text-align: center;">{{date('Y-m-d H:i:s', $list->create_time)}}</td>
                                 {{--<td style="overflow:visible; text-align: center;">
                                     <a class='btn btn-default' href="{{ yzWebUrl('tracking.goods-tracking.index', array('id' => $list->id)) }}" style="margin-bottom: 2px">详细记录</a>
