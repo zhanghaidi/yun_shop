@@ -47,6 +47,7 @@
                         <label class="col-xs-12 col-sm-3 col-md-1 control-label">课程封面</label>
                         <div class="col-sm-9 col-xs-12 col-md-10">
                             {!! app\common\helpers\ImageHelper::tplFormFieldImage('cover_img', $info['cover_img']) !!}
+                            <span class="help-block">图片比例 5:4，请按照规定尺寸上传</span>
                         </div>
                     </div>
                 @endif
