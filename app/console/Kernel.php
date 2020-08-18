@@ -8,6 +8,7 @@ use app\framework\Foundation\Bootstrap\SetRequestForConsole;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use app\console\Commands\CourseReminder;
+use app\console\Commands\NotPaidOrderNotice;
 
 class Kernel extends ConsoleKernel
 {
@@ -28,6 +29,7 @@ class Kernel extends ConsoleKernel
         'app\console\Commands\UpdateInviteCode',
         WriteFrame::class,
         CourseReminder::class,
+        NotPaidOrderNotice::class,
     ];
     /**
      * The bootstrap classes for the application.
@@ -57,6 +59,11 @@ class Kernel extends ConsoleKernel
 
         // 每5分钟执行新课程视频发布提醒
         $schedule->command('command:coursereminder')
+            ->withoutOverlapping()
+            ->everyFiveMinutes();
+
+        // 每5分钟执行待支付订单提醒
+        $schedule->command('command:notpaidordernotice')
             ->withoutOverlapping()
             ->everyFiveMinutes();
     }
