@@ -82,6 +82,7 @@
                         @else
                             {!! app\common\helpers\ImageHelper::tplFormFieldImage('cover_img', $info['cover_img']) !!}
                         @endif
+                        <span class="help-block">图片比例 5:4，请按照规定尺寸上传</span>
                     </div>
                 </div>
                 <div class="form-group">
