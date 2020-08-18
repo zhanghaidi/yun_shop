@@ -62,17 +62,16 @@ class CourseReminder extends Command
     {
         Log::info("------------------------ 课程提醒定时任务 BEGIN -------------------------------");
 
-        // 1、查询距离当前时间点10-15分钟之间即将发布的视频
+        // 1、查询距离当前时间点15~20分钟之间即将发布的视频
         $time_now = time();
-        $time_check_point = $time_now + 900;
-        $time_check_where = [$time_check_point, $time_check_point + 600];
+        $check_time_range = [$time_now + 900, $time_now + 1200];
         $replay_publish_soon = DB::table('appletslive_replay')
             ->select('id', 'rid', 'title', 'doctor', 'publish_time')
-            ->whereBetween('publish_time', $time_check_where)
+            ->whereBetween('publish_time', $check_time_range)
             ->get()->toArray();
 
         Log::info('time_now: ' . $time_now);
-        Log::info('time_check_where: ', $time_check_where);
+        Log::info('check_time_range: ', $check_time_range);
         Log::info('replay_publish_soon: ', $replay_publish_soon);
 
         if (empty($replay_publish_soon)) {
@@ -144,7 +143,7 @@ class CourseReminder extends Command
                 }
             }
 
-            Log::info("队列数据组装完成", $job_list);
+            Log::info("数据组装完成", $job_list);
 
             // 5、添加消息发送任务到消息队列
             foreach ($job_list as $job) {

@@ -131,6 +131,7 @@ class LiveController extends BaseController
      */
     public function testgroupsendtemplatemsg()
     {
+        $result = [];
         $start_time = implode('.', array_reverse(explode(' ', substr(microtime(), 2))));
 
         // $openid_list = DB::table('mc_mapping_fans')
@@ -163,7 +164,9 @@ class LiveController extends BaseController
             for ($i = 0; $i < 10; $i++) {
                 $job = new SendTemplateMsgJob('wechat', $options, $template_id, $notice_data, $openid, '', '');
                 $dispatch = dispatch($job);
-                Log::info("队列已添加:发送公众号模板消息", ['job' => $job, 'dispatch' => $dispatch]);
+                $result[] = [
+                    'tips' => '队列已添加:发送公众号模板消息', 'job' => $job, 'dispatch' => $dispatch
+                ];
             }
         }
 
@@ -172,6 +175,7 @@ class LiveController extends BaseController
             'start_time' => $start_time,
             'end_time' => $end_time,
             'cost' => bcsub($end_time, $start_time, 8) . ' seconds',
+            'result' => $result,
         ]);
     }
 
@@ -236,8 +240,6 @@ class LiveController extends BaseController
      */
     public function testcoursereminder()
     {
-        Log::info("------------------------ 测试：课程提醒定时任务 BEGIN -------------------------------");
-
         // 公众号配置信息
         $wechat_account = DB::table('account_wechats')
             ->select('key', 'secret')
@@ -258,19 +260,16 @@ class LiveController extends BaseController
             'secret' => $wxapp_account['secret'],
         ];
 
-        // 1、查询距离当前时间点10-15分钟之间即将发布的视频
+        // 1、查询距离当前时间点15~20分钟之间即将发布的视频
         $time_now = time();
-        $time_check_point = $time_now + 900;
-        $time_check_where = [$time_check_point, $time_check_point + 600];
+        $check_time_range = [$time_now + 900, $time_now + 1200];
         $replay_publish_soon = DB::table('appletslive_replay')
             ->select('id', 'rid', 'title', 'doctor', 'publish_time')
-            ->whereBetween('publish_time', $time_check_where)
+            ->whereBetween('publish_time', $check_time_range)
             ->get()->toArray();
-        $result['publish_time_range'] = $time_check_where;
-        $result['replay_publish_soon'] = $replay_publish_soon;
 
         Log::info('time_now: ' . $time_now);
-        Log::info('time_check_where: ', $time_check_where);
+        Log::info('check_time_range: ', $check_time_range);
         Log::info('replay_publish_soon: ', $replay_publish_soon);
 
         if (empty($replay_publish_soon)) {
@@ -287,9 +286,7 @@ class LiveController extends BaseController
                 ->select('user_id', 'room_id')
                 ->where('room_id', array_keys($rela_room))
                 ->get()->toArray();
-            if (empty($subscribed_user)) {
-                Log::info('未找到订阅了课程的用户.');
-            } else {
+            if (!empty($subscribed_user)) {
                 $subscribed_uid = array_unique(array_column($subscribed_user, 'user_id'));
                 // 3.1、存在已关注课程的用户，查询用户openid
                 $wxapp_user = DB::table('diagnostic_service_user')
@@ -344,22 +341,8 @@ class LiveController extends BaseController
             }
 
             $result['job_list'] = $job_list;
-            Log::info("队列数据组装完成", $job_list);
-
-            // 5、添加消息发送任务到消息队列
-            // foreach ($job_list as $job) {
-            //     $job = SendTemplateMsgJob($job['type'], $$job['options'], $job['template_id'], $job['notice_data'],
-            //         $job['openid'], '', $job['page']);
-            //     $dispatch = dispatch($job);
-            //     if ($job['type'] == 'wechat') {
-            //         Log::info("队列已添加:发送公众号模板消息", ['job' => $job, 'dispatch' => $dispatch]);
-            //     } elseif ($job['type'] == 'wxapp') {
-            //         Log::info("队列已添加:发送小程序订阅模板消息", ['job' => $job, 'dispatch' => $dispatch]);
-            //     }
-            // }
         }
 
-        Log::info("------------------------ 测试：课程提醒定时任务 END -------------------------------\n");
         return $this->successJson('测试：课程提醒定时任务', $result);
     }
 
