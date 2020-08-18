@@ -267,14 +267,13 @@ class LiveController extends BaseController
             ->select('id', 'rid', 'title', 'doctor', 'publish_time')
             ->whereBetween('publish_time', $check_time_range)
             ->get()->toArray();
+        $result = [
+            'time_now' => $time_now,
+            'check_time_range' => $check_time_range,
+            'replay_publish_soon' => $replay_publish_soon,
+        ];
 
-        Log::info('time_now: ' . $time_now);
-        Log::info('check_time_range: ', $check_time_range);
-        Log::info('replay_publish_soon: ', $replay_publish_soon);
-
-        if (empty($replay_publish_soon)) {
-            Log::info('未找到即将新发布的视频.');
-        } else {
+        if (!empty($replay_publish_soon)) {
 
             // 2、查询即将发布的视频关联的课程
             $rela_room = DB::table('appletslive_room')
@@ -321,7 +320,6 @@ class LiveController extends BaseController
             $job_list = [];
             foreach ($replay_publish_soon as $replay) {
                 // 4.1、当前课程有哪些订阅用户
-                $current_subscribed_user = [];
                 foreach ($subscribed_user as $user) {
                     if ($user['room_id'] == $replay['rid']) {
                         $type = ($user['wechat_openid'] != '') ? 'wechat' : 'wxapp';
@@ -378,6 +376,150 @@ class LiveController extends BaseController
             ];
         }
         return $param;
+    }
+
+    /**
+     * 测试待支付订单提醒定时任务
+     */
+    public function testnotpaidordernotice()
+    {
+        // 提醒配置
+        $setting_trade = DB::table('yz_setting')
+            ->where('uniacid', 39)
+            ->where('group', 'shop')
+            ->where('key', 'trade')
+            ->value('value');
+        $setting_trade = unserialize($setting_trade);
+        $setting_notice = DB::table('yz_setting')
+            ->where('uniacid', 39)
+            ->where('group', 'shop')
+            ->where('key', 'notice')
+            ->value('value');
+        $setting_notice = unserialize($setting_notice);
+        $message_template = DB::table('yz_message_template')
+            ->where('notice_type', 'order_not_paid')
+            ->first();
+
+        // 商城提醒未开启、待支付订单提醒未开启、待支付订单提醒模板未配置、待支付订单提醒时间设置为空，说明不执行提醒
+        if (empty(intval($setting_notice['toggle']))
+            || empty(intval($setting_notice['order_not_paid']))
+            || empty(intval($setting_trade['not_paid_notice_minutes']))
+            || empty($message_template)) {
+            return $this->successJson('测试：待支付订单提醒未开启', [
+                'setting_trade' => $setting_trade,
+                'setting_notice' => $setting_notice,
+                'message_template' => $message_template,
+            ]);
+        }
+
+        // 公众号配置信息
+        $wechat_account = DB::table('account_wechats')
+            ->select('key', 'secret')
+            ->where('uniacid', 39)
+            ->first();
+        $options['wechat'] = [
+            'app_id' => $wechat_account['key'],
+            'secret' => $wechat_account['secret'],
+        ];
+
+        // 小程序配置信息
+        $wxapp_account = DB::table('account_wxapp')
+            ->select('key', 'secret')
+            ->where('uniacid', 45)
+            ->first();
+        $options['wxapp'] = [
+            'app_id' => $wxapp_account['key'],
+            'secret' => $wxapp_account['secret'],
+        ];
+
+        // 模板消息内容
+        $notice_data = json_decode($message_template['data'], true);
+
+        // 1、查询待支付订单（下单时间距离现在10~15分钟）
+        $time_now = time();
+        $check_time_range = [$time_now - 1200, $time_now - 900];
+        $not_paid_order = DB::table('yz_order')
+            ->select('id', 'uid', 'order_sn', 'price', 'create_time')
+            ->whereBetween('create_time', $check_time_range)
+            ->get()->toArray();
+        $result['check_time_range'] = $check_time_range;
+        $result['not_paid_order'] = $not_paid_order;
+
+        if (!empty($not_paid_order)) {
+
+            // 2、查询待支付订单关联的商品
+            $order_goods = DB::table('yz_order_goods')
+                ->select('order_id', 'title')
+                ->whereIn('order_id', array_unique(array_column($not_paid_order, 'id')))
+                ->get()->toArray();
+
+            // 3、查询订单用户openid
+            $order_uid = array_unique(array_column($not_paid_order, 'uid'));
+            $wxapp_user = DB::table('diagnostic_service_user')
+                ->select('ajy_uid', 'openid', 'unionid')
+                ->whereIn('ajy_uid', $order_uid)
+                ->get()->toArray();
+            $wx_unionid = array_column($wxapp_user, 'unionid');
+            $wechat_user = DB::table('mc_mapping_fans')
+                ->select('uid', 'openid', 'follow')
+                ->whereIn('unionid', $wx_unionid)
+                ->get()->toArray();
+
+            // 4、组装用户数据
+            $order_user = array(count($order_uid));
+            array_walk($order_user, function (&$item, $key) use ($order_uid, $wxapp_user, $wechat_user) {
+                $item = ['user_id' => $item];
+                foreach ($wxapp_user as $user) {
+                    if ($user['ajy_uid'] == $item['user_id']) {
+                        $item['unionid'] = $user['unionid'];
+                        $item['wxapp_openid'] = $user['openid'];
+                        break;
+                    }
+                }
+                $item['wechat_openid'] = '';
+                foreach ($wechat_user as $user) {
+                    if ($user['unionid'] == $item['unionid'] && $user['follow'] == 1) {
+                        $item['wechat_openid'] = $user['openid'];
+                        break;
+                    }
+                }
+            });
+
+            // 5、组装队列数据
+            $job_list = [];
+            foreach ($not_paid_order as $order) {
+                $job_item = [
+                    'order_sn' => $order['order_sn'],
+                    'amount' => $order['price'],
+                    'create_time' => date('Y-m-d H:i', $order['create_time']),
+                    'expire_time' => date('Y-m-d H:i', $order['create_time'] + (intval($setting_trade['close_order_days']) * 86400)),
+                ];
+                foreach ($order_goods as $goods) {
+                    if ($goods['order_id'] == $order['id']) {
+                        $job_item['goods_title'] = $goods['title'];
+                        break;
+                    }
+                }
+                foreach ($order_user as $user) {
+                    if ($user['user_id'] == $order['uid']) {
+                        $type = ($user['wechat_openid'] != '') ? 'wechat' : 'wxapp';
+                        $openid = ($user['wechat_openid'] != '') ? $user['wechat_openid'] : $user['wxapp_openid'];
+                        $page = 'pages/template/rumours/index?order_id=' . $order['id'];
+                        $job_item['type'] = $type;
+                        $job_item['options'] = $options[$type];
+                        $job_item['template_id'] = $message_template['template_id'];
+                        $job_item['notice_data'] = $notice_data;
+                        $job_item['openid'] = $openid;
+                        $job_item['page'] = $page;
+                    }
+                }
+                $job_list[] = $job_item;
+            }
+
+            $result['job_list'] = $job_list;
+        }
+
+        return $this->successJson('测试：待支付订单提醒定时任务', $result);
     }
 
     /************************ 测试用代码 END ************************/
