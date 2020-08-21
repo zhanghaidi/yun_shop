@@ -63,7 +63,7 @@ class CourseReminder extends Command
      */
     public function handle()
     {
-        Log::info("------------------------ 课程提醒定时任务 BEGIN -------------------------------");
+        // Log::info("------------------------ 课程提醒定时任务 BEGIN -------------------------------");
 
         // 1、查询距离当前时间点n~n+1分钟之间即将发布的视频
         $time_now = time();
@@ -75,7 +75,7 @@ class CourseReminder extends Command
             ->get()->toArray();
 
         if (empty($replay_publish_soon)) {
-            Log::info('未找到即将新发布的视频.');
+            // Log::info('未找到即将新发布的视频.');
         } else {
 
             // 2、查询即将发布的视频关联的课程
@@ -89,7 +89,7 @@ class CourseReminder extends Command
                 ->where('room_id', array_keys($rela_room))
                 ->get()->toArray();
             if (empty($subscribed_user)) {
-                Log::info('未找到订阅了课程的用户.');
+                // Log::info('未找到订阅了课程的用户.');
             } else {
                 $subscribed_uid = array_unique(array_column($subscribed_user, 'user_id'));
                 // 3.1、存在已关注课程的用户，查询用户openid
@@ -142,13 +142,14 @@ class CourseReminder extends Command
                 }
             }
 
-            Log::info("数据组装完成", $job_list);
+            // Log::info("数据组装完成", $job_list);
 
             // 5、添加消息发送任务到消息队列
             foreach ($job_list as $job_item) {
                 $job = new SendTemplateMsgJob($job_item['type'], $job_item['options'], $job_item['template_id'], $job_item['notice_data'],
                     $job_item['openid'], '', $job_item['page']);
                 $dispatch = dispatch($job);
+                Log::info("模板消息内容:", $job_item);
                 if ($job_item['type'] == 'wechat') {
                     Log::info("队列已添加:发送公众号模板消息", ['job' => $job, 'dispatch' => $dispatch]);
                 } elseif ($job_item['type'] == 'wxapp') {
@@ -157,7 +158,7 @@ class CourseReminder extends Command
             }
         }
 
-        Log::info("------------------------ 课程提醒定时任务 END -------------------------------\n");
+        // Log::info("------------------------ 课程提醒定时任务 END -------------------------------\n");
     }
 
     /**
