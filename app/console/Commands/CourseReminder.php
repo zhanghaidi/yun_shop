@@ -32,6 +32,9 @@ class CourseReminder extends Command
     {
         parent::__construct();
 
+        Log::getMonolog()->popHandler();
+        Log::useFiles(storage_path('logs/schedule.run.log'), 'info');
+
         // 公众号
         $wechat_account = DB::table('account_wechats')
             ->select('key', 'secret')
@@ -62,17 +65,14 @@ class CourseReminder extends Command
     {
         Log::info("------------------------ 课程提醒定时任务 BEGIN -------------------------------");
 
-        // 1、查询距离当前时间点15~20分钟之间即将发布的视频
+        // 1、查询距离当前时间点n~n+1分钟之间即将发布的视频
         $time_now = time();
-        $check_time_range = [$time_now + 900, $time_now + 1200];
+        $wait_seconds = 60 * 15;
+        $check_time_range = [$time_now + $wait_seconds, $time_now + $wait_seconds + 60];
         $replay_publish_soon = DB::table('appletslive_replay')
             ->select('id', 'rid', 'title', 'doctor', 'publish_time')
             ->whereBetween('publish_time', $check_time_range)
             ->get()->toArray();
-
-        Log::info('time_now: ' . $time_now);
-        Log::info('check_time_range: ', $check_time_range);
-        Log::info('replay_publish_soon: ', $replay_publish_soon);
 
         if (empty($replay_publish_soon)) {
             Log::info('未找到即将新发布的视频.');
@@ -99,7 +99,7 @@ class CourseReminder extends Command
                     ->get()->toArray();
                 $subscribed_unionid = array_column($wxapp_user, 'unionid');
                 $wechat_user = DB::table('mc_mapping_fans')
-                    ->select('uid', 'openid', 'follow')
+                    ->select('uid', 'unionid', 'openid', 'follow')
                     ->whereIn('unionid', $subscribed_unionid)
                     ->get()->toArray();
                 array_walk($subscribed_user, function (&$item) use ($wxapp_user, $wechat_user) {
@@ -124,7 +124,6 @@ class CourseReminder extends Command
             $job_list = [];
             foreach ($replay_publish_soon as $replay) {
                 // 4.1、当前课程有哪些订阅用户
-                $current_subscribed_user = [];
                 foreach ($subscribed_user as $user) {
                     if ($user['room_id'] == $replay['rid']) {
                         $type = ($user['wechat_openid'] != '') ? 'wechat' : 'wxapp';
@@ -146,13 +145,13 @@ class CourseReminder extends Command
             Log::info("数据组装完成", $job_list);
 
             // 5、添加消息发送任务到消息队列
-            foreach ($job_list as $job) {
-                $job = new SendTemplateMsgJob($job['type'], $job['options'], $job['template_id'], $job['notice_data'],
-                    $job['openid'], '', $job['page']);
+            foreach ($job_list as $job_item) {
+                $job = new SendTemplateMsgJob($job_item['type'], $job_item['options'], $job_item['template_id'], $job_item['notice_data'],
+                    $job_item['openid'], '', $job_item['page']);
                 $dispatch = dispatch($job);
-                if ($job['type'] == 'wechat') {
+                if ($job_item['type'] == 'wechat') {
                     Log::info("队列已添加:发送公众号模板消息", ['job' => $job, 'dispatch' => $dispatch]);
-                } elseif ($job['type'] == 'wxapp') {
+                } elseif ($job_item['type'] == 'wxapp') {
                     Log::info("队列已添加:发送小程序订阅模板消息", ['job' => $job, 'dispatch' => $dispatch]);
                 }
             }

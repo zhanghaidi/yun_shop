@@ -60,12 +60,12 @@ class Kernel extends ConsoleKernel
         // 每5分钟执行新课程视频发布提醒
         $schedule->command('command:coursereminder')
             ->withoutOverlapping()
-            ->everyFiveMinutes();
+            ->everyMinute();
 
         // 每5分钟执行待支付订单提醒
         $schedule->command('command:notpaidordernotice')
             ->withoutOverlapping()
-            ->everyFiveMinutes();
+            ->everyMinute();
     }
 
     /**
