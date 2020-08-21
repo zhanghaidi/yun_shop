@@ -28,7 +28,6 @@ use Yunshop\Appletslive\common\services\CacheService;
 use Yunshop\Appletslive\common\services\BaseService;
 use app\common\models\AccountWechats;
 use app\Jobs\SendTemplateMsgJob;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Class LiveController
