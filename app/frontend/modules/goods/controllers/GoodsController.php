@@ -1452,7 +1452,7 @@ class GoodsController extends GoodsApiController
             ->select('id', 'id as goods_id', 'title', 'thumb', 'price', 'market_price')
             ->where('is_discount', '1')
             ->whereStatus('1')
-            ->orderBy('id', 'desc')
+            ->orderBy('display_order', 'desc')
             ->get();
 
         if (!$list->isEmpty()) {

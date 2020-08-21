@@ -131,6 +131,7 @@ class LiveController extends BaseController
      */
     public function testgroupsendtemplatemsg()
     {
+        $result = [];
         $start_time = implode('.', array_reverse(explode(' ', substr(microtime(), 2))));
 
         // $openid_list = DB::table('mc_mapping_fans')
@@ -163,7 +164,9 @@ class LiveController extends BaseController
             for ($i = 0; $i < 10; $i++) {
                 $job = new SendTemplateMsgJob('wechat', $options, $template_id, $notice_data, $openid, '', '');
                 $dispatch = dispatch($job);
-                Log::info("队列已添加:发送公众号模板消息", ['job' => $job, 'dispatch' => $dispatch]);
+                $result[] = [
+                    'tips' => '队列已添加:发送公众号模板消息', 'job' => $job, 'dispatch' => $dispatch
+                ];
             }
         }
 
@@ -172,6 +175,7 @@ class LiveController extends BaseController
             'start_time' => $start_time,
             'end_time' => $end_time,
             'cost' => bcsub($end_time, $start_time, 8) . ' seconds',
+            'result' => $result,
         ]);
     }
 
@@ -236,8 +240,6 @@ class LiveController extends BaseController
      */
     public function testcoursereminder()
     {
-        Log::info("------------------------ 测试：课程提醒定时任务 BEGIN -------------------------------");
-
         // 公众号配置信息
         $wechat_account = DB::table('account_wechats')
             ->select('key', 'secret')
@@ -258,24 +260,20 @@ class LiveController extends BaseController
             'secret' => $wxapp_account['secret'],
         ];
 
-        // 1、查询距离当前时间点10-15分钟之间即将发布的视频
+        // 1、查询距离当前时间点15~20分钟之间即将发布的视频
         $time_now = time();
-        $time_check_point = $time_now + 900;
-        $time_check_where = [$time_check_point, $time_check_point + 600];
+        $check_time_range = [$time_now + 900, $time_now + 1200];
         $replay_publish_soon = DB::table('appletslive_replay')
             ->select('id', 'rid', 'title', 'doctor', 'publish_time')
-            ->whereBetween('publish_time', $time_check_where)
+            ->whereBetween('publish_time', $check_time_range)
             ->get()->toArray();
-        $result['publish_time_range'] = $time_check_where;
-        $result['replay_publish_soon'] = $replay_publish_soon;
+        $result = [
+            'time_now' => $time_now,
+            'check_time_range' => $check_time_range,
+            'replay_publish_soon' => $replay_publish_soon,
+        ];
 
-        Log::info('time_now: ' . $time_now);
-        Log::info('time_check_where: ', $time_check_where);
-        Log::info('replay_publish_soon: ', $replay_publish_soon);
-
-        if (empty($replay_publish_soon)) {
-            Log::info('未找到即将新发布的视频.');
-        } else {
+        if (!empty($replay_publish_soon)) {
 
             // 2、查询即将发布的视频关联的课程
             $rela_room = DB::table('appletslive_room')
@@ -287,9 +285,7 @@ class LiveController extends BaseController
                 ->select('user_id', 'room_id')
                 ->where('room_id', array_keys($rela_room))
                 ->get()->toArray();
-            if (empty($subscribed_user)) {
-                Log::info('未找到订阅了课程的用户.');
-            } else {
+            if (!empty($subscribed_user)) {
                 $subscribed_uid = array_unique(array_column($subscribed_user, 'user_id'));
                 // 3.1、存在已关注课程的用户，查询用户openid
                 $wxapp_user = DB::table('diagnostic_service_user')
@@ -324,7 +320,6 @@ class LiveController extends BaseController
             $job_list = [];
             foreach ($replay_publish_soon as $replay) {
                 // 4.1、当前课程有哪些订阅用户
-                $current_subscribed_user = [];
                 foreach ($subscribed_user as $user) {
                     if ($user['room_id'] == $replay['rid']) {
                         $type = ($user['wechat_openid'] != '') ? 'wechat' : 'wxapp';
@@ -344,22 +339,8 @@ class LiveController extends BaseController
             }
 
             $result['job_list'] = $job_list;
-            Log::info("队列数据组装完成", $job_list);
-
-            // 5、添加消息发送任务到消息队列
-            // foreach ($job_list as $job) {
-            //     $job = SendTemplateMsgJob($job['type'], $$job['options'], $job['template_id'], $job['notice_data'],
-            //         $job['openid'], '', $job['page']);
-            //     $dispatch = dispatch($job);
-            //     if ($job['type'] == 'wechat') {
-            //         Log::info("队列已添加:发送公众号模板消息", ['job' => $job, 'dispatch' => $dispatch]);
-            //     } elseif ($job['type'] == 'wxapp') {
-            //         Log::info("队列已添加:发送小程序订阅模板消息", ['job' => $job, 'dispatch' => $dispatch]);
-            //     }
-            // }
         }
 
-        Log::info("------------------------ 测试：课程提醒定时任务 END -------------------------------\n");
         return $this->successJson('测试：课程提醒定时任务', $result);
     }
 
@@ -397,6 +378,184 @@ class LiveController extends BaseController
         return $param;
     }
 
+    /**
+     * 测试待支付订单提醒定时任务
+     */
+    public function testnotpaidordernotice()
+    {
+        // 提醒配置
+        $setting_trade = DB::table('yz_setting')
+            ->where('uniacid', 39)
+            ->where('group', 'shop')
+            ->where('key', 'trade')
+            ->value('value');
+        $setting_trade = unserialize($setting_trade);
+        $setting_notice = DB::table('yz_setting')
+            ->where('uniacid', 39)
+            ->where('group', 'shop')
+            ->where('key', 'notice')
+            ->value('value');
+        $setting_notice = unserialize($setting_notice);
+        $message_template = DB::table('yz_message_template')
+            ->where('notice_type', 'order_not_paid')
+            ->first();
+
+        // 商城提醒未开启、待支付订单提醒未开启、待支付订单提醒模板未配置、待支付订单提醒时间设置为空，说明不执行提醒
+        if (empty(intval($setting_notice['toggle']))
+            || empty(intval($setting_notice['order_not_paid']))
+            || empty(intval($setting_trade['not_paid_notice_minutes']))
+            || empty($message_template)) {
+            return $this->successJson('测试：待支付订单提醒未开启', [
+                'setting_trade' => $setting_trade,
+                'setting_notice' => $setting_notice,
+                'message_template' => $message_template,
+            ]);
+        }
+
+        // 公众号配置信息
+        $wechat_account = DB::table('account_wechats')
+            ->select('key', 'secret')
+            ->where('uniacid', 39)
+            ->first();
+        $options['wechat'] = [
+            'app_id' => $wechat_account['key'],
+            'secret' => $wechat_account['secret'],
+        ];
+
+        // 小程序配置信息
+        $wxapp_account = DB::table('account_wxapp')
+            ->select('key', 'secret')
+            ->where('uniacid', 45)
+            ->first();
+        $options['wxapp'] = [
+            'app_id' => $wxapp_account['key'],
+            'secret' => $wxapp_account['secret'],
+        ];
+
+        // 模板消息内容
+        $notice_data = json_decode($message_template['data'], true);
+
+        // 1、查询待支付订单（下单时间距离现在10~15分钟）
+        $time_now = time();
+        $check_time_range = [$time_now - 1200, $time_now - 900];
+        $not_paid_order = DB::table('yz_order')
+            ->select('id', 'uid', 'order_sn', 'price', 'create_time')
+            ->whereBetween('create_time', $check_time_range)
+            ->get()->toArray();
+        $result['check_time_range'] = $check_time_range;
+        $result['not_paid_order'] = $not_paid_order;
+
+        if (!empty($not_paid_order)) {
+
+            // 2、查询待支付订单关联的商品
+            $order_goods = DB::table('yz_order_goods')
+                ->select('order_id', 'title')
+                ->whereIn('order_id', array_unique(array_column($not_paid_order, 'id')))
+                ->get()->toArray();
+
+            // 3、查询订单用户openid
+            $order_uid = array_unique(array_column($not_paid_order, 'uid'));
+            $wxapp_user = DB::table('diagnostic_service_user')
+                ->select('ajy_uid', 'openid', 'unionid')
+                ->whereIn('ajy_uid', $order_uid)
+                ->get()->toArray();
+            $wx_unionid = array_column($wxapp_user, 'unionid');
+            $wechat_user = DB::table('mc_mapping_fans')
+                ->select('uid', 'unionid', 'openid', 'follow')
+                ->whereIn('unionid', $wx_unionid)
+                ->get()->toArray();
+
+            // 4、组装用户数据
+            $order_user = [];
+            foreach ($order_uid as $uid) {
+                $order_user[] = ['user_id' => $uid];
+            }
+            array_walk($order_user, function (&$item) use ($order_uid, $wxapp_user, $wechat_user) {
+                foreach ($wxapp_user as $user) {
+                    if ($user['ajy_uid'] == $item['user_id']) {
+                        $item['unionid'] = $user['unionid'];
+                        $item['wxapp_openid'] = $user['openid'];
+                        break;
+                    }
+                }
+                $item['wechat_openid'] = '';
+                foreach ($wechat_user as $user) {
+                    if ($user['unionid'] == $item['unionid'] && $user['follow'] == 1) {
+                        $item['wechat_openid'] = $user['openid'];
+                        break;
+                    }
+                }
+            });
+            $result['order_user_list'] = $order_user;
+
+            // 5、组装队列数据
+            $job_list = [];
+            $value_key_sort = ['goods_title', 'amount', 'order_sn', 'create_time', 'expire_time'];
+            foreach ($not_paid_order as $order) {
+                $job_item = [
+                    'order_sn' => $order['order_sn'],
+                    'amount' => $order['price'],
+                    'create_time' => date('Y-m-d H:i', $order['create_time']),
+                    'expire_time' => date('Y-m-d H:i', $order['create_time'] + (intval($setting_trade['close_order_days']) * 86400)),
+                ];
+                foreach ($order_goods as $goods) {
+                    if ($goods['order_id'] == $order['id']) {
+                        $job_item['goods_title'] = $goods['title'];
+                        break;
+                    }
+                }
+                foreach ($order_user as $user) {
+                    if ($user['user_id'] == $order['uid']) {
+                        $type = ($user['wechat_openid'] != '') ? 'wechat' : 'wxapp';
+                        $openid = ($user['wechat_openid'] != '') ? $user['wechat_openid'] : $user['wxapp_openid'];
+                        $page = 'pages/template/rumours/index?order_id=' . $order['id'];
+                        $job_item['type'] = $type;
+                        $job_item['options'] = $options[$type];
+                        $job_item['template_id'] = $message_template['template_id'];
+
+                        foreach ($value_key_sort as $value_key_idx => $value_key_val) {
+                            $notice_data[$value_key_idx]['value'] = $job_item[$value_key_val];
+                        }
+                        $job_item['notice_data'] = $notice_data;
+
+                        $job_item['openid'] = $openid;
+                        $job_item['page'] = $page;
+                    }
+                }
+                $job_list[] = $job_item;
+            }
+
+            $result['job_list'] = $job_list;
+        }
+
+        return $this->successJson('测试：待支付订单提醒定时任务', $result);
+    }
+
+    /**
+     * 测试订单提交推送给灸师
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function testcreateorder()
+    {
+        $jiushi_id_arr = ['hxy'];
+        $jiushi_id = $jiushi_id_arr[mt_rand(0, count($jiushi_id_arr) - 1)];
+        $order = ['id' => time(), 'price' => (mt_rand(1, 30000) . '.' . mt_rand(10, 99))];
+
+        $cache_key = 'to_push_list_' . $jiushi_id;
+        $cache_tag = 'swoole_websocket:JiushiOrderPusher';
+        $to_push_list = Cache::tags([$cache_tag])->get($cache_key);
+
+        if (empty($to_push_list)) {
+            $to_push_list = [['jiushi_id' => $jiushi_id, 'order' => $order]];
+        } else {
+            $to_push_list[] = ['jiushi_id' => $jiushi_id, 'order' => $order];
+        }
+        Cache::tags([$cache_tag])->forever($cache_key, $to_push_list);
+
+        return $this->successJson('ok', Cache::tags([$cache_tag])->get($cache_key));
+    }
+
     /************************ 测试用代码 END ************************/
 
     /**
@@ -419,7 +578,7 @@ class LiveController extends BaseController
                 ->where('type', 1)
                 ->where('delete_time', 0)
                 ->orderBy('live_status', 'asc')
-                ->orderBy('view_num', 'desc')
+                ->orderBy('id', 'asc')
                 ->offset($offset)->limit($limit)->get()
                 ->toArray();
             $page_val = ['total' => $total, 'totalPage' => ceil($total / $limit), 'list' => $list];
@@ -454,6 +613,11 @@ class LiveController extends BaseController
      */
     public function roominfo()
     {
+        // $sharer_uid = request()->get('sharer_uid', 0);
+        // if ($sharer_uid) {
+        //     Log::info('someone visit room detail page via sharing link. sharer uid id:' . $sharer_uid);
+        // }
+
         $room_id = request()->get('room_id', 0);
         $room_info = CacheService::getRoomInfo($room_id);
         if (!$room_info) {
@@ -664,7 +828,7 @@ class LiveController extends BaseController
                 ->select('id', 'rid', 'type', 'title', 'intro', 'cover_img', 'media_url', 'publish_time', 'time_long')
                 ->where('rid', $room_id)
                 ->where('delete_time', 0)
-                ->orderBy('id', 'desc')
+                ->orderBy('id', 'asc')
                 ->get()->toArray();
             if (empty($cache_val)) {
                 Cache::forever($cache_key, []);
