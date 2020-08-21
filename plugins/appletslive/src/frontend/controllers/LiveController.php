@@ -461,14 +461,16 @@ class LiveController extends BaseController
                 ->get()->toArray();
             $wx_unionid = array_column($wxapp_user, 'unionid');
             $wechat_user = DB::table('mc_mapping_fans')
-                ->select('uid', 'openid', 'follow')
+                ->select('uid', 'unionid', 'openid', 'follow')
                 ->whereIn('unionid', $wx_unionid)
                 ->get()->toArray();
 
             // 4、组装用户数据
-            $order_user = array(count($order_uid));
-            array_walk($order_user, function (&$item, $key) use ($order_uid, $wxapp_user, $wechat_user) {
-                $item = ['user_id' => $item];
+            $order_user = [];
+            foreach ($order_uid as $uid) {
+                $order_user[] = ['user_id' => $uid];
+            }
+            array_walk($order_user, function (&$item) use ($order_uid, $wxapp_user, $wechat_user) {
                 foreach ($wxapp_user as $user) {
                     if ($user['ajy_uid'] == $item['user_id']) {
                         $item['unionid'] = $user['unionid'];
@@ -484,9 +486,11 @@ class LiveController extends BaseController
                     }
                 }
             });
+            $result['order_user_list'] = $order_user;
 
             // 5、组装队列数据
             $job_list = [];
+            $value_key_sort = ['goods_title', 'amount', 'order_sn', 'create_time', 'expire_time'];
             foreach ($not_paid_order as $order) {
                 $job_item = [
                     'order_sn' => $order['order_sn'],
@@ -508,7 +512,12 @@ class LiveController extends BaseController
                         $job_item['type'] = $type;
                         $job_item['options'] = $options[$type];
                         $job_item['template_id'] = $message_template['template_id'];
+
+                        foreach ($value_key_sort as $value_key_idx => $value_key_val) {
+                            $notice_data[$value_key_idx]['value'] = $job_item[$value_key_val];
+                        }
                         $job_item['notice_data'] = $notice_data;
+
                         $job_item['openid'] = $openid;
                         $job_item['page'] = $page;
                     }
@@ -520,6 +529,31 @@ class LiveController extends BaseController
         }
 
         return $this->successJson('测试：待支付订单提醒定时任务', $result);
+    }
+
+    /**
+     * 测试订单提交推送给灸师
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function testcreateorder()
+    {
+        $jiushi_id_arr = ['hxy'];
+        $jiushi_id = $jiushi_id_arr[mt_rand(0, count($jiushi_id_arr) - 1)];
+        $order = ['id' => time(), 'price' => (mt_rand(1, 30000) . '.' . mt_rand(10, 99))];
+
+        $cache_key = 'to_push_list_' . $jiushi_id;
+        $cache_tag = 'swoole_websocket:JiushiOrderPusher';
+        $to_push_list = Cache::tags([$cache_tag])->get($cache_key);
+
+        if (empty($to_push_list)) {
+            $to_push_list = [['jiushi_id' => $jiushi_id, 'order' => $order]];
+        } else {
+            $to_push_list[] = ['jiushi_id' => $jiushi_id, 'order' => $order];
+        }
+        Cache::tags([$cache_tag])->forever($cache_key, $to_push_list);
+
+        return $this->successJson('ok', Cache::tags([$cache_tag])->get($cache_key));
     }
 
     /************************ 测试用代码 END ************************/
@@ -544,7 +578,7 @@ class LiveController extends BaseController
                 ->where('type', 1)
                 ->where('delete_time', 0)
                 ->orderBy('live_status', 'asc')
-                ->orderBy('view_num', 'desc')
+                ->orderBy('id', 'asc')
                 ->offset($offset)->limit($limit)->get()
                 ->toArray();
             $page_val = ['total' => $total, 'totalPage' => ceil($total / $limit), 'list' => $list];
@@ -579,6 +613,11 @@ class LiveController extends BaseController
      */
     public function roominfo()
     {
+        // $sharer_uid = request()->get('sharer_uid', 0);
+        // if ($sharer_uid) {
+        //     Log::info('someone visit room detail page via sharing link. sharer uid id:' . $sharer_uid);
+        // }
+
         $room_id = request()->get('room_id', 0);
         $room_info = CacheService::getRoomInfo($room_id);
         if (!$room_info) {
@@ -789,7 +828,7 @@ class LiveController extends BaseController
                 ->select('id', 'rid', 'type', 'title', 'intro', 'cover_img', 'media_url', 'publish_time', 'time_long')
                 ->where('rid', $room_id)
                 ->where('delete_time', 0)
-                ->orderBy('id', 'desc')
+                ->orderBy('id', 'asc')
                 ->get()->toArray();
             if (empty($cache_val)) {
                 Cache::forever($cache_key, []);
