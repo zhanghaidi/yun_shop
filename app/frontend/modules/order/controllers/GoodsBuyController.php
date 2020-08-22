@@ -51,6 +51,10 @@ class GoodsBuyController extends ApiController
      */
     public function index()
     {
+        return response()->json([
+            'code' => 0,
+            'msg' => '执行成功',
+        ], 200, ['charset' => 'utf-8']);
         $this->validateParam();
         $trade = $this->getMemberCarts()->getTrade();
         $data = json_decode($trade, true);
