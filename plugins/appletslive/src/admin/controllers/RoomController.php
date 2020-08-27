@@ -23,15 +23,14 @@ namespace Yunshop\Appletslive\admin\controllers;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 use app\common\exceptions\AppException;
 use app\common\components\BaseController;
 use app\common\helpers\Url;
-use app\common\facades\Setting;
 use Yunshop\Appletslive\common\services\BaseService;
 use Yunshop\Appletslive\common\models\Room;
 use Yunshop\Appletslive\common\models\Replay;
 use app\common\helpers\PaginationHelper;
+use Illuminate\Support\Facades\Log;
 
 class RoomController extends BaseController
 {
@@ -61,24 +60,28 @@ class RoomController extends BaseController
                 Cache::forget("api_live_room_list");
 
                 // 重新查询并同步直播间列表
-                $room_from_weixin = (new BaseService())->getRooms($this->getToken());
+                $room_from_weixin = (new BaseService())->getRooms();
                 $present = $room_from_weixin['room_info'];
+
                 Cache::put($cache_key, $present, 10);
-                $stored = DB::table('appletslive_room')
-                    ->where('type', 0)
+                $stored = DB::table('appletslive_liveroom')
                     ->orderBy('id', 'desc')
+                    ->limit(100)
                     ->get();
 
                 // 添加新增的直播间
                 $insert = [];
+                $present = array_reverse($present);
                 foreach ($present as $psk => $psv) {
                     $exist = false;
                     foreach ($stored as $drk => $drv) {
                         if ($drv['roomid'] == $psv['roomid']) {
                             // 房间信息在数据库中存在，实时更新数据
-                            DB::table('appletslive_room')->where('id', $drv['id'])->update([
-                                'live_status' => $psv['live_status'],
-                            ]);
+                            if ($drv['live_status'] != $psv['live_status']) {
+                                DB::table('appletslive_liveroom')->where('id', $drv['id'])->update([
+                                    'live_status' => $psv['live_status'],
+                                ]);
+                            }
                             $exist = true;
                             break;
                         }
@@ -86,21 +89,21 @@ class RoomController extends BaseController
                     // 房间信息在数据库中不存在，实时记录数据
                     if (!$exist) {
                         array_push($insert, [
-                            'type' => 0,
-                            'roomid' => $psv['roomid'],
                             'name' => $psv['name'],
-                            'anchor_name' => $psv['anchor_name'],
+                            'roomid' => $psv['roomid'],
                             'cover_img' => $psv['cover_img'],
                             'share_img' => $psv['share_img'],
+                            'live_status' => $psv['live_status'],
                             'start_time' => $psv['start_time'],
                             'end_time' => $psv['end_time'],
-                            'live_status' => $psv['live_status'],
-                            'create_time' => time(),
+                            'anchor_name' => $psv['anchor_name'],
+                            'goods' => json_encode($psv['goods']),
                         ]);
                     }
                 }
                 if ($insert) {
-                    DB::table('appletslive_room')->insert($insert);
+                    DB::table('appletslive_liveroom')->insert($insert);
+                    Log::info('新增直播间', $insert);
                 }
 
                 // 移除删掉的直播间
@@ -118,7 +121,8 @@ class RoomController extends BaseController
                     }
                 }
                 if ($todel) {
-                    DB::table('appletslive_room')->where('id', 'in', $todel)->delete();
+                    DB::table('appletslive_liveroom')->whereIn('id', $todel)->delete();
+                    Log::info('移除直播间', $todel);
                 }
             }
 
@@ -139,13 +143,13 @@ class RoomController extends BaseController
                 if (trim($search['live_status']) !== '') {
                     $where[] = ['live_status', '=', $search['live_status']];
                 }
-                if (trim($search['status']) !== '') {
-                    if ($search['status'] === '0') {
-                        $where[] = ['delete_time', '>', 0];
-                    } else {
-                        $where[] = ['delete_time', '=', 0];
-                    }
-                }
+                // if (trim($search['status']) !== '') {
+                //     if ($search['status'] === '0') {
+                //         $where[] = ['delete_time', '>', 0];
+                //     } else {
+                //         $where[] = ['delete_time', '=', 0];
+                //     }
+                // }
             }
         }
 
@@ -475,23 +479,5 @@ class RoomController extends BaseController
         Cache::forget('api_live_replay_list|' . $replay->rid);
 
         return $this->message('修改成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.replaylist', ['rid' => $replay->rid]));
-    }
-
-    private function getToken()
-    {
-        $set = Setting::get('plugin.appletslive');
-        $appId = $set['appId'];
-        $secret = $set['secret'];
-
-        if (empty($appId) || empty($secret)) {
-            throw new AppException('请配置appId和secret');
-        }
-
-        $result = (new BaseService())->getToken($appId, $secret);
-        if ($result['errcode'] != 0) {
-            throw new AppException('appId或者secret错误'.$result['errmsg']);
-        }
-
-        return $result['access_token'];
     }
 }

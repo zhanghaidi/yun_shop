@@ -9,6 +9,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use app\console\Commands\CourseReminder;
 use app\console\Commands\NotPaidOrderNotice;
+use app\console\Commands\SyncWxappLiveRoom;
 
 class Kernel extends ConsoleKernel
 {
@@ -30,6 +31,7 @@ class Kernel extends ConsoleKernel
         WriteFrame::class,
         CourseReminder::class,
         NotPaidOrderNotice::class,
+        SyncWxappLiveRoom::class,
     ];
     /**
      * The bootstrap classes for the application.
@@ -57,13 +59,18 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')
         //          ->hourly();
 
-        // 每5分钟执行新课程视频发布提醒
+        // 每分钟执行新课程视频发布提醒
         $schedule->command('command:coursereminder')
             ->withoutOverlapping()
             ->everyMinute();
 
-        // 每5分钟执行待支付订单提醒
+        // 每分钟执行待支付订单提醒
         $schedule->command('command:notpaidordernotice')
+            ->withoutOverlapping()
+            ->everyMinute();
+
+        // 每分钟执行同步微信小程序直播间数据
+        $schedule->command('command:syncwxappliveroom')
             ->withoutOverlapping()
             ->everyMinute();
     }

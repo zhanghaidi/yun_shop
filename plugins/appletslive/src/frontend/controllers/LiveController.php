@@ -102,25 +102,13 @@ class LiveController extends BaseController
     }
 
     /**
-     * @return mixed
-     * @throws AppException
+     * 获取关联公众号关注链接
+     * @return \Illuminate\Http\JsonResponse
      */
-    private function getToken()
+    public function followlink()
     {
-        $set = Setting::get('plugin.appletslive');
-        $appId = $set['appId'];
-        $secret = $set['secret'];
-
-        if (empty($appId) || empty($secret)) {
-            throw new AppException('请配置appId和secret');
-        }
-
-        $result = (new BaseService())->getToken($appId, $secret);
-        if ($result['errcode'] != 0) {
-            throw new AppException('appId或者secret错误'.$result['errmsg']);
-        }
-
-        return $result['access_token'];
+        $setting = Setting::get('plugin.min_app');
+        return $this->successJson('获取成功', $setting['follow_link']);
     }
 
     /************************ 测试用代码 BEGIN ************************/
@@ -532,7 +520,6 @@ class LiveController extends BaseController
 
     /**
      * 测试订单提交推送给灸师
-     *
      * @return \Illuminate\Http\JsonResponse
      */
     public function testcreateorder()
@@ -557,6 +544,8 @@ class LiveController extends BaseController
 
     /************************ 测试用代码 END ************************/
 
+    /************************ 课程/录播 相关接口 BEGIN ************************/
+
     /**
      * 分页获取课程列表
      * @return \Illuminate\Http\JsonResponse
@@ -564,29 +553,11 @@ class LiveController extends BaseController
     public function roomlist()
     {
         $page = request()->get('page', 1);
-        $limit = 10;
-        $offset = ($page - 1) * $limit;
+        $limit = request()->get('limit', 10);
 
-        $cache_key = "api_live_room_list";
-        $cache_val = Cache::get($cache_key);
-        $page_key = "$limit|$page";
-        if (!$cache_val || !array_key_exists($page_key, $cache_val)) {
-            $total = DB::table('appletslive_room')->where('type', 1)->where('delete_time', 0)->count();
-            $list = DB::table('appletslive_room')
-                ->select('id', 'type', 'roomid', 'name', 'anchor_name', 'cover_img', 'start_time', 'end_time', 'live_status', 'desc')
-                ->where('type', 1)
-                ->where('delete_time', 0)
-                ->orderBy('live_status', 'asc')
-                ->orderBy('id', 'asc')
-                ->offset($offset)->limit($limit)->get()
-                ->toArray();
-            $page_val = ['total' => $total, 'totalPage' => ceil($total / $limit), 'list' => $list];
-            Cache::put($cache_key, [$page_key => $page_val], 30);
-        } else {
-            $page_val = $cache_val[$page_key];
-        }
-
+        $page_val = CacheService::getRecordedRoomList($page, $limit);
         if (!empty($page_val['list'])) {
+            $page_val['list'] = $page_val['list']->toArray();
             $numdata = CacheService::getRoomNum(array_column($page_val['list'], 'id'));
             $my_subscription = ($this->user_id ? CacheService::getUserSubscription($this->user_id) : []);
             foreach ($page_val['list'] as $k => $v) {
@@ -596,10 +567,6 @@ class LiveController extends BaseController
                 $page_val['list'][$k]['view_num'] = $numdata[$key]['view_num'];
                 $page_val['list'][$k]['comment_num'] = $numdata[$key]['comment_num'];
                 $page_val['list'][$k]['has_subscription'] = (array_search($page_val['list'][$k]['id'], $my_subscription) === false) ? false : true;
-                if ($page_val['list'][$k]['type'] == 0) {
-                    $page_val['list'][$k]['start_time'] = date('Y-m-d H:i', $page_val['list'][$k]['start_time']);
-                    $page_val['list'][$k]['end_time'] = date('Y-m-d H:i', $page_val['list'][$k]['end_time']);
-                }
             }
         }
 
@@ -751,7 +718,7 @@ class LiveController extends BaseController
         // 评论内容敏感词过滤
         $content = trim($input['content']);
         $wxapp_base_service = new BaseService();
-        $sensitive_check = $wxapp_base_service->msgSecCheck($content, $this->getToken());
+        $sensitive_check = $wxapp_base_service->msgSecCheck($content);
         if (!is_bool($sensitive_check) || $sensitive_check === false) {
             return $this->errorJson('评论内容包含敏感词', $sensitive_check);
         }
@@ -804,6 +771,9 @@ class LiveController extends BaseController
             return $this->errorJson('只能删除自己的评论');
         }
         DB::table('appletslive_room_comment')->where('id', $input['comment_id'])->delete();
+        if ($is_mine['parent_id'] == 0) {
+            CacheService::setRoomNum($is_mine['room_id'], 'comment_num', true);
+        }
         CacheService::setRoomComment($is_mine['room_id']);
         return $this->successJson('删除成功');
     }
@@ -947,7 +917,7 @@ class LiveController extends BaseController
         // 评论内容敏感词过滤
         $content = trim($input['content']);
         $wxapp_base_service = new BaseService();
-        $sensitive_check = $wxapp_base_service->msgSecCheck($content, $this->getToken());
+        $sensitive_check = $wxapp_base_service->msgSecCheck($content);
         if (!is_bool($sensitive_check) || $sensitive_check === false) {
             return $this->errorJson('评论内容包含敏感词', $sensitive_check);
         }
@@ -1000,17 +970,271 @@ class LiveController extends BaseController
             return $this->errorJson('只能删除自己的评论');
         }
         DB::table('appletslive_replay_comment')->where('id', $input['comment_id'])->delete();
+        if ($is_mine['parent_id'] == 0) {
+            CacheService::setReplayNum($is_mine['replay_id'], 'comment_num', true);
+        }
         CacheService::setReplayComment($is_mine['replay_id']);
         return $this->successJson('删除成功');
     }
 
+    /************************ 课程/录播 相关接口 END ************************/
+
+    /************************ 课程/品牌特卖 相关接口 BEGIN ************************/
+
     /**
-     * 获取关联公众号关注链接
+     * 分页获取品牌特卖专辑列表
      * @return \Illuminate\Http\JsonResponse
      */
-    public function followlink()
+    public function brandsalelist()
     {
-        $setting = Setting::get('plugin.min_app');
-        return $this->successJson('获取成功', $setting['follow_link']);
+        $page = request()->get('page', 1);
+        $limit = request()->get('limit', 10);
+
+        $page_val = CacheService::getBrandSaleAlbumList($page, $limit);
+        if (!empty($page_val['list'])) {
+            $numdata = CacheService::getBrandSaleAlbumNum(array_column($page_val['list'], 'id'));
+            $my_subscription = ($this->user_id ? CacheService::getUserBrandSaleAlbumSubscription($this->user_id) : []);
+            foreach ($page_val['list'] as $k => $v) {
+                $key = 'key_' . $v['id'];
+                $page_val['list'][$k]['hot_num'] = $numdata[$key]['hot_num'];
+                $page_val['list'][$k]['subscription_num'] = $numdata[$key]['subscription_num'];
+                $page_val['list'][$k]['view_num'] = $numdata[$key]['view_num'];
+                $page_val['list'][$k]['comment_num'] = $numdata[$key]['comment_num'];
+                $page_val['list'][$k]['has_subscription'] = (array_search($page_val['list'][$k]['id'], $my_subscription) === false) ? false : true;
+            }
+        }
+
+        return $this->successJson('获取成功', $page_val);
     }
+
+    /**
+     * 获取品牌特卖专辑详情
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function brandsaleinfo()
+    {
+        $album_id = request()->get('album_id', 0);
+        $album_info = CacheService::getBrandSaleAlbumInfo($album_id);
+        if (!$album_info) {
+            return $this->errorJson('专辑不存在', $album_info);
+        }
+
+        CacheService::setBrandSaleAlbumNum($album_id, 'view_num');
+        $numdata = CacheService::getBrandSaleAlbumNum($album_id);
+        // $subscription = CacheService::getBrandSaleAlbumSubscription($room_id);
+        // $album_info['subscription'] = $subscription;
+        $album_info['hot_num'] = $numdata['hot_num'];
+        $album_info['subscription_num'] = $numdata['subscription_num'];
+        $album_info['view_num'] = $numdata['view_num'];
+        $album_info['comment_num'] = $numdata['comment_num'];
+        $my_subscription = ($this->user_id ? CacheService::getUserBrandSaleAlbumSubscription($this->user_id) : []);
+        $album_info['has_subscription'] = ($this->user_id ? ((array_search($album_id, $my_subscription) === false) ? false : true) : false);
+
+        return $this->successJson('获取成功', $album_info);
+    }
+
+    /**
+     * 页获取品牌特卖专辑下属直播间列表
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function brandsaleliverooms()
+    {
+        $album_id = request()->get('album_id', 0);
+        $page = request()->get('page', 1);
+        $limit = request()->get('limit', 10);
+        $offset = ($page - 1) * $limit;
+        $rooms = CacheService::getBrandSaleAlbumLiveRooms($album_id);
+        $numdata = CacheService::getBrandSaleLiveRoomNum(array_column($rooms['list'], 'id'));
+        foreach ($rooms['list'] as $k => $v) {
+            $key = 'key_' . $v['id'];
+            $rooms['list'][$k]['view_num'] = $numdata[$key]['view_num'];
+        }
+        return $this->successJson('获取成功', [
+            'total' => $rooms['total'],
+            'list' => array_slice($rooms['list'], $offset, $limit),
+        ]);
+    }
+
+    /**
+     * 订阅品牌特卖专辑
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function brandsalesubscription()
+    {
+        $this->needLogin();
+        $this->needFollowAccount();
+
+        $input = request()->all();
+        if (!array_key_exists('album_id', $input)) {
+            return $this->errorJson('缺少参数');
+        }
+
+        $table = 'appletslive_room_subscription';
+        $map = [['room_id', '=', $input['album_id']], ['user_id', '=', $this->user_id]];
+        if (!DB::table($table)->where($map)->first()) {
+            DB::table($table)->insert([
+                'uniacid' => $this->uniacid,
+                'room_id' => $input['album_id'],
+                'user_id' => $this->user_id,
+                'create_time' => time(),
+                'type' => 2,
+            ]);
+            CacheService::setBrandSaleAlbumNum($input['album_id'], 'subscription_num');
+            CacheService::setUserBrandSaleAlbumSubscription($this->user_id, $input['album_id']);
+            CacheService::setBrandSaleAlbumSubscription($input['album_id'], $this->user_id);
+            return $this->successJson('订阅成功');
+        }
+
+        return $this->errorJson('你已订阅该专辑');
+    }
+
+    /**
+     * 我订阅的品牌特卖专辑
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function mybrandsalesubscription()
+    {
+        $this->needLogin();
+
+        $page = request()->get('page', 1);
+        $limit = 10;
+        $offset = ($page - 1) * $limit;
+
+        $my_subscription = CacheService::getUserBrandSaleAlbumSubscription($this->user_id);
+        $list = array_slice($my_subscription, $offset, $limit);
+        foreach ($list as $k => $v) {
+            $list[$k] = CacheService::getBrandSaleAlbumInfo($v);
+        }
+
+        if (!empty($list)) {
+            $numdata = CacheService::getBrandSaleAlbumNum(array_column($list, 'id'));
+            foreach ($list as $k => $v) {
+                $key = 'key_' . $v['id'];
+                $list[$k]['hot_num'] = $numdata[$key]['hot_num'];
+                $list[$k]['subscription_num'] = $numdata[$key]['subscription_num'];
+                $list[$k]['view_num'] = $numdata[$key]['view_num'];
+                $list[$k]['comment_num'] = $numdata[$key]['comment_num'];
+            }
+        }
+
+        $total = count($my_subscription);
+        return $this->successJson('获取成功', [
+            'total' => $total,
+            'totalPage' => ceil($total / $limit),
+            'list' => $list,
+        ]);
+    }
+
+    /**
+     * 分页获取品牌特卖专辑评论列表
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function brandsalecommentlist()
+    {
+        $album_id = request()->get('album_id', 0);
+        $page = request()->get('page', 1);
+        $limit = 10;
+        $offset = ($page - 1) * $limit;
+
+        $cache_val = CacheService::getBrandSaleAlbumComment($album_id);
+        return $this->successJson('获取成功', [
+            'total' => $cache_val['total'],
+            'list' => array_slice($cache_val['list'], $offset, $limit),
+        ]);
+    }
+
+    /**
+     * 品牌特卖专辑添加评论
+     * @return \Illuminate\Http\JsonResponse
+     * @throws AppException
+     */
+    public function brandsalecommentadd()
+    {
+        $this->needLogin();
+        $input = request()->all();
+        if (!array_key_exists('album_id', $input) || !array_key_exists('content', $input)) {
+            return $this->errorJson('缺少参数');
+        }
+        if (is_string($input['content']) && strlen(trim($input['content'])) == 0) {
+            return $this->errorJson('评论内容不能为空');
+        }
+
+        // 评论内容敏感词过滤
+        $content = trim($input['content']);
+        $wxapp_base_service = new BaseService();
+        $sensitive_check = $wxapp_base_service->msgSecCheck($content);
+        if (!is_bool($sensitive_check) || $sensitive_check === false) {
+            return $this->errorJson('评论内容包含敏感词', $sensitive_check);
+        }
+        $content = $wxapp_base_service->textCheck($content);
+
+        // 组装插入数据
+        $comment_num_inc = true;
+        $insert_data = [
+            'uniacid' => $this->uniacid,
+            'room_id' => $input['album_id'],
+            'user_id' => $this->user_id,
+            'content' => $content,
+            'create_time' => time(),
+        ];
+        if (array_key_exists('parent_id', $input) && $input['parent_id'] > 0) {
+            $parent = DB::table('appletslive_room_comment')->where('id', $input['parent_id'])->first();
+            if ($parent) {
+                $comment_num_inc = false;
+                $insert_data['parent_id'] = $parent['id'];
+                $insert_data['is_reply'] = 1;
+                $insert_data['rele_user_id'] = $parent['user_id'];
+            }
+        }
+
+        $id = DB::table('appletslive_room_comment')->insertGetId($insert_data);
+        if ($comment_num_inc) {
+            CacheService::setBrandSaleAlbumNum($input['album_id'], 'comment_num');
+        }
+        CacheService::setBrandSaleAlbumComment($input['album_id']);
+        return $this->successJson('评论成功', ['id' => $id, 'content' => $content]);
+    }
+
+    /**
+     * 品牌特卖专辑删除评论
+     * @return \Illuminate\Http\JsonResponse
+     * @throws AppException
+     */
+    public function brandsalecommentdel()
+    {
+        $this->needLogin();
+        $input = request()->all();
+        if (!array_key_exists('comment_id', $input) || empty(intval($input['comment_id']))) {
+            return $this->errorJson('评论id有误');
+        }
+        $is_mine = DB::table('appletslive_room_comment')
+            ->where('id', $input['comment_id'])
+            ->where('user_id', $this->user_id)
+            ->first();
+        if (!$is_mine) {
+            return $this->errorJson('只能删除自己的评论');
+        }
+        DB::table('appletslive_room_comment')->where('id', $input['comment_id'])->delete();
+        if ($is_mine['parent_id'] == 0) {
+            CacheService::setBrandSaleAlbumNum($is_mine['room_id'], 'comment_num', true);
+        }
+        CacheService::setBrandSaleAlbumComment($is_mine['room_id']);
+        return $this->successJson('删除成功');
+    }
+
+    /**
+     * 记录品牌特卖直播间观看人数
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function brandsaleliveroomviewreport()
+    {
+        $live_room_id = request()->get('live_room_id', 0);
+        if (!$live_room_id) {
+            return $this->errorJson('缺少参数');
+        }
+        CacheService::setBrandSaleLiveRoomNum($live_room_id, 'view_num');
+        return $this->successJson('记录成功');
+    }
+
+    /************************ 课程/品牌特卖 相关接口 END ************************/
 }
