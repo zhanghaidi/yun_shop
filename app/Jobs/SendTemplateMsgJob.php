@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use EasyWeChat\Foundation\Application;
+use EasyWeChat\Core\Exceptions\HttpException;
 
 class SendTemplateMsgJob implements ShouldQueue
 {
@@ -60,15 +61,19 @@ class SendTemplateMsgJob implements ShouldQueue
                     'pagepath' => $this->config['page'],
                 ]];
             }
-            $app = new Application($this->config['options']);
-            $app = $app->notice;
-            $result = $app
-                ->uses($this->config['template_id'])
-                ->andData($this->config['notice_data'])
-                ->andReceiver($this->config['openid'])
-                ->andUrl($this->config['url'])
-                ->send($miniprogram);
-            Log::info('发送模板消息成功:', ['config' => $this->config, 'result' => $result]);
+            try {
+                $app = new Application($this->config['options']);
+                $app = $app->notice;
+                $result = $app
+                    ->uses($this->config['template_id'])
+                    ->andData($this->config['notice_data'])
+                    ->andReceiver($this->config['openid'])
+                    ->andUrl($this->config['url'])
+                    ->send($miniprogram);
+                Log::info('发送模板消息成功:', ['config' => $this->config, 'result' => $result]);
+            } catch (HttpException $e) {
+                Log::info('发送模板消息失败:' . $e->getMessage());
+            }
             Log::info("------------------------ 发送公众号模板消息 END -------------------------------\n");
         } elseif ($this->config['type'] == 'wxapp') {
             Log::info("------------------------ 发送小程序订阅模板消息 BEGIN -------------------------------");

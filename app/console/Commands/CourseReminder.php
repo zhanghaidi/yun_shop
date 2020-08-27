@@ -100,6 +100,7 @@ class CourseReminder extends Command
                 $subscribed_unionid = array_column($wxapp_user, 'unionid');
                 $wechat_user = DB::table('mc_mapping_fans')
                     ->select('uid', 'unionid', 'openid', 'follow')
+                    ->where('uniacid', 39)
                     ->whereIn('unionid', $subscribed_unionid)
                     ->get()->toArray();
                 array_walk($subscribed_user, function (&$item) use ($wxapp_user, $wechat_user) {

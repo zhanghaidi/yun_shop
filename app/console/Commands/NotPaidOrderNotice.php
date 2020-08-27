@@ -89,7 +89,6 @@ class NotPaidOrderNotice extends Command
             || empty(intval($setting_trade['not_paid_notice_minutes']))
             || empty($message_template)) {
             $doexec = false;
-
         }
         if (!$doexec) {
             // Log::info('未开启待支付订单提醒.');
@@ -142,6 +141,7 @@ class NotPaidOrderNotice extends Command
             $wx_unionid = array_column($wxapp_user, 'unionid');
             $wechat_user = DB::table('mc_mapping_fans')
                 ->select('uid', 'unionid', 'openid', 'follow')
+                ->where('uniacid', 39)
                 ->whereIn('unionid', $wx_unionid)
                 ->get()->toArray();
 
