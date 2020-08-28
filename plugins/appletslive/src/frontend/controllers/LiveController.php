@@ -622,7 +622,7 @@ class LiveController extends BaseController
             return $this->errorJson('缺少参数');
         }
 
-        $table = 'appletslive_room_subscription';
+        $table = 'yz_appletslive_room_subscription';
         $map = [['room_id', '=', $input['room_id']], ['user_id', '=', $this->user_id]];
         if (!DB::table($table)->where($map)->first()) {
             DB::table($table)->insert([
@@ -1019,7 +1019,7 @@ class LiveController extends BaseController
             return $this->errorJson('缺少参数');
         }
 
-        $table = 'appletslive_room_subscription';
+        $table = 'yz_appletslive_room_subscription';
         $map = [['room_id', '=', $input['album_id']], ['user_id', '=', $this->user_id]];
         if (!DB::table($table)->where($map)->first()) {
             DB::table($table)->insert([

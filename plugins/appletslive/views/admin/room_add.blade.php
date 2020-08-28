@@ -19,7 +19,7 @@
         <div class="rightlist">
             <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
 
-                @if($info['type']=='1')
+                @if($type=='1')
                     <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-1 control-label">课程名称</label>
                         <div class="col-sm-9 col-xs-12 col-md-11">
@@ -41,7 +41,7 @@
                     </div>
                 @endif
 
-                @if($info['type']=='2')
+                @if($type=='2')
                     <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-1 control-label">专辑名称</label>
                         <div class="col-sm-9 col-xs-12 col-md-11">
