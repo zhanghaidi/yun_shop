@@ -27,8 +27,10 @@ use app\common\exceptions\AppException;
 use app\common\components\BaseController;
 use app\common\helpers\Url;
 use Yunshop\Appletslive\common\services\BaseService;
+use Yunshop\Appletslive\common\services\CacheService;
 use Yunshop\Appletslive\common\models\Room;
 use Yunshop\Appletslive\common\models\Replay;
+use Yunshop\Appletslive\common\models\LiveRoom;
 use app\common\helpers\PaginationHelper;
 use Illuminate\Support\Facades\Log;
 
@@ -38,7 +40,7 @@ class RoomController extends BaseController
     public function index()
     {
         $type = request()->get('type', 0);
-        if (!in_array($type, [0, 1])) {
+        if (!in_array($type, [0, 1, 2])) {
             throw new AppException('房间类型有误');
         }
 
@@ -47,24 +49,14 @@ class RoomController extends BaseController
 
         if ($type == 0) { // 直播
 
-            $cache_key = 'live_room_list';
-            $cache_val = Cache::get($cache_key);
-
             // 同步房间列表
             $tag = request()->get('tag', '');
             if ($tag == 'refresh' || empty($cache_val)) {
-                Cache::forget($cache_key);
-                $cache_val = null;
-
-                // 刷新课程列表接口数据缓存
-                Cache::forget("api_live_room_list");
 
                 // 重新查询并同步直播间列表
                 $room_from_weixin = (new BaseService())->getRooms();
                 $present = $room_from_weixin['room_info'];
-
-                Cache::put($cache_key, $present, 10);
-                $stored = DB::table('appletslive_liveroom')
+                $stored = DB::table('yz_appletslive_liveroom')
                     ->orderBy('id', 'desc')
                     ->limit(100)
                     ->get();
@@ -78,7 +70,7 @@ class RoomController extends BaseController
                         if ($drv['roomid'] == $psv['roomid']) {
                             // 房间信息在数据库中存在，实时更新数据
                             if ($drv['live_status'] != $psv['live_status']) {
-                                DB::table('appletslive_liveroom')->where('id', $drv['id'])->update([
+                                DB::table('yz_appletslive_liveroom')->where('id', $drv['id'])->update([
                                     'live_status' => $psv['live_status'],
                                 ]);
                             }
@@ -102,7 +94,7 @@ class RoomController extends BaseController
                     }
                 }
                 if ($insert) {
-                    DB::table('appletslive_liveroom')->insert($insert);
+                    DB::table('yz_appletslive_liveroom')->insert($insert);
                     Log::info('新增直播间', $insert);
                 }
 
@@ -121,13 +113,13 @@ class RoomController extends BaseController
                     }
                 }
                 if ($todel) {
-                    DB::table('appletslive_liveroom')->whereIn('id', $todel)->delete();
-                    Log::info('移除直播间', $todel);
+                    DB::table('yz_appletslive_liveroom')->whereIn('id', $todel)->delete();
+                    DB::table('yz_appletslive_replay')->whereIn('room_id', $todel)->update(['delete_time' => time()]);
                 }
             }
 
             // 处理搜索条件
-            $where[] = ['type', '=', 0];
+            $where = [];
             if (isset($input->search)) {
                 $search = $input->search;
                 if (intval($search['roomid']) > 0) {
@@ -143,14 +135,12 @@ class RoomController extends BaseController
                 if (trim($search['live_status']) !== '') {
                     $where[] = ['live_status', '=', $search['live_status']];
                 }
-                // if (trim($search['status']) !== '') {
-                //     if ($search['status'] === '0') {
-                //         $where[] = ['delete_time', '>', 0];
-                //     } else {
-                //         $where[] = ['delete_time', '=', 0];
-                //     }
-                // }
             }
+
+            $list = LiveRoom::where($where)
+                ->orderBy('id', 'desc')
+                ->paginate($limit);
+            $pager = PaginationHelper::show($list->total(), $list->currentPage(), $list->perPage());
         }
 
         if ($type == 1) { // 录播
@@ -172,16 +162,40 @@ class RoomController extends BaseController
                     }
                 }
             }
+            $list = Room::where($where)
+                ->orderBy('id', 'desc')
+                ->paginate($limit);
+            $pager = PaginationHelper::show($list->total(), $list->currentPage(), $list->perPage());
         }
 
-        $room_list = Room::where($where)
-            ->orderBy('id', 'desc')
-            ->paginate($limit);
-        $pager = PaginationHelper::show($room_list->total(), $room_list->currentPage(), $room_list->perPage());
+        if ($type == 2) { // 品牌特卖
+            // 处理搜索条件
+            $where[] = ['type', '=', 2];
+            if (isset($input->search)) {
+                $search = $input->search;
+                if (intval($search['id']) > 0) {
+                    $where[] = ['id', '=', intval($search['id'])];
+                }
+                if (trim($search['name']) !== '') {
+                    $where[] = ['name', 'like', '%' . trim($search['name']) . '%'];
+                }
+                if (trim($search['status']) !== '') {
+                    if ($search['status'] === '0') {
+                        $where[] = ['delete_time', '>', 0];
+                    } else {
+                        $where[] = ['delete_time', '=', 0];
+                    }
+                }
+            }
+            $list = Room::where($where)
+                ->orderBy('id', 'desc')
+                ->paginate($limit);
+            $pager = PaginationHelper::show($list->total(), $list->currentPage(), $list->perPage());
+        }
 
         return view('Yunshop\Appletslive::admin.room_index', [
             'type' => $type,
-            'room_list' => $room_list,
+            'room_list' => $list,
             'pager' => $pager,
             'request' => $input,
         ])->render();
@@ -191,8 +205,9 @@ class RoomController extends BaseController
     public function edit()
     {
         if (request()->isMethod('post')) {
-            $upd_data = [];
+
             $param = request()->all();
+            $upd_data = ['sort' => intval($param['sort'])];
             if (array_key_exists('name', $param)) { // 房间名
                 $upd_data['name'] = $param['name'] ? trim($param['name']) : '';
             }
@@ -203,27 +218,32 @@ class RoomController extends BaseController
                 $upd_data['desc'] = $param['desc'] ? $param['desc'] : '';
             }
             $id = $param['id'] ? $param['id'] : 0;
-            $room = DB::table('appletslive_room')->where('id', $id)->first();
+            $room = DB::table('yz_appletslive_room')->where('id', $id)->first();
             if (!$room) {
-                return $this->message('无效的房间ID', Url::absoluteWeb(''), 'danger');
+                return $this->message('无效的ID', Url::absoluteWeb(''), 'danger');
             }
-            if (DB::table('appletslive_room')->where('name', $upd_data['name'])->where('id', '<>', $id)->first()) {
-                return $this->message('课程名称已存在', Url::absoluteWeb(''), 'danger');
+            if (DB::table('yz_appletslive_room')->where('name', $upd_data['name'])->where('id', '<>', $id)->first()) {
+                return $this->message('名称已存在', Url::absoluteWeb(''), 'danger');
             }
-            DB::table('appletslive_room')->where('id', $id)->update($upd_data);
+            DB::table('yz_appletslive_room')->where('id', $id)->update($upd_data);
 
-            // 刷新课程详情和课程列表接口数据缓存
-            Cache::forget("api_live_room_info|$id");
-            Cache::forget("api_live_room_list");
+            // 刷新接口数据缓存
+            if ($room['type'] == 1) {
+                Cache::forget(CacheService::$cache_keys['recorded.roomlist']);
+                Cache::forget(CacheService::$cache_keys['recorded.roominfo']);
+            } elseif ($room['type'] == 2) {
+                Cache::forget(CacheService::$cache_keys['brandsale.albumlist']);
+                Cache::forget(CacheService::$cache_keys['brandsale.albuminfo']);
+            }
 
             return $this->message('保存成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.index', ['type' => $room['type']]));
         }
 
         $id = request()->get('id', 0);
-        $info = DB::table('appletslive_room')->where('id', $id)->first();
+        $info = DB::table('yz_appletslive_room')->where('id', $id)->first();
 
         if (!$info) {
-            return $this->message('房间不存在', Url::absoluteWeb(''), 'danger');
+            return $this->message('无效的ID', Url::absoluteWeb(''), 'danger');
         }
 
         return view('Yunshop\Appletslive::admin.room_edit', [
@@ -236,8 +256,12 @@ class RoomController extends BaseController
     public function add()
     {
         if (request()->isMethod('post')) {
-            $ist_data = ['type' => 1, 'live_status' => 255];
+
             $param = request()->all();
+            if (!array_key_exists('type', $param) || !in_array($param['type'], [1, 2])) { // 类型
+                return $this->message('类型参数有误', Url::absoluteWeb(''), 'danger');
+            }
+            $ist_data = ['type' => $param['type'], 'sort' => intval($param['sort'])];
             if (array_key_exists('name', $param)) { // 房间名
                 $ist_data['name'] = $param['name'] ? trim($param['name']) : '';
             }
@@ -247,18 +271,28 @@ class RoomController extends BaseController
             if (array_key_exists('desc', $param)) { // 房间介绍
                 $ist_data['desc'] = $param['desc'] ? $param['desc'] : '';
             }
-            if (DB::table('appletslive_room')->where('name', $ist_data['name'])->first()) {
+            if (DB::table('yz_appletslive_room')->where('name', $ist_data['name'])->first()) {
                 return $this->message('课程名称已存在', Url::absoluteWeb(''), 'danger');
             }
-            DB::table('appletslive_room')->insert($ist_data);
+            DB::table('yz_appletslive_room')->insert($ist_data);
 
-            // 刷新课程列表接口数据缓存
-            Cache::forget("api_live_room_list");
+            // 刷新接口数据缓存
+            if ($param['type'] == 1) {
+                Cache::forget(CacheService::$cache_keys['recorded.roomlist']);
+                Cache::forget(CacheService::$cache_keys['recorded.roominfo']);
+            } elseif ($param['type'] == 2) {
+                Cache::forget(CacheService::$cache_keys['brandsale.albumlist']);
+                Cache::forget(CacheService::$cache_keys['brandsale.albuminfo']);
+            }
 
             return $this->message('保存成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.index', ['type' => 1]));
         }
 
-        return view('Yunshop\Appletslive::admin.room_add')->render();
+        $type = request()->get('type', 0);
+        if (!$type) {
+            return $this->message('无效的类型', Url::absoluteWeb(''), 'danger');
+        }
+        return view('Yunshop\Appletslive::admin.room_add', ['type' => $type])->render();
     }
 
     // 录播房间显示/隐藏
@@ -279,8 +313,14 @@ class RoomController extends BaseController
         $delete_time = ($room->delete_time > 0) ? 0 : time();
         Room::where('id', $room->id)->update(['delete_time' => $delete_time]);
 
-        // 刷新课程列表接口数据缓存
-        Cache::forget("api_live_room_list");
+        // 刷新接口数据缓存
+        if ($room->type == 1) {
+            Cache::forget(CacheService::$cache_keys['recorded.roomlist']);
+            Cache::forget(CacheService::$cache_keys['recorded.roominfo']);
+        } elseif ($room->type == 2) {
+            Cache::forget(CacheService::$cache_keys['brandsale.albumlist']);
+            Cache::forget(CacheService::$cache_keys['brandsale.albuminfo']);
+        }
 
         return $this->message('修改成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.index', ['type' => $room->type]));
     }
@@ -294,66 +334,36 @@ class RoomController extends BaseController
     public function replaylist()
     {
         $rid = request()->get('rid', 0);
-        $room = DB::table('appletslive_room')->where('id', $rid)->first();
+        $room = DB::table('yz_appletslive_room')->where('id', $rid)->first();
         $room_type = $room['type'];
-        $cache_key = 'live_room_replay_list_' . $room_type . '_' . $rid;
-        $replay_list = Cache::get($cache_key);
 
         $input = \YunShop::request();
         $limit = 10;
 
-        if ($room_type == 0) { // 直播回看列表
-            if (empty($replay_list)) {
-                $result = (new BaseService())->getReplays($this->getToken(), $room['roomid']);
-
-                if (!$result || $result['errcode'] != 0) {
-                    if (is_array($result)) {
-                        return $this->message('获取回看列表失败【' . $result['errmsg'] . '】', Url::absoluteWeb(''), 'danger');
-                    }
-                    return $this->message('获取回看列表失败', Url::absoluteWeb(''), 'danger');
+        // 处理搜索条件
+        $where[] = ['rid', '=', $rid];
+        if (isset($input->search)) {
+            $search = $input->search;
+            if (intval($search['id']) > 0) {
+                $where[] = ['id', '=', intval($search['id'])];
+            }
+            if (trim($search['title']) !== '') {
+                $where[] = ['title', 'like', '%' . trim($search['title']) . '%'];
+            }
+            if (trim($search['type']) !== '') {
+                $where[] = ['type', '=', $search['type']];
+            }
+            if (trim($search['status']) !== '') {
+                if ($search['status'] === '0') {
+                    $where[] = ['delete_time', '>', 0];
+                } else {
+                    $where[] = ['delete_time', '=', 0];
                 }
-
-                foreach ($result['live_replay'] as &$replay) {
-                    $replay['create_time'] = date('Y-m-d H:i:s', $replay['create_time']);
-                    $replay['expire_time'] = date('Y-m-d H:i:s', $replay['expire_time']);
-                    if (strexists($replay['media_url'], 'http://')) {
-                        $replay['media_url'] = str_replace('http://', 'https://', $replay['media_url']);
-                    }
-                }
-
-                Cache::put($cache_key, $result['live_replay'], 10);
-                $replay_list = Cache::get($cache_key);
             }
         }
-
-        if ($room_type == 1) { // 录播列表
-            // 处理搜索条件
-            $where[] = ['rid', '=', $rid];
-            if (isset($input->search)) {
-                $search = $input->search;
-                if (intval($search['id']) > 0) {
-                    $where[] = ['id', '=', intval($search['id'])];
-                }
-                if (trim($search['title']) !== '') {
-                    $where[] = ['title', 'like', '%' . trim($search['title']) . '%'];
-                }
-                if (trim($search['type']) !== '') {
-                    $where[] = ['type', '=', $search['type']];
-                }
-                if (trim($search['status']) !== '') {
-                    if ($search['status'] === '0') {
-                        $where[] = ['delete_time', '>', 0];
-                    } else {
-                        $where[] = ['delete_time', '=', 0];
-                    }
-                }
-            }
-            $result = Replay::where($where)
-                ->orderBy('id', 'desc')
-                ->paginate($limit);
-            $replay_list = $result;
-        }
-
+        $replay_list = Replay::where($where)
+            ->orderBy('id', 'desc')
+            ->paginate($limit);
         $pager = PaginationHelper::show($replay_list->total(), $replay_list->currentPage(), $replay_list->perPage());
 
         return view('Yunshop\Appletslive::admin.replay_list', [
@@ -380,31 +390,38 @@ class RoomController extends BaseController
             $upd_data['doctor'] = $param['doctor'] ? $param['doctor'] : '';
             $upd_data['time_long'] = ((intval($param['minute']) * 60) + intval($param['second']));
             $upd_data['publish_time'] = strtotime($param['publish_time']) <= time() ? time() : strtotime($param['publish_time']);
-            $replay = DB::table('appletslive_replay')->where('id', $id)->first();
+            $replay = DB::table('yz_appletslive_replay')->where('id', $id)->first();
             if (!$replay) {
                 return $this->message('无效的回放或视频ID', Url::absoluteWeb(''), 'danger');
             }
-            if (DB::table('appletslive_replay')->where('title', $upd_data['title'])->where('rid', $replay->rid)->where('id', '<>', $id)->first()) {
+            if (DB::table('yz_appletslive_replay')->where('title', $upd_data['title'])->where('rid', $replay->rid)->where('id', '<>', $id)->first()) {
                 return $this->message('视频名称已存在', Url::absoluteWeb(''), 'danger');
             }
-            DB::table('appletslive_replay')->where('id', $id)->update($upd_data);
+            DB::table('yz_appletslive_replay')->where('id', $id)->update($upd_data);
 
-            // 刷新录播详情和录播列表接口数据缓存
-            Cache::forget("api_live_replay_info|$id");
-            Cache::forget("api_live_replay_list|" . $replay->rid);
+            // 刷新接口数据缓存
+            if ($replay['type'] == 0) {
+                Cache::forget(CacheService::$cache_keys['brandsale.albumlist']);
+                Cache::forget(CacheService::$cache_keys['brandsale.albuminfo']);
+                Cache::forget(CacheService::$cache_keys['brandsale.albumliverooms']);
+            } else {
+                Cache::forget(CacheService::$cache_keys['recorded.roomlist']);
+                Cache::forget(CacheService::$cache_keys['recorded.roominfo']);
+                Cache::forget(CacheService::$cache_keys['recorded.roomreplays']);
+            }
 
             return $this->message('保存成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.replaylist', ['rid' => $replay['rid']]));
         }
 
         $id = request()->get('id', 0);
-        $info = DB::table('appletslive_replay')->where('id', $id)->first();
+        $info = DB::table('yz_appletslive_replay')->where('id', $id)->first();
         if (!$info) {
             return $this->message('回放或视频不存在', Url::absoluteWeb(''), 'danger');
         }
         $info['minute'] = floor($info['time_long'] / 60);
         $info['second'] = $info['time_long'] % 60;
 
-        $room = DB::table('appletslive_room')->where('id', $info['rid'])->first();
+        $room = DB::table('yz_appletslive_room')->where('id', $info['rid'])->first();
         return view('Yunshop\Appletslive::admin.replay_edit', [
             'id' => $id,
             'room' => $room,
@@ -418,13 +435,14 @@ class RoomController extends BaseController
         if (request()->isMethod('post')) {
             $param = request()->all();
             $rid = $param['rid'] ? intval($param['rid']) : 0;
-            $room = DB::table('appletslive_room')->where('id', $rid)->first();
+            $room = DB::table('yz_appletslive_room')->where('id', $rid)->first();
             if (!$room) {
                 return $this->message('房间不存在', Url::absoluteWeb(''), 'danger');
             }
+            $type = array_key_exists('type', $param) ? intval($param['type']) :  0;
             $ist_data = [
                 'rid' => $rid,
-                'type' => intval($param['type']),
+                'type' => $type,
                 'title' => $param['title'] ? trim($param['title']) : '',
                 'cover_img' => $param['cover_img'] ? $param['cover_img'] : '',
                 'media_url' => $param['media_url'] ? $param['media_url'] : '',
@@ -435,26 +453,31 @@ class RoomController extends BaseController
                 'time_long' => ((intval($param['minute']) * 60) + intval($param['second'])),
                 'publish_time' => strtotime($param['publish_time']) <= time() ? time() : strtotime($param['publish_time']),
             ];
-            if (DB::table('appletslive_replay')->where('title', $ist_data['title'])->where('rid', $rid)->first()) {
-                return $this->message('视频名称已存在', Url::absoluteWeb(''), 'danger');
+            if (DB::table('yz_appletslive_replay')->where('title', $ist_data['title'])->where('rid', $rid)->first()) {
+                return $this->message('名称已存在', Url::absoluteWeb(''), 'danger');
             }
-            DB::table('appletslive_replay')->insert($ist_data);
+            DB::table('yz_appletslive_replay')->insert($ist_data);
 
-            // 刷新录播列表接口数据缓存
-            Cache::forget("api_live_replay_list|$rid");
+            // 刷新接口数据缓存
+            if ($type == 0) {
+                Cache::forget(CacheService::$cache_keys['brandsale.albumlist']);
+                Cache::forget(CacheService::$cache_keys['brandsale.albuminfo']);
+                Cache::forget(CacheService::$cache_keys['brandsale.albumliverooms']);
+            } else {
+                Cache::forget(CacheService::$cache_keys['recorded.roomlist']);
+                Cache::forget(CacheService::$cache_keys['recorded.roominfo']);
+                Cache::forget(CacheService::$cache_keys['recorded.roomreplays']);
+            }
 
             return $this->message('保存成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.replaylist', ['rid' => $rid]));
         }
 
         $rid = request()->get('rid', 0);
-        $room = DB::table('appletslive_room')->where('id', $rid)->first();
+        $room = DB::table('yz_appletslive_room')->where('id', $rid)->first();
         if (!$room || $room['type'] == 0) {
             return $this->message('不可操作', Url::absoluteWeb(''), 'danger');
         }
-
-        return view('Yunshop\Appletslive::admin.replay_add', [
-            'rid' => $rid,
-        ])->render();
+        return view('Yunshop\Appletslive::admin.replay_add', ['rid' => $rid])->render();
     }
 
     // 视频显示/隐藏
@@ -475,8 +498,16 @@ class RoomController extends BaseController
         $delete_time = ($replay->delete_time > 0) ? 0 : time();
         Replay::where('id', $replay->id)->update(['delete_time' => $delete_time]);
 
-        // 刷新录播列表接口数据缓存
-        Cache::forget('api_live_replay_list|' . $replay->rid);
+        // 刷新接口数据缓存
+        if ($replay->type == 0) {
+            Cache::forget(CacheService::$cache_keys['brandsale.albumlist']);
+            Cache::forget(CacheService::$cache_keys['brandsale.albuminfo']);
+            Cache::forget(CacheService::$cache_keys['brandsale.albumliverooms']);
+        } else {
+            Cache::forget(CacheService::$cache_keys['recorded.roomlist']);
+            Cache::forget(CacheService::$cache_keys['recorded.roominfo']);
+            Cache::forget(CacheService::$cache_keys['recorded.roomreplays']);
+        }
 
         return $this->message('修改成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.replaylist', ['rid' => $replay->rid]));
     }

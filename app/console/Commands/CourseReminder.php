@@ -69,7 +69,7 @@ class CourseReminder extends Command
         $time_now = time();
         $wait_seconds = 60 * 15;
         $check_time_range = [$time_now + $wait_seconds, $time_now + $wait_seconds + 60];
-        $replay_publish_soon = DB::table('appletslive_replay')
+        $replay_publish_soon = DB::table('yz_appletslive_replay')
             ->select('id', 'rid', 'title', 'doctor', 'publish_time')
             ->whereBetween('publish_time', $check_time_range)
             ->get()->toArray();
@@ -79,12 +79,12 @@ class CourseReminder extends Command
         } else {
 
             // 2、查询即将发布的视频关联的课程
-            $rela_room = DB::table('appletslive_room')
+            $rela_room = DB::table('yz_appletslive_room')
                 ->whereIn('id', array_unique(array_column($replay_publish_soon, 'rid')))
                 ->pluck('name', 'id')->toArray();
 
             // 3、查询关注了这些课程的所有小程序用户信息(openid)
-            $subscribed_user = DB::table('appletslive_room_subscription')
+            $subscribed_user = DB::table('yz_appletslive_room_subscription')
                 ->select('user_id', 'room_id')
                 ->where('room_id', array_keys($rela_room))
                 ->get()->toArray();

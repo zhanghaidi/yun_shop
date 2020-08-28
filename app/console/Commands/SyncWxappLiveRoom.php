@@ -90,7 +90,7 @@ class SyncWxappLiveRoom extends Command
 
         if ($need_update) {
 
-            $stored = DB::table('appletslive_liveroom')
+            $stored = DB::table('yz_appletslive_liveroom')
                 ->orderBy('id', 'desc')
                 ->limit(100)
                 ->get();
@@ -137,7 +137,7 @@ class SyncWxappLiveRoom extends Command
             }
             if ($update) {
                 foreach ($update as $item) {
-                    DB::table('appletslive_liveroom')->where('id', $item['id'])->update([
+                    DB::table('yz_appletslive_liveroom')->where('id', $item['id'])->update([
                         'name' => $item['name'],
                         'roomid' => $item['roomid'],
                         'cover_img' => $item['cover_img'],
@@ -152,7 +152,7 @@ class SyncWxappLiveRoom extends Command
                 Log::info('同步微信直播间数据:更新直播间信息', ['count' => count($update)]);
             }
             if ($insert) {
-                DB::table('appletslive_liveroom')->insert($insert);
+                DB::table('yz_appletslive_liveroom')->insert($insert);
                 Log::info('同步微信直播间数据:新增直播间', ['count' => count($insert)]);
             }
 
@@ -171,8 +171,8 @@ class SyncWxappLiveRoom extends Command
                 }
             }
             if ($todel) {
-                DB::table('appletslive_liveroom')->whereIn('id', $todel)->delete();
-                DB::table('appletslive_replay')->whereIn('room_id', $todel)->update(['delete_time' => time()]);
+                DB::table('yz_appletslive_liveroom')->whereIn('id', $todel)->delete();
+                DB::table('yz_appletslive_replay')->whereIn('room_id', $todel)->update(['delete_time' => time()]);
                 Log::info('同步微信直播间数据:移除直播间', ['count' => count($todel)]);
             }
         }

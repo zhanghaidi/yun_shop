@@ -24,7 +24,15 @@ use app\common\models\BaseModel;
 
 class Replay extends BaseModel
 {
-    public $table = "appletslive_replay";
+    public $table = "yz_appletslive_replay";
 
     public $timestamps = false;
+
+    /**
+     * 获取关联直播间
+     */
+    public function liveroom()
+    {
+        return $this->hasOne('Yunshop\Appletslive\common\models\LiveRoom', 'room_id');
+    }
 }

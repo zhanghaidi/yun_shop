@@ -250,7 +250,7 @@ class LiveController extends BaseController
         // 1、查询距离当前时间点15~20分钟之间即将发布的视频
         $time_now = time();
         $check_time_range = [$time_now + 900, $time_now + 1200];
-        $replay_publish_soon = DB::table('appletslive_replay')
+        $replay_publish_soon = DB::table('yz_appletslive_replay')
             ->select('id', 'rid', 'title', 'doctor', 'publish_time')
             ->whereBetween('publish_time', $check_time_range)
             ->get()->toArray();
@@ -263,12 +263,12 @@ class LiveController extends BaseController
         if (!empty($replay_publish_soon)) {
 
             // 2、查询即将发布的视频关联的课程
-            $rela_room = DB::table('appletslive_room')
+            $rela_room = DB::table('yz_appletslive_room')
                 ->whereIn('id', array_unique(array_column($replay_publish_soon, 'rid')))
                 ->pluck('name', 'id')->toArray();
 
             // 3、查询关注了这些课程的所有小程序用户信息(openid)
-            $subscribed_user = DB::table('appletslive_room_subscription')
+            $subscribed_user = DB::table('yz_appletslive_room_subscription')
                 ->select('user_id', 'room_id')
                 ->where('room_id', array_keys($rela_room))
                 ->get()->toArray();
@@ -734,7 +734,7 @@ class LiveController extends BaseController
             'create_time' => time(),
         ];
         if (array_key_exists('parent_id', $input) && $input['parent_id'] > 0) {
-            $parent = DB::table('appletslive_room_comment')->where('id', $input['parent_id'])->first();
+            $parent = DB::table('yz_appletslive_room_comment')->where('id', $input['parent_id'])->first();
             if ($parent) {
                 $comment_num_inc = false;
                 $insert_data['parent_id'] = $parent['id'];
@@ -743,7 +743,7 @@ class LiveController extends BaseController
             }
         }
 
-        $id = DB::table('appletslive_room_comment')->insertGetId($insert_data);
+        $id = DB::table('yz_appletslive_room_comment')->insertGetId($insert_data);
         if ($comment_num_inc) {
             CacheService::setRoomNum($input['room_id'], 'comment_num');
         }
@@ -763,14 +763,14 @@ class LiveController extends BaseController
         if (!array_key_exists('comment_id', $input) || empty(intval($input['comment_id']))) {
             return $this->errorJson('评论id有误');
         }
-        $is_mine = DB::table('appletslive_room_comment')
+        $is_mine = DB::table('yz_appletslive_room_comment')
             ->where('id', $input['comment_id'])
             ->where('user_id', $this->user_id)
             ->first();
         if (!$is_mine) {
             return $this->errorJson('只能删除自己的评论');
         }
-        DB::table('appletslive_room_comment')->where('id', $input['comment_id'])->delete();
+        DB::table('yz_appletslive_room_comment')->where('id', $input['comment_id'])->delete();
         if ($is_mine['parent_id'] == 0) {
             CacheService::setRoomNum($is_mine['room_id'], 'comment_num', true);
         }
@@ -786,52 +786,20 @@ class LiveController extends BaseController
     {
         $room_id = request()->get('room_id', 0);
         $page = request()->get('page', 1);
-        $limit = 10;
+        $limit = request()->get('limit', 10);
         $offset = ($page - 1) * $limit;
-
-        $cache_key = "api_live_replay_list|$room_id";
-        $cache_val = Cache::get($cache_key);
-
-        if (!$cache_val) {
-            $cache_val = DB::table('appletslive_replay')
-                ->select('id', 'rid', 'type', 'title', 'intro', 'cover_img', 'media_url', 'publish_time', 'time_long')
-                ->where('rid', $room_id)
-                ->where('delete_time', 0)
-                ->orderBy('id', 'asc')
-                ->get()->toArray();
-            if (empty($cache_val)) {
-                Cache::forever($cache_key, []);
-            } else {
-                array_walk($cache_val, function (&$item) {
-                    $item['publish_status'] = 1;
-                    if ($item['publish_time'] > time()) {
-                        $item['publish_status'] = 0;
-                        $item['media_url'] = '';
-                    }
-                    $item['minute'] = floor($item['time_long'] / 60);
-                    $item['second'] = $item['time_long'] % 60;
-                    $item['publish_time'] = date('Y-m-d H:i:s', $item['publish_time']);
-                    unset($item['rid']);
-                });
-            }
-            Cache::put($cache_key, $cache_val);
+        $replays = CacheService::getRoomReplays($room_id);
+        $numdata = CacheService::getReplayNum(array_column($replays, 'id'));
+        foreach ($replays['list'] as $k => $v) {
+            $key = 'key_' . $v['id'];
+            $replays['list'][$k]['hot_num'] = $numdata[$key]['hot_num'];
+            $replays['list'][$k]['view_num'] = $numdata[$key]['view_num'];
+            $replays['list'][$k]['comment_num'] = $numdata[$key]['comment_num'];
+            $replays['list'][$k]['watch_num'] = $numdata[$key]['watch_num'];
         }
-
-        if (!empty($cache_val)) {
-            $numdata = CacheService::getReplayNum(array_column($cache_val, 'id'));
-            $my_watch = ($this->user_id ? CacheService::getUserWatch($this->user_id) : []);
-            foreach ($cache_val as $k => $v) {
-                $key = 'key_' . $v['id'];
-                $cache_val[$k]['hot_num'] = $numdata[$key]['hot_num'];
-                $cache_val[$k]['view_num'] = $numdata[$key]['view_num'];
-                $cache_val[$k]['comment_num'] = $numdata[$key]['comment_num'];
-                $cache_val[$k]['watch_num'] = $numdata[$key]['watch_num'];
-            }
-        }
-
         return $this->successJson('获取成功', [
-            'total' => count($cache_val),
-            'list' => array_slice($cache_val, $offset, $limit),
+            'total' => $replays['total'],
+            'list' => array_slice($replays['list'], $offset, $limit),
         ]);
     }
 
@@ -842,33 +810,15 @@ class LiveController extends BaseController
     public function replayinfo()
     {
         $replay_id = request()->get('replay_id', 0);
-        $cache_key = "api_live_replay_info|$replay_id";
-        $cache_val = Cache::get($cache_key);
-        if (!$cache_val) {
-            $cache_val = DB::table('appletslive_replay')
-                ->select('id', 'rid', 'type', 'title', 'intro', 'cover_img', 'media_url', 'publish_time', 'time_long')
-                ->where('id', $replay_id)
-                ->first();
-            if (!$cache_val) {
-                return $this->errorJson('视频不存在');
-            }
-            $cache_val['minute'] = floor($cache_val['time_long'] / 60);
-            $cache_val['second'] = $cache_val['time_long'] % 60;
-            $cache_val['publish_time'] = date('Y-m-d H:i:s', $cache_val['publish_time']);
-            unset($cache_val['rid']);
-            Cache::put($cache_key, $cache_val, 30);
-        }
-
-        $cache_val['publish_status'] = 1;
-        if ($cache_val['publish_time'] > time()) {
-            $cache_val['publish_status'] = 0;
-            $cache_val['media_url'] = '';
+        $replay_info = CacheService::getReplayInfo($replay_id);
+        if (!$replay_info) {
+            return $this->errorJson('视频不存在', $replay_info);
         }
 
         CacheService::setReplayNum($replay_id, 'view_num');
-        if ($this->user_id && $cache_val['media_url'] != '') {
+        if ($this->user_id && $replay_info['media_url'] != '') {
             CacheService::setReplayNum($replay_id, 'watch_num', $this->user_id);
-            CacheService::setUserWatch($this->user_id, $cache_val['id']);
+            CacheService::setUserWatch($this->user_id, $replay_info['id']);
         }
         $numdata = CacheService::getReplayNum($replay_id);
         $my_watch = ($this->user_id ? CacheService::getUserWatch($this->user_id) : []);
@@ -933,7 +883,7 @@ class LiveController extends BaseController
             'create_time' => time(),
         ];
         if (array_key_exists('parent_id', $input) && $input['parent_id'] > 0) {
-            $parent = DB::table('appletslive_replay_comment')->where('id', $input['parent_id'])->first();
+            $parent = DB::table('yz_appletslive_replay_comment')->where('id', $input['parent_id'])->first();
             if ($parent) {
                 $comment_num_inc = false;
                 $insert_data['parent_id'] = $parent['id'];
@@ -942,7 +892,7 @@ class LiveController extends BaseController
             }
         }
 
-        $id = DB::table('appletslive_replay_comment')->insertGetId($insert_data);
+        $id = DB::table('yz_appletslive_replay_comment')->insertGetId($insert_data);
         if ($comment_num_inc) {
             CacheService::setReplayNum($input['replay_id'], 'comment_num');
         }
@@ -962,14 +912,14 @@ class LiveController extends BaseController
         if (!array_key_exists('comment_id', $input) || empty(intval($input['comment_id']))) {
             return $this->errorJson('评论id有误');
         }
-        $is_mine = DB::table('appletslive_replay_comment')
+        $is_mine = DB::table('yz_appletslive_replay_comment')
             ->where('id', $input['comment_id'])
             ->where('user_id', $this->user_id)
             ->first();
         if (!$is_mine) {
             return $this->errorJson('只能删除自己的评论');
         }
-        DB::table('appletslive_replay_comment')->where('id', $input['comment_id'])->delete();
+        DB::table('yz_appletslive_replay_comment')->where('id', $input['comment_id'])->delete();
         if ($is_mine['parent_id'] == 0) {
             CacheService::setReplayNum($is_mine['replay_id'], 'comment_num', true);
         }
@@ -1178,7 +1128,7 @@ class LiveController extends BaseController
             'create_time' => time(),
         ];
         if (array_key_exists('parent_id', $input) && $input['parent_id'] > 0) {
-            $parent = DB::table('appletslive_room_comment')->where('id', $input['parent_id'])->first();
+            $parent = DB::table('yz_appletslive_room_comment')->where('id', $input['parent_id'])->first();
             if ($parent) {
                 $comment_num_inc = false;
                 $insert_data['parent_id'] = $parent['id'];
@@ -1187,7 +1137,7 @@ class LiveController extends BaseController
             }
         }
 
-        $id = DB::table('appletslive_room_comment')->insertGetId($insert_data);
+        $id = DB::table('yz_appletslive_room_comment')->insertGetId($insert_data);
         if ($comment_num_inc) {
             CacheService::setBrandSaleAlbumNum($input['album_id'], 'comment_num');
         }
@@ -1207,14 +1157,14 @@ class LiveController extends BaseController
         if (!array_key_exists('comment_id', $input) || empty(intval($input['comment_id']))) {
             return $this->errorJson('评论id有误');
         }
-        $is_mine = DB::table('appletslive_room_comment')
+        $is_mine = DB::table('yz_appletslive_room_comment')
             ->where('id', $input['comment_id'])
             ->where('user_id', $this->user_id)
             ->first();
         if (!$is_mine) {
             return $this->errorJson('只能删除自己的评论');
         }
-        DB::table('appletslive_room_comment')->where('id', $input['comment_id'])->delete();
+        DB::table('yz_appletslive_room_comment')->where('id', $input['comment_id'])->delete();
         if ($is_mine['parent_id'] == 0) {
             CacheService::setBrandSaleAlbumNum($is_mine['room_id'], 'comment_num', true);
         }

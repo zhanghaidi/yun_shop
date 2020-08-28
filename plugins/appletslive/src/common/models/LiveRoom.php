@@ -22,9 +22,9 @@ namespace Yunshop\Appletslive\common\models;
 
 use app\common\models\BaseModel;
 
-class Room extends BaseModel
+class LiveRoom extends BaseModel
 {
-    public $table = "yz_appletslive_room";
+    public $table = "yz_appletslive_liveroom";
 
     public $timestamps = false;
 }
