@@ -440,7 +440,11 @@ class RoomController extends BaseController
             $upd_data['doctor'] = $param['doctor'] ? $param['doctor'] : '';
             $upd_data['sort'] = intval($param['sort']);
             $upd_data['time_long'] = ((intval($param['minute']) * 60) + intval($param['second']));
-            $upd_data['publish_time'] = strtotime($param['publish_time']) <= time() ? time() : strtotime($param['publish_time']);
+
+            if ($upd_data['type'] != 0) {
+                $upd_data['publish_time'] = strtotime($param['publish_time']) <= time() ? time() : strtotime($param['publish_time']);
+            }
+
             $replay = DB::table('yz_appletslive_replay')->where('id', $id)->first();
             if (!$replay) {
                 return $this->message('无效的回放或视频ID', Url::absoluteWeb(''), 'danger');
@@ -503,11 +507,15 @@ class RoomController extends BaseController
                 'intro' => $param['intro'] ? $param['intro'] : '',
                 'doctor' => $param['doctor'] ? $param['doctor'] : '',
                 'sort' => intval($param['sort']),
-                'create_time' => time(),
-                'expire_time' => strtotime('2099-12-31 23:59:59'),
                 'time_long' => ((intval($param['minute']) * 60) + intval($param['second'])),
-                'publish_time' => strtotime($param['publish_time']) <= time() ? time() : strtotime($param['publish_time']),
             ];
+
+            if ($type > 0) {
+                $ist_data['create_time'] = time();
+                $ist_data['expire_time'] = strtotime('2099-12-31 23:59:59');
+                $ist_data['publish_time'] = strtotime($param['publish_time']) <= time() ? time() : strtotime($param['publish_time']);
+            }
+
             if ($type > 0 && DB::table('yz_appletslive_replay')->where('title', $ist_data['title'])->where('rid', $rid)->first()) {
                 return $this->message('名称已存在', Url::absoluteWeb(''), 'danger');
             }
