@@ -33,6 +33,6 @@ class Replay extends BaseModel
      */
     public function liveroom()
     {
-        return $this->hasOne('Yunshop\Appletslive\common\models\LiveRoom', 'room_id');
+        return $this->belongsTo('Yunshop\Appletslive\common\models\LiveRoom', 'room_id');
     }
 }

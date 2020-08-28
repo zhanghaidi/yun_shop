@@ -565,7 +565,7 @@ class CacheService
     public static function setReplayNum($replay_id, $field = null, $user_id = 0, $is_dec = false)
     {
         $watch_num = 0;
-        $num_table = 'appletslive_replay';
+        $num_table = 'yz_appletslive_replay';
         if (is_array($replay_id)) {
             $num_record = DB::table($num_table)->whereIn('id', $replay_id)->get();
             $watch_record = DB::table('yz_appletslive_replay_watch')
@@ -574,7 +574,7 @@ class CacheService
                 ->groupBy('replay_id')
                 ->get()->toArray();
         } else {
-            $watch_table = 'appletslive_replay_watch';
+            $watch_table = 'yz_appletslive_replay_watch';
             if ($field !== null) {
                 if ($field == 'watch_num') {
                     if (!DB::table($watch_table)->where('replay_id', $replay_id)->where('user_id', $user_id)->first()) {
@@ -1322,7 +1322,7 @@ class CacheService
      */
     public static function setBrandSaleLiveRoomNum($live_room_id, $field = null)
     {
-        $num_table = 'appletslive_replay';
+        $num_table = 'yz_appletslive_replay';
         if (is_array($live_room_id)) {
             $num_record = DB::table($num_table)->whereIn('id', $live_room_id)->get();
         } else {
