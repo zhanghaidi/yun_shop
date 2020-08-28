@@ -32,8 +32,11 @@ class CacheService
 {
     protected static $uniacid = 45;
 
-    private static $cache_keys = [
+    public static $cache_keys = [
         'recorded.roomlist' => 'appletslive_api_recorded_roomlist',
+        'recorded.roominfo' => 'appletslive_api_recorded_roominfo',
+        'recorded.roomreplays' => 'appletslive_api_recorded_roomreplays',
+        'recorded.roomreplayinfo' => 'appletslive_api_recorded_roomreplayinfo',
         'brandsale.albumlist' => 'appletslive_api_brandsale_albumlist',
         'brandsale.albuminfo' => 'appletslive_api_brandsale_albuminfo',
         'brandsale.albumnum' => 'appletslive_api_brandsale_albumnum',
@@ -60,7 +63,6 @@ class CacheService
         if (!$cache_val || !array_key_exists($page_key, $cache_val)) {
             self::setRecordedRoomList($page, $limit);
         }
-
         $cache_val = Cache::get($cache_key);
         return $cache_val[$page_key];
     }
@@ -78,11 +80,11 @@ class CacheService
         $cache_val = Cache::get($cache_key);
 
         $offset = ($page - 1) * $limit;
-        $total = DB::table('appletslive_room')
+        $total = DB::table('yz_appletslive_room')
             ->where('type', 1)
             ->where('delete_time', 0)
             ->count();
-        $list = DB::table('appletslive_room')
+        $list = DB::table('yz_appletslive_room')
             ->select('id', 'name', 'cover_img', 'subscription_num', 'view_num', 'comment_num')
             ->where('type', 1)
             ->where('delete_time', 0)
@@ -99,7 +101,9 @@ class CacheService
             'totalPage' => ceil($total / $limit),
             'list' => $list,
         ];
-        Cache::forever($cache_key, $cache_val);
+
+        Cache::forget($cache_key);
+        Cache::add($cache_key, $cache_val, 1);
     }
 
     /**
@@ -109,15 +113,13 @@ class CacheService
      */
     public static function getRoomInfo($room_id)
     {
-        $cache_key = "api_live_room_info|$room_id";
+        $cache_key = self::$cache_keys['recorded.roominfo'];
         $cache_val = Cache::get($cache_key);
-
-        if (!$cache_val) {
+        if (!$cache_val || !array_key_exists($room_id, $cache_val)) {
             self::setRoomInfo($room_id);
-            $cache_val = Cache::get($cache_key);
         }
-
-        return $cache_val;
+        $cache_val = Cache::get($cache_key);
+        return $cache_val[$room_id];
     }
 
     /**
@@ -127,12 +129,18 @@ class CacheService
      */
     public static function setRoomInfo($room_id)
     {
-        $cache_key = "api_live_room_info|$room_id";
-        $cache_val = DB::table('appletslive_room')
+        $cache_key = self::$cache_keys['recorded.roominfo'];
+        $cache_val = Cache::get($cache_key);
+        $info = DB::table('yz_appletslive_room')
             ->select('id', 'type', 'roomid', 'name', 'anchor_name', 'cover_img', 'start_time', 'end_time', 'live_status', 'desc')
             ->where('id', $room_id)
             ->first();
-        Cache::forever($cache_key, $cache_val);
+        if (!$cache_val) {
+            $cache_val = [];
+        }
+        $cache_val[$room_id] = $info;
+        Cache::forget($cache_key);
+        Cache::add($cache_key, $cache_val, 1);
     }
 
     /**
@@ -185,16 +193,16 @@ class CacheService
     public static function setRoomNum($room_id, $field = null, $is_dec = false)
     {
         if (is_array($room_id)) {
-            $record = DB::table('appletslive_room')->whereIn('id', $room_id)->get();
+            $record = DB::table('yz_appletslive_room')->whereIn('id', $room_id)->get();
         } else {
             if ($field !== null) {
                 if ($is_dec) {
-                    DB::table('appletslive_room')->where('id', $room_id)->decrement($field);
+                    DB::table('yz_appletslive_room')->where('id', $room_id)->decrement($field);
                 } else {
-                    DB::table('appletslive_room')->where('id', $room_id)->increment($field);
+                    DB::table('yz_appletslive_room')->where('id', $room_id)->increment($field);
                 }
             }
-            $record = DB::table('appletslive_room')->where('id', $room_id)->first();
+            $record = DB::table('yz_appletslive_room')->where('id', $room_id)->first();
         }
 
         $cache_key = 'api_live_room_num';
@@ -262,7 +270,7 @@ class CacheService
         $cache_refresh = false;
         if (!$cache_val) {
             $cache_refresh = true;
-            $cache_val = DB::table('appletslive_room_subscription')
+            $cache_val = DB::table('yz_appletslive_room_subscription')
                 ->where('uniacid', self::$uniacid)
                 ->where('room_id', $room_id)
                 ->orderBy('id', 'desc')
@@ -323,7 +331,7 @@ class CacheService
         $cache_refresh = false;
         if (!$cache_val) {
             $cache_refresh = true;
-            $cache_val = DB::table('appletslive_room_subscription')
+            $cache_val = DB::table('yz_appletslive_room_subscription')
                 ->where('uniacid', self::$uniacid)
                 ->where('user_id', $user_id)
                 ->where('type', 1)
@@ -363,7 +371,7 @@ class CacheService
     public static function setRoomComment($room_id)
     {
         $cache_key = "api_live_room_comment|$room_id";
-        $comment = DB::table('appletslive_room_comment')
+        $comment = DB::table('yz_appletslive_room_comment')
             ->select('id', 'user_id', 'content', 'create_time', 'parent_id', 'is_reply')
             ->where('uniacid', self::$uniacid)
             ->where('room_id', $room_id)
@@ -414,6 +422,96 @@ class CacheService
             }
             Cache::forever($cache_key, ['total' => count($comment), 'list' => $comment]);
         }
+    }
+
+    /**
+     * 获取课程下属视频列表
+     * @param int $room_id
+     * @return mixed|null
+     */
+    public static function getRoomReplays($room_id)
+    {
+        $cache_key = self::$cache_keys['recorded.roomreplays'];
+        $cache_val = Cache::get($cache_key);
+        if (!$cache_val || !array_key_exists($room_id, $cache_val)) {
+            self::setRoomReplays($room_id);
+        }
+        $cache_val = Cache::get($cache_key);
+        return $cache_val[$room_id];
+    }
+
+    /**
+     * 设置课程下属视频列表
+     * @param $room_id
+     * @return mixed
+     */
+    public static function setRoomReplays($room_id)
+    {
+        $cache_key = self::$cache_keys['recorded.roomreplays'];
+        $cache_val = Cache::get($cache_key);
+        $list = DB::table('yz_appletslive_replay')
+            ->select('id', 'type', 'title', 'cover_img', 'publish_time', 'media_url', 'time_long')
+            ->where('rid', $room_id)
+            ->where('delete_time', 0)
+            ->orderBy('sort', 'desc')
+            ->orderBy('id', 'asc')
+            ->get()->toArray();
+        array_walk($list, function (&$item) {
+            $item['publish_status'] = 1;
+            if ($item['publish_time'] > time()) {
+                $item['publish_status'] = 0;
+                $item['media_url'] = '';
+            }
+            $item['minute'] = floor($item['time_long'] / 60);
+            $item['second'] = $item['time_long'] % 60;
+            $item['publish_time'] = date('Y-m-d H:i:s', $item['publish_time']);
+        });
+        if ($cache_val) {
+            $cache_val = [];
+        }
+        $cache_val[$room_id] = ['total' => count($list), 'list' => $list];
+        Cache::forget($cache_key);
+        Cache::add($cache_key, $cache_val, 1);
+    }
+
+    /**
+     * 获取视频信息
+     * @param int $replay_id
+     * @return mixed|null
+     */
+    public function getReplayInfo($replay_id)
+    {
+        $cache_key = self::$cache_keys['recorded.roomreplayinfo'];
+        $cache_val = Cache::get($cache_key);
+        if (!$cache_val || !array_key_exists($replay_id, $cache_val)) {
+            self::setReplayInfo($replay_id);
+        }
+        $cache_val = Cache::get($cache_key);
+        return $cache_val[$replay_id];
+    }
+
+    /**
+     * 设置视频信息
+     * @param int $replay_id
+     * @return mixed|null
+     */
+    public function setReplayInfo($replay_id)
+    {
+        $cache_key = self::$cache_keys['recorded.roomreplayinfo'];
+        $cache_val = Cache::get($cache_key);
+        $info = DB::table('yz_appletslive_replay')
+            ->select('id', 'type', 'title', 'intro', 'cover_img', 'media_url', 'publish_time', 'time_long')
+            ->where('id', $replay_id)
+            ->first();
+        $info['minute'] = floor($info['time_long'] / 60);
+        $info['second'] = $info['time_long'] % 60;
+        $info['publish_time'] = date('Y-m-d H:i:s', $info['publish_time']);
+        if ($cache_val) {
+            $cache_val = [];
+        }
+        $cache_val[$replay_id] = $info;
+        Cache::forget($cache_key);
+        Cache::add($cache_key, $cache_val, 1);
     }
 
     /**
@@ -470,7 +568,7 @@ class CacheService
         $num_table = 'appletslive_replay';
         if (is_array($replay_id)) {
             $num_record = DB::table($num_table)->whereIn('id', $replay_id)->get();
-            $watch_record = DB::table('appletslive_replay_watch')
+            $watch_record = DB::table('yz_appletslive_replay_watch')
                 ->select('replay_id', DB::raw('COUNT(user_id) as watch_num'))
                 ->whereIn('replay_id', $replay_id)
                 ->groupBy('replay_id')
@@ -569,7 +667,7 @@ class CacheService
         $cache_refresh = false;
         if (!$cache_val) {
             $cache_refresh = true;
-            $cache_val = DB::table('appletslive_replay_watch')
+            $cache_val = DB::table('yz_appletslive_replay_watch')
                 ->where('uniacid', self::$uniacid)
                 ->where('user_id', $user_id)
                 ->pluck('replay_id')->toArray();
@@ -608,7 +706,7 @@ class CacheService
     public static function setReplayComment($replay_id)
     {
         $cache_key = "api_live_replay_comment|$replay_id";
-        $comment = DB::table('appletslive_replay_comment')
+        $comment = DB::table('yz_appletslive_replay_comment')
             ->select('id', 'user_id', 'content', 'create_time', 'parent_id', 'is_reply')
             ->where('uniacid', self::$uniacid)
             ->where('replay_id', $replay_id)
@@ -697,11 +795,11 @@ class CacheService
         $cache_val = Cache::get($cache_key);
 
         $offset = ($page - 1) * $limit;
-        $total = DB::table('appletslive_room')
+        $total = DB::table('yz_appletslive_room')
             ->where('type', 2)
             ->where('delete_time', 0)
             ->count();
-        $list = DB::table('appletslive_room')
+        $list = DB::table('yz_appletslive_room')
             ->select('id', 'name', 'cover_img', 'subscription_num', 'view_num', 'comment_num')
             ->where('type', 2)
             ->where('delete_time', 0)
@@ -753,7 +851,7 @@ class CacheService
     {
         $cache_key = self::$cache_keys['brandsale.albuminfo'];
         $cache_val = Cache::get($cache_key);
-        $info = DB::table('appletslive_room')
+        $info = DB::table('yz_appletslive_room')
             ->select('id', 'name', 'desc', 'cover_img', 'subscription_num', 'view_num', 'comment_num')
             ->where('id', $album_id)
             ->first();
@@ -822,7 +920,7 @@ class CacheService
     {
         $cache_key = self::$cache_keys['brandsale.albumliverooms'];
         $cache_val = Cache::get($cache_key);
-        $replay_list = DB::table('appletslive_replay')
+        $replay_list = DB::table('yz_appletslive_replay')
             ->select('id', 'room_id', 'view_num')
             ->where('rid', $album_id)
             ->where('delete_time', 0)
@@ -830,7 +928,7 @@ class CacheService
             ->orderBy('id', 'asc')
             ->get()->toArray();
         if (!empty($replay_list)) {
-            $liverooms = DB::table('appletslive_liveroom')
+            $liverooms = DB::table('yz_appletslive_liveroom')
                 ->whereIn('id', array_column($replay_list, 'room_id'))
                 ->get()->toArray();
             foreach ($replay_list as $rk => $rv) {
@@ -918,16 +1016,16 @@ class CacheService
     public static function setBrandSaleAlbumNum($album_id, $field = null, $is_dec = false)
     {
         if (is_array($album_id)) {
-            $record = DB::table('appletslive_room')->whereIn('id', $album_id)->get();
+            $record = DB::table('yz_appletslive_room')->whereIn('id', $album_id)->get();
         } else {
             if ($field !== null) {
                 if ($is_dec) {
-                    DB::table('appletslive_room')->where('id', $album_id)->decrement($field);
+                    DB::table('yz_appletslive_room')->where('id', $album_id)->decrement($field);
                 } else {
-                    DB::table('appletslive_room')->where('id', $album_id)->increment($field);
+                    DB::table('yz_appletslive_room')->where('id', $album_id)->increment($field);
                 }
             }
-            $record = DB::table('appletslive_room')->where('id', $album_id)->first();
+            $record = DB::table('yz_appletslive_room')->where('id', $album_id)->first();
         }
 
         $cache_key = self::$cache_keys['brandsale.albumnum'];
@@ -999,7 +1097,7 @@ class CacheService
             if (empty($cache_val)) {
                 $cache_val = [];
             }
-            $list = DB::table('appletslive_room_subscription')
+            $list = DB::table('yz_appletslive_room_subscription')
                 ->where('uniacid', self::$uniacid)
                 ->where('room_id', $album_id)
                 ->orderBy('id', 'desc')
@@ -1066,7 +1164,7 @@ class CacheService
             if (empty($cache_val)) {
                 $cache_val = [];
             }
-            $list = DB::table('appletslive_room_subscription')
+            $list = DB::table('yz_appletslive_room_subscription')
                 ->where('uniacid', self::$uniacid)
                 ->where('user_id', $user_id)
                 ->where('type', 2)
@@ -1113,7 +1211,7 @@ class CacheService
         $cache_key = self::$cache_keys['brandsale.albumcomment'];
         $cache_val = Cache::get($cache_key);
 
-        $comment = DB::table('appletslive_room_comment')
+        $comment = DB::table('yz_appletslive_room_comment')
             ->select('id', 'user_id', 'content', 'create_time', 'parent_id', 'is_reply')
             ->where('uniacid', self::$uniacid)
             ->where('room_id', $album_id)
@@ -1291,7 +1389,7 @@ class CacheService
         $cache_val = Cache::get($cache_key);
         if (!$cache_val) {
             $cache_refresh = true;
-            $cache_val = DB::table('appletslive_replay_watch')
+            $cache_val = DB::table('yz_appletslive_replay_watch')
                 ->where('uniacid', self::$uniacid)
                 ->where('user_id', $user_id)
                 ->where('type', 2)
