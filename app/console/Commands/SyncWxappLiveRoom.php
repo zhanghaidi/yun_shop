@@ -55,7 +55,8 @@ class SyncWxappLiveRoom extends Command
                 foreach ($cache_val as $cvk => $cvv) {
                     $exist = true;
                     if ($cvv['roomid'] == $psv['roomid']) {
-                        if ($cvv['name'] != $psv['name'] || $cvv['anchor_name'] != $psv['anchor_name'] || $cvv['live_status'] != $psv['live_status']) {
+                        if ($cvv['name'] != $psv['name'] || $cvv['anchor_name'] != $psv['anchor_name']
+                            || $cvv['live_status'] != $psv['live_status'] || $cvv['start_time'] != $psv['start_time']) {
                             $need_update = true;
                             break;
                         }
@@ -105,7 +106,8 @@ class SyncWxappLiveRoom extends Command
                 foreach ($stored as $drk => $drv) {
                     if ($drv['roomid'] == $psv['roomid']) {
                         // 房间信息在数据库中存在，实时更新数据
-                        if ($drv['live_status'] != $psv['live_status']) {
+                        if ($drv['name'] != $psv['name'] || $drv['anchor_name'] != $psv['anchor_name']
+                            || $drv['live_status'] != $psv['live_status'] || $drv['start_time'] != $psv['start_time']) {
                             array_push($update, [
                                 'id' => $drv['id'],
                                 'name' => $psv['name'],
