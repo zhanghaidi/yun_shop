@@ -70,7 +70,8 @@ class RoomController extends BaseController
                     foreach ($stored as $drk => $drv) {
                         if ($drv['roomid'] == $psv['roomid']) {
                             // 房间信息在数据库中存在，实时更新数据
-                            if ($drv['live_status'] != $psv['live_status']) {
+                            if ($drv['name'] != $psv['name'] || $drv['anchor_name'] != $psv['anchor_name']
+                                || $drv['live_status'] != $psv['live_status'] || $drv['start_time'] != $psv['start_time']) {
                                 array_push($update, [
                                     'id' => $drv['id'],
                                     'name' => $psv['name'],
