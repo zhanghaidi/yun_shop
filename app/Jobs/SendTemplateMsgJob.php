@@ -135,6 +135,7 @@ class SendTemplateMsgJob implements ShouldQueue
             'template_id' => $template_id,
             'page' => $page,
             'data' => $notice_data,
+            'miniprogram_state' => 'developer',
         ];
         $response = $this->curl_post($url, $post_data);
         if ($response === false) {

@@ -122,9 +122,7 @@ class NotPaidOrderNotice extends Command
         $result['check_time_range'] = $check_time_range;
         $result['not_paid_order'] = $not_paid_order;
 
-        if (empty($not_paid_order)) {
-            // Log::info('未找到需要待支付提醒的订单.');
-        } else {
+        if (!empty($not_paid_order)) {
 
             // 2、查询待支付订单关联的商品
             $order_goods = DB::table('yz_order_goods')
@@ -140,7 +138,8 @@ class NotPaidOrderNotice extends Command
                 ->get()->toArray();
             $wx_unionid = array_column($wxapp_user, 'unionid');
             $wechat_user = DB::table('mc_mapping_fans')
-                ->select('uid', 'unionid', 'openid', 'follow')
+                ->select('uid', 'unionid', 'openid')
+                ->where('follow', 1)
                 ->where('uniacid', 39)
                 ->whereIn('unionid', $wx_unionid)
                 ->get()->toArray();
@@ -160,7 +159,7 @@ class NotPaidOrderNotice extends Command
                 }
                 $item['wechat_openid'] = '';
                 foreach ($wechat_user as $user) {
-                    if ($user['unionid'] == $item['unionid'] && $user['follow'] == 1) {
+                    if ($user['unionid'] == $item['unionid']) {
                         $item['wechat_openid'] = $user['openid'];
                         break;
                     }
@@ -169,6 +168,7 @@ class NotPaidOrderNotice extends Command
 
             // 6、组装队列数据
             $job_list = [];
+            $jump_page = '/pages/template/rumours/index?share=1&shareUrl=';
             $value_key_sort = ['goods_title', 'amount', 'order_sn', 'create_time', 'expire_time'];
             foreach ($not_paid_order as $order) {
                 $job_item = [
@@ -187,8 +187,9 @@ class NotPaidOrderNotice extends Command
                     if ($user['user_id'] == $order['uid']) {
                         $type = ($user['wechat_openid'] != '') ? 'wechat' : 'wxapp';
                         $openid = ($user['wechat_openid'] != '') ? $user['wechat_openid'] : $user['wxapp_openid'];
-                        $page = 'pages/template/rumours/index?order_id=' . $order['id'];
+
                         $job_item['type'] = $type;
+                        $job_item['openid'] = $openid;
                         $job_item['options'] = $this->options[$type];
                         $job_item['template_id'] = $message_template['template_id'];
 
@@ -203,8 +204,8 @@ class NotPaidOrderNotice extends Command
                         }
                         $job_item['notice_data']['remark'] = ['value' => $message_template['remark'], 'color' => $message_template['remark_color']];
 
-                        $job_item['openid'] = $openid;
-                        $job_item['page'] = $page;
+                        $jump_tail = '/pages/course/CouRse/index?id=' . $order['id'];
+                        $job_item['page'] = $jump_page . urlencode($jump_tail);
                     }
                 }
                 $job_list[] = $job_item;
