@@ -110,6 +110,7 @@ class SyncWxappLiveRoom extends Command
                                 'id' => $drv['id'],
                                 'name' => $psv['name'],
                                 'cover_img' => $psv['cover_img'],
+                                'share_img' => $psv['share_img'],
                                 'live_status' => $psv['live_status'],
                                 'start_time' => $psv['start_time'],
                                 'end_time' => $psv['end_time'],
@@ -140,7 +141,6 @@ class SyncWxappLiveRoom extends Command
                 foreach ($update as $item) {
                     DB::table('yz_appletslive_liveroom')->where('id', $item['id'])->update([
                         'name' => $item['name'],
-                        'roomid' => $item['roomid'],
                         'cover_img' => $item['cover_img'],
                         'share_img' => $item['share_img'],
                         'live_status' => $item['live_status'],
