@@ -65,41 +65,41 @@ class CourseReminder extends Command
     {
         // Log::info("------------------------ 课程提醒定时任务 BEGIN -------------------------------");
 
-        // 1、查询距离当前时间点n~n+1分钟之间即将发布的视频
         $time_now = time();
         $wait_seconds = 60 * 15;
         $check_time_range = [$time_now + $wait_seconds, $time_now + $wait_seconds + 60];
+
+        // 1、查询距离当前时间点n~n+1分钟之间即将发布的视频
         $replay_publish_soon = DB::table('yz_appletslive_replay')
             ->select('id', 'rid', 'title', 'doctor', 'publish_time')
+            ->where('delete_time', 0)
             ->whereBetween('publish_time', $check_time_range)
             ->get()->toArray();
-
-        if (empty($replay_publish_soon)) {
-            // Log::info('未找到即将新发布的视频.');
-        } else {
+        if (!empty($replay_publish_soon)) {
 
             // 2、查询即将发布的视频关联的课程
             $rela_room = DB::table('yz_appletslive_room')
                 ->whereIn('id', array_unique(array_column($replay_publish_soon, 'rid')))
+                ->where('delete_time', 0)
                 ->pluck('name', 'id')->toArray();
 
             // 3、查询关注了这些课程的所有小程序用户信息(openid)
             $subscribed_user = DB::table('yz_appletslive_room_subscription')
                 ->select('user_id', 'room_id')
-                ->where('room_id', array_keys($rela_room))
+                ->whereIn('room_id', array_keys($rela_room))
                 ->get()->toArray();
-            if (empty($subscribed_user)) {
-                // Log::info('未找到订阅了课程的用户.');
-            } else {
-                $subscribed_uid = array_unique(array_column($subscribed_user, 'user_id'));
+            if (!empty($subscribed_user)) {
+
                 // 3.1、存在已关注课程的用户，查询用户openid
+                $subscribed_uid = array_unique(array_column($subscribed_user, 'user_id'));
                 $wxapp_user = DB::table('diagnostic_service_user')
                     ->select('ajy_uid', 'openid', 'unionid')
                     ->whereIn('ajy_uid', $subscribed_uid)
                     ->get()->toArray();
                 $subscribed_unionid = array_column($wxapp_user, 'unionid');
                 $wechat_user = DB::table('mc_mapping_fans')
-                    ->select('uid', 'unionid', 'openid', 'follow')
+                    ->select('uid', 'unionid', 'openid')
+                    ->where('follow', 1)
                     ->where('uniacid', 39)
                     ->whereIn('unionid', $subscribed_unionid)
                     ->get()->toArray();
@@ -113,7 +113,7 @@ class CourseReminder extends Command
                     }
                     $item['wechat_openid'] = '';
                     foreach ($wechat_user as $user) {
-                        if ($user['unionid'] == $item['unionid'] && $user['follow'] == 1) {
+                        if ($user['unionid'] == $item['unionid']) {
                             $item['wechat_openid'] = $user['openid'];
                             break;
                         }
@@ -143,8 +143,6 @@ class CourseReminder extends Command
                 }
             }
 
-            // Log::info("数据组装完成", $job_list);
-
             // 5、添加消息发送任务到消息队列
             foreach ($job_list as $job_item) {
                 $job = new SendTemplateMsgJob($job_item['type'], $job_item['options'], $job_item['template_id'], $job_item['notice_data'],
@@ -155,6 +153,113 @@ class CourseReminder extends Command
                     Log::info("队列已添加:发送公众号模板消息", ['job' => $job, 'dispatch' => $dispatch]);
                 } elseif ($job_item['type'] == 'wxapp') {
                     Log::info("队列已添加:发送小程序订阅模板消息", ['job' => $job, 'dispatch' => $dispatch]);
+                }
+            }
+        }
+
+        // 6. 查询即将开播的特卖直播
+        $live_start_soon = DB::table('yz_appletslive_liveroom')
+            ->select('id', 'name', 'anchor_name', 'start_time')
+            ->where('live_status', 102)
+            ->whereBetween('publish_time', $check_time_range)
+            ->get()->toArray();
+        $replay_publish_soon = empty($live_start_soon) ? [] : DB::table('yz_appletslive_replay')
+            ->select('id', 'rid', 'room_id')
+            ->whereIn('room_id', array_column($live_start_soon, 'id'))
+            ->where('delete_time', 0)
+            ->get()->toArray();
+        if (!empty($replay_publish_soon)) {
+
+            // 组装直播间名称和开播时间
+            array_walk($replay_publish_soon, function (&$item) use ($live_start_soon) {
+                foreach ($live_start_soon as $live) {
+                    if ($item['room_id'] == $live['id']) {
+                        $item['title'] = $live['name'];
+                        $item['doctor'] = $live['anchor_name'];
+                        $item['publish_time'] = $live['start_time'];
+                        break;
+                    }
+                }
+            });
+
+            // 7. 查询关联的特卖直播和专辑
+            $rela_room = empty($rela_replay) ? [] : DB::table('yz_appletslive_room')
+                ->whereIn('id', array_unique(array_column($rela_replay, 'rid')))
+                ->where('delete_time', 0)
+                ->pluck('name', 'id')->toArray();
+            if (!empty($rela_room)) {
+
+                // 8. 查询订阅了相关特卖专辑的用户
+                $subscribed_user = DB::table('yz_appletslive_room_subscription')
+                    ->select('user_id', 'room_id')
+                    ->whereIn('room_id', array_keys($rela_room))
+                    ->get()->toArray();
+                if (!empty($subscribed_user)) {
+
+                    // 8.1、存在已关注特卖专辑的用户，查询openid
+                    $subscribed_uid = array_unique(array_column($subscribed_user, 'user_id'));
+                    $wxapp_user = DB::table('diagnostic_service_user')
+                        ->select('ajy_uid', 'openid', 'unionid')
+                        ->whereIn('ajy_uid', $subscribed_uid)
+                        ->get()->toArray();
+                    $subscribed_unionid = array_column($wxapp_user, 'unionid');
+                    $wechat_user = DB::table('mc_mapping_fans')
+                        ->select('uid', 'unionid', 'openid')
+                        ->where('follow', 1)
+                        ->where('uniacid', 39)
+                        ->whereIn('unionid', $subscribed_unionid)
+                        ->get()->toArray();
+                    array_walk($subscribed_user, function (&$item) use ($wxapp_user, $wechat_user) {
+                        foreach ($wxapp_user as $user) {
+                            if ($user['ajy_uid'] == $item['user_id']) {
+                                $item['unionid'] = $user['unionid'];
+                                $item['wxapp_openid'] = $user['openid'];
+                                break;
+                            }
+                        }
+                        $item['wechat_openid'] = '';
+                        foreach ($wechat_user as $user) {
+                            if ($user['unionid'] == $item['unionid']) {
+                                $item['wechat_openid'] = $user['openid'];
+                                break;
+                            }
+                        }
+                    });
+
+                }
+
+                // 9、组装队列数据
+                $job_list = [];
+                foreach ($replay_publish_soon as $replay) {
+                    // 9.1、当前直播有哪些订阅用户
+                    foreach ($subscribed_user as $user) {
+                        if ($user['room_id'] == $replay['rid']) {
+                            $type = ($user['wechat_openid'] != '') ? 'wechat' : 'wxapp';
+                            $openid = ($user['wechat_openid'] != '') ? $user['wechat_openid'] : $user['wxapp_openid'];
+                            $job_param = $this->makeJobParam($type, $rela_room[$replay['rid']], $replay);
+                            array_push($job_list, [
+                                'type' => $type,
+                                'openid' => $openid,
+                                'options' => $job_param['options'],
+                                'template_id' => $job_param['template_id'],
+                                'notice_data' => $job_param['notice_data'],
+                                'page' => $job_param['page'],
+                            ]);
+                        }
+                    }
+                }
+
+                // 5、添加消息发送任务到消息队列
+                foreach ($job_list as $job_item) {
+                    $job = new SendTemplateMsgJob($job_item['type'], $job_item['options'], $job_item['template_id'], $job_item['notice_data'],
+                        $job_item['openid'], '', $job_item['page']);
+                    $dispatch = dispatch($job);
+                    Log::info("模板消息内容:", $job_item);
+                    if ($job_item['type'] == 'wechat') {
+                        Log::info("队列已添加:发送公众号模板消息", ['job' => $job, 'dispatch' => $dispatch]);
+                    } elseif ($job_item['type'] == 'wxapp') {
+                        Log::info("队列已添加:发送小程序订阅模板消息", ['job' => $job, 'dispatch' => $dispatch]);
+                    }
                 }
             }
         }
@@ -172,29 +277,48 @@ class CourseReminder extends Command
     private function makeJobParam($type, $room_name, $replay_info)
     {
         $param = [];
+        $jump_page = '/pages/template/rumours/index?share=1&shareUrl=';
+        $jump_tail = '/pages/course/CouRse/index?tid=' . $replay_info['rid'];
+
         if ($type == 'wechat') {
+
+            $first_value = '尊敬的用户,您订阅的课程有新视频要发布啦~';
+            $remark_value = '最新视频【' . $replay_info['title'] . '】将于' . date('Y-m-d H:i', $replay_info['publish_time']) . '倾情发布!';
+            if ($replay_info['room_id'] > 0) {
+                $jump_tail = '/pages/course/CouRse/index?tid=' . $replay_info['rid'];
+                $first_value = '尊敬的用户,您订阅的特卖直播马上开始直播啦~';
+                $remark_value = '最新直播【' . $replay_info['title'] . '】将于' . date('Y-m-d H:i', $replay_info['publish_time']) . '倾情发布!';
+            }
+
             $param['options'] = $this->options['wechat'];
+            $param['page'] = $jump_page . urlencode($jump_tail);
             $param['template_id'] = 'c-tYzcbVnoqT33trwq6ckW_lquLDPmqySXvntFJEMhE';
             $param['notice_data'] = [
-                'first' => ['value' => '尊敬的用户,您订阅的课程有新视频要发布啦~', 'color' => '#173177'],
+                'first' =>  ['value' => $first_value, 'color' => '#173177'],
                 'keyword1' => ['value' => '【' . $room_name . '】', 'color' => '#173177'],
                 'keyword2' => ['value' => '长期有效', 'color' => '#173177'],
                 'keyword3' => ['value' => '更新中', 'color' => '#173177'],
-                'remark' => [
-                    'value' => '最新视频【' . $replay_info['title'] . '】将于' . date('Y-m-d H:i', $replay_info['publish_time']) . '倾情发布!',
-                    'color' => '#173177',
-                ],
+                'remark' => ['value' => $remark_value, 'color' => '#173177'],
             ];
+
         } elseif ($type == 'wxapp') {
+
+            $thing1_value = '课程更新';
+            if ($replay_info['room_id'] > 0) {
+                $jump_tail = '/pages/course/CouRse/index?tid=' . $replay_info['rid'];
+                $thing1_value = '品牌特卖开播提醒';
+            }
+
             $param['options'] = $this->options['wxapp'];
             $param['template_id'] = 'ABepy-L03XH_iU0tPd03VUV9KQ_Vjii5mClL7Qp8_jc';
             $param['notice_data'] = [
-                'thing1' => ['value' => '课程更新', 'color' => '#173177'],
+                'thing1' => ['value' => $thing1_value, 'color' => '#173177'],
                 'thing2' => ['value' => '【' . $room_name . '】', 'color' => '#173177'],
                 'name3' => ['value' => $replay_info['doctor'], 'color' => '#173177'],
                 'thing4' => ['value' => date('Y-m-d H:i', $replay_info['publish_time']), 'color' => '#173177'],
             ];
         }
+
         return $param;
     }
 }
