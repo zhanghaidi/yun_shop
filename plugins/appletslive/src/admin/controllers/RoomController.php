@@ -113,7 +113,7 @@ class RoomController extends BaseController
                     }
                 }
                 if ($todel) {
-                    DB::table('yz_appletslive_liveroom')->whereIn('id', $todel)->delete();
+                    DB::table('yz_appletslive_liveroom')->whereIn('id', $todel)->update(['live_status' => 108]);
                     DB::table('yz_appletslive_replay')->whereIn('room_id', $todel)->update(['delete_time' => time()]);
                 }
             }

@@ -207,6 +207,8 @@
                                     异常
                                 @elseif($row->liveroom->live_status==107)
                                     已过期
+                                @elseif($row->liveroom->live_status==108)
+                                    已删除
                                 @else
                                     未知
                                 @endif
