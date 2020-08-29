@@ -161,7 +161,7 @@ class CourseReminder extends Command
         $live_start_soon = DB::table('yz_appletslive_liveroom')
             ->select('id', 'name', 'anchor_name', 'start_time')
             ->where('live_status', 102)
-            ->whereBetween('publish_time', $check_time_range)
+            ->whereBetween('start_time', $check_time_range)
             ->get()->toArray();
         $replay_publish_soon = empty($live_start_soon) ? [] : DB::table('yz_appletslive_replay')
             ->select('id', 'rid', 'room_id')
