@@ -130,14 +130,13 @@ class CourseReminder extends Command
                         $type = ($user['wechat_openid'] != '') ? 'wechat' : 'wxapp';
                         $openid = ($user['wechat_openid'] != '') ? $user['wechat_openid'] : $user['wxapp_openid'];
                         $job_param = $this->makeJobParam($type, $rela_room[$replay['rid']], $replay);
-                        $page = 'pages/template/rumours/index?room_id=' . $replay['rid'];
                         array_push($job_list, [
                             'type' => $type,
+                            'openid' => $openid,
                             'options' => $job_param['options'],
                             'template_id' => $job_param['template_id'],
                             'notice_data' => $job_param['notice_data'],
-                            'openid' => $openid,
-                            'page' => $page,
+                            'page' => $job_param['page'],
                         ]);
                     }
                 }
@@ -276,16 +275,19 @@ class CourseReminder extends Command
      */
     private function makeJobParam($type, $room_name, $replay_info)
     {
+        define('COURSE_PATH', '/pages/course/CouRse/index');
+        define('LIVE_PATH', '/pages/course/liveBroadcast/liveBroadcast');
+
         $param = [];
         $jump_page = '/pages/template/rumours/index?share=1&shareUrl=';
-        $jump_tail = '/pages/course/CouRse/index?tid=' . $replay_info['rid'];
+        $jump_tail = COURSE_PATH . '?tid=' . $replay_info['rid'];
 
         if ($type == 'wechat') {
 
             $first_value = '尊敬的用户,您订阅的课程有新视频要发布啦~';
             $remark_value = '最新视频【' . $replay_info['title'] . '】将于' . date('Y-m-d H:i', $replay_info['publish_time']) . '倾情发布!';
             if ($replay_info['room_id'] > 0) {
-                $jump_tail = '/pages/course/CouRse/index?tid=' . $replay_info['rid'];
+                $jump_tail = LIVE_PATH . '?tid=' . $replay_info['rid'];
                 $first_value = '尊敬的用户,您订阅的特卖直播马上开始直播啦~';
                 $remark_value = '最新直播【' . $replay_info['title'] . '】将于' . date('Y-m-d H:i', $replay_info['publish_time']) . '倾情发布!';
             }
@@ -305,11 +307,12 @@ class CourseReminder extends Command
 
             $thing1_value = '课程更新';
             if ($replay_info['room_id'] > 0) {
-                $jump_tail = '/pages/course/CouRse/index?tid=' . $replay_info['rid'];
+                $jump_tail = LIVE_PATH . '?tid=' . $replay_info['rid'];
                 $thing1_value = '品牌特卖开播提醒';
             }
 
             $param['options'] = $this->options['wxapp'];
+            $param['page'] = $jump_page . urlencode($jump_tail);
             $param['template_id'] = 'ABepy-L03XH_iU0tPd03VUV9KQ_Vjii5mClL7Qp8_jc';
             $param['notice_data'] = [
                 'thing1' => ['value' => $thing1_value, 'color' => '#173177'],

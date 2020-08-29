@@ -204,7 +204,7 @@ class NotPaidOrderNotice extends Command
                         }
                         $job_item['notice_data']['remark'] = ['value' => $message_template['remark'], 'color' => $message_template['remark_color']];
 
-                        $jump_tail = '/pages/course/CouRse/index?id=' . $order['id'];
+                        $jump_tail = '/pages/shopping/order_detail/index?id=' . $order['id'];
                         $job_item['page'] = $jump_page . urlencode($jump_tail);
                     }
                 }
