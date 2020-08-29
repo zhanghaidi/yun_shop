@@ -50,6 +50,7 @@
                                 <option value='105' @if($request['search']['live_status']=='105') selected @endif>暂停</option>
                                 <option value='106' @if($request['search']['live_status']=='106') selected @endif>异常</option>
                                 <option value='107' @if($request['search']['live_status']=='107') selected @endif>已过期</option>
+                                <option value='108' @if($request['search']['live_status']=='108') selected @endif>已删除</option>
                             </select>
                         </div>
                         <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
