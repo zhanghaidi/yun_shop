@@ -63,6 +63,7 @@ class RoomController extends BaseController
 
                 // 添加新增的直播间
                 $insert = [];
+                $update = [];
                 $present = array_reverse($present);
                 foreach ($present as $psk => $psv) {
                     $exist = false;
@@ -70,8 +71,16 @@ class RoomController extends BaseController
                         if ($drv['roomid'] == $psv['roomid']) {
                             // 房间信息在数据库中存在，实时更新数据
                             if ($drv['live_status'] != $psv['live_status']) {
-                                DB::table('yz_appletslive_liveroom')->where('id', $drv['id'])->update([
+                                array_push($update, [
+                                    'id' => $drv['id'],
+                                    'name' => $psv['name'],
+                                    'cover_img' => $psv['cover_img'],
+                                    'share_img' => $psv['share_img'],
                                     'live_status' => $psv['live_status'],
+                                    'start_time' => $psv['start_time'],
+                                    'end_time' => $psv['end_time'],
+                                    'anchor_name' => $psv['anchor_name'],
+                                    'goods' => json_encode($psv['goods']),
                                 ]);
                             }
                             $exist = true;
@@ -93,9 +102,24 @@ class RoomController extends BaseController
                         ]);
                     }
                 }
+                if ($update) {
+                    foreach ($update as $item) {
+                        DB::table('yz_appletslive_liveroom')->where('id', $item['id'])->update([
+                            'name' => $item['name'],
+                            'cover_img' => $item['cover_img'],
+                            'share_img' => $item['share_img'],
+                            'live_status' => $item['live_status'],
+                            'start_time' => $item['start_time'],
+                            'end_time' => $item['end_time'],
+                            'anchor_name' => $item['anchor_name'],
+                            'goods' => $item['goods'],
+                        ]);
+                    }
+                    Log::info('同步微信直播间数据:更新直播间信息', ['count' => count($update)]);
+                }
                 if ($insert) {
                     DB::table('yz_appletslive_liveroom')->insert($insert);
-                    Log::info('新增直播间', $insert);
+                    Log::info('同步微信直播间数据:新增直播间', ['count' => count($insert)]);
                 }
 
                 // 移除删掉的直播间
@@ -115,6 +139,7 @@ class RoomController extends BaseController
                 if ($todel) {
                     DB::table('yz_appletslive_liveroom')->whereIn('id', $todel)->update(['live_status' => 108]);
                     DB::table('yz_appletslive_replay')->whereIn('room_id', $todel)->update(['delete_time' => time()]);
+                    Log::info('同步微信直播间数据:移除直播间', ['count' => count($todel)]);
                 }
 
                 Cache::forget(CacheService::$cache_keys['brandsale.albumlist']);
