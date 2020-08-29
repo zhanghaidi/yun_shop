@@ -171,7 +171,7 @@ class SyncWxappLiveRoom extends Command
                 }
             }
             if ($todel) {
-                DB::table('yz_appletslive_liveroom')->whereIn('id', $todel)->delete();
+                DB::table('yz_appletslive_liveroom')->whereIn('id', $todel)->update(['live_status' => 108]);
                 DB::table('yz_appletslive_replay')->whereIn('room_id', $todel)->update(['delete_time' => time()]);
                 Log::info('同步微信直播间数据:移除直播间', ['count' => count($todel)]);
             }
