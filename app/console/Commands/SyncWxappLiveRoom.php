@@ -4,6 +4,7 @@ namespace app\Console\Commands;
 
 use Illuminate\Console\Command;
 use Yunshop\Appletslive\common\services\BaseService;
+use Yunshop\Appletslive\common\services\CacheService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -175,6 +176,10 @@ class SyncWxappLiveRoom extends Command
                 DB::table('yz_appletslive_replay')->whereIn('room_id', $todel)->update(['delete_time' => time()]);
                 Log::info('同步微信直播间数据:移除直播间', ['count' => count($todel)]);
             }
+
+            Cache::forget(CacheService::$cache_keys['brandsale.albumlist']);
+            Cache::forget(CacheService::$cache_keys['brandsale.albuminfo']);
+            Cache::forget(CacheService::$cache_keys['brandsale.albumliverooms']);
         }
     }
 }

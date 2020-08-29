@@ -116,6 +116,10 @@ class RoomController extends BaseController
                     DB::table('yz_appletslive_liveroom')->whereIn('id', $todel)->update(['live_status' => 108]);
                     DB::table('yz_appletslive_replay')->whereIn('room_id', $todel)->update(['delete_time' => time()]);
                 }
+
+                Cache::forget(CacheService::$cache_keys['brandsale.albumlist']);
+                Cache::forget(CacheService::$cache_keys['brandsale.albuminfo']);
+                Cache::forget(CacheService::$cache_keys['brandsale.albumliverooms']);
             }
 
             // 处理搜索条件
