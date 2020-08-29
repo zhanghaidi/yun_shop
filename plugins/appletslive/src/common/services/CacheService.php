@@ -296,7 +296,7 @@ class CacheService
                 }
                 $user = array_filter($user);
                 array_walk($cache_val, function (&$item, $key) use ($user) {
-                    $item = ['user' => $user['ajy_uid_' . $key], 'create_time' => date('Y-m-d H:i', $item)];
+                    $item = ['user' => $user['ajy_uid_' . $key], 'create_time' => date('Y-m-d H:i:s', $item)];
                 });
                 Cache::forever($cache_key, $cache_val);
             }
@@ -950,8 +950,8 @@ class CacheService
                         if ($lrv['end_time'] < time() || $lrv['live_status'] == 103) {
                             $replay_list[$rk]['live_status'] = 103;
                         }
-                        $replay_list[$rk]['start_time'] = date('Y-m-d H:i', $lrv['start_time']);
-                        $replay_list[$rk]['end_time'] = date('Y-m-d H:i', $lrv['end_time']);
+                        $replay_list[$rk]['start_time'] = date('Y-m-d H:i:s', $lrv['start_time']);
+                        $replay_list[$rk]['end_time'] = date('Y-m-d H:i:s', $lrv['end_time']);
                         $replay_list[$rk]['anchor_name'] = $lrv['anchor_name'];
                     }
                 }
@@ -1125,7 +1125,7 @@ class CacheService
                 }
                 $user = array_filter($user);
                 array_walk($cache_val[$album_id], function (&$item, $key) use ($user) {
-                    $item = ['user' => $user['ajy_uid_' . $key], 'create_time' => date('Y-m-d H:i', $item)];
+                    $item = ['user' => $user['ajy_uid_' . $key], 'create_time' => date('Y-m-d H:i:s', $item)];
                 });
             }
             Cache::forget($cache_key);

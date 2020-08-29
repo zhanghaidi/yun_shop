@@ -951,6 +951,11 @@ class LiveController extends BaseController
                 $page_val['list'][$k]['view_num'] = $numdata[$key]['view_num'];
                 $page_val['list'][$k]['comment_num'] = $numdata[$key]['comment_num'];
                 $page_val['list'][$k]['has_subscription'] = (array_search($page_val['list'][$k]['id'], $my_subscription) === false) ? false : true;
+
+                if (in_array($v['live_status'], [101, 102])) {
+                    $countdown_seconds = intval(bcsub(strtotime($v['start_time']), time(), 0));
+                    $page_val['list'][$k]['countdown_seconds'] = ($countdown_seconds < 0 ? 0 : $countdown_seconds);
+                }
             }
         }
 
@@ -977,6 +982,12 @@ class LiveController extends BaseController
         $album_info['subscription_num'] = $numdata['subscription_num'];
         $album_info['view_num'] = $numdata['view_num'];
         $album_info['comment_num'] = $numdata['comment_num'];
+
+        if (in_array($album_info['live_status'], [101, 102])) {
+            $countdown_seconds = intval(bcsub(strtotime($album_info['start_time']), time(), 0));
+            $album_info['countdown_seconds'] = ($countdown_seconds < 0 ? 0 : $countdown_seconds);
+        }
+
         $my_subscription = ($this->user_id ? CacheService::getUserBrandSaleAlbumSubscription($this->user_id) : []);
         $album_info['has_subscription'] = ($this->user_id ? ((array_search($album_id, $my_subscription) === false) ? false : true) : false);
 
@@ -995,10 +1006,18 @@ class LiveController extends BaseController
         $offset = ($page - 1) * $limit;
         $rooms = CacheService::getBrandSaleAlbumLiveRooms($album_id);
         $numdata = CacheService::getBrandSaleLiveRoomNum(array_column($rooms['list'], 'id'));
+
+        $time = time();
         foreach ($rooms['list'] as $k => $v) {
             $key = 'key_' . $v['id'];
             $rooms['list'][$k]['view_num'] = $numdata[$key]['view_num'];
+
+            if (in_array($v['live_status'], [101, 102])) {
+                $countdown_seconds = intval(bcsub(strtotime($v['start_time']), $time, 0));
+                $rooms['list'][$k]['countdown_seconds'] = ($countdown_seconds < 0 ? 0 : $countdown_seconds);
+            }
         }
+
         return $this->successJson('获取成功', [
             'total' => $rooms['total'],
             'list' => array_slice($rooms['list'], $offset, $limit),
