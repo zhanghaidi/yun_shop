@@ -197,8 +197,8 @@ class CourseReminder extends Command
         if (!empty($replay_publish_soon)) {
 
             // 7. 查询关联的特卖专辑
-            $rela_room = empty($rela_replay) ? [] : DB::table('yz_appletslive_room')
-                ->whereIn('id', array_unique(array_column($rela_replay, 'rid')))
+            $rela_room = empty($replay_publish_soon) ? [] : DB::table('yz_appletslive_room')
+                ->whereIn('id', array_unique(array_column($replay_publish_soon, 'rid')))
                 ->where('delete_time', 0)
                 ->pluck('name', 'id')->toArray();
 
