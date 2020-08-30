@@ -51,7 +51,7 @@ class RoomController extends BaseController
 
             // 同步房间列表
             $tag = request()->get('tag', '');
-            if ($tag == 'refresh' || empty($cache_val)) {
+            if ($tag == 'refresh') {
 
                 // 重新查询并同步直播间列表
                 $room_from_weixin = (new BaseService())->getRooms();
