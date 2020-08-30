@@ -70,9 +70,9 @@ class Kernel extends ConsoleKernel
             ->everyMinute();
 
         // 每分钟执行同步微信小程序直播间数据
-        // $schedule->command('command:syncwxappliveroom')
-        //     ->withoutOverlapping()
-        //     ->everyMinute();
+        $schedule->command('command:syncwxappliveroom')
+            ->withoutOverlapping()
+            ->everyMinute();
     }
 
     /**

@@ -63,7 +63,7 @@ class CourseReminder extends Command
      */
     public function handle()
     {
-        Log::info('------------------------ 小程序直播提醒定时任务 BEGIN -------------------------------');
+        // Log::info('------------------------ 小程序直播提醒定时任务 BEGIN -------------------------------');
 
         $time_now = time();
         $wait_seconds = 60 * 15;
@@ -76,7 +76,7 @@ class CourseReminder extends Command
             ->whereBetween('publish_time', $check_time_range)
             ->get()->toArray();
 
-        Log::info('即将发布课程视频', $replay_publish_soon);
+        // Log::info('即将发布课程视频', $replay_publish_soon);
 
         if (!empty($replay_publish_soon)) {
 
@@ -86,7 +86,7 @@ class CourseReminder extends Command
                 ->where('delete_time', 0)
                 ->pluck('name', 'id')->toArray();
 
-            Log::info('视频关联的课程', $rela_room);
+            // Log::info('视频关联的课程', $rela_room);
 
             // 3、查询关注了这些课程的所有小程序用户信息(openid)
             $subscribed_user = DB::table('yz_appletslive_room_subscription')
@@ -94,7 +94,7 @@ class CourseReminder extends Command
                 ->whereIn('room_id', array_keys($rela_room))
                 ->get()->toArray();
 
-            Log::info('订阅了课程的用户', $subscribed_user);
+            // Log::info('订阅了课程的用户', $subscribed_user);
 
             if (!empty($subscribed_user)) {
 
@@ -171,7 +171,7 @@ class CourseReminder extends Command
             ->whereBetween('start_time', $check_time_range)
             ->get()->toArray();
 
-        Log::info('即将开始的小程序直播间', $live_start_soon);
+        // Log::info('即将开始的小程序直播间', $live_start_soon);
 
         $replay_publish_soon = empty($live_start_soon) ? [] : DB::table('yz_appletslive_replay')
             ->select('id', 'rid', 'room_id')
@@ -192,7 +192,7 @@ class CourseReminder extends Command
             }
         });
 
-        Log::info('关联特卖直播', $replay_publish_soon);
+        // Log::info('关联特卖直播', $replay_publish_soon);
 
         if (!empty($replay_publish_soon)) {
 
@@ -202,7 +202,7 @@ class CourseReminder extends Command
                 ->where('delete_time', 0)
                 ->pluck('name', 'id')->toArray();
 
-            Log::info('关联特卖专辑', $rela_room);
+            // Log::info('关联特卖专辑', $rela_room);
 
             if (!empty($rela_room)) {
 
@@ -212,7 +212,7 @@ class CourseReminder extends Command
                     ->whereIn('room_id', array_keys($rela_room))
                     ->get()->toArray();
 
-                Log::info('订阅了特卖专辑的用户', $subscribed_user);
+                // Log::info('订阅了特卖专辑的用户', $subscribed_user);
 
                 if (!empty($subscribed_user)) {
 
@@ -284,7 +284,7 @@ class CourseReminder extends Command
             }
         }
 
-        Log::info("------------------------ 小程序直播提醒定时任务 END -------------------------------\n");
+        // Log::info("------------------------ 小程序直播提醒定时任务 END -------------------------------\n");
     }
 
     /**

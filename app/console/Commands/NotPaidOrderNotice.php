@@ -91,8 +91,6 @@ class NotPaidOrderNotice extends Command
             $doexec = false;
         }
         if (!$doexec) {
-            // Log::info('未开启待支付订单提醒.');
-        } else {
             $this->doNotice($setting_trade, $setting_notice, $message_template);
         }
 
@@ -211,8 +209,6 @@ class NotPaidOrderNotice extends Command
                 $job_list[] = $job_item;
             }
 
-            // Log::info("数据组装完成", $job_list);
-
             // 7、添加消息发送任务到消息队列
             foreach ($job_list as $job_item) {
                 $job = new SendTemplateMsgJob($job_item['type'], $job_item['options'], $job_item['template_id'], $job_item['notice_data'],
@@ -225,8 +221,6 @@ class NotPaidOrderNotice extends Command
                     Log::info("队列已添加:发送小程序订阅模板消息", ['job' => $job, 'dispatch' => $dispatch]);
                 }
             }
-
-            // Log::info("------------------------ 测试：待支付订单提醒定时任务 END -------------------------------\n");
         }
     }
 }
