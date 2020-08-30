@@ -63,7 +63,7 @@ class CourseReminder extends Command
      */
     public function handle()
     {
-        // Log::info("------------------------ 课程提醒定时任务 BEGIN -------------------------------");
+        Log::info('------------------------ 小程序直播提醒定时任务 BEGIN -------------------------------');
 
         $time_now = time();
         $wait_seconds = 60 * 15;
@@ -75,6 +75,9 @@ class CourseReminder extends Command
             ->where('delete_time', 0)
             ->whereBetween('publish_time', $check_time_range)
             ->get()->toArray();
+
+        Log::info('即将发布课程视频', $replay_publish_soon);
+
         if (!empty($replay_publish_soon)) {
 
             // 2、查询即将发布的视频关联的课程
@@ -83,11 +86,16 @@ class CourseReminder extends Command
                 ->where('delete_time', 0)
                 ->pluck('name', 'id')->toArray();
 
+            Log::info('视频关联的课程', $rela_room);
+
             // 3、查询关注了这些课程的所有小程序用户信息(openid)
             $subscribed_user = DB::table('yz_appletslive_room_subscription')
                 ->select('user_id', 'room_id')
                 ->whereIn('room_id', array_keys($rela_room))
                 ->get()->toArray();
+
+            Log::info('订阅了课程的用户', $subscribed_user);
+
             if (!empty($subscribed_user)) {
 
                 // 3.1、存在已关注课程的用户，查询用户openid
@@ -162,30 +170,40 @@ class CourseReminder extends Command
             ->where('live_status', 102)
             ->whereBetween('start_time', $check_time_range)
             ->get()->toArray();
+
+        Log::info('即将开始的小程序直播间', $live_start_soon);
+
         $replay_publish_soon = empty($live_start_soon) ? [] : DB::table('yz_appletslive_replay')
             ->select('id', 'rid', 'room_id')
             ->whereIn('room_id', array_column($live_start_soon, 'id'))
             ->where('delete_time', 0)
             ->get()->toArray();
+        if (empty($replay_publish_soon)) {
+            $replay_publish_soon = [];
+        }
+        array_walk($replay_publish_soon, function (&$item) use ($live_start_soon) {
+            foreach ($live_start_soon as $live) {
+                if ($item['room_id'] == $live['id']) {
+                    $item['title'] = $live['name'];
+                    $item['doctor'] = $live['anchor_name'];
+                    $item['publish_time'] = $live['start_time'];
+                    break;
+                }
+            }
+        });
+
+        Log::info('关联特卖直播', $replay_publish_soon);
+
         if (!empty($replay_publish_soon)) {
 
-            // 组装直播间名称和开播时间
-            array_walk($replay_publish_soon, function (&$item) use ($live_start_soon) {
-                foreach ($live_start_soon as $live) {
-                    if ($item['room_id'] == $live['id']) {
-                        $item['title'] = $live['name'];
-                        $item['doctor'] = $live['anchor_name'];
-                        $item['publish_time'] = $live['start_time'];
-                        break;
-                    }
-                }
-            });
-
-            // 7. 查询关联的特卖直播和专辑
+            // 7. 查询关联的特卖专辑
             $rela_room = empty($rela_replay) ? [] : DB::table('yz_appletslive_room')
                 ->whereIn('id', array_unique(array_column($rela_replay, 'rid')))
                 ->where('delete_time', 0)
                 ->pluck('name', 'id')->toArray();
+
+            Log::info('关联特卖专辑', $rela_room);
+
             if (!empty($rela_room)) {
 
                 // 8. 查询订阅了相关特卖专辑的用户
@@ -193,6 +211,9 @@ class CourseReminder extends Command
                     ->select('user_id', 'room_id')
                     ->whereIn('room_id', array_keys($rela_room))
                     ->get()->toArray();
+
+                Log::info('订阅了特卖专辑的用户', $subscribed_user);
+
                 if (!empty($subscribed_user)) {
 
                     // 8.1、存在已关注特卖专辑的用户，查询openid
@@ -248,7 +269,7 @@ class CourseReminder extends Command
                     }
                 }
 
-                // 5、添加消息发送任务到消息队列
+                // 10、添加消息发送任务到消息队列
                 foreach ($job_list as $job_item) {
                     $job = new SendTemplateMsgJob($job_item['type'], $job_item['options'], $job_item['template_id'], $job_item['notice_data'],
                         $job_item['openid'], '', $job_item['page']);
@@ -263,7 +284,7 @@ class CourseReminder extends Command
             }
         }
 
-        // Log::info("------------------------ 课程提醒定时任务 END -------------------------------\n");
+        Log::info("------------------------ 小程序直播提醒定时任务 END -------------------------------\n");
     }
 
     /**
