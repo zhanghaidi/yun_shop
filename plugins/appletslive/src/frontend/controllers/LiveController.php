@@ -821,13 +821,13 @@ class LiveController extends BaseController
             CacheService::setUserWatch($this->user_id, $replay_info['id']);
         }
         $numdata = CacheService::getReplayNum($replay_id);
-        $my_watch = ($this->user_id ? CacheService::getUserWatch($this->user_id) : []);
-        $cache_val['hot_num'] = $numdata['hot_num'];
-        $cache_val['view_num'] = $numdata['view_num'];
-        $cache_val['comment_num'] = $numdata['comment_num'];
-        $cache_val['watch_num'] = $numdata['watch_num'];
+        // $my_watch = ($this->user_id ? CacheService::getUserWatch($this->user_id) : []);
+        $replay_info['hot_num'] = $numdata['hot_num'];
+        $replay_info['view_num'] = $numdata['view_num'];
+        $replay_info['comment_num'] = $numdata['comment_num'];
+        $replay_info['watch_num'] = $numdata['watch_num'];
 
-        return $this->successJson('获取成功', $cache_val);
+        return $this->successJson('获取成功', $replay_info);
     }
 
     /**
