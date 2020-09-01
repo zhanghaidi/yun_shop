@@ -96,12 +96,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        if (config('app.env') !== 'production') {
-            $this->app->register(\Orangehill\Iseed\IseedServiceProvider::class);
-            $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
-            $this->app->register(\Way\Generators\GeneratorsServiceProvider::class);
-            $this->app->register(\Xethron\MigrationsGenerator\MigrationsGeneratorServiceProvider::class);
-        }
+        // if (config('app.env') !== 'production') {
+        //     $this->app->register(\Orangehill\Iseed\IseedServiceProvider::class);
+        //     $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
+        //     $this->app->register(\Way\Generators\GeneratorsServiceProvider::class);
+        //     $this->app->register(\Xethron\MigrationsGenerator\MigrationsGeneratorServiceProvider::class);
+        // }
 
         //增加模板扩展tpl
         \View::addExtension('tpl', 'blade');

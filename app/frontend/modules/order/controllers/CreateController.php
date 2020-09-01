@@ -67,6 +67,8 @@ class CreateController extends ApiController
         $orderIds = $trade->orders->pluck('id')->implode(',');
         //生成订单,触发事件
 
+        // 新增订单实时推送给正在和用户聊天的灸师
+
         return $this->successJson('成功', ['order_ids' => $orderIds]);
     }
 }
