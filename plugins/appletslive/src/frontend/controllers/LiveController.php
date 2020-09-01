@@ -789,7 +789,7 @@ class LiveController extends BaseController
         $limit = request()->get('limit', 10);
         $offset = ($page - 1) * $limit;
         $replays = CacheService::getRoomReplays($room_id);
-        $numdata = CacheService::getReplayNum(array_column($replays, 'id'));
+        $numdata = CacheService::getReplayNum(array_column($replays['list'], 'id'));
         foreach ($replays['list'] as $k => $v) {
             $key = 'key_' . $v['id'];
             $replays['list'][$k]['hot_num'] = $numdata[$key]['hot_num'];
@@ -800,6 +800,8 @@ class LiveController extends BaseController
         return $this->successJson('获取成功', [
             'total' => $replays['total'],
             'list' => array_slice($replays['list'], $offset, $limit),
+            'replays' => $replays,
+            'numdata' => $numdata,
         ]);
     }
 
