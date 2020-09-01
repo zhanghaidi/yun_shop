@@ -53,6 +53,9 @@ class SendTemplateMsgJob implements ShouldQueue
      */
     public function handle()
     {
+        $environment = App::environment();
+        Log::info('SendTemplateMsgJob environment:' . $environment);
+
         if ($this->config['type'] == 'wechat') {
             Log::info("------------------------ 发送公众号模板消息 BEGIN -------------------------------");
             $miniprogram = [];
