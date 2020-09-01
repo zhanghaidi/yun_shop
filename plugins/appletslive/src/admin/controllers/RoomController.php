@@ -367,10 +367,10 @@ class RoomController extends BaseController
         $input = \YunShop::request();
         $limit = 10;
 
-        $where[] = ['rid', '=', $rid];
-
         // 录播视频
         if ($room_type == 1) {
+
+            $where[] = ['rid', '=', $rid];
 
             // 处理搜索条件
             if (isset($input->search)) {
@@ -403,42 +403,41 @@ class RoomController extends BaseController
         // 特卖直播
         if ($room_type == 2) {
 
-            $with_where = [];
+            $where[] = ['yz_appletslive_replay.rid', '=', $rid];
 
             // 处理搜索条件
             if (isset($input->search)) {
 
                 $search = $input->search;
                 if (intval($search['roomid']) > 0) {
-                    $with_where[] = ['roomid', '=', intval($search['roomid'])];
+                    $where[] = ['yz_appletslive_liveroom.roomid', '=', intval($search['roomid'])];
                 }
                 if (trim($search['name']) !== '') {
-                    $with_where[] = ['name', 'like', '%' . trim($search['name']) . '%'];
+                    $where[] = ['yz_appletslive_liveroom.name', 'like', '%' . trim($search['name']) . '%'];
                 }
                 if (trim($search['live_status']) !== '') {
-                    $with_where[] = ['live_status', '=', $search['live_status']];
+                    $where[] = ['yz_appletslive_liveroom.live_status', '=', $search['live_status']];
                 }
                 if (trim($search['status']) !== '') {
                     if ($search['status'] === '0') {
-                        $where[] = ['delete_time', '>', 0];
+                        $where[] = ['yz_appletslive_replay.delete_time', '>', 0];
                     } else {
-                        $where[] = ['delete_time', '=', 0];
+                        $where[] = ['yz_appletslive_replay.delete_time', '=', 0];
                     }
                 }
             }
 
-            if (!empty($with_where)) {
-                $where_in_room_id = LiveRoom::where($with_where)->pluck('id');
-            }
-
-            $queryer = Replay::where($where);
-            if (isset($where_in_room_id)) {
-                $queryer->whereIn('room_id', $where_in_room_id);
-            }
-            $replay_list = $queryer
-                ->with('liveroom')
-                ->orderBy('sort', 'desc')
-                ->orderBy('id', 'desc')
+            $replay_list = DB::table('yz_appletslive_replay')
+                ->join('yz_appletslive_liveroom', 'yz_appletslive_replay.room_id', '=', 'yz_appletslive_liveroom.id')
+                ->select('yz_appletslive_replay.id', 'yz_appletslive_liveroom.roomid', 'yz_appletslive_liveroom.name',
+                    'yz_appletslive_liveroom.cover_img', 'yz_appletslive_liveroom.anchor_name',
+                    'yz_appletslive_liveroom.anchor_name', 'yz_appletslive_liveroom.live_status',
+                    'yz_appletslive_liveroom.start_time', 'yz_appletslive_liveroom.end_time')
+                ->where($where)
+                ->where('yz_appletslive_replay.delete_time', 0)
+                ->whereIn('yz_appletslive_liveroom.live_status', [101, 102, 103, 105, 107])
+                ->orderBy('yz_appletslive_liveroom.start_time', 'desc')
+                ->orderBy('yz_appletslive_replay.id', 'desc')
                 ->paginate($limit);
         }
 

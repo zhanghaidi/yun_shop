@@ -326,4 +326,21 @@ class CategoryController extends BaseController
         }
         return $this->successJson('获取分类成功!',['list'=>$list->toArray()]);
     }
+
+    /**
+     * 商城只展示二级分类
+     * @return \Illuminate\Http\JsonResponse
+     * @throws AppException
+     */
+    public function fastChildCategory(){
+        $list = Category::select('id', 'name', 'thumb', 'adv_img', 'adv_url')->uniacid()->where('level',2)->where('enabled', 1)->get();
+        /*$list->map(function($category){
+            $category->childrens = Category::select('id', 'name', 'thumb', 'adv_img', 'adv_url')->where('level',2)->where('parent_id',$category->id)->get();
+        });*/
+
+        if($list->isEmpty()){
+            throw new AppException('未检测到分类数据');
+        }
+        return $this->successJson('获取分类成功!',['list'=>$list->toArray()]);
+    }
 }

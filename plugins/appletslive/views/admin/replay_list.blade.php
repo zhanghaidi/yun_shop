@@ -142,6 +142,7 @@
                                 <option value="101" @if($request['search']['live_status']=='101') selected @endif>直播中</option>
                                 <option value='102' @if($request['search']['live_status']=='102') selected @endif>待开播</option>
                                 <option value='103' @if($request['search']['live_status']=='103') selected @endif>已结束</option>
+                                <option value='107' @if($request['search']['live_status']=='107') selected @endif>已过期</option>
                             </select>
                         </div>
                         <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
@@ -170,7 +171,6 @@
                     <thead>
                     <tr>
                         <th style='width:5%;'>ID</th>
-                        <th style='width:5%;'>排序</th>
                         <th style='width:5%;'>房间号</th>
                         <th style='width:10%;'>预览图</th>
                         <th style='width:15%;'>标题</th>
@@ -185,36 +185,35 @@
                     @foreach($replay_list as $row)
                         <tr>
                             <td>{{ $row['id'] }}</td>
-                            <td>{{ $row['sort'] }}</td>
-                            <td>{{ $row->liveroom->roomid }}</td>
+                            <td>{{ $row['roomid'] }}</td>
                             <td>
-                                <img src="{!! tomedia($row->liveroom->cover_img) !!}" style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
+                                <img src="{!! tomedia($row['cover_img']) !!}" style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
                             </td>
-                            <td>{{ $row->liveroom->name }}</td>
-                            <td>{{ $row->liveroom->anchor_name }}</td>
+                            <td>{{ $row['name'] }}</td>
+                            <td>{{ $row['anchor_name'] }}</td>
                             <td>
-                                @if($row->liveroom->live_status==101)
+                                @if($row['live_status']==101)
                                     直播中
-                                @elseif($row->liveroom->live_status==102)
+                                @elseif($row['live_status']==102)
                                     待开播
-                                @elseif($row->liveroom->live_status==103)
+                                @elseif($row['live_status']==103)
                                     已结束
-                                @elseif($row->liveroom->live_status==104)
+                                @elseif($row['live_status']==104)
                                     禁播
-                                @elseif($row->liveroom->live_status==105)
+                                @elseif($row['live_status']==105)
                                     暂停
-                                @elseif($row->liveroom->live_status==106)
+                                @elseif($row['live_status']==106)
                                     异常
-                                @elseif($row->liveroom->live_status==107)
+                                @elseif($row['live_status']==107)
                                     已过期
-                                @elseif($row->liveroom->live_status==108)
+                                @elseif($row['live_status']==108)
                                     已删除
                                 @else
                                     未知
                                 @endif
                             </td>
-                            <td>{{ date('Y-m-d H:i:s', $row->liveroom->start_time) }}</td>
-                            <td>{{ date('Y-m-d H:i:s', $row->liveroom->end_time) }}</td>
+                            <td>{{ date('Y-m-d H:i:s', $row['start_time']) }}</td>
+                            <td>{{ date('Y-m-d H:i:s', $row['end_time']) }}</td>
                             <td style="overflow:visible;">
                                 <a class='btn btn-default'
                                    href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.replayedit', ['id' => $row['id']])}}"
