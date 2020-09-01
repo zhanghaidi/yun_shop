@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use EasyWeChat\Foundation\Application;
 use EasyWeChat\Core\Exceptions\HttpException;
+use Illuminate\Support\Facades\App;
 
 class SendTemplateMsgJob implements ShouldQueue
 {
@@ -135,19 +136,30 @@ class SendTemplateMsgJob implements ShouldQueue
             'template_id' => $template_id,
             'page' => $page,
             'data' => $notice_data,
-            'miniprogram_state' => 'developer',
         ];
+
+        $environment = App::environment();
+        if ($environment == 'dev') {
+            $post_data['miniprogram_state'] = 'developer';
+        }
+        if ($environment == 'test') {
+            $post_data['miniprogram_state'] = 'trial';
+        }
+
+        $state = array_key_exists('miniprogram_state', $post_data) ? $post_data['miniprogram_state'] : 'formal';
+        Log::info("订阅消息跳转小程序类型:{$state}");
+
         $response = $this->curl_post($url, $post_data);
         if ($response === false) {
             Log::error('小程序模板消息接口调用失败:false', ['url' => $url]);
         }
         $result = json_decode($response, true);
         if (!$result || !is_array($result)) {
-            Log::error('小程序模板消息发送失败:', ['url' => $url, 'config' => [
+            Log::error('小程序订阅消息发送失败:', ['url' => $url, 'config' => [
                 'template_id' => $template_id, 'notice_data' => $notice_data, 'openid' => $openid,
             ], 'result' => $result]);
         } else {
-            Log::info('小程序模板消息接口调用成功:', ['url' => $url, 'config' => [
+            Log::info('小程序订阅消息发送成功:', ['url' => $url, 'config' => [
                 'template_id' => $template_id, 'notice_data' => $notice_data, 'openid' => $openid,
             ], 'result' => $result]);
         }
