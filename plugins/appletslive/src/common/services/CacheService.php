@@ -921,11 +921,13 @@ class CacheService
         $cache_key = self::$cache_keys['brandsale.albumliverooms'];
         $cache_val = Cache::get($cache_key);
         $replay_list = DB::table('yz_appletslive_replay')
-            ->select('id', 'room_id', 'view_num')
-            ->where('rid', $album_id)
-            ->where('delete_time', 0)
-            ->orderBy('sort', 'desc')
-            ->orderBy('id', 'asc')
+            ->join('yz_appletslive_liveroom', 'yz_appletslive_replay.room_id', '=', 'yz_appletslive_liveroom.id')
+            ->select('yz_appletslive_replay.id', 'yz_appletslive_replay.room_id', 'yz_appletslive_replay.view_num')
+            ->where('yz_appletslive_replay.rid', $album_id)
+            ->where('yz_appletslive_replay.delete_time', 0)
+            ->whereIn('yz_appletslive_liveroom.live_status', [101, 102, 103, 105, 107])
+            ->orderBy('yz_appletslive_liveroom.start_time', 'desc')
+            ->orderBy('yz_appletslive_replay.id', 'desc')
             ->get()->toArray();
         if (!empty($replay_list)) {
             $liverooms = DB::table('yz_appletslive_liveroom')

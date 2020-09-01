@@ -80,6 +80,12 @@
                             <textarea name="intro" rows="5" class="form-control"></textarea>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label class="col-md-2 col-sm-3 col-xs-12 control-label">排序</label>
+                        <div class="col-md-10 col-sm-9 col-xs-12">
+                            <input name="sort" type="number" class="form-control" value="0" placeholder="" required />
+                        </div>
+                    </div>
 
                 @endif
 
@@ -108,6 +114,7 @@
                     <input name="minute" type="hidden" value="0" />
                     <input name="second" type="hidden" value="0" />
                     <input name="publish_time" type="hidden" value="" />
+                    <input name="sort" type="hidden" value="0" />
 
                     <div class="form-group fg-showhide" style="display:none;">
                         <label class="col-md-2 col-sm-3 col-xs-12 control-label">标题</label>
@@ -195,13 +202,6 @@
                     </div>
 
                 @endif
-
-                <div class="form-group">
-                    <label class="col-md-2 col-sm-3 col-xs-12 control-label">排序</label>
-                    <div class="col-md-10 col-sm-9 col-xs-12">
-                        <input name="sort" type="number" class="form-control" value="0" placeholder="" required />
-                    </div>
-                </div>
 
                 <div class="form-group">
                     <label class="col-md-2 col-sm-3 col-xs-12 control-label"></label>
