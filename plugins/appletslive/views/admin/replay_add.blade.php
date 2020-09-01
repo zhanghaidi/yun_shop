@@ -35,8 +35,8 @@
                 </div>
                 <div class="form-group">
                     <label class="col-md-2 col-sm-3 col-xs-12 control-label">链接地址</label>
-                    <div class="col-md-10 col-sm-9 col-xs-12">
-                        <input name="media_url" type="text" class="form-control" value="" required />
+                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        {!! app\common\helpers\ImageHelper::tplFormFieldVideo('media_url') !!}
                     </div>
                 </div>
                 <div class="form-group">
@@ -68,6 +68,7 @@
                     <label class="col-md-2 col-sm-3 col-xs-12 control-label">预览图片</label>
                     <div class="col-md-9 col-sm-9 col-xs-12 detail-logo">
                         {!! app\common\helpers\ImageHelper::tplFormFieldImage('cover_img', '') !!}
+                        <span class="help-block">图片比例 5:4，请按照规定尺寸上传</span>
                     </div>
                 </div>
                 <div class="form-group">

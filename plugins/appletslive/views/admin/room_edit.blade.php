@@ -47,6 +47,7 @@
                         <label class="col-xs-12 col-sm-3 col-md-1 control-label">课程封面</label>
                         <div class="col-sm-9 col-xs-12 col-md-10">
                             {!! app\common\helpers\ImageHelper::tplFormFieldImage('cover_img', $info['cover_img']) !!}
+                            <span class="help-block">图片比例 5:4，请按照规定尺寸上传</span>
                         </div>
                     </div>
                 @endif
@@ -60,7 +61,7 @@
                 <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
                     <div class="col-sm-9 col-xs-12">
-                        <input type="hidden" name="id" value="{{$rid}}" />
+                        <input type="hidden" name="id" value="{{$id}}" />
                         <input type="submit" name="submit" value="提交" class="btn btn-success"/>
                     </div>
                 </div>
