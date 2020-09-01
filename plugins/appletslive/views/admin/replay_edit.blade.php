@@ -144,6 +144,8 @@
                         </div>
                     </div>
 
+                    <input name="sort" type="hidden" value="{{ $info['sort'] }}" />
+
                 @else
 
                     <div class="form-group">
@@ -210,14 +212,14 @@
                         </div>
                     </div>
 
-                @endif
-
-                <div class="form-group">
-                    <label class="col-md-2 col-sm-3 col-xs-12 control-label">排序</label>
-                    <div class="col-md-10 col-sm-9 col-xs-12">
-                        <input name="sort" type="number" class="form-control" value="{{ $info['sort'] }}" placeholder="" required />
+                    <div class="form-group">
+                        <label class="col-md-2 col-sm-3 col-xs-12 control-label">排序</label>
+                        <div class="col-md-10 col-sm-9 col-xs-12">
+                            <input name="sort" type="number" class="form-control" value="{{ $info['sort'] }}" placeholder="" required />
+                        </div>
                     </div>
-                </div>
+
+                @endif
 
                 <div class="form-group">
                     <label class="col-md-2 col-sm-3 col-xs-12 control-label"></label>
