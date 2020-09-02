@@ -432,7 +432,8 @@ class RoomController extends BaseController
                 ->select('yz_appletslive_replay.id', 'yz_appletslive_liveroom.roomid', 'yz_appletslive_liveroom.name',
                     'yz_appletslive_liveroom.cover_img', 'yz_appletslive_liveroom.anchor_name',
                     'yz_appletslive_liveroom.anchor_name', 'yz_appletslive_liveroom.live_status',
-                    'yz_appletslive_liveroom.start_time', 'yz_appletslive_liveroom.end_time')
+                    'yz_appletslive_liveroom.start_time', 'yz_appletslive_liveroom.end_time',
+                    'yz_appletslive_replay.delete_time')
                 ->where($where)
                 ->whereIn('yz_appletslive_liveroom.live_status', [101, 102, 103, 105, 107])
                 ->orderBy('yz_appletslive_liveroom.start_time', 'desc')
