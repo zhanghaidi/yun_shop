@@ -118,7 +118,9 @@ class JuShuiTanController extends ApiController
     {
         //↓↓↓↓↓这个是物流回调地址，追加打印的数据，聚水潭发货以后这个接口接收，芸众根目录可查看发过来的订单数据（正式上线删除）
         file_put_contents('ceshi.txt',print_r($this->param,true));
+        \Log::info('聚水潭回传参数', $this->param);
         $order_sn = $this->param['so_id'];
+
         if (!empty($order_sn) && $order_sn) {
             $order = Db::table('yz_order')->where(['order_sn' => $order_sn, 'status' => 1])->first();
             if (!empty($order) && $order) {
@@ -155,14 +157,22 @@ class JuShuiTanController extends ApiController
                 $data['express_sn'] = $this->param['l_id'];
                 $data['confirmsend'] = "yes";
                 OrderService::orderSend($data);
+
+                \Log::info('订单状态更改', $data);
                 OrderService::orderMess($order_sn,$order,1);
                 $this->ju_log("订单：{$order_sn}发货成功,物流编号：{$lc_id},物流名称：{$data['express_company_name']}", 1);
-                echo json_encode(['code' => "0", 'msg' => '执行成功'], JSON_UNESCAPED_UNICODE);
+                //echo json_encode(['code' => "0", 'msg' => '执行成功'], JSON_UNESCAPED_UNICODE);
+                return response()->json([
+                    'code' => '0',
+                    'msg' => '执行成功',
+                ], 200, ['charset' => 'utf-8']);
+
             } else {
+                \Log::info('订单不存在、发货状态已更改', $order);
                 $this->ju_log("订单{$order_sn}发货失败：订单已发货，或被删除");
             }
         } else {
-            $this->ju_log("订单发货失败：订单回调有误！");
+            $this->ju_log("订单发货失败：订单号不存在！");
         }
 
     }
@@ -193,9 +203,17 @@ class JuShuiTanController extends ApiController
         if (!empty($refund_sn)) {
             $data['status'] = '8';
             DB::table('yz_order_refund')->where(['refund_sn' => $refund_sn])->update($data);
-            echo json_encode(['code' => "0", 'msg' => '执行成功'], JSON_UNESCAPED_UNICODE);
+            //echo json_encode(['code' => "0", 'msg' => '执行成功'], JSON_UNESCAPED_UNICODE);
+            return response()->json([
+                'code' => '0',
+                'msg' => '执行成功',
+            ], 200, ['charset' => 'utf-8']);
         } else {
-            echo json_encode(['code' => "1", 'msg' => '接收失败'], JSON_UNESCAPED_UNICODE);
+           // echo json_encode(['code' => "1", 'msg' => '接收失败'], JSON_UNESCAPED_UNICODE);
+            return response()->json([
+                'code' => '1',
+                'msg' => '接收失败',
+            ], 200, ['charset' => 'utf-8']);
         }
 
     }

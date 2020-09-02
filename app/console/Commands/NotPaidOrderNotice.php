@@ -63,7 +63,7 @@ class NotPaidOrderNotice extends Command
      */
     public function handle()
     {
-        Log::info("------------------------ 待支付订单提醒定时任务 BEGIN -------------------------------");
+        // Log::info("------------------------ 待支付订单提醒定时任务 BEGIN -------------------------------");
 
         // 提醒配置
         $setting_trade = DB::table('yz_setting')
@@ -89,15 +89,12 @@ class NotPaidOrderNotice extends Command
             || empty(intval($setting_trade['not_paid_notice_minutes']))
             || empty($message_template)) {
             $doexec = false;
-
         }
         if (!$doexec) {
-            Log::info('未开启待支付订单提醒.');
-        } else {
             $this->doNotice($setting_trade, $setting_notice, $message_template);
         }
 
-        Log::info("------------------------ 待支付订单提醒定时任务 END -------------------------------\n");
+        // Log::info("------------------------ 待支付订单提醒定时任务 END -------------------------------\n");
     }
 
     /**
@@ -123,9 +120,7 @@ class NotPaidOrderNotice extends Command
         $result['check_time_range'] = $check_time_range;
         $result['not_paid_order'] = $not_paid_order;
 
-        if (empty($not_paid_order)) {
-            Log::info('未找到需要待支付提醒的订单.');
-        } else {
+        if (!empty($not_paid_order)) {
 
             // 2、查询待支付订单关联的商品
             $order_goods = DB::table('yz_order_goods')
@@ -141,7 +136,9 @@ class NotPaidOrderNotice extends Command
                 ->get()->toArray();
             $wx_unionid = array_column($wxapp_user, 'unionid');
             $wechat_user = DB::table('mc_mapping_fans')
-                ->select('uid', 'unionid', 'openid', 'follow')
+                ->select('uid', 'unionid', 'openid')
+                ->where('follow', 1)
+                ->where('uniacid', 39)
                 ->whereIn('unionid', $wx_unionid)
                 ->get()->toArray();
 
@@ -160,7 +157,7 @@ class NotPaidOrderNotice extends Command
                 }
                 $item['wechat_openid'] = '';
                 foreach ($wechat_user as $user) {
-                    if ($user['unionid'] == $item['unionid'] && $user['follow'] == 1) {
+                    if ($user['unionid'] == $item['unionid']) {
                         $item['wechat_openid'] = $user['openid'];
                         break;
                     }
@@ -169,6 +166,7 @@ class NotPaidOrderNotice extends Command
 
             // 6、组装队列数据
             $job_list = [];
+            $jump_page = '/pages/template/rumours/index?share=1&shareUrl=';
             $value_key_sort = ['goods_title', 'amount', 'order_sn', 'create_time', 'expire_time'];
             foreach ($not_paid_order as $order) {
                 $job_item = [
@@ -187,38 +185,42 @@ class NotPaidOrderNotice extends Command
                     if ($user['user_id'] == $order['uid']) {
                         $type = ($user['wechat_openid'] != '') ? 'wechat' : 'wxapp';
                         $openid = ($user['wechat_openid'] != '') ? $user['wechat_openid'] : $user['wxapp_openid'];
-                        $page = 'pages/template/rumours/index?order_id=' . $order['id'];
+
                         $job_item['type'] = $type;
+                        $job_item['openid'] = $openid;
                         $job_item['options'] = $this->options[$type];
                         $job_item['template_id'] = $message_template['template_id'];
 
-                        foreach ($value_key_sort as $value_key_idx => $value_key_val) {
-                            $notice_data[$value_key_idx]['value'] = $job_item[$value_key_val];
+                        $job_item['notice_data']['first'] = ['value' => $message_template['first'], 'color' => $message_template['first_color']];
+                        $value_key_idx = 0;
+                        foreach ($notice_data as $nd_item) {
+                            $job_item['notice_data'][$nd_item['keywords']] = [
+                                'value' => $job_item[$value_key_sort[$value_key_idx]],
+                                'color' => $nd_item['color'],
+                            ]; ;
+                            $value_key_idx++;
                         }
-                        $job_item['notice_data'] = $notice_data;
+                        $job_item['notice_data']['remark'] = ['value' => $message_template['remark'], 'color' => $message_template['remark_color']];
 
-                        $job_item['openid'] = $openid;
-                        $job_item['page'] = $page;
+                        $jump_tail = '/pages/shopping/order_detail/index?id=' . $order['id'];
+                        $job_item['page'] = $jump_page . urlencode($jump_tail);
                     }
                 }
                 $job_list[] = $job_item;
             }
-
-            Log::info("数据组装完成", $job_list);
 
             // 7、添加消息发送任务到消息队列
             foreach ($job_list as $job_item) {
                 $job = new SendTemplateMsgJob($job_item['type'], $job_item['options'], $job_item['template_id'], $job_item['notice_data'],
                     $job_item['openid'], '', $job_item['page']);
                 $dispatch = dispatch($job);
+                Log::info("模板消息内容:", $job_item);
                 if ($job_item['type'] == 'wechat') {
                     Log::info("队列已添加:发送公众号模板消息", ['job' => $job, 'dispatch' => $dispatch]);
                 } elseif ($job_item['type'] == 'wxapp') {
                     Log::info("队列已添加:发送小程序订阅模板消息", ['job' => $job, 'dispatch' => $dispatch]);
                 }
             }
-
-            Log::info("------------------------ 测试：待支付订单提醒定时任务 END -------------------------------\n");
         }
     }
 }

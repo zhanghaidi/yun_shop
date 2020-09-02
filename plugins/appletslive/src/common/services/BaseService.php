@@ -21,14 +21,33 @@
 namespace Yunshop\Appletslive\common\services;
 
 use Illuminate\Support\Facades\DB;
+use app\common\facades\Setting;
+use app\common\exceptions\AppException;
 
 class BaseService
 {
     protected $appId;
     protected $secret;
 
-    public function getRooms($token)
+    public function __construct()
     {
+        $set = Setting::get('plugin.appletslive');
+        if (empty($set)) {
+            $wxapp_account = DB::table('account_wxapp')
+                ->select('key', 'secret')
+                ->where('uniacid', 45)
+                ->first();
+            $this->appId = $wxapp_account['key'];
+            $this->secret = $wxapp_account['secret'];
+        } else {
+            $this->appId = $set['appId'];
+            $this->secret = $set['secret'];
+        }
+    }
+
+    public function getRooms()
+    {
+        $token = $this->getToken();
         $url = 'https://api.weixin.qq.com/wxa/business/getliveinfo?access_token=' . $token;
 
         $post_data = [
@@ -41,8 +60,9 @@ class BaseService
         return json_decode($result, true);
     }
 
-    public function getReplays($token, $rid)
+    public function getReplays($rid)
     {
+        $token = $this->getToken();
         $url = 'https://api.weixin.qq.com/wxa/business/getliveinfo?access_token=' . $token;
 
         $post_data = [
@@ -57,9 +77,10 @@ class BaseService
         return json_decode($result, true);
     }
 
-    public function msgSecCheck($content, $token)
+    public function msgSecCheck($content)
     {
         // 文本检测
+        $token = $this->getToken();
         $url = 'https://api.weixin.qq.com/wxa/msg_sec_check?access_token=' . $token;
         $post_data = ['content' => $content];
         $result = json_decode(self::curlPost($url, json_encode($post_data), []), true);
@@ -87,11 +108,17 @@ class BaseService
         return $str;
     }
 
-    public function getToken($appId, $secret)
+    public function getToken()
     {
-        $result = self::curlPost($this->requestUrl($appId, $secret), '', []);
-
-        return json_decode($result, true);
+        if (empty($this->appId) || empty($this->secret)) {
+            throw new AppException('请配置appId和secret');
+        }
+        $result = self::curlPost($this->requestUrl($this->appId, $this->secret), '', []);
+        $decode = json_decode($result, true);
+        if ($decode['errcode'] != 0) {
+            throw new AppException('appId或者secret错误' . $decode['errmsg']);
+        }
+        return $decode['access_token'];
     }
 
     private static function curlPost($url, $post_data, $options = []){

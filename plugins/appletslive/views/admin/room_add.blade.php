@@ -18,32 +18,66 @@
     <div class="w1200 m0a">
         <div class="rightlist">
             <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+
+                @if($type=='1')
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">课程名称</label>
+                        <div class="col-sm-9 col-xs-12 col-md-11">
+                            <input name="name" type="text" class="form-control" value="" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">课程封面</label>
+                        <div class="col-sm-9 col-xs-12 col-md-10">
+                            {!! app\common\helpers\ImageHelper::tplFormFieldImage('cover_img', '') !!}
+                            <span class="help-block">图片比例 5:4，请按照规定尺寸上传</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">课程介绍</label>
+                        <div class="col-sm-9 col-xs-12 col-md-11">
+                            {!! yz_tpl_ueditor('desc', $info['desc']) !!}
+                        </div>
+                    </div>
+                @endif
+
+                @if($type=='2')
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">专辑名称</label>
+                        <div class="col-sm-9 col-xs-12 col-md-11">
+                            <input name="name" type="text" class="form-control" value="" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">专辑封面</label>
+                        <div class="col-sm-9 col-xs-12 col-md-10">
+                            {!! app\common\helpers\ImageHelper::tplFormFieldImage('cover_img', '') !!}
+                            <span class="help-block">图片比例 5:4，请按照规定尺寸上传</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">专辑介绍</label>
+                        <div class="col-sm-9 col-xs-12 col-md-11">
+                            {!! yz_tpl_ueditor('desc', $info['desc']) !!}
+                        </div>
+                    </div>
+                @endif
+
                 <div class="form-group">
-                    <label class="col-xs-12 col-sm-3 col-md-1 control-label">课程名称</label>
+                    <label class="col-xs-12 col-sm-3 col-md-1 control-label">排序</label>
                     <div class="col-sm-9 col-xs-12 col-md-11">
-                        <input name="name" type="text" class="form-control" value="" required />
+                        <input name="sort" type="number" class="form-control" value="0" required />
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="col-xs-12 col-sm-3 col-md-1 control-label">课程封面</label>
-                    <div class="col-sm-9 col-xs-12 col-md-10">
-                        {!! app\common\helpers\ImageHelper::tplFormFieldImage('cover_img', '') !!}
-                        <span class="help-block">图片比例 5:4，请按照规定尺寸上传</span>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-xs-12 col-sm-3 col-md-1 control-label">课程介绍</label>
-                    <div class="col-sm-9 col-xs-12 col-md-11">
-                        {!! yz_tpl_ueditor('desc', $info['desc']) !!}
-                    </div>
-                </div>
+
                 <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
                     <div class="col-sm-9 col-xs-12">
-                        <input type="hidden" name="id" value="{{$rid}}" />
+                        <input type="hidden" name="type" value="{{ $type }}" />
                         <input type="submit" name="submit" value="提交" class="btn btn-success"/>
                     </div>
                 </div>
+
             </form>
         </div>
     </div>
