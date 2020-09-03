@@ -12,6 +12,7 @@ use app\common\components\ApiController;
 use app\frontend\models\Member;
 use app\frontend\modules\member\services\MemberCartService;
 use app\frontend\modules\memberCart\MemberCartCollection;
+use Illuminate\Support\Facades\Log;
 
 class CreateController extends ApiController
 {
@@ -58,7 +59,7 @@ class CreateController extends ApiController
      */
     public function index()
     {
-        \Log::info('用户下单', request()->input());
+        Log::info('用户下单', request()->input());
         $this->validateParam();
 
         //订单组1
@@ -68,6 +69,14 @@ class CreateController extends ApiController
         //生成订单,触发事件
 
         // 新增订单实时推送给正在和用户聊天的灸师
+        $push_orders = [];
+        foreach ($trade->orders as $order) {
+            $push_orders[] = [
+                'id' => $order->id,
+                'create_time' => date('Y-m-d H:i:s', $order->create_at),
+            ];
+        }
+        Log::info("新增订单", ['orders' => $push_orders]);
 
         return $this->successJson('成功', ['order_ids' => $orderIds]);
     }
