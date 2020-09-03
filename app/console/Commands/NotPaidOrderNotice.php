@@ -89,8 +89,15 @@ class NotPaidOrderNotice extends Command
             || empty(intval($setting_trade['not_paid_notice_minutes']))
             || empty($message_template)) {
             $doexec = false;
+            // Log::info("待支付订单提醒未开启");
         }
-        if (!$doexec) {
+        if ($doexec) {
+            // Log::info("待支付订单提醒配置", [
+            //     'toggle' => $setting_notice['toggle'],
+            //     'order_not_paid' => $setting_notice['order_not_paid'],
+            //     'not_paid_notice_minutes' => $setting_trade['not_paid_notice_minutes'],
+            //     'message_template' => ['id' => $message_template['id'], 'template_id' => $message_template['template_id']],
+            // ]);
             $this->doNotice($setting_trade, $setting_notice, $message_template);
         }
 
@@ -115,12 +122,21 @@ class NotPaidOrderNotice extends Command
         $check_time_range = [$time_now - $wait_seconds - 60, $time_now - $wait_seconds];
         $not_paid_order = DB::table('yz_order')
             ->select('id', 'uid', 'order_sn', 'price', 'create_time')
+            ->where('status', 0)
             ->whereBetween('create_time', $check_time_range)
             ->get()->toArray();
         $result['check_time_range'] = $check_time_range;
         $result['not_paid_order'] = $not_paid_order;
 
+        // if (empty($not_paid_order)) {
+        //     Log::info("未找到需要提醒的待支付订单");
+        // }
+
         if (!empty($not_paid_order)) {
+
+            foreach ($not_paid_order as $order) {
+                Log::info("待支付订单", ['id' => $order['id'], 'create_time' => date('Y-m-d H:i', $order['create_time'])]);
+            }
 
             // 2、查询待支付订单关联的商品
             $order_goods = DB::table('yz_order_goods')
