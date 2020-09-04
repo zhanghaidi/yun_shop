@@ -1341,9 +1341,12 @@ if (!function_exists('file_remote_upload_wq')) {
 
                 return error(-1, $message);
             }
+            \Log::info('附件上传到服务器:' . $filename);
             if ($auto_delete_local) {
                 file_deletes($filename);
+                \Log::info('自动删除附件');
             }
+            \Log::info('附件上传腾讯云', $uploadRet);
         }
     }
 }
