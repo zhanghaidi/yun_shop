@@ -26,7 +26,8 @@ class PluginApplication extends \app\common\services\PluginApplication
 {
     protected function setConfig()
     {
-
+        define('APPLETSLIVE_ROOM_TYPE_COURSE', 1);
+        define('APPLETSLIVE_ROOM_TYPE_BRANDSALE', 2);
     }
 
     protected function setMenuConfig()

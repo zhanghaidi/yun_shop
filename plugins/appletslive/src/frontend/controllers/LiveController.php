@@ -630,6 +630,7 @@ class LiveController extends BaseController
                 'room_id' => $input['room_id'],
                 'user_id' => $this->user_id,
                 'create_time' => time(),
+                'type' => APPLETSLIVE_ROOM_TYPE_COURSE,
             ]);
             CacheService::setRoomNum($input['room_id'], 'subscription_num');
             CacheService::setUserSubscription($this->user_id, $input['room_id']);
@@ -1048,7 +1049,7 @@ class LiveController extends BaseController
                 'room_id' => $input['album_id'],
                 'user_id' => $this->user_id,
                 'create_time' => time(),
-                'type' => 2,
+                'type' => APPLETSLIVE_ROOM_TYPE_BRANDSALE,
             ]);
             CacheService::setBrandSaleAlbumNum($input['album_id'], 'subscription_num');
             CacheService::setUserBrandSaleAlbumSubscription($this->user_id, $input['album_id']);
