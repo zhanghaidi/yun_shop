@@ -26,152 +26,24 @@ use Illuminate\Support\Facades\Cache;
 use app\common\exceptions\AppException;
 use app\common\components\BaseController;
 use app\common\helpers\Url;
-use Yunshop\Appletslive\common\services\BaseService;
 use Yunshop\Appletslive\common\services\CacheService;
 use Yunshop\Appletslive\common\models\Room;
 use Yunshop\Appletslive\common\models\Replay;
 use Yunshop\Appletslive\common\models\LiveRoom;
 use app\common\helpers\PaginationHelper;
-use Illuminate\Support\Facades\Log;
 
 class RoomController extends BaseController
 {
     // 房间列表
     public function index()
     {
-        $type = request()->get('type', 0);
-        if (!in_array($type, [0, 1, 2])) {
+        $type = request()->get('type', 1);
+        if (!in_array($type, [1, 2])) {
             throw new AppException('房间类型有误');
         }
 
         $input = \YunShop::request();
-        $limit = 10;
-
-        if ($type == 0) { // 直播
-
-            // 同步房间列表
-            $tag = request()->get('tag', '');
-            if ($tag == 'refresh') {
-
-                // 重新查询并同步直播间列表
-                $room_from_weixin = (new BaseService())->getRooms();
-                $present = $room_from_weixin['room_info'];
-                $stored = DB::table('yz_appletslive_liveroom')
-                    ->orderBy('id', 'desc')
-                    ->limit(100)
-                    ->get();
-
-                // 添加新增的直播间
-                $insert = [];
-                $update = [];
-                $present = array_reverse($present);
-                foreach ($present as $psk => $psv) {
-                    $exist = false;
-                    foreach ($stored as $drk => $drv) {
-                        if ($drv['roomid'] == $psv['roomid']) {
-                            // 房间信息在数据库中存在，实时更新数据
-                            if ($drv['name'] != $psv['name'] || $drv['anchor_name'] != $psv['anchor_name']
-                                || $drv['live_status'] != $psv['live_status'] || $drv['start_time'] != $psv['start_time']) {
-                                array_push($update, [
-                                    'id' => $drv['id'],
-                                    'name' => $psv['name'],
-                                    'cover_img' => $psv['cover_img'],
-                                    'share_img' => $psv['share_img'],
-                                    'live_status' => $psv['live_status'],
-                                    'start_time' => $psv['start_time'],
-                                    'end_time' => $psv['end_time'],
-                                    'anchor_name' => $psv['anchor_name'],
-                                    'goods' => json_encode($psv['goods']),
-                                ]);
-                            }
-                            $exist = true;
-                            break;
-                        }
-                    }
-                    // 房间信息在数据库中不存在，实时记录数据
-                    if (!$exist) {
-                        array_push($insert, [
-                            'name' => $psv['name'],
-                            'roomid' => $psv['roomid'],
-                            'cover_img' => $psv['cover_img'],
-                            'share_img' => $psv['share_img'],
-                            'live_status' => $psv['live_status'],
-                            'start_time' => $psv['start_time'],
-                            'end_time' => $psv['end_time'],
-                            'anchor_name' => $psv['anchor_name'],
-                            'goods' => json_encode($psv['goods']),
-                        ]);
-                    }
-                }
-                if ($update) {
-                    foreach ($update as $item) {
-                        DB::table('yz_appletslive_liveroom')->where('id', $item['id'])->update([
-                            'name' => $item['name'],
-                            'cover_img' => $item['cover_img'],
-                            'share_img' => $item['share_img'],
-                            'live_status' => $item['live_status'],
-                            'start_time' => $item['start_time'],
-                            'end_time' => $item['end_time'],
-                            'anchor_name' => $item['anchor_name'],
-                            'goods' => $item['goods'],
-                        ]);
-                    }
-                    Log::info('同步微信直播间数据:更新直播间信息', ['count' => count($update)]);
-                }
-                if ($insert) {
-                    DB::table('yz_appletslive_liveroom')->insert($insert);
-                    Log::info('同步微信直播间数据:新增直播间', ['count' => count($insert)]);
-                }
-
-                // 移除删掉的直播间
-                $todel = [];
-                foreach ($stored as $drk => $drv) {
-                    $match = false;
-                    foreach ($present as $psv) {
-                        if ($drv['roomid'] == $psv['roomid']) {
-                            $match = true;
-                            break;
-                        }
-                    }
-                    if (!$match) {
-                        $todel[] = $drv['id'];
-                    }
-                }
-                if ($todel) {
-                    DB::table('yz_appletslive_liveroom')->whereIn('id', $todel)->update(['live_status' => 108]);
-                    DB::table('yz_appletslive_replay')->whereIn('room_id', $todel)->update(['delete_time' => time()]);
-                    Log::info('同步微信直播间数据:移除直播间', ['count' => count($todel)]);
-                }
-
-                Cache::forget(CacheService::$cache_keys['brandsale.albumlist']);
-                Cache::forget(CacheService::$cache_keys['brandsale.albuminfo']);
-                Cache::forget(CacheService::$cache_keys['brandsale.albumliverooms']);
-            }
-
-            // 处理搜索条件
-            $where = [];
-            if (isset($input->search)) {
-                $search = $input->search;
-                if (intval($search['roomid']) > 0) {
-                    $where[] = ['roomid', '=', intval($search['roomid'])];
-                }
-                if (trim($search['name']) !== '') {
-                    $where[] = ['name', 'like', '%' . trim($search['name']) . '%'];
-                }
-                if ($search['searchtime'] !== '') {
-                    $time_field = ($search['searchtime'] === '0') ? 'start_time' : 'end_time';
-                    $where[] = [$time_field, 'between', [strtotime($search['date']['start']), strtotime($search['date']['end'] . ' 23:59:59')]];
-                }
-                if (trim($search['live_status']) !== '') {
-                    $where[] = ['live_status', '=', $search['live_status']];
-                }
-            }
-
-            $list = LiveRoom::where($where)
-                ->orderBy('id', 'desc')
-                ->paginate($limit);
-            $pager = PaginationHelper::show($list->total(), $list->currentPage(), $list->perPage());
-        }
+        $limit = 20;
 
         if ($type == 1) { // 录播
             // 处理搜索条件
@@ -365,7 +237,7 @@ class RoomController extends BaseController
         $room_type = $room['type'];
 
         $input = \YunShop::request();
-        $limit = 10;
+        $limit = 20;
 
         // 录播视频
         if ($room_type == 1) {
