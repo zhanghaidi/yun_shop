@@ -217,6 +217,7 @@
                                     @elseif ($list->type_id == 9) 商城
                                     @elseif ($list->type_id == 10) 活动
                                     @elseif ($list->type_id == 11) 用户分享
+                                    @elseif ($list->type_id == 12) 搜索
                                     @endif
                                 </td>
 
@@ -232,6 +233,7 @@
                                     @elseif ($list->type_id == 9) @if ($list->resource_id ==1) 底部菜单商城 @elseif ($list->resource_id ==2)功能导航商城  @endif
                                     @elseif ($list->type_id == 10) {{ $list->resource->title }}
                                     @elseif ($list->type_id == 11) {{ $list->user->nickname }}
+                                    @elseif ($list->type_id == 12) @if ($list->resource_id ==1) 全局搜索 @elseif ($list->resource_id ==2)商城搜索  @endif
                                     @endif
                                 </td>
                                 <td style="text-align: center;">
