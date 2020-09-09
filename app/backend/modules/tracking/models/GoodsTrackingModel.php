@@ -30,11 +30,16 @@ class GoodsTrackingModel extends Model
     {
         $this->type_id = $value;
         $map = [
-           1 => 'App\backend\modules\tracking\models\DiagnosticServiceAcupoint',
-           3 => 'App\backend\modules\tracking\models\DiagnosticServiceArticle',
-           4 => 'App\backend\modules\tracking\models\DiagnosticServicePost',
-           5 => 'App\backend\modules\tracking\models\DiagnosticServiceSomatoType',
+           1 => 'App\backend\modules\tracking\models\DiagnosticServiceAcupoint', //穴位
+           3 => 'App\backend\modules\tracking\models\DiagnosticServiceArticle', //文章
+           4 => 'App\backend\modules\tracking\models\DiagnosticServicePost',  //社区
+           5 => 'App\backend\modules\tracking\models\DiagnosticServiceSomatoType', //体质
            //6 => 'App\backend\modules\tracking\models\ChartChartuser'
+           7 => 'App\backend\modules\tracking\models\AppletsliveReplay', //课时
+            8 => 'App\backend\modules\tracking\models\AppletsliveRoom', //直播
+            //9 =>'', //商城首页
+            10 => 'App\backend\modules\tracking\models\DiagnosticServiceBanner', //活动海报/二维码banner
+            11 => 'App\backend\modules\tracking\models\DiagnosticServiceUser' //用户分享
         ];
         return $map[$value];
     }
