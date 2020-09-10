@@ -73,7 +73,7 @@
                                 <option value='4'
                                         @if($search['type_id']=='4')
                                         selected
-                                        @endif>社区话题
+                                        @endif>帖子
                                 </option>
                                 <option value='5'
                                         @if($search['type_id']=='5')
@@ -84,6 +84,31 @@
                                         @if($search['type_id']=='6')
                                         selected
                                         @endif>灸师
+                                </option>
+                                <option value='7'
+                                        @if($search['type_id']=='7')
+                                        selected
+                                        @endif>课时
+                                </option>
+                                <option value='8'
+                                        @if($search['type_id']=='8')
+                                        selected
+                                        @endif>直播
+                                </option>
+                                <option value='9'
+                                        @if($search['type_id']=='9')
+                                        selected
+                                        @endif>商城
+                                </option>
+                                <option value='10'
+                                        @if($search['type_id']=='10')
+                                        selected
+                                        @endif>活动
+                                </option>
+                                <option value='11'
+                                        @if($search['type_id']=='11')
+                                        selected
+                                        @endif>分享
                                 </option>
                             </select>
                         </div>
@@ -184,9 +209,15 @@
                                     @if($list->type_id == 1) 穴位
                                     @elseif ($list->type_id == 2) 病例
                                     @elseif ($list->type_id == 3) 文章
-                                    @elseif ($list->type_id == 4) 话题
+                                    @elseif ($list->type_id == 4) 帖子
                                     @elseif ($list->type_id == 5) 体质
                                     @elseif ($list->type_id == 6) 灸师
+                                    @elseif ($list->type_id == 7) 课时
+                                    @elseif ($list->type_id == 8) 直播
+                                    @elseif ($list->type_id == 9) 商城
+                                    @elseif ($list->type_id == 10) 活动
+                                    @elseif ($list->type_id == 11) 用户分享
+                                    @elseif ($list->type_id == 12) 搜索
                                     @endif
                                 </td>
 
@@ -197,7 +228,12 @@
                                     @elseif ($list->type_id == 3) {{ $list->resource->title }}
                                     @elseif ($list->type_id == 4) {{ $list->resource->title }}
                                     @elseif ($list->type_id == 5) {{ $list->resource->name }}
-                                    {{--@elseif ($list->type_id == 6) {{ $list->resource->username }}--}}
+                                    @elseif ($list->type_id == 7) {{ $list->resource->title }}
+                                    @elseif ($list->type_id == 8) {{ $list->resource->name }}
+                                    @elseif ($list->type_id == 9) @if ($list->resource_id ==1) 底部菜单商城 @elseif ($list->resource_id ==2)功能导航商城  @endif
+                                    @elseif ($list->type_id == 10) {{ $list->resource->title }}
+                                    @elseif ($list->type_id == 11) {{ $list->user->nickname }}
+                                    @elseif ($list->type_id == 12) @if ($list->resource_id ==1) 全局搜索 @elseif ($list->resource_id ==2)商城搜索  @endif
                                     @endif
                                 </td>
                                 <td style="text-align: center;">
