@@ -136,7 +136,7 @@ class MemberCartController extends ApiController
         $cart_id = $hasGoodsModel['id'];
 //dd($cart_id);
         if ($hasGoodsModel) {
-            $hasGoodsModel->total = $hasGoodsModel->total + 1;
+            $hasGoodsModel->total = $hasGoodsModel->total + $data['total'];
 
             $hasGoodsModel->validate();
 

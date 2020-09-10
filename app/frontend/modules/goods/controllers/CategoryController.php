@@ -333,7 +333,7 @@ class CategoryController extends BaseController
      * @throws AppException
      */
     public function fastChildCategory(){
-        $list = Category::select('id', 'name', 'thumb', 'adv_img', 'adv_url')->uniacid()->where('level',2)->where('enabled', 1)->get();
+        $list = Category::select('id', 'name', 'thumb', 'adv_img', 'adv_url')->uniacid()->where('level',2)->where('enabled', 1)->orderBy('display_order', 'desc')->get();
         /*$list->map(function($category){
             $category->childrens = Category::select('id', 'name', 'thumb', 'adv_img', 'adv_url')->where('level',2)->where('parent_id',$category->id)->get();
         });*/
