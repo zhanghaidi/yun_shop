@@ -130,13 +130,13 @@ class MemberCartController extends ApiController
          * @var MemberCart $cartModel
          */
         $cartModel = app('OrderManager')->make('MemberCart', $data);
-//        dd($cartModel);
+
         //验证商品是否存在购物车,存在则修改数量
         $hasGoodsModel = app('OrderManager')->make('MemberCart')->hasGoodsToMemberCart($data);
         $cart_id = $hasGoodsModel['id'];
-//dd($cart_id);
+
         if ($hasGoodsModel) {
-            $hasGoodsModel->total = $hasGoodsModel->total + 1;
+            $hasGoodsModel->total = $hasGoodsModel->total + $data['total'];
 
             $hasGoodsModel->validate();
 
