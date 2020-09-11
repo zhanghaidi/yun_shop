@@ -65,7 +65,7 @@ class PluginApplication extends \app\common\services\PluginApplication
                     'icon'      => '',
                     'url'       => 'plugin.enterprise-wechat.admin.set.index',
                     'url_params'=> '',
-                    'parents'   => ['enterprise-wechat'],
+                    'parents'   => ['enterprise_wechat'],
                     'child'     => []
                 ]
             ]
