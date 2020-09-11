@@ -18,6 +18,7 @@
  *      ___)( )(___
  *     (((__) (__)))     梦之所想,心之所向.
  */
+
 namespace Yunshop\Appletslive\common\services;
 
 use Illuminate\Support\Facades\DB;
@@ -45,14 +46,36 @@ class BaseService
         }
     }
 
-    public function getRooms()
+    public function uploadMedia($mediaPath, $type = 'image')
+    {
+        $token = $this->getToken();
+        $url = "https://api.weixin.qq.com/cgi-bin/media/upload?access_token={$token}&type={$type}";
+        $data = ['media' => new \CURLFile($mediaPath)];
+        $result = self::curlPost($url, $data);
+        unlink($mediaPath);
+        return json_decode($result, true);
+    }
+
+    public function createRoom($data)
+    {
+        $token = $this->getToken();
+        $url = "https://api.weixin.qq.com/wxaapi/broadcast/room/create?access_token={$token}";
+        $headers = [
+            "Content-Type: application/json",
+            "Accept: application/json",
+        ];
+        $result = self::curlPost($url, json_encode($data), $headers);
+        return json_decode($result, true);
+    }
+
+    public function getRooms($start = 0, $limit = 100)
     {
         $token = $this->getToken();
         $url = 'https://api.weixin.qq.com/wxa/business/getliveinfo?access_token=' . $token;
 
         $post_data = [
-            'start' => 0,
-            'limit' => 100,
+            'start' => $start,
+            'limit' => $limit,
         ];
 
         $result = self::curlPost($url, json_encode($post_data), []);
@@ -94,11 +117,11 @@ class BaseService
     {
         $filterStrs = DB::table('diagnostic_service_sns_filter')->get()->toArray();
         $keywords = array();
-        foreach ($filterStrs as $k => $v){
-            $filterStrs[$k]['content'] = explode('-' , $v['content']);
-            if(empty($keywords)){
+        foreach ($filterStrs as $k => $v) {
+            $filterStrs[$k]['content'] = explode('-', $v['content']);
+            if (empty($keywords)) {
                 $keywords = $filterStrs[$k]['content'];
-            }else{
+            } else {
                 $keywords = array_merge($keywords, $filterStrs[$k]['content']);
             }
         }
@@ -121,18 +144,19 @@ class BaseService
         return $decode['access_token'];
     }
 
-    private static function curlPost($url, $post_data, $options = []){
+    private static function curlPost($url, $post_data, $headers = [])
+    {
         $ch = curl_init($url);
 
-        curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
-        curl_setopt($ch,CURLOPT_POST,1);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
         curl_setopt($ch, CURLOPT_TIMEOUT, 5);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
 
-        if(!empty($options)){
-            curl_setopt_array($ch, $options);
+        if (!empty($headers)) {
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         }
 
         $data = curl_exec($ch);
@@ -143,6 +167,6 @@ class BaseService
 
     protected function requestUrl($appId, $secret)
     {
-        return 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='. $appId .'&secret=' . $secret;
+        return 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=' . $appId . '&secret=' . $secret;
     }
 }
