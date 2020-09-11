@@ -146,7 +146,7 @@ class ApiController extends BaseController
                 response()->json([
                     'result' => 41009,
                     'msg' => '请登录',
-                    'data' => null,
+                    'data' => '',
                 ], 200, ['charset' => 'utf-8'])->send();
                 exit;
             }
