@@ -99,25 +99,28 @@
                         </td>
                         <td style="overflow:visible;">
                             @if ($audit_status[$row['id']] == 1)
-                                <a class='btn btn-default'
+                                <a class='btn btn-default' id="btnResetaudit"
                                    href="{{yzWebUrl('plugin.appletslive.admin.controllers.goods.resetaudit', ['id' => $row['id']])}}"
                                    title='撤回提审'>撤回提审
                                 </a>
                             @endif
 
                             @if ($audit_status[$row['id']] == 0)
-                                <a class='btn btn-default'
+                                <a class='btn btn-default' id="btnAudit"
                                    href="{{yzWebUrl('plugin.appletslive.admin.controllers.goods.audit', ['id' => $row['id']])}}"
                                    title='重新提审'>重新提审
                                 </a>
                             @endif
 
-                            @if ($audit_status[$row['id']] != 1)
+                            @if ($audit_status[$row['id']] == 0 || $audit_status[$row['id']] == 2)
                                 <a class='btn btn-default'
                                    href="{{yzWebUrl('plugin.appletslive.admin.controllers.goods.edit', ['id' => $row['id']])}}"
                                    title='录播列表'><i class='fa fa-list'></i>更新商品
                                 </a>
-                                <a class='btn btn-danger'
+                            @endif
+
+                            @if ($audit_status[$row['id']] == 0 || $audit_status[$row['id']] == 2 || $audit_status[$row['id']] == 3)
+                                <a class='btn btn-danger' id="btnDelete"
                                    href="{{yzWebUrl('plugin.appletslive.admin.controllers.goods.del', ['id' => $row['id']])}}"
                                    title='录播列表'>删除商品
                                 </a>
@@ -134,6 +137,24 @@
     <div style="width:100%;height:150px;"></div>
 
     <script>
+
+        $(document).on('click', '#btnResetaudit', function () {
+            $(this).addClass('disabled');
+            $(this).attr('disabled', 'disabled');
+        });
+        $(document).on('click', '#btnAudit', function () {
+            $(this).addClass('disabled');
+            $(this).attr('disabled', 'disabled');
+        });
+        $(document).on('click', '#btnDelete', function () {
+            if (confirm('确定删除吗')) {
+                $(this).addClass('disabled');
+                $(this).attr('disabled', 'disabled');
+            } else {
+                return false;
+            }
+        });
+
         var app = new Vue({
             el: '#goodsTable',
             data: {
