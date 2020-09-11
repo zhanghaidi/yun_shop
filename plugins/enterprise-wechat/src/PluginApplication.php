@@ -63,7 +63,7 @@ class PluginApplication extends \app\common\services\PluginApplication
                     'name'      => '基础设置',
                     'permit'    => 1,
                     'menu'      => 1,
-                    'icon'      => '',
+                    'icon'      => 'fa-cog',
                     'url'       => 'plugin.enterprise-wechat.admin.set.index',
                     'url_params'=> '',
                     'parents'   => ['enterprise_wechat'],
