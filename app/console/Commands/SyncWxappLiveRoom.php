@@ -103,13 +103,19 @@ class SyncWxappLiveRoom extends Command
             $present = array_reverse($present);
             foreach ($present as $psk => $psv) {
                 $exist = false;
-                foreach ($stored as $drk => $drv) {
-                    if ($drv['roomid'] == $psv['roomid']) {
+                foreach ($stored as $stk => $stv) {
+                    if ($stv['roomid'] == $psv['roomid']) {
                         // 房间信息在数据库中存在，实时更新数据
-                        if ($drv['name'] != $psv['name'] || $drv['anchor_name'] != $psv['anchor_name']
-                            || $drv['live_status'] != $psv['live_status'] || $drv['start_time'] != $psv['start_time']) {
+                        $good_ids = '';
+                        if (!empty($psv['goods'])) {
+                            $good_ids = implode(',', array_column($psv['goods'], 'goods_id'));
+                        }
+                        if ($stv['name'] != $psv['name'] || $stv['cover_img'] != $psv['cover_img']
+                            || $stv['share_img'] != $psv['share_img'] || $stv['live_status'] != $psv['live_status']
+                            || $stv['start_time'] != $psv['start_time'] || $stv['end_time'] != $psv['end_time']
+                            || $stv['live_status'] != $psv['live_status'] || $stv['goods_ids'] != $good_ids) {
                             array_push($update, [
-                                'id' => $drv['id'],
+                                'id' => $stv['id'],
                                 'name' => $psv['name'],
                                 'cover_img' => $psv['cover_img'],
                                 'share_img' => $psv['share_img'],
@@ -117,6 +123,18 @@ class SyncWxappLiveRoom extends Command
                                 'start_time' => $psv['start_time'],
                                 'end_time' => $psv['end_time'],
                                 'anchor_name' => $psv['anchor_name'],
+                                'goods' => json_encode($psv['goods']),
+                            ]);
+                            array_push($update, [
+                                'id' => $stv['id'],
+                                'name' => $psv['name'],
+                                'cover_img' => $psv['cover_img'],
+                                'share_img' => $psv['share_img'],
+                                'live_status' => $psv['live_status'],
+                                'start_time' => $psv['start_time'],
+                                'end_time' => $psv['end_time'],
+                                'anchor_name' => $psv['anchor_name'],
+                                'goods_ids' => $good_ids,
                                 'goods' => json_encode($psv['goods']),
                             ]);
                         }
@@ -161,16 +179,16 @@ class SyncWxappLiveRoom extends Command
 
             // 移除删掉的直播间
             $todel = [];
-            foreach ($stored as $drk => $drv) {
+            foreach ($stored as $stk => $stv) {
                 $match = false;
                 foreach ($present as $psv) {
-                    if ($drv['roomid'] == $psv['roomid']) {
+                    if ($stv['roomid'] == $psv['roomid']) {
                         $match = true;
                         break;
                     }
                 }
                 if (!$match) {
-                    $todel[] = $drv['id'];
+                    $todel[] = $stv['id'];
                 }
             }
             if ($todel) {

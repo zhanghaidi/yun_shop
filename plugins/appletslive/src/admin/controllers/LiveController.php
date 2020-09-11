@@ -29,9 +29,10 @@ use Yunshop\Appletslive\common\models\Replay;
 use Yunshop\Appletslive\common\services\BaseService;
 use Yunshop\Appletslive\common\services\CacheService;
 use Yunshop\Appletslive\common\models\LiveRoom;
+use Yunshop\Appletslive\common\models\Goods;
 use app\common\helpers\PaginationHelper;
 use Illuminate\Support\Facades\Log;
-use app\common\services\qcloud\Api;
+
 
 class LiveController extends BaseController
 {
@@ -59,13 +60,19 @@ class LiveController extends BaseController
             $present = array_reverse($present);
             foreach ($present as $psk => $psv) {
                 $exist = false;
-                foreach ($stored as $drk => $drv) {
-                    if ($drv['roomid'] == $psv['roomid']) {
+                foreach ($stored as $stk => $stv) {
+                    if ($stv['roomid'] == $psv['roomid']) {
                         // 房间信息在数据库中存在，实时更新数据
-                        if ($drv['name'] != $psv['name'] || $drv['anchor_name'] != $psv['anchor_name']
-                            || $drv['live_status'] != $psv['live_status'] || $drv['start_time'] != $psv['start_time']) {
+                        $good_ids = '';
+                        if (!empty($psv['goods'])) {
+                            $good_ids = implode(',', array_column($psv['goods'], 'goods_id'));
+                        }
+                        if ($stv['name'] != $psv['name'] || $stv['cover_img'] != $psv['cover_img']
+                            || $stv['share_img'] != $psv['share_img'] || $stv['live_status'] != $psv['live_status']
+                            || $stv['start_time'] != $psv['start_time'] || $stv['end_time'] != $psv['end_time']
+                            || $stv['live_status'] != $psv['live_status'] || $stv['goods_ids'] != $good_ids) {
                             array_push($update, [
-                                'id' => $drv['id'],
+                                'id' => $stv['id'],
                                 'name' => $psv['name'],
                                 'cover_img' => $psv['cover_img'],
                                 'share_img' => $psv['share_img'],
@@ -73,6 +80,7 @@ class LiveController extends BaseController
                                 'start_time' => $psv['start_time'],
                                 'end_time' => $psv['end_time'],
                                 'anchor_name' => $psv['anchor_name'],
+                                'goods_ids' => $good_ids,
                                 'goods' => json_encode($psv['goods']),
                             ]);
                         }
@@ -97,16 +105,10 @@ class LiveController extends BaseController
             }
             if ($update) {
                 foreach ($update as $item) {
-                    DB::table('yz_appletslive_liveroom')->where('id', $item['id'])->update([
-                        'name' => $item['name'],
-                        'cover_img' => $item['cover_img'],
-                        'share_img' => $item['share_img'],
-                        'live_status' => $item['live_status'],
-                        'start_time' => $item['start_time'],
-                        'end_time' => $item['end_time'],
-                        'anchor_name' => $item['anchor_name'],
-                        'goods' => $item['goods'],
-                    ]);
+                    $id = $item['id'];
+                    $temp = $item;
+                    unset($temp['id']);
+                    DB::table('yz_appletslive_liveroom')->where('id', $id)->update($temp);
                 }
                 Log::info('同步微信直播间数据:更新直播间信息', ['count' => count($update)]);
             }
@@ -117,16 +119,16 @@ class LiveController extends BaseController
 
             // 移除删掉的直播间
             $todel = [];
-            foreach ($stored as $drk => $drv) {
+            foreach ($stored as $stk => $stv) {
                 $match = false;
                 foreach ($present as $psv) {
-                    if ($drv['roomid'] == $psv['roomid']) {
+                    if ($stv['roomid'] == $psv['roomid']) {
                         $match = true;
                         break;
                     }
                 }
                 if (!$match) {
-                    $todel[] = $drv['id'];
+                    $todel[] = $stv['id'];
                 }
             }
             if ($todel) {
@@ -140,7 +142,7 @@ class LiveController extends BaseController
             Cache::forget(CacheService::$cache_keys['brandsale.albumliverooms']);
 
             if (request()->ajax()) {
-                return $this->successJson('直播间同步成功');
+                return $this->successJson('直播间同步成功', ['present' => $present]);
             }
         }
 
@@ -240,7 +242,7 @@ class LiveController extends BaseController
             }
 
             // 上传直播间背景图临时素材
-            $cover_img_path = $this->downloadImgFromCos($param['coverImg']);
+            $cover_img_path = (new BaseService())->downloadImgFromCos($param['coverImg']);
             if ($cover_img_path['result_code'] != 0) {
                 $msg = '背景图获取失败:' . $cover_img_path['data'];
                 return $this->errorJson($msg);
@@ -252,7 +254,7 @@ class LiveController extends BaseController
             $post_data['coverImg'] = $upload_media['media_id'];
 
             // 上传直播间分享图临时素材
-            $share_img_path = $this->downloadImgFromCos($param['shareImg']);
+            $share_img_path = (new BaseService())->downloadImgFromCos($param['shareImg']);
             if ($share_img_path['result_code'] != 0) {
                 $msg = '分享图获取失败:' . $share_img_path['data'];
                 return $this->errorJson($msg);
@@ -265,7 +267,7 @@ class LiveController extends BaseController
 
             // 上传直播间购物频道封面图
             if ($param['feedsImg'] != '') {
-                $feeds_img_path = $this->downloadImgFromCos($param['feedsImg']);
+                $feeds_img_path = (new BaseService())->downloadImgFromCos($param['feedsImg']);
                 if ($feeds_img_path['result_code'] != 0) {
                     $msg = '购物频道封面图获取失败:' . $feeds_img_path['data'];
                     return $this->errorJson($msg);
@@ -284,87 +286,58 @@ class LiveController extends BaseController
             $post_data['closeLike'] = intval($post_data['closeLike']);
             $post_data['closeGoods'] = intval($post_data['closeGoods']);
             $post_data['closeComment'] = intval($post_data['closeComment']);
+            $post_data['closeReplay'] = intval($post_data['closeReplay']);
+            $post_data['closeShare'] = intval($post_data['closeShare']);
+            $post_data['closeKf'] = intval($post_data['closeKf']);
             $result = (new BaseService())->createRoom($post_data);
 
             if ($result['errcode'] != 0) {
                 return $this->errorJson($result['errmsg']);
             }
+
+            $insert_data = [
+                'name' => $post_data['name'],
+                'roomid' => $result['roomId'],
+                'live_status' => 100,
+                'start_time' => $post_data['startTime'],
+                'end_time' => $post_data['endTime'],
+                'anchor_name' => $post_data['anchorName'],
+                'anchor_wechat' => $post_data['anchorWechat'],
+                'sub_anchor_wechat' => $post_data['subAnchorWechat'],
+                'feeds_img' => $param['feedsImg'],
+                'is_feeds_public' => $post_data['isFeedsPublic'],
+                'type' => $post_data['type'],
+                'screen_type' => $post_data['screenType'],
+                'close_like' => $post_data['closeLike'],
+                'close_goods' => $post_data['closeGoods'],
+                'close_comment' => $post_data['closeComment'],
+                'close_replay' => $post_data['closeReplay'],
+                'close_share' => $post_data['closeShare'],
+                'close_kf' => $post_data['closeKf'],
+            ];
+            LiveRoom::insert($insert_data);
             return $this->successJson('直播间添加成功');
         }
 
         return view('Yunshop\Appletslive::admin.live_add')->render();
     }
 
-    // 从云存储下载图片
-    private function downloadImgFromCos($filepath)
-    {
-        global $_W;
-
-        $fileinfo = explode('/', $filepath);
-        $filename = $fileinfo[count($fileinfo) - 1];
-
-        // 获取云存储配置信息
-        $uni_setting = app('WqUniSetting')->get()->toArray();
-        if (!empty($uni_setting['remote']) && iunserializer($uni_setting['remote'])['type'] != 0) {
-            $setting['remote'] = iunserializer($uni_setting['remote']);
-            $remote = $setting['remote']['cos'];
-        } else {
-            $remote = $_W['setting']['remote']['cos'];
-        }
-
-        try {
-
-            $uniqid = uniqid();
-            $localpath = ATTACHMENT_ROOT . 'image/' . $uniqid . $filename;
-
-            $config = [
-                'app_id' => $remote['appid'],
-                'secret_id' => $remote['secretid'],
-                'secret_key' => $remote['secretkey'],
-                'region' => $remote['local'],
-                'timeout' => 60,
-            ];
-            $cosApi = new Api($config);
-            $ret = $cosApi->download($remote['bucket'], $filepath, $localpath);
-
-            $message = $localpath;
-            if ($ret['code'] != 0) {
-                switch ($ret['code']) {
-                    case -62:
-                        $message = '输入的appid有误';
-                        break;
-                    case -79:
-                        $message = '输入的SecretID有误';
-                        break;
-                    case -97:
-                        $message = '输入的SecretKEY有误';
-                        break;
-                    case -166:
-                        $message = '输入的bucket有误';
-                        break;
-                }
-            }
-
-            return ['result_code' => $ret['code'], 'data' => $message, 'ret' => $ret];
-
-        } catch (\Exception $e) {
-            return ['result_code' => 1, 'data' => $e->getMessage()];
-        }
-    }
-
     // 直播间导入商品
     public function import()
     {
         $id = request()->get('id', 0);
-        $info = DB::table('yz_appletslive_room')->where('id', $id)->first();
+        $info = LiveRoom::where('id', $id)->first();
 
         if (!$info) {
             return $this->message('无效的直播间ID', Url::absoluteWeb(''), 'danger');
         }
 
-        return view('Yunshop\Appletslive::admin.room_edit', [
+        $goods = Goods::whereNotIn('id', explode($info['goods_ids']))->get();
+
+        return view('Yunshop\Appletslive::admin.goods_edit', [
             'id' => $id,
             'info' => $info,
+            'goods' => $goods,
         ])->render();
     }
 }
