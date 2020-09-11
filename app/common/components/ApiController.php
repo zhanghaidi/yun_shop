@@ -143,7 +143,7 @@ class ApiController extends BaseController
             }
 
             if ($type == 2) {
-                return response()->json([
+                response()->json([
                     'result' => 41009,
                     'msg' => '请登录',
                     'data' => null,
