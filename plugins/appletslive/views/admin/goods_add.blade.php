@@ -109,7 +109,7 @@
                 <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
                     <div class="col-sm-9 col-xs-12">
-                        <input id="submitGoodsForm" type="submit" name="submit" value="提交" class="btn btn-success"/>
+                        <input id="submitGoodsForm" type="submit" name="submit" value="提交" class="btn btn-success disabled"/>
                     </div>
                 </div>
 
@@ -153,6 +153,8 @@
                     $('.price3 input').removeAttr('required');
                     $('.price3 input').val('');
 
+                    $('#submitGoodsForm').addClass('disabled');
+
                     if (goodId !== '') {
 
                         var selOption = $(this).find('option:selected');
@@ -173,6 +175,8 @@
                         $('.fg-showhide').show();
                         $('.price2').hide();
                         $('.price3').hide();
+
+                        $('#submitGoodsForm').removeClass('disabled');
                     }
                 });
 

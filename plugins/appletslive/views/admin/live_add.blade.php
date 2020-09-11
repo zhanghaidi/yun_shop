@@ -263,7 +263,7 @@
                             data: that.data,
                             success: function (res) {
                                 submitBtn.button('reset');
-                                var jump = "{!! yzWebUrl('plugin.appletslive.admin.controllers.live.index', ['tag'=>'refresh']) !!}";
+                                var jump = "{!! yzWebUrl('plugin.appletslive.admin.controllers.live.index') !!}";
                                 util.message(res.msg, res.result == 1 ? jump : '', res.result == 1 ? 'success' : 'info');
                             }
                         });
