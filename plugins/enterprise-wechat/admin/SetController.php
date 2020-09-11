@@ -14,6 +14,7 @@ class SetController extends BaseController
 
 	public function index()
 	{
+	    var_dump(222);die;
 		$request = request();
 		$set = Setting::get('plugin.enterprise-wechat');
 		$alipaySet = \Yunshop::request()->setdata;
@@ -35,7 +36,6 @@ class SetController extends BaseController
             return $this->error('设置失败');
 		}
 
-		var_dump(222);die;
 		return view('Yunshop\EnterpriseWechat::admin.set', [
 			'setdata' => $set,
 		])->render();
