@@ -54,11 +54,12 @@ class PluginApplication extends \app\common\services\PluginApplication
             'top_show'          => 0,
             'left_first_show'   => 0,
             'left_second_show'  => 1,
-            'icon'              => 'fa-hourglass-2',
+            'icon'              => 'fa-cog',
             'list_icon'         => 'enterprise_wechat',
+            'item' => '',
             'parents'           => [],
             'child'             => [
-                'alipay-onekey-login' => [
+                'enterprise-wechat' => [
                     'name'      => '基础设置',
                     'permit'    => 1,
                     'menu'      => 1,
