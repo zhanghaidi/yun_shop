@@ -168,11 +168,14 @@ class BaseService
     {
         $token = $this->getToken();
         $url = "https://api.weixin.qq.com/wxaapi/broadcast/goods/add?access_token={$token}";
+
         $headers = [
             "Content-Type: application/json",
             "Accept: application/json",
         ];
-        $result = self::curlRequest($url, json_encode($data), $headers);
+        $post_data = ['goodsInfo' => $data];
+        $result = self::curlRequest($url, json_encode($post_data), $headers);
+
         return json_decode($result, true);
     }
 
@@ -191,13 +194,17 @@ class BaseService
         return json_decode($result, true);
     }
 
-    public function resetAudit($goods_id)
+    public function resetAudit($goods_id, $audit_id)
     {
         $token = $this->getToken();
         $url = "https://api.weixin.qq.com/wxaapi/broadcast/goods/resetaudit?access_token={$token}";
 
-        $post_data = ['goodsId' => $goods_id];
-        $result = self::curlRequest($url, json_encode($post_data));
+        $headers = [
+            "Content-Type: application/json",
+            "Accept: application/json",
+        ];
+        $post_data = ['goodsId' => $goods_id, 'auditId' => $audit_id];
+        $result = self::curlRequest($url, json_encode($post_data), $headers);
 
         return json_decode($result, true);
     }
@@ -207,8 +214,42 @@ class BaseService
         $token = $this->getToken();
         $url = "https://api.weixin.qq.com/wxaapi/broadcast/goods/audit?access_token={$token}";
 
+        $headers = [
+            "Content-Type: application/json",
+            "Accept: application/json",
+        ];
         $post_data = ['goodsId' => $goods_id];
-        $result = self::curlRequest($url, json_encode($post_data));
+        $result = self::curlRequest($url, json_encode($post_data), $headers);
+
+        return json_decode($result, true);
+    }
+
+    public function deleteGoods($goods_id)
+    {
+        $token = $this->getToken();
+        $url = "https://api.weixin.qq.com/wxaapi/broadcast/goods/delete?access_token={$token}";
+
+        $headers = [
+            "Content-Type: application/json",
+            "Accept: application/json",
+        ];
+        $post_data = ['goodsId' => $goods_id];
+        $result = self::curlRequest($url, json_encode($post_data), $headers);
+
+        return json_decode($result, true);
+    }
+
+    public function updateGoods($data)
+    {
+        $token = $this->getToken();
+        $url = "https://api.weixin.qq.com/wxaapi/broadcast/goods/update?access_token={$token}";
+
+        $headers = [
+            "Content-Type: application/json",
+            "Accept: application/json",
+        ];
+        $post_data = ['goodsInfo' => $data];
+        $result = self::curlRequest($url, json_encode($post_data), $headers);
 
         return json_decode($result, true);
     }
