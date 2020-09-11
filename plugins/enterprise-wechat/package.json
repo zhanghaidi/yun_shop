@@ -1,0 +1,10 @@
+{
+  "name": "enterprise-wechat",
+  "version": "1.0.1",
+  "title": "企业微信API",
+  "description": "企业微信API",
+  "author": "zhd",
+  "url": "http://www.yunzshop.com",
+  "namespace": "Yunshop\\EnterpriseWechat",
+  "config": "config.tpl"
+}
