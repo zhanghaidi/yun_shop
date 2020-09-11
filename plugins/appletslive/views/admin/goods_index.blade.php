@@ -145,7 +145,7 @@
                 refresh() {
                     var that = this;
                     that.allowRefresh = 0;
-                    this.$http.get("{!! yzWebUrl('plugin.appletslive.admin.controllers.goods.index', ['tag'=>'refresh']) !!}")
+                    this.$http.get("{!! yzWebUrl('plugin.appletslive.admin.controllers.goods.index', ['tag' => 'refresh']) !!}")
                         .then(res => {
                             that.allowRefresh = 1;
                             this.$message({
