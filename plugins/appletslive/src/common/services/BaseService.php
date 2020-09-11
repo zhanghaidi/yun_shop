@@ -254,6 +254,21 @@ class BaseService
         return json_decode($result, true);
     }
 
+    public function importGoods($roomid, $goods_ids)
+    {
+        $token = $this->getToken();
+        $url = "https://api.weixin.qq.com/wxaapi/broadcast/room/addgoods?access_token={$token}";
+
+        $headers = [
+            "Content-Type: application/json",
+            "Accept: application/json",
+        ];
+        $post_data = ['roomId' => $roomid, 'ids' => $goods_ids];
+        $result = self::curlRequest($url, json_encode($post_data), $headers);
+
+        return json_decode($result, true);
+    }
+
     public function msgSecCheck($content)
     {
         // 文本检测

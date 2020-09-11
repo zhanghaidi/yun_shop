@@ -16,7 +16,6 @@
                 <input type="hidden" name="m" value="yun_shop"/>
                 <input type="hidden" name="do" value="{{ $request['do'] }}"/>
                 <input type="hidden" name="route" value="plugin.appletslive.admin.controllers.goods.index"/>
-                <input type="hidden" name="type" value="1"/>
                 <div class="form-group">
                     <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
                         <input type="number" placeholder="购物袋商品ID" class="form-control" name="search[id]"
