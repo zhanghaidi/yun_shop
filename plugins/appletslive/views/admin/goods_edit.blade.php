@@ -18,26 +18,32 @@
     <div class="w1200 m0a">
         <form action="" method="post" class="form-horizontal form" onsubmit="return false;">
 
-            <div class="form-group">
-                <label class="col-md-2 col-sm-3 col-xs-12 control-label">商品</label>
-                <div class="col-md-10 col-sm-9 col-xs-12">
-                    <select id="sltGoodsId" name='goods_id' class='form-control goods-select2'>
-                        <option value="">请选择商品</option>
-                        @foreach ($goods as $item)
-                            <option value="{{ $item['id'] }}" data-title="{{ $item['title'] }}"
-                                    data-price="{{ $item['price'] }}" data-thumb="{{ $item['thumb'] }}"
-                                    data-imgurl="{!! tomedia($item['thumb']) !!}"
-                                    @if($info['goods_id']==$item['id']) selected @endif
-                            >{{ $item['title'] }}</option>
-                        @endforeach
-                    </select>
+            @if ($info['audit_status'] == 0)
+                <div class="form-group">
+                    <label class="col-md-2 col-sm-3 col-xs-12 control-label">商品</label>
+                    <div class="col-md-10 col-sm-9 col-xs-12">
+                        <select id="sltGoodsId" name='goods_id' class='form-control goods-select2'>
+                            <option value="">请选择商品</option>
+                            @foreach ($goods as $item)
+                                <option value="{{ $item['id'] }}" data-title="{{ $item['title'] }}"
+                                        data-price="{{ $item['price'] }}" data-thumb="{{ $item['thumb'] }}"
+                                        data-imgurl="{!! tomedia($item['thumb']) !!}"
+                                        @if($info['goods_id']==$item['id']) selected @endif
+                                >{{ $item['title'] }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
-            </div>
+            @endif
 
             <div class="form-group fg-showhide">
                 <label class="col-md-2 col-sm-3 col-xs-12 control-label">商品名称</label>
                 <div class="col-md-10 col-sm-9 col-xs-12">
-                    <input id="formName" name="name" type="text" class="form-control" value="{{ $info['name'] }}" required />
+                    @if ($info['audit_status'] == 0)
+                        <input id="formName" name="name" type="text" class="form-control" value="{{ $info['name'] }}" required />
+                    @else
+                        <input id="formName" name="name" type="text" class="form-control" value="{{ $info['name'] }}" required readonly disabled />
+                    @endif
                     <span class="help-block">商品名称不得超过14个汉字</span>
                 </div>
             </div>
@@ -45,7 +51,14 @@
             <div class="form-group fg-showhide">
                 <label class="col-md-2 col-sm-3 col-xs-12 control-label">预览图片</label>
                 <div class="col-md-9 col-sm-9 col-xs-12 thumb-img">
-                    {!! app\common\helpers\ImageHelper::tplFormFieldImage('cover_img_url', $info['cover_img_url']) !!}
+                    @if ($info['audit_status'] == 0)
+                        {!! app\common\helpers\ImageHelper::tplFormFieldImage('cover_img_url', $info['cover_img_url']) !!}
+                    @else
+                        <input type="hidden" name="cover_img_url" value="{{ $info['cover_img_url'] }}" >
+                        <div class="input-group" style="margin-top:.5em;">
+                            <img src="{!! tomedia($info['cover_img_url']) !!}" onerror="this.src='/addons/yun_shop/static/resource/images/nopic.jpg'; this.title='图片未找到.'" class="img-responsive img-thumbnail" width="150">
+                        </div>
+                    @endif
                     <span class="help-block">图片规则：图片尺寸最大300像素*300像素</span>
                 </div>
             </div>
@@ -68,56 +81,43 @@
                 </div>
             </div>
 
-            @if($info['price_type'] == 1)
-                <div class="form-group fg-showhide price1">
-                    <label class="col-md-2 col-sm-3 col-xs-12 control-label">价格</label>
-                    <div class="col-md-10 col-sm-9 col-xs-12">
-                        <input id="formPrice" name="price" type="number" step="0.01" class="form-control" value="{{ $info['price'] }}" required />
-                    </div>
-                </div>
-            @endif
-
-            @if($info['price_type'] == 2)
-                <div class="form-group fg-showhide price2">
-                    <label class="col-md-2 col-sm-3 col-xs-12 control-label">价格(左边界)</label>
-                    <div class="col-md-10 col-sm-9 col-xs-12">
-                        <input id="formPrice1" name="price1" type="number" step="0.01" class="form-control" value="{{ $info['price'] }}" required />
-                    </div>
-                </div>
-                <div class="form-group fg-showhide price2">
-                    <label class="col-md-2 col-sm-3 col-xs-12 control-label">价格(右边界)</label>
-                    <div class="col-md-10 col-sm-9 col-xs-12">
-                        <input id="formPrice2" name="price2" type="number" step="0.01" class="form-control" value="{{ $info['price2'] }}" required />
-                    </div>
-                </div>
-            @endif
-
-            @if($info['price_type'] == 3)
-                <div class="form-group fg-showhide price3">
-                    <label class="col-md-2 col-sm-3 col-xs-12 control-label">原价</label>
-                    <div class="col-md-10 col-sm-9 col-xs-12">
-                        <input id="formPrice3" name="price3" type="number" step="0.01" class="form-control" value="{{ $info['price'] }}" required />
-                    </div>
-                </div>
-                <div class="form-group fg-showhide price3">
-                    <label class="col-md-2 col-sm-3 col-xs-12 control-label">现价</label>
-                    <div class="col-md-10 col-sm-9 col-xs-12">
-                        <input id="formPrice4" name="price4" type="number" step="0.01" class="form-control" value="{{ $info['price2'] }}" required />
-                    </div>
-                </div>
-            @endif
-
-            <div class="form-group fg-showhide">
-                <label class="col-md-2 col-sm-3 col-xs-12 control-label">小程序路径</label>
+            <div class="form-group fg-showhide price1" @if($info['price_type'] != 1) style="display: none" @endif>
+                <label class="col-md-2 col-sm-3 col-xs-12 control-label">价格</label>
                 <div class="col-md-10 col-sm-9 col-xs-12">
-                    <span class="form-control wxapppagepath">{{ $info['url'] }}</span>
+                    <input id="formPrice" name="price" type="number" step="0.01" class="form-control" value="{{ $info['price'] }}" required />
+                </div>
+            </div>
+
+            <div class="form-group fg-showhide price2" @if($info['price_type'] != 2) style="display: none" @endif>
+                <label class="col-md-2 col-sm-3 col-xs-12 control-label">价格(左边界)</label>
+                <div class="col-md-10 col-sm-9 col-xs-12">
+                    <input id="formPrice1" name="price1" type="number" step="0.01" class="form-control" value="{{ $info['price'] }}" required />
+                </div>
+            </div>
+            <div class="form-group fg-showhide price2" @if($info['price_type'] != 2) style="display: none" @endif>
+                <label class="col-md-2 col-sm-3 col-xs-12 control-label">价格(右边界)</label>
+                <div class="col-md-10 col-sm-9 col-xs-12">
+                    <input id="formPrice2" name="price2" type="number" step="0.01" class="form-control" value="{{ $info['price2'] }}" required />
+                </div>
+            </div>
+
+            <div class="form-group fg-showhide price3" @if($info['price_type'] != 3) style="display: none" @endif>
+                <label class="col-md-2 col-sm-3 col-xs-12 control-label">原价</label>
+                <div class="col-md-10 col-sm-9 col-xs-12">
+                    <input id="formPrice3" name="price3" type="number" step="0.01" class="form-control" value="{{ $info['price'] }}" required />
+                </div>
+            </div>
+            <div class="form-group fg-showhide price3" @if($info['price_type'] != 3) style="display: none" @endif>
+                <label class="col-md-2 col-sm-3 col-xs-12 control-label">现价</label>
+                <div class="col-md-10 col-sm-9 col-xs-12">
+                    <input id="formPrice4" name="price4" type="number" step="0.01" class="form-control" value="{{ $info['price2'] }}" required />
                 </div>
             </div>
 
             <div class="form-group">
                 <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
                 <div class="col-sm-9 col-xs-12">
-                    <input id="submitGoodsForm" type="submit" name="submit" value="提交" class="btn btn-success disabled"/>
+                    <input id="submitGoodsForm" type="submit" name="submit" value="提交" class="btn btn-success" />
                 </div>
             </div>
 
@@ -128,7 +128,9 @@
 
         var Page = {
             data: {
-                yzgoods: {},
+                yzgoods: {
+                    price: "{{ $info['price'] }}"
+                },
                 postParam: {
                     id: "{{ $info['id'] }}",
                     name: "{{ $info['name'] }}",
@@ -137,7 +139,6 @@
                     priceType: "{{ $info['price_type'] }}",
                     price: "{{ $info['price'] }}",
                     price2: "{{ $info['price2'] }}",
-                    url: "{{ $info['url'] }}",
                 }
             },
             init: function () {
@@ -162,6 +163,7 @@
                     $('.price3 input').val('');
 
                     $('#submitGoodsForm').addClass('disabled');
+                    $('#submitGoodsForm').attr('disabled', 'disabled');
 
                     if (goodId !== '') {
 
@@ -177,14 +179,12 @@
                         $('input[name="cover_img_url"]').val(that.data.yzgoods.thumb);
                         $('.thumb-img img').attr('src', selOption.data('imgurl'));
 
-                        var url = '/page/abc/def?id=' + goodId;
-                        $('.wxapppagepath').text(url);
-
                         $('.fg-showhide').show();
                         $('.price2').hide();
                         $('.price3').hide();
 
                         $('#submitGoodsForm').removeClass('disabled');
+                        $('#submitGoodsForm').removeAttr('disabled');
                     }
                 });
 

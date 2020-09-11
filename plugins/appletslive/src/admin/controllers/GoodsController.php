@@ -30,6 +30,8 @@ use app\common\helpers\PaginationHelper;
 
 class GoodsController extends BaseController
 {
+    protected $goodsUrlPrefix = 'pages/shopping/detail/details?goods_id=';
+
     // 商品列表
     public function index()
     {
@@ -95,12 +97,12 @@ class GoodsController extends BaseController
         if (request()->isMethod('post')) {
 
             $param = request()->all();
+            unset($param['c']);
+            unset($param['a']);
+            unset($param['m']);
+            unset($param['do']);
+            unset($param['route']);
             $post_data = $param;
-            unset($post_data['c']);
-            unset($post_data['a']);
-            unset($post_data['m']);
-            unset($post_data['do']);
-            unset($post_data['route']);
 
             // 必填项验证 - 商品名称
             if (!array_key_exists('name', $param) || $param['name'] == '') {
@@ -148,7 +150,7 @@ class GoodsController extends BaseController
                 return $this->errorJson('上传临时素材失败:' . $upload_media['errmsg']);
             }
             $post_data['coverImgUrl'] = $upload_media['media_id'];
-            $post_data['url'] = 'pages/shopping/detail/details?goods_id=' . $param['goodsId'];
+            $post_data['url'] = $this->goodsUrlPrefix . $param['goodsId'];
 
             // 调用小程序接口添加商品并提审
             $result = (new BaseService())->addGoods($post_data);
@@ -172,6 +174,7 @@ class GoodsController extends BaseController
                 'price_type' => $post_data['priceType'],
                 'price' => $post_data['price'],
                 'price2' => $post_data['price2'],
+                'cover_img_origin' => $param['coverImgUrl'],
                 'url' => $post_data['url'],
             ];
             Goods::insert($insert_data);
@@ -238,12 +241,12 @@ class GoodsController extends BaseController
         if (request()->isMethod('post')) {
 
             $param = request()->all();
+            unset($param['c']);
+            unset($param['a']);
+            unset($param['m']);
+            unset($param['do']);
+            unset($param['route']);
             $post_data = $param;
-            unset($post_data['c']);
-            unset($post_data['a']);
-            unset($post_data['m']);
-            unset($post_data['do']);
-            unset($post_data['route']);
 
             $id = array_key_exists('id', $param) ? intval($param['id']) : 0;
             $info = Goods::where('id', $id)->first();
@@ -287,11 +290,17 @@ class GoodsController extends BaseController
                 return $this->errorJson('商品图片不能为空');
             }
 
-            $diff = array_diff($info, $param);
-            return $this->errorJson('测试', $diff);
+            // 商品没有任何更改
+            if ($post_data['name'] == $info['name'] && $post_data['goodsId'] == $info['goods_id']
+                && ($post_data['coverImgUrl'] == $info['cover_img_url'] || $post_data['coverImgUrl'] == $info['cover_img_origin'])
+                && $post_data['priceType'] == $info['price_type'] && $post_data['price'] == $info['price']
+                && $post_data['price2'] == $info['price2'] && $post_data['goodsId'] == $info['goods_id']) {
+                return $this->errorJson('商品没有任何更改');
+            }
 
+            // 处理商品图片
             if ($param['coverImgUrl'] == $info['cover_img_url']) {
-                if (emtpy($info['cover_img_origin'])) {
+                if (empty($info['cover_img_origin'])) {
                     return $this->errorJson('原始图片丢失，请重新上传图片');
                 } else {
                     $param['coverImgUrl'] = $info['cover_img_origin'];
@@ -308,10 +317,12 @@ class GoodsController extends BaseController
                 return $this->errorJson('上传临时素材失败:' . $upload_media['errmsg']);
             }
             $post_data['coverImgUrl'] = $upload_media['media_id'];
-            $post_data['url'] = 'pages/shopping/detail/details?goods_id=' . $param['goodsId'];
+            $post_data['url'] = $this->goodsUrlPrefix . $param['goodsId'];
 
             // 调用小程序接口添加商品并提审
-            $result = (new BaseService())->addGoods($post_data);
+            unset($post_data['id']);
+            $post_data['goodsId'] = $info['id'];
+            $result = (new BaseService())->updateGoods($post_data);
 
             if ($result['errcode'] != 0) {
                 $msg = $result['errmsg'];
@@ -324,9 +335,7 @@ class GoodsController extends BaseController
                 return $this->errorJson($msg, ['param' => $param, 'post' => $post_data, 'audit' => $result]);
             }
 
-            $insert_data = [
-                'id' => $result['goodsId'],
-                'audit_id' => $result['auditId'],
+            $update_data = [
                 'goods_id' => $param['goodsId'],
                 'name' => $post_data['name'],
                 'price_type' => $post_data['priceType'],
@@ -335,7 +344,7 @@ class GoodsController extends BaseController
                 'cover_img_origin' => $param['coverImgUrl'],
                 'url' => $post_data['url'],
             ];
-            Goods::insert($insert_data);
+            Goods::where('id', $id)->update($update_data);
 
             Goods::refresh();
             return $this->successJson('商品更新成功');
@@ -350,7 +359,7 @@ class GoodsController extends BaseController
 
         $exist = Goods::pluck('goods_id');
         $goods = YzGoods::where('id', $info['goods_id'])
-            // ->orWhereNotIn('id', $exist)
+            ->orWhereNotIn('id', $exist)
             ->get();
         return view('Yunshop\Appletslive::admin.goods_edit', [
             'id' => $id,

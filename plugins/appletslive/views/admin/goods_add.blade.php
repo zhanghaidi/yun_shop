@@ -99,17 +99,10 @@
                     </div>
                 </div>
 
-                <div class="form-group fg-showhide" style="display:none;">
-                    <label class="col-md-2 col-sm-3 col-xs-12 control-label">小程序路径</label>
-                    <div class="col-md-10 col-sm-9 col-xs-12">
-                        <span class="form-control wxapppagepath"></span>
-                    </div>
-                </div>
-
                 <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
                     <div class="col-sm-9 col-xs-12">
-                        <input id="submitGoodsForm" type="submit" name="submit" value="提交" class="btn btn-success disabled"/>
+                        <input id="submitGoodsForm" type="submit" name="submit" value="提交" class="btn btn-success disabled" disabled />
                     </div>
                 </div>
 
@@ -129,7 +122,6 @@
                     priceType: 1,
                     price: 0,
                     price2: 0,
-                    url: ''
                 }
             },
             init: function () {
@@ -154,6 +146,7 @@
                     $('.price3 input').val('');
 
                     $('#submitGoodsForm').addClass('disabled');
+                    $('#submitGoodsForm').attr('disabled', 'disabled');
 
                     if (goodId !== '') {
 
@@ -169,14 +162,12 @@
                         $('input[name="cover_img_url"]').val(that.data.yzgoods.thumb);
                         $('.thumb-img img').attr('src', selOption.data('imgurl'));
 
-                        var url = '/page/abc/def?id=' + goodId;
-                        $('.wxapppagepath').text(url);
-
                         $('.fg-showhide').show();
                         $('.price2').hide();
                         $('.price3').hide();
 
                         $('#submitGoodsForm').removeClass('disabled');
+                        $('#submitGoodsForm').removeAttr('disabled');
                     }
                 });
 
