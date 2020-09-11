@@ -125,10 +125,12 @@
                             @endif
                         </td>
                         <td style="text-align:center;">
-                            <a class='btn btn-default'
-                               href="{{yzWebUrl('plugin.appletslive.admin.controllers.live.import', ['id' => $row['id']])}}"
-                               title='设置'><i class='fa fa-edit'></i>导入商品
-                            </a>
+                            @if ($row['live_status'] == 101 || $row['live_status'] == 102)
+                                <a class='btn btn-default'
+                                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.live.import', ['id' => $row['id']])}}"
+                                   title='设置'><i class='fa fa-edit'></i>导入商品
+                                </a>
+                            @endif
                         </td>
                     </tr>
                 @endforeach

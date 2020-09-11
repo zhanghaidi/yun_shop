@@ -103,7 +103,7 @@ class LiveRoom extends BaseModel
         // 移除删掉的直播间
         $delete = [];
         foreach ($stored as $stk => $stv) {
-            if (empty($sort_present[$stv['id']]) && $stv['live_status'] != 108) {
+            if (empty($sort_present[$stv['roomid']]) && $stv['live_status'] != 108) {
                 array_push($delete, $stv['id']);
             }
         }
