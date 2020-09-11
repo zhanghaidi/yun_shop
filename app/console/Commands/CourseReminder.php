@@ -67,7 +67,7 @@ class CourseReminder extends Command
         // Log::info('------------------------ 小程序直播提醒定时任务 BEGIN -------------------------------');
 
         $time_now = time();
-        $wait_seconds = 60 * 15;
+        $wait_seconds = 60 * 1;
         $check_time_range = [$time_now + $wait_seconds, $time_now + $wait_seconds + 60];
 
         // 1、查询距离当前时间点n~n+1分钟之间即将发布的视频
