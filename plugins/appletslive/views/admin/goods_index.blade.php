@@ -15,22 +15,23 @@
                 <input type="hidden" name="a" value="entry"/>
                 <input type="hidden" name="m" value="yun_shop"/>
                 <input type="hidden" name="do" value="{{ $request['do'] }}"/>
-                <input type="hidden" name="route" value="plugin.appletslive.admin.controllers.room.index"/>
-                <input type="hidden" name="type" value="1"/>
+                <input type="hidden" name="route" value="plugin.appletslive.admin.controllers.goods.index"/>
                 <div class="form-group">
                     <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                        <input type="number" placeholder="课程ID" class="form-control" name="search[id]"
+                        <input type="number" placeholder="购物袋商品ID" class="form-control" name="search[id]"
                                value="{{$request['search']['id']}}"/>
                     </div>
                     <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
                         <input type="text" class="form-control" name="search[name]"
-                               value="{{$request['search']['name']}}" placeholder="课程标题"/>
+                               value="{{$request['search']['name']}}" placeholder="商品名称"/>
                     </div>
                     <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                        <select name="search[status]" class="form-control">
-                            <option value="">请选择显示/隐藏</option>
-                            <option value="1" @if($request['search']['status']=='1') selected @endif>显示</option>
-                            <option value='0' @if($request['search']['status']=='0') selected @endif>隐藏</option>
+                        <select name="search[audit_status]" class="form-control">
+                            <option value="">请选择审核状态</option>
+                            <option value="0" @if($request['search']['audit_status']=='0') selected @endif>未审核</option>
+                            <option value='1' @if($request['search']['audit_status']=='1') selected @endif>审核中</option>
+                            <option value='2' @if($request['search']['audit_status']=='2') selected @endif>审核通过</option>
+                            <option value='3' @if($request['search']['audit_status']=='3') selected @endif>审核失败</option>
                         </select>
                     </div>
                     <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
@@ -42,11 +43,11 @@
     </div>
     <div class='panel panel-default'>
         <div class='panel-body'>
-            <div class="clearfix panel-heading" id="goodsRefreshClean">
+            <div class="clearfix panel-heading" id="goodsTable">
                 <a id="btn-room-refresh" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;"
-                   href="javascript:;;" @click="refresh">同步商品列表</a>
-                <a id="btn-room-refresh" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;"
-                   href="javascript:;;" @click="clean">清除已失效商品</a>
+                   href="javascript:;;" @click="refresh" v-if="allowRefresh==1">同步商品列表</a>
+                <a id="btn-room-refresh" class="btn btn-defaultt disabled" style="height: 35px;margin-top: 5px;color: white;"
+                   href="javascript:;;" disabled v-else>同步商品列表</a>
                 <a id="" class="btn btn-primary" style="height: 35px;margin-top: 5px;color: white;"
                    href="{{ yzWebUrl('plugin.appletslive.admin.controllers.goods.add') }}">添加商品</a>
             </div>
@@ -55,41 +56,72 @@
                 <thead>
                 <tr>
                     <th style='width:10%;'>ID</th>
-                    <th style='width:15%;'>排序</th>
                     <th style='width:15%;'>封面</th>
                     <th style='width:25%;'>名称</th>
-                    <th style='width:15%;'>订阅人数</th>
+                    <th style='width:15%;'>价格(元)</th>
+                    <th style='width:15%;'>审核状态</th>
                     <th style='width:20%;'>操作</th>
                 </tr>
                 </thead>
                 <tbody>
-                @foreach($room_list as $row)
+                @foreach($list as $row)
                     <tr>
                         <td>{{ $row['id'] }}</td>
-                        <td>{{ $row['sort'] }}</td>
                         <td>
-                            <img src="{!! tomedia($row['cover_img']) !!}" style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
+                            <img src="{!! tomedia($row['cover_img_url']) !!}" style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
                         </td>
                         <td>{{ $row['name'] }}</td>
-                        <td>{{ $row['subscription_num'] }}</td>
-                        <td style="overflow:visible;">
-                            <a class='btn btn-default'
-                               href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.edit', ['id' => $row['id']])}}"
-                               title='课程设置'><i class='fa fa-edit'></i>课程设置
-                            </a>
-                            <a class='btn btn-default'
-                               href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.replaylist', ['rid' => $row['id']])}}"
-                               title='录播列表'><i class='fa fa-list'></i>录播列表
-                            </a>
-                            @if ($row['delete_time'] > 0)
-                                <a class='btn btn-default btn-success'
-                                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.showhide', ['id' => $row['id']])}}"
-                                   title='显示'>显示
-                                </a>
+                        <td>
+                            @if ($row['price_type'] == 1)
+                                {{ floatval($row['price']) }}
+                            @elseif ($row['price_type'] == 2)
+                                {{ floatval($row['price']) }} ~ {{ floatval($row['price2']) }}
                             @else
-                                <a class='btn btn-default btn-danger'
-                                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.showhide', ['id' => $row['id']])}}"
-                                   title='隐藏'>隐藏
+                                原价：{{ floatval($row['price']) }} 现价：{{ floatval($row['price2']) }}
+                            @endif
+                        </td>
+                        <td>
+                            @if ($audit_status[$row['id']] == 0)
+                                未审核
+                                @if($row['reset_audit'] == 1)
+                                    (已撤回)
+                                @endif
+                            @elseif ($audit_status[$row['id']] == 1)
+                                审核中
+                            @elseif ($audit_status[$row['id']] == 2)
+                                审核通过
+                            @elseif ($audit_status[$row['id']] == 3)
+                                审核失败
+                            @else
+                                未知
+                            @endif
+                        </td>
+                        <td style="overflow:visible;">
+                            @if ($audit_status[$row['id']] == 1)
+                                <a class='btn btn-default' id="btnResetaudit"
+                                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.goods.resetaudit', ['id' => $row['id']])}}"
+                                   title='撤回提审'>撤回提审
+                                </a>
+                            @endif
+
+                            @if ($audit_status[$row['id']] == 0)
+                                <a class='btn btn-default' id="btnAudit"
+                                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.goods.audit', ['id' => $row['id']])}}"
+                                   title='重新提审'>重新提审
+                                </a>
+                            @endif
+
+                            @if ($audit_status[$row['id']] == 0 || $audit_status[$row['id']] == 2)
+                                <a class='btn btn-default'
+                                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.goods.edit', ['id' => $row['id']])}}"
+                                   title='录播列表'><i class='fa fa-list'></i>更新商品
+                                </a>
+                            @endif
+
+                            @if ($audit_status[$row['id']] == 0 || $audit_status[$row['id']] == 2 || $audit_status[$row['id']] == 3)
+                                <a class='btn btn-danger' id="btnDelete"
+                                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.goods.del', ['id' => $row['id']])}}"
+                                   title='录播列表'>删除商品
                                 </a>
                             @endif
                         </td>
@@ -104,28 +136,38 @@
     <div style="width:100%;height:150px;"></div>
 
     <script>
+
+        $(document).on('click', '#btnResetaudit', function () {
+            $(this).addClass('disabled');
+            $(this).attr('disabled', 'disabled');
+        });
+        $(document).on('click', '#btnAudit', function () {
+            $(this).addClass('disabled');
+            $(this).attr('disabled', 'disabled');
+        });
+        $(document).on('click', '#btnDelete', function () {
+            if (confirm('确定删除吗')) {
+                $(this).addClass('disabled');
+                $(this).attr('disabled', 'disabled');
+            } else {
+                return false;
+            }
+        });
+
         var app = new Vue({
-            el: '#goodsRefreshClean',
-            data: {},
+            el: '#goodsTable',
+            data: {
+                allowRefresh: 1
+            },
             mounted: function () {
             },
             methods: {
                 refresh() {
-                    this.$http.get("{!! yzWebUrl('plugin.appletslive.admin.controllers.goods.index', ['tag'=>'refresh']) !!}")
+                    var that = this;
+                    that.allowRefresh = 0;
+                    this.$http.get("{!! yzWebUrl('plugin.appletslive.admin.controllers.goods.index', ['tag' => 'refresh']) !!}")
                         .then(res => {
-                            this.$message({
-                                type: 'success',
-                                duration: 1000,
-                                message: res.data.msg,
-                                onClose: function () {
-                                    location.href = "{!! yzWebUrl('plugin.appletslive.admin.controllers.goods.index') !!}";
-                                }
-                            });
-                        });
-                },
-                clean() {
-                    this.$http.get("{!! yzWebUrl('plugin.appletslive.admin.controllers.goods.index', ['tag'=>'clean']) !!}")
-                        .then(res => {
+                            that.allowRefresh = 1;
                             this.$message({
                                 type: 'success',
                                 duration: 1000,

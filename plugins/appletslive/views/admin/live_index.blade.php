@@ -64,10 +64,17 @@
         <div class='panel-body'>
 
             <div class="clearfix panel-heading" id="liveRefreshClean">
+
                 <a id="btn-room-refresh" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;"
-                   href="javascript:;;" @click="refresh">同步直播间列表</a>
+                   href="javascript:;;" @click="refresh" v-if="allowRefresh==1">同步直播间列表</a>
+                <a id="btn-room-refresh" class="btn btn-defaultt disabled" style="height: 35px;margin-top: 5px;color: white;"
+                   href="javascript:;;" @click="refresh" v-else disabled>同步直播间列表</a>
+
                 <a id="btn-room-refresh" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;"
-                   href="javascript:;;" @click="clean">清除已失效直播间</a>
+                   href="javascript:;;" @click="clean" v-if="allowClean==1">清除已失效直播间</a>
+                <a id="btn-room-refresh" class="btn btn-defaultt disabled" style="height: 35px;margin-top: 5px;color: white;"
+                   href="javascript:;;" @click="clean" v-else disabled>清除已失效直播间</a>
+
                 <a id="" class="btn btn-primary" style="height: 35px;margin-top: 5px;color: white;"
                    href="{{ yzWebUrl('plugin.appletslive.admin.controllers.live.add') }}">新增直播间</a>
             </div>
@@ -118,10 +125,12 @@
                             @endif
                         </td>
                         <td style="text-align:center;">
-                            <a class='btn btn-default'
-                               href="{{yzWebUrl('plugin.appletslive.admin.controllers.live.import', ['id' => $row['id']])}}"
-                               title='设置'><i class='fa fa-edit'></i>导入商品
-                            </a>
+                            @if ($row['live_status'] == 101 || $row['live_status'] == 102)
+                                <a class='btn btn-default'
+                                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.live.import', ['id' => $row['id']])}}"
+                                   title='设置'><i class='fa fa-edit'></i>导入商品
+                                </a>
+                            @endif
                         </td>
                     </tr>
                 @endforeach
@@ -136,13 +145,19 @@
     <script>
         var app = new Vue({
             el: '#liveRefreshClean',
-            data: {},
+            data: {
+                allowRefresh: 1,
+                allowClean: 1
+            },
             mounted: function () {
             },
             methods: {
                 refresh() {
+                    var that = this;
+                    that.allowRefresh = 0;
                     this.$http.get("{!! yzWebUrl('plugin.appletslive.admin.controllers.live.index', ['tag'=>'refresh']) !!}")
                         .then(res => {
+                            that.allowRefresh = 1;
                             this.$message({
                                 type: 'success',
                                 duration: 1000,
@@ -154,8 +169,11 @@
                         });
                 },
                 clean() {
+                    var that = this;
+                    that.allowClean = 0;
                     this.$http.get("{!! yzWebUrl('plugin.appletslive.admin.controllers.live.index', ['tag'=>'clean']) !!}")
                         .then(res => {
+                            that.allowClean = 1;
                             this.$message({
                                 type: 'success',
                                 duration: 1000,

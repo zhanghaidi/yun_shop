@@ -168,6 +168,43 @@
                 </div>
 
                 <div class="form-group">
+                    <label class="col-md-2 col-sm-3 col-xs-12 control-label">是否关闭回放</label>
+                    <div class="col-md-10 col-sm-9 col-xs-12">
+                        <label class="radio radio-inline">
+                            <input type="radio" name="close_repaly" value="0" /> 开启
+                        </label>
+                        <label class="radio radio-inline">
+                            <input type="radio" name="close_repaly" value="1" checked /> 关闭
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-2 col-sm-3 col-xs-12 control-label">是否关闭分享</label>
+                    <div class="col-md-10 col-sm-9 col-xs-12">
+                        <label class="radio radio-inline">
+                            <input type="radio" name="close_share" value="0" checked /> 开启
+                        </label>
+                        <label class="radio radio-inline">
+                            <input type="radio" name="close_share" value="1" /> 关闭
+                        </label>
+                        <span class="help-block">直播开始后不允许修改</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-md-2 col-sm-3 col-xs-12 control-label">是否关闭客服</label>
+                    <div class="col-md-10 col-sm-9 col-xs-12">
+                        <label class="radio radio-inline">
+                            <input type="radio" name="close_kf" value="0" /> 开启
+                        </label>
+                        <label class="radio radio-inline">
+                            <input type="radio" name="close_kf" value="1" checked /> 关闭
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
                     <div class="col-sm-9 col-xs-12">
                         <input type="submit" name="submit" value="提交" class="btn btn-success" id="submitLiveForm" />
@@ -196,7 +233,10 @@
                 screenType: 1,
                 closeLike: 0,
                 closeGoods: 0,
-                closeComment: 0
+                closeComment: 0,
+                closeReplay: 1,
+                closeShare: 0,
+                closeKf: 1,
             },
             init: function () {
                 var that = this;
@@ -204,19 +244,33 @@
                 // 点击提交表单
                 $('#submitLiveForm').on('click', function () {
 
-                    var submitBtn = $(this);
-                    submitBtn.button('loading');
-
                     $('input[name="cover_img"]').attr('required', true);
                     $('input[name="cover_img"]').attr('id', 'formCoverImg');
                     $('input[name="start_time"]').attr('required', true);
                     $('input[name="end_time"]').attr('required', true);
                     $('input[name="share_img"]').attr('required', true);
                     $('input[name="share_img"]').attr('id', 'formShareImg');
-                    that.checkForm(submitBtn);
+
+                    var check = that.checkForm();
+                    if (check) {
+
+                        var submitBtn = $(this);
+                        submitBtn.button('loading');
+
+                        $.ajax({
+                            url: "",
+                            type: 'POST',
+                            data: that.data,
+                            success: function (res) {
+                                submitBtn.button('reset');
+                                var jump = "{!! yzWebUrl('plugin.appletslive.admin.controllers.live.index') !!}";
+                                util.message(res.msg, res.result == 1 ? jump : '', res.result == 1 ? 'success' : 'info');
+                            }
+                        });
+                    }
                 });
             },
-            checkForm: function (submitBtn) {
+            checkForm: function () {
                 var that = this;
 
                 // 表单验证 - 直播间名称长度
@@ -280,33 +334,33 @@
                 that.data.feedsImg = $('input[name="feeds_img"]').val().trim();
 
                 // 是否开启官方收录
-                that.data.isFeedsPublic = $('input[name="is_feeds_public"]:checked').val() * 1;
+                that.data.isFeedsPublic = $('input[name="is_feeds_public"]:checked').val();
 
                 // 直播间类型
-                that.data.type = $('input[name="type"]:checked').val() * 1;
+                that.data.type = $('input[name="type"]:checked').val();
 
                 // 横屏|竖屏
-                that.data.screenType = $('input[name="screen_type"]:checked').val() * 1;
+                that.data.screenType = $('input[name="screen_type"]:checked').val();
 
                 // 是否关闭点赞
-                that.data.closeLike = $('input[name="close_like"]:checked').val() * 1;
+                that.data.closeLike = $('input[name="close_like"]:checked').val();
 
                 // 是否关闭货架
-                that.data.closeGoods = $('input[name="close_goods"]:checked').val() * 1;
+                that.data.closeGoods = $('input[name="close_goods"]:checked').val();
 
                 // 是否关闭评论
-                that.data.closeComment = $('input[name="close_comment"]:checked').val() * 1;
+                that.data.closeComment = $('input[name="close_comment"]:checked').val();
 
-                $.ajax({
-                    url: "",
-                    type: 'POST',
-                    data: that.data,
-                    success: function (res) {
-                        submitBtn.button('reset');
-                        var jump = "{!! yzWebUrl('plugin.appletslive.admin.controllers.live.index', ['tag'=>'refresh']) !!}";
-                        util.message(res.msg, res.result == 1 ? jump : '', res.result == 1 ? 'success' : 'info');
-                    }
-                });
+                // 是否关闭回放
+                that.data.closeReplay = $('input[name="close_replay"]:checked').val();
+
+                // 是否关闭分享
+                that.data.closeShare = $('input[name="close_share"]:checked').val();
+
+                // 是否关闭客服
+                that.data.closeKf = $('input[name="close_kf"]:checked').val();
+
+                return true;
             }
         };
 

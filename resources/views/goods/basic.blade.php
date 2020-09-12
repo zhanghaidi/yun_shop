@@ -64,7 +64,7 @@
 
 
 {{--<div class="form-group">
-    <label class="col-xs-12 col-sm-3 col-md-2 control-label">商品类型2</label>
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label">商品类型2</label>商品属性
     <div class="col-sm-9 col-xs-12">
         <div style="float: left" id="ttttype2">
             <label class="radio-inline"><input type="radio" name="goods[type2]" value="1" id="isshow3" @if (empty($goods['type2']) || $goods['type2'] == 1) checked="true" @endif/>
