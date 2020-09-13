@@ -16,6 +16,7 @@ use app\common\models\notice\MessageTemp;
 use app\common\services\finance\PointService;
 use app\common\services\MessageService;
 use app\frontend\modules\coupon\services\CouponSendService;
+use app\Jobs\SendTemplateMsgJob;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Yunshop\Love\Common\Services\LoveChangeService;
@@ -326,15 +327,124 @@ class SignController extends ApiController
         $betweenDaySign = 3;
         $startTimes = strtotime(date('Y-m-d', strtotime("-$betweenDaySign day")));
         $whereBetweenSign = [$startTimes, $time_now];
-        DB::connection()->enableQueryLog();
+
         $sign_users = DB::table('yz_sign')
             ->select('id', 'uniacid', 'member_id', 'updated_at')
             ->whereBetween('updated_at', $whereBetweenSign)
             ->get()->toArray();
+        dd($sign_users);die();
+        if (!empty($sign_users)) {
+            // 2、查询签到用户的小程序用户信息(openid)
+            $member_ids = array_unique(array_column($sign_users, 'user_id'));
+            $wxapp_user = DB::table('diagnostic_service_user')
+                ->select('ajy_uid', 'unionid', 'openid')
+                ->whereIn('ajy_uid', $member_ids)
+                ->get()->toArray();
+            //如果小程序 公众号ID
+            $subscribed_unionid = array_column($wxapp_user, 'unionid');
+            $wechat_user = DB::table('mc_mapping_fans')
+                ->select('uid', 'unionid', 'openid')
+                ->where('follow', 1)
+                ->where('uniacid', 39)
+                ->whereIn('unionid', $subscribed_unionid)
+                ->get()->toArray();
+            array_walk($subscribed_user, function (&$item) use ($wxapp_user, $wechat_user) {
+                foreach ($wxapp_user as $user) {
+                    if ($user['ajy_uid'] == $item['user_id']) {
+                        $item['unionid'] = $user['unionid'];
+                        $item['wxapp_openid'] = $user['openid'];
+                        break;
+                    }
+                }
+                $item['wechat_openid'] = '';
+                foreach ($wechat_user as $user) {
+                    if ($user['unionid'] == $item['unionid']) {
+                        $item['wechat_openid'] = $user['openid'];
+                        break;
+                    }
+                }
+            });
 
-        echo '<pre>';
-        print_r(DB::getQueryLog());
-        dd($sign_users);
-        exit;
+
+            // 4、组装队列数据
+            $job_list = [];
+            foreach ($sign_users as $user) {
+                $type = ($user['wechat_openid'] != '') ? 'wechat' : 'wxapp';
+                $openid = ($user['wechat_openid'] != '') ? $user['wechat_openid'] : $user['wxapp_openid'];
+
+                $job_param = $this->makeJobParam($type, $user);
+                array_push($job_list, [
+                    'type' => $type,
+                    'openid' => $openid,
+                    'options' => $job_param['options'],
+                    'template_id' => $job_param['template_id'],
+                    'notice_data' => $job_param['notice_data'],
+                    'page' => $job_param['page'],
+                ]);
+
+            }
+
+            // 5、添加消息发送任务到消息队列
+            foreach ($job_list as $job_item) {
+                $job = new SendTemplateMsgJob($job_item['type'], $job_item['options'], $job_item['template_id'], $job_item['notice_data'],
+                    $job_item['openid'], '', $job_item['page']);
+                $dispatch = dispatch($job);
+                Log::info("模板消息内容:", $job_item);
+                if ($job_item['type'] == 'wechat') {
+                    Log::info("队列已添加:发送公众号模板消息", ['job' => $job, 'dispatch' => $dispatch]);
+                } elseif ($job_item['type'] == 'wxapp') {
+                    Log::info("队列已添加:发送小程序订阅模板消息", ['job' => $job, 'dispatch' => $dispatch]);
+                }
+            }
+        }
+
+    }
+    /**
+     * 组装Job任务需要的参数
+     * @param $type
+     * @param $room_name
+     * @param $replay_info
+     * @return array
+     */
+    private function makeJobParam($type, $users)
+    {
+        define('SIGN_PATH', '/pages/signin/index');//签到小程序地址
+
+        $param = [];
+        $jump_page = SIGN_PATH ;
+
+        if ($type == 'wechat') {
+
+            $first_value = '尊敬的用户,您的签到还未有签到~';
+            $remark_value = '尊敬的用户,您的签到今天还未有签到~';
+
+
+            $param['options'] = $this->options['wechat'];
+            $param['page'] = $jump_page;
+            $param['template_id'] = 'c-tYzcbVnoqT33trwq6ckW_lquLDPmqySXvntFJEMhE';
+            $param['notice_data'] = [
+                'first' => ['value' => $first_value, 'color' => '#173177'],
+                'keyword1' => ['value' => '签到有礼', 'color' => '#173177'],
+                'keyword2' => ['value' => '连续签到送优惠券', 'color' => '#173177'],
+                'keyword3' => ['value' => '优惠持续更新中', 'color' => '#173177'],
+                'remark' => ['value' => $remark_value, 'color' => '#173177'],
+            ];
+
+        } elseif ($type == 'wxapp') {
+
+            $thing1_value = '尊敬的用户,您的签到还未有签到~';
+
+            $param['options'] = $this->options['wxapp'];
+            $param['page'] = $jump_page;
+            $param['template_id'] = 'ABepy-L03XH_iU0tPd03VUV9KQ_Vjii5mClL7Qp8_jc';
+            $param['notice_data'] = [
+                'thing1' => ['value' => $thing1_value, 'color' => '#173177'],
+                'thing2' => ['value' => '连续签到送优惠券', 'color' => '#173177'],
+                'name3' => ['value' => '优惠持续更新中', 'color' => '#173177'],
+                'thing4' => ['value' => date('Y-m-d H:i', time()), 'color' => '#173177'],
+            ];
+        }
+
+        return $param;
     }
 }
