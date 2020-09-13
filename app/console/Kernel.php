@@ -30,6 +30,7 @@ class Kernel extends ConsoleKernel
         'app\console\Commands\UpdateInviteCode',
         WriteFrame::class,
         CourseReminder::class,
+        SignReminder::class,
         NotPaidOrderNotice::class,
         SyncWxappLiveRoom::class,
     ];
