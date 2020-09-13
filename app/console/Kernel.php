@@ -8,9 +8,9 @@ use app\framework\Foundation\Bootstrap\SetRequestForConsole;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use app\console\Commands\CourseReminder;
-use app\console\Commands\SignReminder;
 use app\console\Commands\NotPaidOrderNotice;
 use app\console\Commands\SyncWxappLiveRoom;
+use app\console\Commands\SignReminder;
 
 class Kernel extends ConsoleKernel
 {
@@ -31,9 +31,9 @@ class Kernel extends ConsoleKernel
         'app\console\Commands\UpdateInviteCode',
         WriteFrame::class,
         CourseReminder::class,
-        SignReminder::class,
         NotPaidOrderNotice::class,
         SyncWxappLiveRoom::class,
+        SignReminder::class,
     ];
     /**
      * The bootstrap classes for the application.
@@ -79,7 +79,7 @@ class Kernel extends ConsoleKernel
         // 定时执行 未签到用户签到提醒
         $schedule->command('command:signreminder')
             ->withoutOverlapping()
-           ->cron('35,38 16 * * *');
+           ->cron('15 17 * * *');
     }
 
     /**
