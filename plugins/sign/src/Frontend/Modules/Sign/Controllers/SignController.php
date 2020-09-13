@@ -323,7 +323,7 @@ class SignController extends ApiController
     public function testSignReminder(){
         $time_now = time();
         $betweenDaySign = 3;
-        $startTimes = strtotime("-$betweenDaySign day");
+        $startTimes = strtotime(data('Y-m-d',strtotime("-$betweenDaySign day")));
         $whereBetweenSign = [$startTimes, $time_now];
         var_dump($whereBetweenSign);exit;
     }
