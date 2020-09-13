@@ -325,10 +325,16 @@ class SignController extends ApiController
         $time_now = time();
         $betweenDaySign = 3;
         $startTimes = strtotime(date('Y-m-d', strtotime("-$betweenDaySign day")));
-        var_dump($startTimes);
+        DB::connection()->enableQueryLog();
         $whereBetweenSign = [$startTimes, $time_now];
+        $sign_users = DB::table('yz_sign')
+            ->select('id', 'uniacid', 'member_id', 'updated_at')
+            ->whereBetween('updated_at', $whereBetweenSign)
+            ->get()->toArray();
 
-        var_dump($whereBetweenSign);
+        echo '<pre>';
+        print_r(DB::getQueryLog());
+        dd($sign_users);
         exit;
     }
 }
