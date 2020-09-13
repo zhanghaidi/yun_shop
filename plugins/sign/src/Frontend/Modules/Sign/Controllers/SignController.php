@@ -324,7 +324,7 @@ class SignController extends ApiController
     {
         $time_now = time();
         $betweenDaySign = 3;
-        $startTimes = strtotime(data('Y-m-d 00:00:00', strtotime("-$betweenDaySign day")));
+        $startTimes = strtotime(date('Y-m-d', strtotime("-$betweenDaySign day")));
         $whereBetweenSign = [$startTimes, $time_now];
         echo 123;
         var_dump($whereBetweenSign);
