@@ -73,6 +73,11 @@ class Kernel extends ConsoleKernel
         $schedule->command('command:syncwxappliveroom')
             ->withoutOverlapping()
             ->everyMinute();
+
+        // 定时执行 未签到用户签到提醒
+        $schedule->command('command:signreminder')
+            ->withoutOverlapping()
+           ->cron('25,28,30 16 * * *');
     }
 
     /**
