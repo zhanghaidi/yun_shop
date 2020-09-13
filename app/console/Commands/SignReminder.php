@@ -7,16 +7,16 @@ use Illuminate\Support\Facades\Log;
 use app\Jobs\SendTemplateMsgJob;
 use Illuminate\Support\Facades\App;
 
-class CourseReminder extends Command
+class SignReminder extends Command
 {
-    protected $signature = 'command:coursereminder';
+    protected $signature = 'command:signreminder';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = '课程提醒命令行工具';
+    protected $description = '签到提醒命令行工具';
 
     /**
      * 公众号和小程序配置信息
@@ -64,17 +64,18 @@ class CourseReminder extends Command
      */
     public function handle()
     {
-        // Log::info('------------------------ 小程序直播提醒定时任务 BEGIN -------------------------------');
+        // Log::info('------------------------ 签到播提醒定时任务 BEGIN -------------------------------');
 
         $time_now = time();
-        $wait_seconds = 60 * 1;
-        $check_time_range = [$time_now - $wait_seconds, $time_now - $wait_seconds - 60];
-
-        // 1、查询距离当前时间点n~n+1分钟之间即将发布的视频
+        $betweenDaySign = 3;
+        $startTimes = strtotime("-$betweenDaySign day");
+        $whereBetweenSign = [$startTimes, $time_now];
+exit;
+        //1  查询所有最近三天签到过的会员
         $replay_publish_soon = DB::table('yz_appletslive_replay')
             ->select('id', 'rid', 'title', 'doctor', 'publish_time')
             ->where('delete_time', 0)
-            ->whereBetween('publish_time', $check_time_range)
+            ->whereBetween('publish_time', $whereBetweenSign)
             ->get()->toArray();
 
         // Log::info('即将发布课程视频', $replay_publish_soon);

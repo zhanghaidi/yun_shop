@@ -319,4 +319,12 @@ class SignController extends ApiController
         $love_rand = mt_rand($award_love_min, $award_love_max); //爱心值随机奖励
         return $love_rand;
     }
+
+    public function testSignReminder(){
+        $time_now = time();
+        $betweenDaySign = 3;
+        $startTimes = strtotime("-$betweenDaySign day");
+        $whereBetweenSign = [$startTimes, $time_now];
+        var_dump($whereBetweenSign);exit;
+    }
 }
