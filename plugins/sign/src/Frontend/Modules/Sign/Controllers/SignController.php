@@ -322,11 +322,11 @@ class SignController extends ApiController
 
     public function testSignReminder()
     {
-        $time_now = time();
+        $time_now = strtotime(date('Y-m-d', time()));
         $betweenDaySign = 3;
         $startTimes = strtotime(date('Y-m-d', strtotime("-$betweenDaySign day")));
-        DB::connection()->enableQueryLog();
         $whereBetweenSign = [$startTimes, $time_now];
+        DB::connection()->enableQueryLog();
         $sign_users = DB::table('yz_sign')
             ->select('id', 'uniacid', 'member_id', 'updated_at')
             ->whereBetween('updated_at', $whereBetweenSign)
