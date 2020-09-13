@@ -320,11 +320,14 @@ class SignController extends ApiController
         return $love_rand;
     }
 
-    public function testSignReminder(){
+    public function testSignReminder()
+    {
         $time_now = time();
         $betweenDaySign = 3;
-        $startTimes = strtotime("-$betweenDaySign day");
+        $startTimes = strtotime(data('Y-m-d', strtotime("-$betweenDaySign day")));
         $whereBetweenSign = [$startTimes, $time_now];
-        var_dump($whereBetweenSign);exit;
+        echo 123;
+        var_dump($whereBetweenSign);
+        exit;
     }
 }
