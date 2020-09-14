@@ -4,22 +4,26 @@
 
     <div class="right-titpos">
         <ul class="add-snav">
-            <li class="active"><a href="#">添加录播视频</a></li>
+            @if($room['type']=='1')
+                <li class="active"><a href="#">添加录播视频</a></li>
+            @else
+                <li class="active"><a href="#">添加特卖直播</a></li>
+            @endif
         </ul>
     </div>
 
-    <div class='panel panel-default'>
-        <div class="clearfix panel-heading">
-            <a id="" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;"
-               href="javascript:history.go(-1);">返回</a>
+    @if($room['type']=='1')
+
+        <div class='panel panel-default'>
+            <div class="clearfix panel-heading">
+                <a id="" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;"
+                   href="javascript:history.go(-1);">返回</a>
+            </div>
         </div>
-    </div>
 
-    <div class="w1200 m0a">
-        <div class="rightlist">
-            <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
-
-                @if($room['type']=='1')
+        <div class="w1200 m0a">
+            <div class="rightlist">
+                <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
 
                     <div class="form-group">
                         <label class="col-md-2 col-sm-3 col-xs-12 control-label">标题</label>
@@ -87,154 +91,163 @@
                         </div>
                     </div>
 
-                @endif
-
-                @if($room['type']=='2')
-
                     <div class="form-group">
-                        <label class="col-md-2 col-sm-3 col-xs-12 control-label">直播间</label>
+                        <label class="col-md-2 col-sm-3 col-xs-12 control-label"></label>
                         <div class="col-md-10 col-sm-9 col-xs-12">
-                            <select id="sltRoomId" name="room_id" class="form-control">
-                                <option value="">请选择直播间</option>
-                                @foreach($liverooms as $liveroom)
-                                    <option value="{{ $liveroom->id }}" data-name="{{ $liveroom->name  }}" data-cover_img="{{ $liveroom->cover_img }}"
-                                    data-live_status="{{ $liveroom->live_status  }}" data-anchor_name="{{ $liveroom->anchor_name }}"
-                                    data-start_time="{{ date('Y-m-d H:i:s', $liveroom->start_time) }}"
-                                    data-end_time="{{ date('Y-m-d H:i:s', $liveroom->end_time) }}" >{{ $liveroom->name }}</option>
-                                @endforeach
-                            </select>
+                            <input type="hidden" name="rid" value="{{ $rid }}" />
+                            <input type="submit" name="submit" value="提交" class="btn btn-success"/>
                         </div>
                     </div>
 
-                    <input name="title" type="hidden" value="" />
-                    <input name="type" type="hidden" value="0" />
-                    <input name="cover_img" type="hidden" value="" />
-                    <input name="media_url" type="hidden" value="" />
-                    <input name="doctor" type="hidden" value="" />
-                    <input name="minute" type="hidden" value="0" />
-                    <input name="second" type="hidden" value="0" />
-                    <input name="publish_time" type="hidden" value="" />
-                    <input name="sort" type="hidden" value="0" />
+                </form>
+            </div>
+        </div>
 
-                    <div class="form-group fg-showhide" style="display:none;">
-                        <label class="col-md-2 col-sm-3 col-xs-12 control-label">标题</label>
-                        <div class="col-md-10 col-sm-9 col-xs-12">
-                            @foreach($liverooms as $liveroom)
-                                <span class="form-control fc-showhide fc-{{ $liveroom->id }}">{{ $liveroom->name }}</span>
-                            @endforeach
-                        </div>
-                    </div>
+    @endif
 
-                    <div class="form-group fg-showhide" style="display:none;">
-                        <label class="col-md-2 col-sm-3 col-xs-12 control-label">预览</label>
-                        <div class="col-md-10 col-sm-9 col-xs-12">
-                            @foreach($liverooms as $liveroom)
-                                <div class="input-group fc-showhide fc-{{ $liveroom->id }}" style="margin-top:.5em;">
-                                    <img src="{!! tomedia($liveroom->cover_img) !!}" onerror="this.src='/addons/yun_shop/static/resource/images/nopic.jpg'; this.title='图片未找到.'" class="img-responsive img-thumbnail" width="150">
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
+    @if($room['type']=='2')
 
-                    <div class="form-group fg-showhide" style="display:none;">
-                        <label class="col-md-2 col-sm-3 col-xs-12 control-label">房间号</label>
-                        <div class="col-md-10 col-sm-9 col-xs-12">
-                            @foreach($liverooms as $liveroom)
-                                <span class="form-control fc-showhide fc-{{ $liveroom->id }}">{{ $liveroom->roomid }}</span>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <div class="form-group fg-showhide" style="display:none;">
-                        <label class="col-md-2 col-sm-3 col-xs-12 control-label">主播</label>
-                        <div class="col-md-10 col-sm-9 col-xs-12">
-                            @foreach($liverooms as $liveroom)
-                                <span class="form-control fc-showhide fc-{{ $liveroom->id }}">{{ $liveroom->anchor_name }}</span>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <div class="form-group fg-showhide" style="display:none;">
-                        <label class="col-md-2 col-sm-3 col-xs-12 control-label">状态</label>
-                        <div class="col-md-10 col-sm-9 col-xs-12">
-                            @foreach($liverooms as $liveroom)
-                                @if($liveroom->live_status==101)
-                                    <span class="form-control fc-showhide fc-{{ $liveroom->id }}">直播中</span>
-                                @elseif($liveroom->live_status==102)
-                                    <span class="form-control fc-showhide fc-{{ $liveroom->id }}">待开播</span>
-                                @elseif($liveroom->live_status==103)
-                                    <span class="form-control fc-showhide fc-{{ $liveroom->id }}">已结束</span>
-                                @elseif($liveroom->live_status==104)
-                                    <span class="form-control fc-showhide fc-{{ $liveroom->id }}">禁播</span>
-                                @elseif($liveroom->live_status==105)
-                                    <span class="form-control fc-showhide fc-{{ $liveroom->id }}">暂停</span>
-                                @elseif($liveroom->live_status==106)
-                                    <span class="form-control fc-showhide fc-{{ $liveroom->id }}">异常</span>
-                                @elseif($liveroom->live_status==107)
-                                    <span class="form-control fc-showhide fc-{{ $liveroom->id }}">已过期</span>
-                                @else
-                                    <span class="form-control fc-showhide fc-{{ $liveroom->id }}">未知</span>
-                                @endif
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <div class="form-group fg-showhide" style="display:none;">
-                        <label class="col-md-2 col-sm-3 col-xs-12 control-label">开播时间</label>
-                        <div class="col-md-10 col-sm-9 col-xs-12">
-                            @foreach($liverooms as $liveroom)
-                                <span class="form-control fc-showhide fc-{{ $liveroom->id }}">
-                                    {{ date('Y-m-d H:i:s', $liveroom->start_time) }}
-                                </span>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <div class="form-group fg-showhide" style="display:none;">
-                        <label class="col-md-2 col-sm-3 col-xs-12 control-label">结束时间</label>
-                        <div class="col-md-10 col-sm-9 col-xs-12">
-                            @foreach($liverooms as $liveroom)
-                                <span class="form-control fc-showhide fc-{{ $liveroom->id }}">
-                                    {{ date('Y-m-d H:i:s', $liveroom->end_time) }}
-                                </span>
-                            @endforeach
-                        </div>
-                    </div>
-
-                @endif
-
-                <div class="form-group">
-                    <label class="col-md-2 col-sm-3 col-xs-12 control-label"></label>
-                    <div class="col-md-10 col-sm-9 col-xs-12">
-                        <input type="hidden" name="rid" value="{{ $rid }}" />
-                        <input type="submit" name="submit" value="提交" class="btn btn-success"/>
-                    </div>
+        <div class='panel panel-default'>
+            <div class='panel-body'>
+                <div class="clearfix panel-heading" id="goodsTable">
+                    <a id="" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;"
+                       href="javascript:history.go(-1);">返回</a>
                 </div>
 
-            </form>
+                <table class="table table-hover" style="overflow:visible;">
+                    <thead>
+                    <tr>
+                        <th style='width:10%;'>ID</th>
+                        <th style='width:10%;'>房间号</th>
+                        <th style='width:10%;'>封面</th>
+                        <th style='width:15%;'>房间名称</th>
+                        <th style='width:10%;'>主播名称</th>
+                        <th style='width:15%;'>开始时间</th>
+                        <th style='width:15%;'>结束时间</th>
+                        <th style='width:10%;'>直播状态</th>
+                        <th style='width:10%;text-align:center;'>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach($liverooms as $row)
+                        <tr style="">
+                            <td>{{ $row['id'] }}</td>
+                            <td>{{ $row['roomid'] }}</td>
+                            <td style="overflow:visible;">
+                                <div class="show-cover-img-big" style="position:relative;width:50px;overflow:visible">
+                                    <img src="{!! tomedia($row['cover_img']) !!}" alt=""
+                                         style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
+                                    <img class="img-big" src="{!! tomedia($row['cover_img']) !!}" alt=""
+                                         style="z-index:99999;position:absolute;top:0;left:0;border:1px solid #ccc;padding:1px;display: none">
+                                </div>
+                            </td>
+                            <td>{{ $row['name'] }}</td>
+                            <td>{{ $row['anchor_name'] }}</td>
+                            <td>{{ date('Y-m-d H:i:s', $row['start_time']) }}</td>
+                            <td>{{ date('Y-m-d H:i:s', $row['end_time']) }}</td>
+                            <td>
+                                @if ($row['live_status'] == APPLETSLIVE_ROOM_LIVESTATUS_101)
+                                    {{ APPLETSLIVE_ROOM_LIVESTATUS_101_TEXT }}
+                                @elseif ($row['live_status'] == APPLETSLIVE_ROOM_LIVESTATUS_102)
+                                    {{ APPLETSLIVE_ROOM_LIVESTATUS_102_TEXT }}
+                                @elseif ($row['live_status'] == APPLETSLIVE_ROOM_LIVESTATUS_103)
+                                    {{ APPLETSLIVE_ROOM_LIVESTATUS_103_TEXT }}
+                                @elseif ($row['live_status'] == APPLETSLIVE_ROOM_LIVESTATUS_104)
+                                    {{ APPLETSLIVE_ROOM_LIVESTATUS_104_TEXT }}
+                                @elseif ($row['live_status'] == APPLETSLIVE_ROOM_LIVESTATUS_105)
+                                    {{ APPLETSLIVE_ROOM_LIVESTATUS_105_TEXT }}
+                                @elseif ($row['live_status'] == APPLETSLIVE_ROOM_LIVESTATUS_106)
+                                    {{ APPLETSLIVE_ROOM_LIVESTATUS_106_TEXT }}
+                                @elseif ($row['live_status'] == APPLETSLIVE_ROOM_LIVESTATUS_107)
+                                    {{ APPLETSLIVE_ROOM_LIVESTATUS_107_TEXT }}
+                                @elseif ($row['live_status'] == APPLETSLIVE_ROOM_LIVESTATUS_108)
+                                    {{ APPLETSLIVE_ROOM_LIVESTATUS_108_TEXT }}
+                                @else
+                                    未知
+                                @endif
+                            </td>
+                            <td style="text-align:center;">
+                                <a class='btn btn-primary btn-use-liveroom' href="javascript:;;"
+                                   data-rid="{{ $room['id'] }}" data-room_id="{{ $row['id'] }}"
+                                   data-toggle="modal" data-target="#modal-use-liveroom">使用
+                                </a>
+                            </td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+                {!! $pager !!}
+            </div>
         </div>
-    </div>
+
+        @include('Yunshop\Appletslive::admin.modals')
+
+    @endif
 
     <script type="text/javascript">
-        var ueditoroption = {
-            'toolbars' : [['source', 'preview', '|', 'bold', 'italic', 'underline', 'strikethrough', 'forecolor', 'backcolor', '|',
-                'justifyleft', 'justifycenter', 'justifyright', '|', 'insertorderedlist', 'insertunorderedlist', 'blockquote', 'emotion',
-                'link', 'removeformat', '|', 'rowspacingtop', 'rowspacingbottom', 'lineheight','indent', 'paragraph', 'fontsize', '|',
-                'inserttable', 'deletetable', 'insertparagraphbeforetable', 'insertrow', 'deleterow', 'insertcol', 'deletecol',
-                'mergecells', 'mergeright', 'mergedown', 'splittocells', 'splittorows', 'splittocols', '|', 'anchor', 'map', 'print', 'drafts']],
+
+        var Page = {
+            data: {},
+            init: function () {
+                var that = this;
+
+                // 查看直播间封面大图
+                $('.show-cover-img-big').on('mouseover', function () {
+                    $(this).find('.img-big').show();
+                });
+                $('.show-cover-img-big').on('mouseout', function () {
+                    $(this).find('.img-big').hide();
+                });
+
+                // 监听表格中使用直播间按钮事件
+                $('.btn-use-liveroom').on('click', function () {
+                    var btnSureUseThisLiveroom = document.getElementById('sureUseThisLiveroom');
+                    btnSureUseThisLiveroom.dataset.rid = $(this).attr('data-rid');
+                    btnSureUseThisLiveroom.dataset.room_id = $(this).attr('data-room_id');
+                    console.log('room id:', btnSureUseThisLiveroom.dataset.rid);
+                    console.log('use room room_id:', btnSureUseThisLiveroom.dataset.room_id);
+                });
+
+                // 监听模态框确定使用直播间按钮事件
+                $('#sureUseThisLiveroom').on('click', function () {
+                    var btnSureUseThisLiveroom = document.getElementById('sureUseThisLiveroom');
+                    that.useLiveroom(btnSureUseThisLiveroom.dataset.rid, btnSureUseThisLiveroom.dataset.room_id);
+                });
+            },
+            useLiveroom: function (rid, room_id) {
+                var data = {
+                    rid: rid,
+                    room_id: room_id,
+                    type: 0,
+                    cover_img: '',
+                    media_url: '',
+                    doctor: '',
+                    minute: 0,
+                    second: 0,
+                    publish_time: '',
+                    sort: 0,
+                };
+
+                $('#sureUseThisLiveroom').button('loading');
+
+                $.ajax({
+                    url: "",
+                    type: 'POST',
+                    data: data,
+                    success: function (res) {
+                        $('#sureUseThisLiveroom').button('reset');
+                        if (res.result == 1) {
+                            $('#modal-use-liveroom').find('a').trigger('click');
+                        }
+                        var jump = "{!! yzWebUrl('plugin.appletslive.admin.controllers.room.replaylist',['rid'=>$room['id']]) !!}";
+                        util.message(res.msg, res.result == 1 ? jump : '', res.result == 1 ? 'success' : 'info');
+                    }
+                });
+            }
         };
 
-        $(document).on('change', '#sltRoomId', function () {
-            if ($(this).val() == '') {
-                $('.fg-showhide').hide();
-            } else {
-                var room_id = $(this).val();
-                $('.fg-showhide').hide();
-                $('.fc-showhide').hide();
-                $('.fc-' + room_id).show();
-                $('.fg-showhide').show();
-            }
-        });
+        Page.init();
+
     </script>
 
 @endsection

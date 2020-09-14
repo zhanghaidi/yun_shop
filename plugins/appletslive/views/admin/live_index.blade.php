@@ -163,7 +163,7 @@
 
     <script>
 
-        // 查看商品封面大图
+        // 查看直播间封面大图
         $('.show-cover-img-big').on('mouseover', function () {
             $(this).find('.img-big').show();
         });
