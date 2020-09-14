@@ -67,8 +67,13 @@
                 @foreach($list as $row)
                     <tr>
                         <td>{{ $row['id'] }}</td>
-                        <td>
-                            <img src="{!! tomedia($row['cover_img_url']) !!}" style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
+                        <td style="overflow:visible;">
+                            <div class="show-cover-img-url-big" style="position:relative;width:50px;overflow:visible">
+                                <img src="{!! tomedia($row['cover_img_url']) !!}" alt=""
+                                     style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
+                                <img class="img-big" src="{!! tomedia($row['cover_img_url']) !!}" alt=""
+                                     style="z-index:99999;position:absolute;top:0;left:0;border:1px solid #ccc;padding:1px;display: none">
+                            </div>
                         </td>
                         <td>{{ $row['name'] }}</td>
                         <td>
@@ -100,14 +105,14 @@
                             @if ($audit_status[$row['id']] == 1)
                                 <button class='btn btn-default btn-reset-audit'
                                    data-href="{{yzWebUrl('plugin.appletslive.admin.controllers.goods.resetaudit', ['id' => $row['id']])}}"
-                                   title='撤回提审'>撤回提审
+                                   title='撤回提审' data-toggle="modal" data-target="#modal-reset-audit-warning">撤回提审
                                 </button>
                             @endif
 
                             @if ($audit_status[$row['id']] == 0)
                                 <button class='btn btn-default btn-audit'
                                    data-href="{{yzWebUrl('plugin.appletslive.admin.controllers.goods.audit', ['id' => $row['id']])}}"
-                                   title='重新提审'>重新提审
+                                   title='重新提审' data-toggle="modal" data-target="#modal-audit-warning">重新提审
                                 </button>
                             @endif
 
@@ -133,30 +138,9 @@
         </div>
     </div>
 
-    <!-- 删除商品弹出模态框 -->
-    <div id="modal-delete-warning" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" style="width:40vw;margin:0px auto;">
-        <div class="form-horizontal form">
-            <div class="modal-dialog" style="width:100%;">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
-                        <h3></h3>
-                    </div>
-                    <div class="modal-body hide">
-                        <div class="form-horizontal form live-list">
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button id="submitDelGoods" class="btn btn-primary">确定</button>
-                        <button id="submitDelGoodsForce" class="btn btn-primary hide" name="close" value="yes">确定</button>
-                        <a href="#" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div style="width:100%;height:150px;"></div>
+
+    @include('Yunshop\Appletslive::admin.modals')
 
     <script>
 
@@ -192,77 +176,98 @@
             init: function () {
                 var that = this;
 
+                // 查看商品封面大图
+                $('.show-cover-img-url-big').on('mouseover', function () {
+                    $(this).find('.img-big').show();
+                });
+                $('.show-cover-img-url-big').on('mouseout', function () {
+                    $(this).find('.img-big').hide();
+                });
+
                 // 监听撤销审核按钮事件
                 $(document).on('click', '.btn-reset-audit', function () {
-                    if (confirm('确定撤销审核?')) {
-                        $(this).addClass('disabled');
-                        $(this).attr('disabled', 'disabled');
-                    } else {
-                        return false
-                    }
+                    var sureResetAuditGoods = document.getElementById('sureResetAuditGoods');
+                    sureResetAuditGoods.dataset.href = $(this).data('href');
+                });
+                $(document).on('click', '#sureResetAuditGoods', function () {
+                    var sureResetAuditGoods = document.getElementById('sureResetAuditGoods');
+                    $(sureResetAuditGoods).button('loading');
+                    location.href = sureResetAuditGoods.dataset.href;
                 });
 
                 // 监听重新提审按钮事件
                 $(document).on('click', '.btn-audit', function () {
-                    if (confirm('确定重新提审?')) {
-                        $(this).addClass('disabled');
-                        $(this).attr('disabled', 'disabled');
-                    } else {
-                        return false
-                    }
+                    var sureAuditGoods = document.getElementById('sureAuditGoods');
+                    sureAuditGoods.dataset.href = $(this).data('href');
+                });
+                $(document).on('click', '#sureAuditGoods', function () {
+                    var sureAuditGoods = document.getElementById('sureAuditGoods');
+                    $(sureAuditGoods).button('loading');
+                    location.href = sureAuditGoods.dataset.href;
                 });
 
-                // 监听删除按钮事件
+                // 监听表格中删除按钮事件
                 $(document).on('click', '.btn-delete', function () {
                     $('#modal-delete-warning').find('h3').html('确定删除吗');
                     $('#modal-delete-warning').find('.live-list').html('');
                     $('#modal-delete-warning').find('.modal-body').addClass('hide');
-                    $('#submitDelGoods').removeClass('hide');
-                    $('#submitDelGoodsForce').addClass('hide');
+
+                    var btnSubmitDelGoods = document.getElementById('submitDelGoods');
+                    var btnSubmitDelGoodsForce = document.getElementById('submitDelGoodsForce');
+                    btnSubmitDelGoods.dataset.url = $(this).data('url');
+                    btnSubmitDelGoodsForce.dataset.url = $(this).data('url');
+                    $(btnSubmitDelGoods).removeClass('hide');
+                    $(btnSubmitDelGoodsForce).addClass('hide');
                 });
 
-                // 监听删除商品按钮事件
+                // 监听模态框删除商品按钮事件
                 $(document).on('click', '#submitDelGoods', function () {
-                    // 以下直播间已导入该商品，
-                    // that.delete();
-
-                    $('#modal-delete-warning').find('h3').html('以下直播间已导入该商品, 仍要删除吗');
-                    $('#modal-delete-warning').find('.live-list').html(''
-                        + '<div class="form-group">'
-                        + '    <label class="col-md-2 col-sm-3 col-xs-12 control-label text-default">'
-                        + '    未开播:'
-                        + '    </label>'
-                        + '    <label class="col-md-10 col-sm-9 col-xs-12 control-label" style="font-weight: bold;text-align: left;">'
-                        + '    哈哈哈哈行昂昂昂昂昂昂昂哈哈哈哈哈'
-                        + '    </label>'
-                        + '</div>'
-                        + '<div class="form-group">'
-                        + '    <label class="col-md-2 col-sm-3 col-xs-12 control-label text-danger">'
-                        + '    直播中:'
-                        + '    </label>'
-                        + '    <label class="col-md-10 col-sm-9 col-xs-12 control-label" style="font-weight: bold;text-align: left;">'
-                        + '    哈哈哈哈行昂昂昂昂昂昂昂哈哈哈哈哈'
-                        + '    </label>'
-                        + '</div>'
-                        + '');
-                    $('#modal-delete-warning').find('.modal-body').removeClass('hide');
-                    $('#submitDelGoods').addClass('hide');
-                    $('#submitDelGoodsForce').removeClass('hide');
+                    var btnSubmitDelGoods = document.getElementById('submitDelGoods');
+                    that.delete(btnSubmitDelGoods.dataset.url);
                 });
 
                 // 监听强制删除商品按钮事件
                 $(document).on('click', '#submitDelGoodsForce', function () {
-                    $('#modal-delete-warning').addClass('hide');
-                    util.message('删除成功', "{!! yzWebUrl('plugin.appletslive.admin.controllers.goods.index') !!}", 'success');
+                    var btnSubmitDelGoodsForce = document.getElementById('submitDelGoodsForce');
+                    that.delete(btnSubmitDelGoodsForce.dataset.url, true);
                 });
             },
-            delete: function (force = false) {
-                $.ajax({
-                    url: '',
-                    type: 'get',
-                    data: {force: force},
-                    success: function () {
+            delete: function (url, force = false) {
+                var btnId = 'submitDelGoods';
+                if (force) {
+                    btnId = 'submitDelGoodsForce';
+                }
+                $('#' + btnId).button('loading');
 
+                $.ajax({
+                    url: url,
+                    type: 'get',
+                    data: {force: force ? 1 : 0},
+                    success: function (res) {
+                        $('#' + btnId).button('reset');
+                        if (res.result === 0 && res.data.inuse) {
+                            var liveList = '';
+                            for (var i = 0; i < res.data.inuse.length; i++) {
+                                liveList += ''
+                                    + '<div class="form-group">'
+                                    + '    <label class="col-md-2 col-sm-3 col-xs-12 control-label">'
+                                    + '    ' + res.data.inuse[i]['live_status_text'] + ':'
+                                    + '    </label>'
+                                    + '    <label class="col-md-10 col-sm-9 col-xs-12 control-label" style="font-weight: bold;text-align: left;">'
+                                    + '    ' + res.data.inuse[i]['name']
+                                    + '    </label>'
+                                    + '</div>';
+                            }
+                            $('#modal-delete-warning').find('h3').html('以下直播间已导入该商品, 仍要删除吗');
+                            $('#modal-delete-warning').find('.live-list').html(liveList);
+                            $('#modal-delete-warning').find('.modal-body').removeClass('hide');
+                            $('#submitDelGoods').addClass('hide');
+                            $('#submitDelGoodsForce').removeClass('hide');
+                        } else {
+                            $('#modal-delete-warning').find('a').trigger('click');
+                            var jump = "{!! yzWebUrl('plugin.appletslive.admin.controllers.goods.index') !!}";
+                            util.message(res.msg, res.result == 1 ? jump : '', res.result == 1 ? 'success' : 'info');
+                        }
                     }
                 });
             }

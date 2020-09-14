@@ -72,8 +72,13 @@
                             @endif
                         </td>
                         <td>{{ $row['id'] }}</td>
-                        <td>
-                            <img src="{!! tomedia($row['cover_img_url']) !!}" style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
+                        <td style="overflow:visible;">
+                            <div class="show-cover-img-url-big" style="position:relative;width:50px;overflow:visible">
+                                <img src="{!! tomedia($row['cover_img_url']) !!}" alt=""
+                                     style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
+                                <img class="img-big" src="{!! tomedia($row['cover_img_url']) !!}" alt=""
+                                     style="z-index:99999;position:absolute;top:0;left:0;border:1px solid #ccc;padding:1px;display: none">
+                            </div>
                         </td>
                         <td>{{ $row['name'] }}</td>
                         <td>
@@ -100,15 +105,22 @@
                                 <a class="btn btn-danger btn-remove" style="height: 35px;margin-top: 5px;color: white;display: none;"
                                    href="javascript:;;" data-id="{{ $row['id'] }}">移除</a>
                             @endif
+                            <button class='btn btn-danger btn-delete'
+                                    data-url="{{yzWebUrl('plugin.appletslive.admin.controllers.goods.del', ['id' => $row['id']])}}"
+                                    title='删除商品' data-toggle="modal" data-target="#modal-delete-warning">删除商品
+                            </button>
                         </td>
                     </tr>
                 @endforeach
                 </tbody>
             </table>
+            {!! $pager !!}
         </div>
     </div>
 
     <div style="width:100%;height:150px;"></div>
+
+    @include('Yunshop\Appletslive::admin.modals')
 
     <script>
 
@@ -120,6 +132,14 @@
             },
             init: function () {
                 var that = this;
+
+                // 查看商品封面大图
+                $('.show-cover-img-url-big').on('mouseover', function () {
+                    $(this).find('.img-big').show();
+                });
+                $('.show-cover-img-url-big').on('mouseout', function () {
+                    $(this).find('.img-big').hide();
+                });
 
                 // 监听全选事件
                 $('#checkall').on('click', function () {
@@ -174,6 +194,32 @@
                 // 监听单个移除按钮事件
                 $('.btn-remove').on('click', function () {
                     that.remove(false, this);
+                });
+
+                // 监听表格中删除按钮事件
+                $(document).on('click', '.btn-delete', function () {
+                    $('#modal-delete-warning').find('h3').html('确定删除吗');
+                    $('#modal-delete-warning').find('.live-list').html('');
+                    $('#modal-delete-warning').find('.modal-body').addClass('hide');
+
+                    var btnSubmitDelGoods = document.getElementById('submitDelGoods');
+                    var btnSubmitDelGoodsForce = document.getElementById('submitDelGoodsForce');
+                    btnSubmitDelGoods.dataset.url = $(this).data('url');
+                    btnSubmitDelGoodsForce.dataset.url = $(this).data('url');
+                    $(btnSubmitDelGoods).removeClass('hide');
+                    $(btnSubmitDelGoodsForce).addClass('hide');
+                });
+
+                // 监听模态框删除商品按钮事件
+                $(document).on('click', '#submitDelGoods', function () {
+                    var btnSubmitDelGoods = document.getElementById('submitDelGoods');
+                    that.delete(btnSubmitDelGoods.dataset.url);
+                });
+
+                // 监听强制删除商品按钮事件
+                $(document).on('click', '#submitDelGoodsForce', function () {
+                    var btnSubmitDelGoodsForce = document.getElementById('submitDelGoodsForce');
+                    that.delete(btnSubmitDelGoodsForce.dataset.url, true);
                 });
             },
             import: function (isBatch = true, btn = null) {
@@ -233,6 +279,44 @@
                         }
                     });
                 }
+            },
+            delete: function (url, force = false) {
+                var btnId = 'submitDelGoods';
+                if (force) {
+                    btnId = 'submitDelGoodsForce';
+                }
+                $('#' + btnId).button('loading');
+
+                $.ajax({
+                    url: url,
+                    type: 'get',
+                    data: {force: force ? 1 : 0},
+                    success: function (res) {
+                        $('#' + btnId).button('reset');
+                        if (res.result === 0 && res.data.inuse) {
+                            var liveList = '';
+                            for (var i = 0; i < res.data.inuse.length; i++) {
+                                liveList += ''
+                                    + '<div class="form-group">'
+                                    + '    <label class="col-md-2 col-sm-3 col-xs-12 control-label">'
+                                    + '    ' + res.data.inuse[i]['live_status_text'] + ':'
+                                    + '    </label>'
+                                    + '    <label class="col-md-10 col-sm-9 col-xs-12 control-label" style="font-weight: bold;text-align: left;">'
+                                    + '    ' + res.data.inuse[i]['name']
+                                    + '    </label>'
+                                    + '</div>';
+                            }
+                            $('#modal-delete-warning').find('h3').html('以下直播间已导入该商品, 仍要删除吗');
+                            $('#modal-delete-warning').find('.live-list').html(liveList);
+                            $('#modal-delete-warning').find('.modal-body').removeClass('hide');
+                            $('#submitDelGoods').addClass('hide');
+                            $('#submitDelGoodsForce').removeClass('hide');
+                        } else {
+                            $('#modal-delete-warning').find('a').trigger('click');
+                            util.message(res.msg, res.result == 1 ? location.href : '', res.result == 1 ? 'success' : 'info');
+                        }
+                    }
+                });
             }
         };
 

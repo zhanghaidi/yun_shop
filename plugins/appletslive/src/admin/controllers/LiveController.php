@@ -57,8 +57,8 @@ class LiveController extends BaseController
         // 清理已失效直播间
         if ($tag == 'clean') {
 
-            $invalid_live_ids = LiveRoom::where('live_status', 108)->pluck('id');
-            LiveRoom::where('live_status', 108)->delete();
+            $invalid_live_ids = LiveRoom::where('live_status', APPLETSLIVE_ROOM_LIVESTATUS_108)->pluck('id');
+            LiveRoom::where('live_status', APPLETSLIVE_ROOM_LIVESTATUS_108)->delete();
             Replay::whereIn('room_id', $invalid_live_ids)->delete();
 
             Cache::forget(CacheService::$cache_keys['brandsale.albumlist']);
@@ -206,7 +206,7 @@ class LiveController extends BaseController
             $insert_data = [
                 'name' => $post_data['name'],
                 'roomid' => $result['roomId'],
-                'live_status' => 102,
+                'live_status' => APPLETSLIVE_ROOM_LIVESTATUS_102,
                 'start_time' => $post_data['startTime'],
                 'end_time' => $post_data['endTime'],
                 'anchor_name' => $post_data['anchorName'],
@@ -325,6 +325,7 @@ class LiveController extends BaseController
         // 处理搜索条件
         $where = [['audit_status', '=', 2]];
         $input = \YunShop::request();
+        $limit = 20;
         if (isset($input->search)) {
             $search = $input->search;
             if (trim($search['name']) !== '') {
@@ -334,11 +335,13 @@ class LiveController extends BaseController
 
         $goods = Goods::where($where)
             ->orderBy('id', 'desc')
-            ->get();
+            ->paginate($limit);
+        $pager = PaginationHelper::show($goods->total(), $goods->currentPage(), $goods->perPage());
 
         return view('Yunshop\Appletslive::admin.live_import', [
             'id' => $id,
             'goods' => $goods,
+            'pager' => $pager,
             'request' => $input,
             'goods_ids' => $goods_ids,
         ])->render();

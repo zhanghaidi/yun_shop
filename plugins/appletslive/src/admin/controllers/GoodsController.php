@@ -71,9 +71,9 @@ class GoodsController extends BaseController
 
         $goods_list = [];
         foreach ($list as $item) {
-            $goods_list[] = ['id' => $item->id, 'audit_status' => $item->audit_status];
+            $goods_list[$item->id] = $item->audit_status;
         }
-        $goods_ids = array_column($goods_list, 'id');
+        $goods_ids = array_keys($goods_list);
 
         $audit_status = [];
         $service = new BaseService();
@@ -81,6 +81,9 @@ class GoodsController extends BaseController
         if (is_array($result) && array_key_exists('errcode', $result) && $result['crrcode'] == 0) {
             foreach ($result['goods'] as $item) {
                 $audit_status[$item['goods_id']] = $item['audit_status'];
+                if ($goods_list[$item['goods_id']] != $item['audit_status']) {
+                    Goods::where('id', $item['goods_id'])->update(['audit_status' => $item['audit_status']]);
+                }
             }
         }
 
@@ -127,8 +130,14 @@ class GoodsController extends BaseController
                 }
 
                 if ($price_type == 2) {
-                    if (floatval($param['price2']) < floatval($param['price'])) {
-                        return $this->errorJson('商品价格区间右边界不能小于价格区间左边界');
+                    if (floatval($param['price2']) <= floatval($param['price'])) {
+                        return $this->errorJson('商品价格区间右边界必须大于价格区间左边界');
+                    }
+                }
+
+                if ($price_type == 3) {
+                    if (floatval($param['price2']) >= floatval($param['price'])) {
+                        return $this->errorJson('现价必须小于原价');
                     }
                 }
             }
@@ -386,11 +395,23 @@ class GoodsController extends BaseController
     // 删除商品
     public function del()
     {
+        if (!request()->ajax()) {
+            return $this->message('非法操作', Url::absoluteWeb(''), 'danger');
+        }
+
         $id = request()->get('id', 0);
         $info = Goods::where('id', $id)->first();
 
         if (!$info) {
-            return $this->message('无效的商品ID', Url::absoluteWeb(''), 'danger');
+            return $this->errorJson('无效的商品ID');
+        }
+
+        $force = request()->get('force', 0);
+        if (!$force) {
+            $inuse = Goods::inUseCheck($id);
+            if ($inuse) {
+                return $this->errorJson('商品正在被使用', ['inuse' => $inuse]);
+            }
         }
 
         $service = new BaseService();
@@ -401,7 +422,7 @@ class GoodsController extends BaseController
         }
 
         Goods::refresh();
-        Goods::where('id', $id)->delete();
-        return $this->message('删除成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.goods.index'));
+
+        return $this->successJson('删除成功', ['result' => $result]);
     }
 }
