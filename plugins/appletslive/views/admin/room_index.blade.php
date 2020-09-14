@@ -214,7 +214,7 @@
     <div style="width:100%;height:150px;"></div>
 
     <script type="text/javascript">
-        // 查看商品封面大图
+        // 查看课程封面大图
         $('.show-cover-img-big').on('mouseover', function () {
             $(this).find('.img-big').show();
         });

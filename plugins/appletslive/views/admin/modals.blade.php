@@ -148,3 +148,23 @@
         </div>
     </div>
 </div>
+
+<!-- 使用直播间弹出模态框 -->
+<div id="modal-use-liveroom" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" style="width:40vw;margin:0px auto;">
+    <div class="form-horizontal form">
+        <div class="modal-dialog" style="width:100%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+                    <h3>确定使用该直播间吗</h3>
+                </div>
+                <div class="modal-body hide">
+                </div>
+                <div class="modal-footer">
+                    <button id="sureUseThisLiveroom" class="btn btn-primary">确定</button>
+                    <a href="#" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
