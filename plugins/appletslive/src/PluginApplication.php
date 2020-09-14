@@ -179,6 +179,15 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'url_params' => '',
                             'parents' => ['appletslive', 'appletslive-live'],
                         ],
+                        'appletslive_live_import' => [
+                            'name' => '直播间导入商品',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'icon' => '',
+                            'url' => 'plugin.appletslive.admin.controllers.live.import',
+                            'url_params' => '',
+                            'parents' => ['appletslive', 'appletslive-live'],
+                        ],
                     ],
                 ],
                 'appletslive-goods' => [
