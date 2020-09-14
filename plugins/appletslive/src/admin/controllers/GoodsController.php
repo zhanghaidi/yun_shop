@@ -23,6 +23,7 @@ namespace Yunshop\Appletslive\admin\controllers;
 
 use app\common\components\BaseController;
 use app\common\helpers\Url;
+use app\backend\modules\goods\models\Brand;
 use Yunshop\Appletslive\common\services\BaseService;
 use Yunshop\Appletslive\common\models\Goods;
 use app\backend\modules\goods\models\Goods as YzGoods;
@@ -183,11 +184,30 @@ class GoodsController extends BaseController
             return $this->successJson('商品添加成功');
         }
 
+        // 处理搜索条件
+        $input = \YunShop::request();
+        $where = [];
+        if (isset($input->search)) {
+            $search = $input->search;
+            if (trim($search['brand_id']) !== '') {
+                $where[] = ['brand_id', '=', trim($search['brand_id'])];
+            }
+            if (trim($search['title']) !== '') {
+                $where[] = ['title', 'like', '%' . trim($search['title']) . '%'];
+            }
+        }
+
+        $limit = 20;
         $exist = Goods::pluck('goods_id');
-        $goods = YzGoods::whereNotIn('id', $exist)->get();
+        $brand = Brand::where('uniacid', 39)->pluck('name', 'id');
+        $goods = YzGoods::whereNotIn('id', $exist)->where($where)->paginate($limit);
+        $pager = PaginationHelper::show($goods->total(), $goods->currentPage(), $goods->perPage());
 
         return view('Yunshop\Appletslive::admin.goods_add', [
+            'brand' => $brand,
             'goods' => $goods,
+            'pager' => $pager,
+            'request' => $input,
         ])->render();
     }
 
@@ -357,14 +377,9 @@ class GoodsController extends BaseController
             return $this->message('无效的商品ID', Url::absoluteWeb(''), 'danger');
         }
 
-        $exist = Goods::pluck('goods_id');
-        $goods = YzGoods::where('id', $info['goods_id'])
-            ->orWhereNotIn('id', $exist)
-            ->get();
         return view('Yunshop\Appletslive::admin.goods_edit', [
             'id' => $id,
             'info' => $info,
-            'goods' => $goods,
         ])->render();
     }
 

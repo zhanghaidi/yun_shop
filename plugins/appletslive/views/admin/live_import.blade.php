@@ -35,8 +35,10 @@
             <div class="clearfix panel-heading" id="goodsTable">
                 <a id="" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;"
                    href="{{yzWebUrl('plugin.appletslive.admin.controllers.live.index')}}">返回</a>
-                <a id="btnImport" class="btn btn-primary" style="height: 35px;margin-top: 5px;color: white;"
-                   href="javascript:;;">导入</a>
+                <a id="btnBatchImport" class="btn btn-primary" style="height: 35px;margin-top: 5px;color: white;"
+                   href="javascript:;;">批量导入</a>
+                <a id="btnBatchRemove" class="btn btn-danger" style="height:35px;margin-top:5px;color:white;display:none;"
+                   href="javascript:;;">批量移除</a>
             </div>
 
             <table class="table table-hover" style="overflow:visible;">
@@ -51,15 +53,23 @@
                     <th style='width:15%;'>封面</th>
                     <th style='width:25%;'>名称</th>
                     <th style='width:15%;'>价格(元)</th>
+                    <th style='width:10%;'>导入状态</th>
+                    <th style='width:20%;'>操作</th>
                 </tr>
                 </thead>
                 <tbody>
                 @foreach($goods as $row)
                     <tr style="">
                         <td style="text-align:center;">
-                            <label for="checkitem_{{ $row['id'] }}" class="checkbox-inline" style="margin-bottom:20px;">
-                                <input type="checkbox" class="checkitem" id="checkitem_{{ $row['id'] }}" value="{{ $row['id'] }}" />
-                            </label>
+                            @if(!in_array($row['id'], $goods_ids))
+                                <label for="checkitem_{{ $row['id'] }}" class="checkbox-inline" style="margin-bottom:20px;">
+                                    <input type="checkbox" class="checkitem" id="checkitem_{{ $row['id'] }}" value="{{ $row['id'] }}" />
+                                </label>
+                            @else
+                                <label for="checkitem_{{ $row['id'] }}" class="checkbox-inline disabled" style="margin-bottom:20px;" disabled>
+                                    <input type="checkbox" class="disabled" id="checkitem_{{ $row['id'] }}" value="{{ $row['id'] }}" disabled />
+                                </label>
+                            @endif
                         </td>
                         <td>{{ $row['id'] }}</td>
                         <td>
@@ -75,6 +85,22 @@
                                 原价：{{ floatval($row['price']) }} 现价：{{ floatval($row['price2']) }}
                             @endif
                         </td>
+                        <td>
+                             @if(!in_array($row['id'], $goods_ids))
+                                 <span class="text-default">未导入</span>
+                            @else
+                                 <span class="text-success">已导入</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if(!in_array($row['id'], $goods_ids))
+                                <a class="btn btn-primary btn-import" style="height: 35px;margin-top: 5px;color: white;"
+                                   href="javascript:;;" data-id="{{ $row['id'] }}">导入</a>
+                            @else
+                                <a class="btn btn-danger btn-remove" style="height: 35px;margin-top: 5px;color: white;display: none;"
+                                   href="javascript:;;" data-id="{{ $row['id'] }}">移除</a>
+                            @endif
+                        </td>
                     </tr>
                 @endforeach
                 </tbody>
@@ -85,43 +111,133 @@
     <div style="width:100%;height:150px;"></div>
 
     <script>
-        $('#checkall').on('click', function () {
-            console.log('checkall', $(this).prop('checked'));
-            if ($(this).prop('checked')) {
-                $('.checkitem').each(function () {
-                    $(this).prop('checked', 'checked');
-                });
-            } else {
-                $('.checkitem').each(function () {
-                    $(this).prop('checked', false);
-                });
-            }
-        });
 
-        $('#btnImport').on('click', function () {
-            var ids = [];
-            $('.checkitem').each(function () {
-                if ($(this).prop('checked')) {
-                    ids.push($(this).val());
-                }
-            });
+        var Page = {
+            data: {
+                id: "{{ $id }}",
+                goodsIds: JSON.parse('{!! json_encode($goods_ids) !!}'),
+                checkedIds: []
+            },
+            init: function () {
+                var that = this;
 
-            if (ids.length == 0) {
-                util.message('请勾选需要导入的商品', '', 'info');
-            } else {
-                $('#btnImport').button('loading');
-                $.ajax({
-                    url: "",
-                    type: 'POST',
-                    data: {id: "{{ $id }}", goods_ids: ids.join(',')},
-                    success: function (res) {
-                        $('#btnImport').button('reset');
-                        var jump = "{!! yzWebUrl('plugin.appletslive.admin.controllers.live.index') !!}";
-                        util.message(res.msg, res.result == 1 ? jump : '', res.result == 1 ? 'success' : 'info');
+                // 监听全选事件
+                $('#checkall').on('click', function () {
+                    that.data.checkedIds = [];
+                    if ($(this).prop('checked')) {
+                        $('.checkitem').each(function () {
+                            $(this).prop('checked', 'checked');
+                            that.data.checkedIds.push($(this).val());
+                        });
+                    } else {
+                        $('.checkitem').each(function () {
+                            $(this).prop('checked', false);
+                        });
                     }
                 });
+
+                // 监听商品选中事件
+                $('.checkitem').on('click', function () {
+                    var val = $(this).val();
+                    if ($(this).prop('checked')) {
+                        that.data.checkedIds.push(val);
+                    } else {
+                        var idx = 0;
+                        for (var i in that.data.checkedIds) {
+                            if (that.data.checkedIds[i] === val) {
+                                that.data.checkedIds.splice(i, 1);
+                            }
+                        }
+                    }
+                    if (that.data.checkedIds.length == $('.checkitem').length) {
+                        $('#checkall').prop('checked', 'checked');
+                    } else {
+                        $('#checkall').prop('checked', false);
+                    }
+                });
+
+                // 监听批量导入按钮事件
+                $('#btnBatchImport').on('click', function () {
+                    that.import();
+                });
+
+                // 监听批量移除按钮事件
+                $('#btnBatchRemove').on('click', function () {
+                    that.remove();
+                });
+
+                // 监听单个移除按钮事件
+                $('.btn-import').on('click', function () {
+                    that.import(false, this);
+                });
+
+                // 监听单个移除按钮事件
+                $('.btn-remove').on('click', function () {
+                    that.remove(false, this);
+                });
+            },
+            import: function (isBatch = true, btn = null) {
+                var that = this;
+                if (isBatch && that.data.checkedIds.length == 0) {
+                    util.message('请勾选需要导入的商品', '', 'info');
+                } else {
+                    var data = {};
+                    if (isBatch) {
+                        $('#btnBatchImport').button('loading');
+                        data = {id: that.data.id, goods_ids: that.data.checkedIds.join(','), type: 'import'};
+                    } else {
+                        $(btn).button('loading');
+                        data = {id: that.data.id, goods_ids: $(btn).data('id'), type: 'import'};
+                    }
+                    $.ajax({
+                        url: "",
+                        type: 'POST',
+                        data: data,
+                        success: function (res) {
+                            if (isBatch) {
+                                $('#btnBatchImport').button('reset');
+                            } else {
+                                $(btn).button('reset');
+                            }
+                            var jump = "{!! yzWebUrl('plugin.appletslive.admin.controllers.live.index') !!}";
+                            util.message(res.msg, res.result == 1 ? jump : '', res.result == 1 ? 'success' : 'info');
+                        }
+                    });
+                }
+            },
+            remove: function (isBatch = true, btn = null) {
+                var that = this;
+                if (isBatch && that.data.checkedIds.length == 0) {
+                    util.message('请勾选需要移除的商品', '', 'info');
+                } else {
+                    var data = {};
+                    if (isBatch) {
+                        $('#btnBatchRemove').button('loading');
+                        data = {id: that.data.id, goods_ids: that.data.checkedIds.join(','), type: 'remove'};
+                    } else {
+                        $(btn).button('loading');
+                        data = {id: that.data.id, goods_ids: $(btn).data('id'), type: 'remove'};
+                    }
+                    $.ajax({
+                        url: "",
+                        type: 'POST',
+                        data: data,
+                        success: function (res) {
+                            if (isBatch) {
+                                $('#btnBatchRemove').button('reset');
+                            } else {
+                                $(btn).button('reset');
+                            }
+                            var jump = "{!! yzWebUrl('plugin.appletslive.admin.controllers.live.index') !!}";
+                            util.message(res.msg, res.result == 1 ? jump : '', res.result == 1 ? 'success' : 'info');
+                        }
+                    });
+                }
             }
-        });
+        };
+
+        Page.init();
+
     </script>
 
 @endsection

@@ -18,24 +18,6 @@
     <div class="w1200 m0a">
         <form action="" method="post" class="form-horizontal form" onsubmit="return false;">
 
-            @if ($info['audit_status'] == 0)
-                <div class="form-group">
-                    <label class="col-md-2 col-sm-3 col-xs-12 control-label">商品</label>
-                    <div class="col-md-10 col-sm-9 col-xs-12">
-                        <select id="sltGoodsId" name='goods_id' class='form-control goods-select2'>
-                            <option value="">请选择商品</option>
-                            @foreach ($goods as $item)
-                                <option value="{{ $item['id'] }}" data-title="{{ $item['title'] }}"
-                                        data-price="{{ $item['price'] }}" data-thumb="{{ $item['thumb'] }}"
-                                        data-imgurl="{!! tomedia($item['thumb']) !!}"
-                                        @if($info['goods_id']==$item['id']) selected @endif
-                                >{{ $item['title'] }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-            @endif
-
             <div class="form-group fg-showhide">
                 <label class="col-md-2 col-sm-3 col-xs-12 control-label">商品名称</label>
                 <div class="col-md-10 col-sm-9 col-xs-12">
@@ -143,50 +125,6 @@
             },
             init: function () {
                 var that = this;
-
-                $('.goods-select2').select2();
-
-                // 商品下拉菜单onchange
-                $(document).on('change', '#sltGoodsId', function () {
-                    var goodId = $(this).val();
-                    that.data.postParam.goodsId = goodId;
-                    $('.fg-showhide').hide();
-
-                    $('#priceType1').prop('checked', 'checked');
-                    $('#priceType2').removeProp('checked');
-                    $('#priceType3').removeProp('checked');
-                    $('.price1 input').attr('required', true);
-                    $('.price1 input').val('');
-                    $('.price2 input').removeAttr('required');
-                    $('.price2 input').val('');
-                    $('.price3 input').removeAttr('required');
-                    $('.price3 input').val('');
-
-                    $('#submitGoodsForm').addClass('disabled');
-                    $('#submitGoodsForm').attr('disabled', 'disabled');
-
-                    if (goodId !== '') {
-
-                        var selOption = $(this).find('option:selected');
-                        that.data.yzgoods = {
-                            title: selOption.data('title'),
-                            price: selOption.data('price'),
-                            thumb: selOption.data('thumb')
-                        };
-
-                        $('input[name="name"]').val(that.data.yzgoods.title);
-                        $('input[name="price"]').val(that.data.yzgoods.price);
-                        $('input[name="cover_img_url"]').val(that.data.yzgoods.thumb);
-                        $('.thumb-img img').attr('src', selOption.data('imgurl'));
-
-                        $('.fg-showhide').show();
-                        $('.price2').hide();
-                        $('.price3').hide();
-
-                        $('#submitGoodsForm').removeClass('disabled');
-                        $('#submitGoodsForm').removeAttr('disabled');
-                    }
-                });
 
                 // 价格类型onchange
                 $(document).on('change', 'input[name="price_type"]', function () {

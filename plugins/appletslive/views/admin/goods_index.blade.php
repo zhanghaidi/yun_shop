@@ -44,9 +44,9 @@
     <div class='panel panel-default'>
         <div class='panel-body'>
             <div class="clearfix panel-heading" id="goodsTable">
-                <a id="btn-room-refresh" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;"
+                <a class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;"
                    href="javascript:;;" @click="refresh" v-if="allowRefresh==1">同步商品列表</a>
-                <a id="btn-room-refresh" class="btn btn-defaultt disabled" style="height: 35px;margin-top: 5px;color: white;"
+                <a class="btn btn-defaultt disabled" style="height: 35px;margin-top: 5px;color: white;"
                    href="javascript:;;" disabled v-else>同步商品列表</a>
                 <a id="" class="btn btn-primary" style="height: 35px;margin-top: 5px;color: white;"
                    href="{{ yzWebUrl('plugin.appletslive.admin.controllers.goods.add') }}">添加商品</a>
@@ -98,31 +98,31 @@
                         </td>
                         <td style="overflow:visible;">
                             @if ($audit_status[$row['id']] == 1)
-                                <a class='btn btn-default' id="btnResetaudit"
-                                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.goods.resetaudit', ['id' => $row['id']])}}"
+                                <button class='btn btn-default btn-reset-audit'
+                                   data-href="{{yzWebUrl('plugin.appletslive.admin.controllers.goods.resetaudit', ['id' => $row['id']])}}"
                                    title='撤回提审'>撤回提审
-                                </a>
+                                </button>
                             @endif
 
                             @if ($audit_status[$row['id']] == 0)
-                                <a class='btn btn-default' id="btnAudit"
-                                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.goods.audit', ['id' => $row['id']])}}"
+                                <button class='btn btn-default btn-audit'
+                                   data-href="{{yzWebUrl('plugin.appletslive.admin.controllers.goods.audit', ['id' => $row['id']])}}"
                                    title='重新提审'>重新提审
-                                </a>
+                                </button>
                             @endif
 
                             @if ($audit_status[$row['id']] == 0 || $audit_status[$row['id']] == 2)
                                 <a class='btn btn-default'
                                    href="{{yzWebUrl('plugin.appletslive.admin.controllers.goods.edit', ['id' => $row['id']])}}"
-                                   title='录播列表'><i class='fa fa-list'></i>更新商品
+                                   title='更新商品'><i class='fa fa-list'></i>更新商品
                                 </a>
                             @endif
 
                             @if ($audit_status[$row['id']] == 0 || $audit_status[$row['id']] == 2 || $audit_status[$row['id']] == 3)
-                                <a class='btn btn-danger' id="btnDelete"
-                                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.goods.del', ['id' => $row['id']])}}"
-                                   title='录播列表'>删除商品
-                                </a>
+                                <button class='btn btn-danger btn-delete'
+                                   data-url="{{yzWebUrl('plugin.appletslive.admin.controllers.goods.del', ['id' => $row['id']])}}"
+                                   title='删除商品' data-toggle="modal" data-target="#modal-delete-warning">删除商品
+                                </button>
                             @endif
                         </td>
                     </tr>
@@ -133,27 +133,34 @@
         </div>
     </div>
 
+    <!-- 删除商品弹出模态框 -->
+    <div id="modal-delete-warning" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" style="width:40vw;margin:0px auto;">
+        <div class="form-horizontal form">
+            <div class="modal-dialog" style="width:100%;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+                        <h3></h3>
+                    </div>
+                    <div class="modal-body hide">
+                        <div class="form-horizontal form live-list">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="submitDelGoods" class="btn btn-primary">确定</button>
+                        <button id="submitDelGoodsForce" class="btn btn-primary hide" name="close" value="yes">确定</button>
+                        <a href="#" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div style="width:100%;height:150px;"></div>
 
     <script>
 
-        $(document).on('click', '#btnResetaudit', function () {
-            $(this).addClass('disabled');
-            $(this).attr('disabled', 'disabled');
-        });
-        $(document).on('click', '#btnAudit', function () {
-            $(this).addClass('disabled');
-            $(this).attr('disabled', 'disabled');
-        });
-        $(document).on('click', '#btnDelete', function () {
-            if (confirm('确定删除吗')) {
-                $(this).addClass('disabled');
-                $(this).attr('disabled', 'disabled');
-            } else {
-                return false;
-            }
-        });
-
+        // 同步商品
         var app = new Vue({
             el: '#goodsTable',
             data: {
@@ -180,5 +187,88 @@
                 }
             }
         });
+
+        var Page = {
+            init: function () {
+                var that = this;
+
+                // 监听撤销审核按钮事件
+                $(document).on('click', '.btn-reset-audit', function () {
+                    if (confirm('确定撤销审核?')) {
+                        $(this).addClass('disabled');
+                        $(this).attr('disabled', 'disabled');
+                    } else {
+                        return false
+                    }
+                });
+
+                // 监听重新提审按钮事件
+                $(document).on('click', '.btn-audit', function () {
+                    if (confirm('确定重新提审?')) {
+                        $(this).addClass('disabled');
+                        $(this).attr('disabled', 'disabled');
+                    } else {
+                        return false
+                    }
+                });
+
+                // 监听删除按钮事件
+                $(document).on('click', '.btn-delete', function () {
+                    $('#modal-delete-warning').find('h3').html('确定删除吗');
+                    $('#modal-delete-warning').find('.live-list').html('');
+                    $('#modal-delete-warning').find('.modal-body').addClass('hide');
+                    $('#submitDelGoods').removeClass('hide');
+                    $('#submitDelGoodsForce').addClass('hide');
+                });
+
+                // 监听删除商品按钮事件
+                $(document).on('click', '#submitDelGoods', function () {
+                    // 以下直播间已导入该商品，
+                    // that.delete();
+
+                    $('#modal-delete-warning').find('h3').html('以下直播间已导入该商品, 仍要删除吗');
+                    $('#modal-delete-warning').find('.live-list').html(''
+                        + '<div class="form-group">'
+                        + '    <label class="col-md-2 col-sm-3 col-xs-12 control-label text-default">'
+                        + '    未开播:'
+                        + '    </label>'
+                        + '    <label class="col-md-10 col-sm-9 col-xs-12 control-label" style="font-weight: bold;text-align: left;">'
+                        + '    哈哈哈哈行昂昂昂昂昂昂昂哈哈哈哈哈'
+                        + '    </label>'
+                        + '</div>'
+                        + '<div class="form-group">'
+                        + '    <label class="col-md-2 col-sm-3 col-xs-12 control-label text-danger">'
+                        + '    直播中:'
+                        + '    </label>'
+                        + '    <label class="col-md-10 col-sm-9 col-xs-12 control-label" style="font-weight: bold;text-align: left;">'
+                        + '    哈哈哈哈行昂昂昂昂昂昂昂哈哈哈哈哈'
+                        + '    </label>'
+                        + '</div>'
+                        + '');
+                    $('#modal-delete-warning').find('.modal-body').removeClass('hide');
+                    $('#submitDelGoods').addClass('hide');
+                    $('#submitDelGoodsForce').removeClass('hide');
+                });
+
+                // 监听强制删除商品按钮事件
+                $(document).on('click', '#submitDelGoodsForce', function () {
+                    $('#modal-delete-warning').addClass('hide');
+                    util.message('删除成功', "{!! yzWebUrl('plugin.appletslive.admin.controllers.goods.index') !!}", 'success');
+                });
+            },
+            delete: function (force = false) {
+                $.ajax({
+                    url: '',
+                    type: 'get',
+                    data: {force: force},
+                    success: function () {
+
+                    }
+                });
+            }
+        };
+
+        Page.init();
+
     </script>
 @endsection

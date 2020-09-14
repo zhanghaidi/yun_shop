@@ -128,7 +128,7 @@
                             @if ($row['live_status'] == 101 || $row['live_status'] == 102)
                                 <a class='btn btn-default'
                                    href="{{yzWebUrl('plugin.appletslive.admin.controllers.live.import', ['id' => $row['id']])}}"
-                                   title='设置'><i class='fa fa-edit'></i>导入商品
+                                   title='设置'><i class='fa fa-edit'></i>商品管理
                                 </a>
                             @endif
                         </td>
