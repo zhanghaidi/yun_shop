@@ -57,8 +57,8 @@ class LiveController extends BaseController
         // 清理已失效直播间
         if ($tag == 'clean') {
 
-            $invalid_live_ids = LiveRoom::where('live_status', 108)->pluck('id');
-            LiveRoom::where('live_status', 108)->delete();
+            $invalid_live_ids = LiveRoom::where('live_status', APPLETSLIVE_ROOM_LIVESTATUS_108)->pluck('id');
+            LiveRoom::where('live_status', APPLETSLIVE_ROOM_LIVESTATUS_108)->delete();
             Replay::whereIn('room_id', $invalid_live_ids)->delete();
 
             Cache::forget(CacheService::$cache_keys['brandsale.albumlist']);
@@ -206,7 +206,7 @@ class LiveController extends BaseController
             $insert_data = [
                 'name' => $post_data['name'],
                 'roomid' => $result['roomId'],
-                'live_status' => 102,
+                'live_status' => APPLETSLIVE_ROOM_LIVESTATUS_102,
                 'start_time' => $post_data['startTime'],
                 'end_time' => $post_data['endTime'],
                 'anchor_name' => $post_data['anchorName'],
@@ -247,38 +247,76 @@ class LiveController extends BaseController
                 return $this->errorJson('无效的直播间ID');
             }
 
+            // 校验前端传过来的商品id是否为空
             $goods_ids = explode(',', $param['goods_ids']);
             if (empty($goods_ids)) {
-                return $this->errorJson('请勾选需要导入的商品');
+                return $this->errorJson('请勾选商品');
             }
+
+            // 已导入直播间的商品id
+            $exist_ids = [];
             if ($info['goods_ids'] != '') {
                 $exist_ids = explode(',', $info['goods_ids']);
-                $goods_ids = array_unique(array_merge($exist_ids, $goods_ids));
             }
-            if (!empty($goods_ids)) {
+
+            // 需要变更的商品id
+            $change_ids = [];
+            $type = $param['type'];
+            if ($type == 'import') {
+                foreach ($goods_ids as $gik => $giv) {
+                    if (array_search($giv, $exist_ids) === false) {
+                        array_push($change_ids, $giv);
+                    }
+                }
+            } else {
+                foreach ($goods_ids as $gik => $giv) {
+                    if (array_search($giv, $exist_ids) !== false) {
+                        array_push($change_ids, $giv);
+                    }
+                }
+            }
+            if (empty($change_ids)) {
+                return $this->errorJson('直播间商品没有变更');
+            }
+
+            // 处理变更
+            if (!empty($change_ids)) {
+                if ($type == 'import') {
+                    $goods_ids = empty($goods_ids) ? $change_ids : array_merge($exist_ids, $change_ids);
+                } else {
+                    $goods_ids = [];
+                    foreach ($exist_ids as $eik => $eiv) {
+                        if (!in_array($eiv, $change_ids)) {
+                            $goods_ids[] = $eiv;
+                        }
+                    }
+                }
                 array_walk($goods_ids, function (&$id) {
                     $id = intval($id);
                 });
-            }
 
-            // 调用小程序接口添加商品并提审
-            $result = (new BaseService())->importGoods($info['roomid'], $goods_ids);
+                // 调用小程序接口添加商品并提审
+                $result = (new BaseService())->importGoods($info['roomid'], $goods_ids);
 
-            if ($result['errcode'] != 0) {
-                $msg = $result['errmsg'];
-                if ($result['errcode'] == 300023) {
-                    $msg = '该直播间已不可导入商品';
+                if ($result['errcode'] != 0) {
+                    $msg = $result['errmsg'];
+                    if ($result['errcode'] == 300023) {
+                        $msg = '该直播间已不可导入商品';
+                    }
+                    if ($result['errcode'] == 300025) {
+                        $msg = '商品审核未通过';
+                    }
+                    return $this->errorJson($msg, ['final' => $goods_ids, 'result' => $result]);
                 }
-                return $this->errorJson($msg, ['result' => $result]);
+                LiveRoom::refresh();
             }
 
-            LiveRoom::refresh();
-            return $this->successJson('商品导入成功', ['result' => $result]);
+            return $this->successJson('操作成功', ['result' => $result]);
         }
 
         $id = request()->get('id', 0);
         $info = LiveRoom::where('id', $id)->first();
-        $goods_ids = explode(',', $info['goods_ids']);
+        $goods_ids = ($info['goods_ids'] == '') ? [] : explode(',', $info['goods_ids']);
 
         if (!$info) {
             return $this->message('无效的直播间ID', Url::absoluteWeb(''), 'danger');
@@ -287,6 +325,7 @@ class LiveController extends BaseController
         // 处理搜索条件
         $where = [['audit_status', '=', 2]];
         $input = \YunShop::request();
+        $limit = 20;
         if (isset($input->search)) {
             $search = $input->search;
             if (trim($search['name']) !== '') {
@@ -294,15 +333,17 @@ class LiveController extends BaseController
             }
         }
 
-        $goods = Goods::whereNotIn('id', $goods_ids)
-            ->where($where)
+        $goods = Goods::where($where)
             ->orderBy('id', 'desc')
-            ->get();
+            ->paginate($limit);
+        $pager = PaginationHelper::show($goods->total(), $goods->currentPage(), $goods->perPage());
 
         return view('Yunshop\Appletslive::admin.live_import', [
             'id' => $id,
             'goods' => $goods,
+            'pager' => $pager,
             'request' => $input,
+            'goods_ids' => $goods_ids,
         ])->render();
     }
 }
