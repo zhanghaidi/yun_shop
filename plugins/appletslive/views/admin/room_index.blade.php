@@ -75,8 +75,13 @@
                         <tr>
                             <td>{{ $row['id'] }}</td>
                             <td>{{ $row['sort'] }}</td>
-                            <td>
-                                <img src="{!! tomedia($row['cover_img']) !!}" style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
+                            <td style="overflow:visible;">
+                                <div class="show-cover-img-big" style="position:relative;width:50px;overflow:visible">
+                                    <img src="{!! tomedia($row['cover_img']) !!}" alt=""
+                                         style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
+                                    <img class="img-big" src="{!! tomedia($row['cover_img']) !!}" alt=""
+                                         style="z-index:99999;position:absolute;top:0;left:0;border:1px solid #ccc;padding:1px;display: none">
+                                </div>
                             </td>
                             <td>{{ $row['name'] }}</td>
                             <td>{{ $row['subscription_num'] }}</td>
@@ -166,8 +171,13 @@
                         <tr>
                             <td>{{ $row['id'] }}</td>
                             <td>{{ $row['sort'] }}</td>
-                            <td>
-                                <img src="{!! tomedia($row['cover_img']) !!}" style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
+                            <td style="overflow:visible;">
+                                <div class="show-cover-img-big" style="position:relative;width:50px;overflow:visible">
+                                    <img src="{!! tomedia($row['cover_img']) !!}" alt=""
+                                         style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
+                                    <img class="img-big" src="{!! tomedia($row['cover_img']) !!}" alt=""
+                                         style="z-index:99999;position:absolute;top:0;left:0;border:1px solid #ccc;padding:1px;display: none">
+                                </div>
                             </td>
                             <td>{{ $row['name'] }}</td>
                             <td>{{ $row['subscription_num'] }}</td>
@@ -204,7 +214,12 @@
     <div style="width:100%;height:150px;"></div>
 
     <script type="text/javascript">
-        $(function() {
+        // 查看商品封面大图
+        $('.show-cover-img-big').on('mouseover', function () {
+            $(this).find('.img-big').show();
+        });
+        $('.show-cover-img-big').on('mouseout', function () {
+            $(this).find('.img-big').hide();
         });
     </script>
 @endsection

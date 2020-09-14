@@ -28,6 +28,22 @@ class PluginApplication extends \app\common\services\PluginApplication
     {
         define('APPLETSLIVE_ROOM_TYPE_COURSE', 1);
         define('APPLETSLIVE_ROOM_TYPE_BRANDSALE', 2);
+        define('APPLETSLIVE_ROOM_LIVESTATUS_101', 101);
+        define('APPLETSLIVE_ROOM_LIVESTATUS_101_TEXT', '直播中');
+        define('APPLETSLIVE_ROOM_LIVESTATUS_102', 102);
+        define('APPLETSLIVE_ROOM_LIVESTATUS_102_TEXT', '待开播');
+        define('APPLETSLIVE_ROOM_LIVESTATUS_103', 103);
+        define('APPLETSLIVE_ROOM_LIVESTATUS_103_TEXT', '已结束');
+        define('APPLETSLIVE_ROOM_LIVESTATUS_104', 104);
+        define('APPLETSLIVE_ROOM_LIVESTATUS_104_TEXT', '禁播');
+        define('APPLETSLIVE_ROOM_LIVESTATUS_105', 105);
+        define('APPLETSLIVE_ROOM_LIVESTATUS_105_TEXT', '暂停');
+        define('APPLETSLIVE_ROOM_LIVESTATUS_106', 106);
+        define('APPLETSLIVE_ROOM_LIVESTATUS_106_TEXT', '异常');
+        define('APPLETSLIVE_ROOM_LIVESTATUS_107', 107);
+        define('APPLETSLIVE_ROOM_LIVESTATUS_107_TEXT', '已过期');
+        define('APPLETSLIVE_ROOM_LIVESTATUS_108', 108);
+        define('APPLETSLIVE_ROOM_LIVESTATUS_108_TEXT', '已删除');
     }
 
     protected function setMenuConfig()

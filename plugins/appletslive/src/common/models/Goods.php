@@ -133,6 +133,7 @@ class Goods extends BaseModel
         }
         if ($delete) {
             self::whereIn('id', $delete)->delete();
+            $refresh_liveroom = LiveRoom::refresh();
         }
 
         return [
@@ -141,6 +142,46 @@ class Goods extends BaseModel
             'insert' => $insert,
             'update' => $update,
             'delete' => $delete,
+            'refresh_liveroom' => isset($refresh_liveroom) ? $refresh_liveroom : null,
         ];
+    }
+
+    // 检测商品是否正在被直播间使用
+    public static function inUseCheck($id)
+    {
+        $live_status_map = [
+            APPLETSLIVE_ROOM_LIVESTATUS_101,
+            APPLETSLIVE_ROOM_LIVESTATUS_102,
+            APPLETSLIVE_ROOM_LIVESTATUS_105,
+        ];
+        $lives = LiveRoom::whereIn('live_status', $live_status_map)
+            ->where(function ($query) use ($id) {
+                $query->where('goods_ids', 'like', "{$id},%")
+                      ->orWhere('goods_ids', 'like', "%,{$id},%")
+                      ->orWhere('goods_ids', 'like', "%,{$id}")
+                      ->orWhere('goods_ids', "{$id}");
+            })
+            ->select('name', 'live_status')
+            ->get()
+            ->toArray();
+        if (!empty($lives)) {
+            array_walk($lives, function (&$item) {
+                switch ($item['live_status']) {
+                    case APPLETSLIVE_ROOM_LIVESTATUS_101:
+                        $item['live_status_text'] = APPLETSLIVE_ROOM_LIVESTATUS_101_TEXT;
+                        break;
+                    case APPLETSLIVE_ROOM_LIVESTATUS_102:
+                        $item['live_status_text'] = APPLETSLIVE_ROOM_LIVESTATUS_102_TEXT;
+                        break;
+                    case APPLETSLIVE_ROOM_LIVESTATUS_105:
+                        $item['live_status_text'] = APPLETSLIVE_ROOM_LIVESTATUS_105_TEXT;
+                        break;
+                    default:
+                        $item['live_status_text'] = '';
+                        break;
+                }
+            });
+        }
+        return $lives;
     }
 }
