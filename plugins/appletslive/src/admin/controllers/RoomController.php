@@ -348,7 +348,11 @@ class RoomController extends BaseController
 
             $replay = DB::table('yz_appletslive_replay')->where('id', $id)->first();
             if (!$replay) {
-                return $this->message('无效的回放或视频ID', Url::absoluteWeb(''), 'danger');
+                if (request()->ajax()) {
+                    return $this->errorJson('无效的视频或直播ID');
+                } else {
+                    return $this->message('无效的视频或直播ID', Url::absoluteWeb(''), 'danger');
+                }
             }
             if (DB::table('yz_appletslive_replay')->where('title', $upd_data['title'])->where('rid', $replay->rid)->where('id', '<>', $id)->first()) {
                 return $this->message('视频名称已存在', Url::absoluteWeb(''), 'danger');
@@ -366,24 +370,34 @@ class RoomController extends BaseController
                 Cache::forget(CacheService::$cache_keys['recorded.roomreplays']);
             }
 
-            return $this->message('保存成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.replaylist', ['rid' => $replay['rid']]));
+            if (request()->ajax()) {
+                return $this->successJson('保存成功');
+            } else {
+                return $this->message('保存成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.replaylist', ['rid' => $replay['rid']]));
+            }
         }
 
         $id = request()->get('id', 0);
         $info = DB::table('yz_appletslive_replay')->where('id', $id)->first();
         if (!$info) {
-            return $this->message('视频不存在', Url::absoluteWeb(''), 'danger');
+            return $this->message('视频或直播不存在', Url::absoluteWeb(''), 'danger');
         }
         $info['minute'] = floor($info['time_long'] / 60);
         $info['second'] = $info['time_long'] % 60;
 
-        $liverooms = LiveRoom::whereIn('live_status', [101, 102, 105])
-            ->orWhere('id', '=', $info['room_id'])
-            ->get();
+        $limit = 20;
+        $liverooms = LiveRoom::whereIn('live_status', [
+            APPLETSLIVE_ROOM_LIVESTATUS_101,
+            APPLETSLIVE_ROOM_LIVESTATUS_102,
+            APPLETSLIVE_ROOM_LIVESTATUS_105,
+        ])->paginate($limit);
+        $pager = PaginationHelper::show($liverooms->total(), $liverooms->currentPage(), $liverooms->perPage());
+
         return view('Yunshop\Appletslive::admin.replay_edit', [
             'id' => $id,
             'info' => $info,
             'liverooms' => $liverooms,
+            'pager' => $pager,
         ])->render();
     }
 
@@ -433,19 +447,32 @@ class RoomController extends BaseController
                 Cache::forget(CacheService::$cache_keys['recorded.roomreplays']);
             }
 
-            return $this->message('保存成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.replaylist', ['rid' => $rid]));
+            if (request()->ajax()) {
+                return $this->successJson('添加成功');
+            } else {
+                return $this->message('添加成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.replaylist', ['rid' => $rid]));
+            }
         }
 
         $rid = request()->get('rid', 0);
         $room = DB::table('yz_appletslive_room')->where('id', $rid)->first();
         if (!$room) {
-            return $this->message('数据不操作', Url::absoluteWeb(''), 'danger');
+            return $this->message('数据不存在', Url::absoluteWeb(''), 'danger');
         }
-        $liverooms = LiveRoom::whereIn('live_status', [101, 102, 105])->get();
+
+        $limit = 20;
+        $liverooms = LiveRoom::whereIn('live_status', [
+            APPLETSLIVE_ROOM_LIVESTATUS_101,
+            APPLETSLIVE_ROOM_LIVESTATUS_102,
+            APPLETSLIVE_ROOM_LIVESTATUS_105,
+        ])->paginate($limit);
+        $pager = PaginationHelper::show($liverooms->total(), $liverooms->currentPage(), $liverooms->perPage());
+
         return view('Yunshop\Appletslive::admin.replay_add', [
             'rid' => $rid,
             'room' => $room,
             'liverooms' => $liverooms,
+            'pager' => $pager,
         ])->render();
     }
 
