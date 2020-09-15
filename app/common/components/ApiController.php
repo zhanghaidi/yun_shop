@@ -127,14 +127,7 @@ class ApiController extends BaseController
             $extra = ['hflive' => \config('hflive')];
         }
 
-        if ($type == 2) {
-            response()->json([
-                'result' => 41009,
-                'msg' => '请登录',
-                'data' => null,
-            ], 200, ['charset' => 'utf-8'])->send();
-            exit;
-        } elseif ($type == 11 || $type == 12) {
+        if ($type == 11 || $type == 12) {
             return $this->errorJson('请登录', ['login_status' => 0, 'login_url' => Url::absoluteApi('member.login.index', $queryString), 'extra' => $extra]);
         } else {
             if ($scope == 'home' && !$mid) {
@@ -149,7 +142,16 @@ class ApiController extends BaseController
                 return $this->errorJson('请登录', ['login_status' => 1, 'login_url' => '', 'type' => $type, 'i' => \YunShop::app()->uniacid, 'mid' => $mid, 'scope' => $scope, 'extra' => $extra]);
             }
 
-            return $this->errorJson('请登录', ['login_status' => 0, 'login_url' => Url::absoluteApi('member.login.index', $queryString), 'extra' => $extra]);
+            if ($type == 2) {
+                response()->json([
+                    'result' => 41009,
+                    'msg' => '请登录',
+                    'data' => '',
+                ], 200, ['charset' => 'utf-8'])->send();
+                exit;
+            }
+          return $this->errorJson('请登录', ['login_status' => 0, 'login_url' => Url::absoluteApi('member.login.index', $queryString), 'extra' => $extra]);
+
         }
     }
 }

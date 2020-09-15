@@ -57,7 +57,7 @@ class GoodsController extends GoodsApiController
         try {
             $member = Member::current()->yzMember;
         } catch (MemberNotLoginException  $e) {
-            if (\YunShop::request()->type == 1) {
+            if (\YunShop::request()->type == 1 || \YunShop::request()->type == 2) {
                 return;
             }
 
