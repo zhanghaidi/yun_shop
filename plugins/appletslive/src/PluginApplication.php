@@ -28,6 +28,22 @@ class PluginApplication extends \app\common\services\PluginApplication
     {
         define('APPLETSLIVE_ROOM_TYPE_COURSE', 1);
         define('APPLETSLIVE_ROOM_TYPE_BRANDSALE', 2);
+        define('APPLETSLIVE_ROOM_LIVESTATUS_101', 101);
+        define('APPLETSLIVE_ROOM_LIVESTATUS_101_TEXT', '直播中');
+        define('APPLETSLIVE_ROOM_LIVESTATUS_102', 102);
+        define('APPLETSLIVE_ROOM_LIVESTATUS_102_TEXT', '待开播');
+        define('APPLETSLIVE_ROOM_LIVESTATUS_103', 103);
+        define('APPLETSLIVE_ROOM_LIVESTATUS_103_TEXT', '已结束');
+        define('APPLETSLIVE_ROOM_LIVESTATUS_104', 104);
+        define('APPLETSLIVE_ROOM_LIVESTATUS_104_TEXT', '禁播');
+        define('APPLETSLIVE_ROOM_LIVESTATUS_105', 105);
+        define('APPLETSLIVE_ROOM_LIVESTATUS_105_TEXT', '暂停');
+        define('APPLETSLIVE_ROOM_LIVESTATUS_106', 106);
+        define('APPLETSLIVE_ROOM_LIVESTATUS_106_TEXT', '异常');
+        define('APPLETSLIVE_ROOM_LIVESTATUS_107', 107);
+        define('APPLETSLIVE_ROOM_LIVESTATUS_107_TEXT', '已过期');
+        define('APPLETSLIVE_ROOM_LIVESTATUS_108', 108);
+        define('APPLETSLIVE_ROOM_LIVESTATUS_108_TEXT', '已删除');
     }
 
     protected function setMenuConfig()
@@ -96,7 +112,7 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'parents' => ['appletslive', 'appletslive-room'],
                         ],
                         'appletslive_room_showhide' => [
-                            'name' => '房间显示与隐藏',
+                            'name' => '课程显示与隐藏',
                             'permit' => 1,
                             'menu' => 0,
                             'icon' => '',
@@ -105,7 +121,7 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'parents' => ['appletslive', 'appletslive-room'],
                         ],
                         'appletslive_room_replaylist' => [
-                            'name' => '回看列表',
+                            'name' => '视频列表',
                             'permit' => 1,
                             'menu' => 0,
                             'icon' => '',
@@ -114,7 +130,7 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'parents' => ['appletslive', 'appletslive-room'],
                         ],
                         'appletslive_room_replayedit' => [
-                            'name' => '编辑回看',
+                            'name' => '编辑视频',
                             'permit' => 1,
                             'menu' => 0,
                             'icon' => '',
@@ -123,7 +139,7 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'parents' => ['appletslive', 'appletslive-room'],
                         ],
                         'appletslive_room_replayadd' => [
-                            'name' => '添加回看',
+                            'name' => '添加视频',
                             'permit' => 1,
                             'menu' => 0,
                             'icon' => '',
@@ -141,6 +157,120 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'parents' => ['appletslive', 'appletslive-room'],
                         ],
                     ]
+                ],
+                'appletslive-live' => [
+                    'name' => '直播管理',
+                    'url' => 'plugin.appletslive.admin.controllers.live.index',
+                    'url_params' => '',
+                    'permit' => 1,
+                    'menu' => 1,
+                    'icon' => 'fa-cog',
+                    'item' => '',
+                    'parents' => ['appletslive'],
+                    'child' => [
+                        'appletslive_live_index' => [
+                            'name' => '直播间列表',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'icon' => '',
+                            'url' => 'plugin.appletslive.admin.controllers.live.index',
+                            'url_params' => '',
+                            'parents' => ['appletslive', 'appletslive-live'],
+                        ],
+                        'appletslive_live_edit' => [
+                            'name' => '编辑直播间',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'icon' => '',
+                            'url' => 'plugin.appletslive.admin.controllers.live.edit',
+                            'url_params' => '',
+                            'parents' => ['appletslive', 'appletslive-live'],
+                        ],
+                        'appletslive_live_add' => [
+                            'name' => '添加直播间',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'icon' => '',
+                            'url' => 'plugin.appletslive.admin.controllers.live.add',
+                            'url_params' => '',
+                            'parents' => ['appletslive', 'appletslive-live'],
+                        ],
+                        'appletslive_live_import' => [
+                            'name' => '直播间导入商品',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'icon' => '',
+                            'url' => 'plugin.appletslive.admin.controllers.live.import',
+                            'url_params' => '',
+                            'parents' => ['appletslive', 'appletslive-live'],
+                        ],
+                    ],
+                ],
+                'appletslive-goods' => [
+                    'name' => '商品管理',
+                    'url' => 'plugin.appletslive.admin.controllers.goods.index',
+                    'url_params' => '',
+                    'permit' => 1,
+                    'menu' => 1,
+                    'icon' => 'fa-cog',
+                    'item' => '',
+                    'parents' => ['appletslive'],
+                    'child' => [
+                        'appletslive_goods_index' => [
+                            'name' => '商品列表',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'icon' => '',
+                            'url' => 'plugin.appletslive.admin.controllers.goods.index',
+                            'url_params' => '',
+                            'parents' => ['appletslive', 'appletslive-goods'],
+                        ],
+                        'appletslive_goods_add' => [
+                            'name' => '添加商品并提审',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'icon' => '',
+                            'url' => 'plugin.appletslive.admin.controllers.goods.add',
+                            'url_params' => '',
+                            'parents' => ['appletslive', 'appletslive-goods'],
+                        ],
+                        'appletslive_goods_resetaudit' => [
+                            'name' => '撤回审核',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'icon' => '',
+                            'url' => 'plugin.appletslive.admin.controllers.goods.resetaudit',
+                            'url_params' => '',
+                            'parents' => ['appletslive', 'appletslive-goods'],
+                        ],
+                        'appletslive_goods_audit' => [
+                            'name' => '重新提审',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'icon' => '',
+                            'url' => 'plugin.appletslive.admin.controllers.goods.audit',
+                            'url_params' => '',
+                            'parents' => ['appletslive', 'appletslive-goods'],
+                        ],
+                        'appletslive_goods_edit' => [
+                            'name' => '更新商品',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'icon' => '',
+                            'url' => 'plugin.appletslive.admin.controllers.goods.edit',
+                            'url_params' => '',
+                            'parents' => ['appletslive', 'appletslive-goods'],
+                        ],
+                        'appletslive_goods_del' => [
+                            'name' => '删除商品',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'icon' => '',
+                            'url' => 'plugin.appletslive.admin.controllers.goods.del',
+                            'url_params' => '',
+                            'parents' => ['appletslive', 'appletslive-goods'],
+                        ],
+                    ],
                 ],
             ]
         ]);

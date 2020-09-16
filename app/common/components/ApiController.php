@@ -150,7 +150,16 @@ class ApiController extends BaseController
                 exit;
             }
 
-            return $this->errorJson('请登录', ['login_status' => 0, 'login_url' => Url::absoluteApi('member.login.index', $queryString), 'extra' => $extra]);
+            if ($type == 2) {
+                response()->json([
+                    'result' => 41009,
+                    'msg' => '请登录',
+                    'data' => '',
+                ], 200, ['charset' => 'utf-8'])->send();
+                exit;
+            }
+          return $this->errorJson('请登录', ['login_status' => 0, 'login_url' => Url::absoluteApi('member.login.index', $queryString), 'extra' => $extra]);
+
         }
     }
 }
