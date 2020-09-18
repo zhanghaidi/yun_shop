@@ -131,7 +131,7 @@ class MemberLevelController extends BaseController
             }
 
             if($requestLevel['goods_id'] == 0 && $shopSet['level_type'] == 3)
-                $shopSet['level_type'] = 'Array';
+                $requestLevel['goods_id'] = 'Array';
 
             $levelModel->fill($requestLevel);
 
