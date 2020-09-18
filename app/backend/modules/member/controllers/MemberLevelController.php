@@ -130,9 +130,6 @@ class MemberLevelController extends BaseController
                 $requestLevel['goods_id'] = 0;
             }
 
-            if($requestLevel['goods_id'] == 0 && $shopSet['level_type'] == 3)
-                $requestLevel['goods_id'] = 'Array';
-
             $levelModel->fill($requestLevel);
 
             if ($requestLevel['goods'] || $requestLevel['goods_id']) {
@@ -161,6 +158,9 @@ class MemberLevelController extends BaseController
                     $levelModel->goods_id = $ids;
                 }
             }
+
+            if($shopSet['level_type'] == 3 && $requestLevel['goods_id'] == 0)  //修复团队业绩会员bug
+                $levelModel->goods_id = 'Array';
 
             $validator = $levelModel->validator();
             if ($validator->fails()) {//检测失败
