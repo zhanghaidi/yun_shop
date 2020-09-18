@@ -141,6 +141,14 @@ class ApiController extends BaseController
             if (self::MOBILE_TYPE == $type || self::WEB_APP == $type || self::NATIVE_APP == $type || self::LOGIN_APP_ANCHOR == $type) {
                 return $this->errorJson('请登录', ['login_status' => 1, 'login_url' => '', 'type' => $type, 'i' => \YunShop::app()->uniacid, 'mid' => $mid, 'scope' => $scope, 'extra' => $extra]);
             }
+            if ($type == 2) {
+                response()->json([
+                    'result' => 41009,
+                    'msg' => '请登录',
+                    'data' => '',
+                ], 200, ['charset' => 'utf-8'])->send();
+                exit;
+            }
 
             if ($type == 2) {
                 response()->json([
