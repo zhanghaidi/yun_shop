@@ -125,9 +125,14 @@ class MemberLevelController extends BaseController
         $goods = MemberLevel::getGoodsId($levelModel['goods_id']);
 
         if($requestLevel) {
+            $shopSet = Setting::get('shop.member'); //获取店铺会员设置
             if(!isset($requestLevel['goods_id'])){
                 $requestLevel['goods_id'] = 0;
             }
+
+            if($requestLevel['goods_id'] == 0 && $shopSet['level_type'] == 3)
+                $shopSet['level_type'] = 'Array';
+
             $levelModel->fill($requestLevel);
 
             if ($requestLevel['goods'] || $requestLevel['goods_id']) {
