@@ -85,7 +85,7 @@ class CacheService
             ->where('delete_time', 0)
             ->count();
         $list = DB::table('yz_appletslive_room')
-            ->select('id', 'name', 'cover_img', 'subscription_num', 'view_num', 'comment_num')
+            ->select('id', 'name','live_status' ,'cover_img', 'subscription_num', 'view_num', 'comment_num')
             ->where('type', 1)
             ->where('delete_time', 0)
             ->orderBy('sort', 'desc')
