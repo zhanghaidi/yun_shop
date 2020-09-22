@@ -290,15 +290,15 @@
                                         {{--订单发送聚水潭ERP状态--}}
 
                                         @if($order['jushuitan_status']==1)
-                                            <label class="label label-success">已发送聚水潭</label>
+                                            <label class="label label-success">已上传聚水潭</label>
                                         @else
                                             @if($order['status'] ==1)
-                                                <a class="label label-primary" href="javascript:;"
+                                                <a class="label label-info" href="javascript:;"
                                                    onclick="$('#modal-jushuitan-send').find(':input[name=order_id]').val('{{$order['id']}}')"
-                                                   data-toggle="modal" data-target="#modal-jushuitan-send">点击可发送聚水潭
+                                                   data-toggle="modal" data-target="#modal-jushuitan-send">可上传聚水潭
                                                 </a>
                                             @else
-                                                <label class="label label-info">未发送聚水潭</label>
+                                                <label class="label label-default">未上传聚水潭</label>
                                             @endif
                                         @endif
 
