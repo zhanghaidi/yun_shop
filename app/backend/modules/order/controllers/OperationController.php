@@ -236,11 +236,13 @@ class OperationController extends BaseController
 
         //$goodsItem =  $order->hasManyOrderGoods();
         $address = explode(" ", $order->address->address);
-        var_dump($address);die;
+        var_dump($address);
+        var_dump($order->pay_time->create());
+        die;
         $paramsData = array(
             'pay' => [
                 'outer_pay_id' => $order->order_sn, //外部支付单号，最大50 （必传项）
-                'pay_date' => $order->pay_time->date, //支付日期 （必传项）
+                'pay_date' => $order->pay_time->create(), //支付日期 （必传项）
                 'amount' => $order->price, //支付金额 （必传项）
                 'payment' => $order->hasOnePayType->name, //支付方式，最大20 （必传项）
                 'seller_account' => $order->address->mobile, //卖家支付账号，最大 50 （必传项）
