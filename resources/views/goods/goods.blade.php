@@ -488,6 +488,21 @@
         if (isreturn) {
             return false;
         }
+
+        //增加分销价格计算确认 fixby-zlt-calcgoodsprice 2020-09-21 18:15
+        $.post("{!! yzWebUrl('goods.goods.calculation-goods-price',['id'=>$goods->id]) !!}"
+            , $('form').serialize()
+            , function (resp) {
+                if (resp.result == 1) {
+                    $('#module-prices').html(resp.data.html)
+                    $('#modal-module-goods-price').modal()
+                }else{
+                    alert(resp.msg)
+                }
+            }
+            , "json"
+        );
+
         return true;
 
     }
@@ -666,7 +681,7 @@
                     @show
                 </div>
                 <div class="form-group col-sm-12 mrleft40 border-t">
-                    <input type="submit" name="submit" value="{{$lang['shopsubmit']}}" class="btn btn-success"
+                    <input type="button" name="btn_sub" value="{{$lang['shopsubmit']}}" class="btn btn-success"
                            onclick="return formcheck()"/>
                     <input type="hidden" name="token" value="{{$var['token']}}"/>
                     @section('back')
@@ -677,6 +692,24 @@
         </div>
     </div>
 </form>
+<div id="modal-module-goods-price" class="modal fade" tabindex="-1"> {{--搜索分类的弹窗--}}
+    <div class="modal-dialog" style='width: 920px;'>
+        <div class="modal-content">
+            <div class="modal-header">
+                <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+                <h3>商品价格提示</h3>
+            </div>
+            <div class="modal-body">
+                <div id="module-prices" style="padding-top:5px;overflow: scroll">商品价格信息</div>
+            </div>
+            <div class="modal-footer">
+                <button id="module-prices-submit" type="button" class="btn btn-success" data-dismiss="modal" onclick="$('form').submit();">确认</button>
+                <a href="#" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</a>
+            </div>
+        </div>
+
+    </div>
+</div>
 {{--</div>--}}
 
 @endsection('content')
