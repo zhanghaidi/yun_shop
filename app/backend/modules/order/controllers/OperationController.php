@@ -77,11 +77,13 @@ class OperationController extends BaseController
      * @return mixed
      * @throws \app\common\exceptions\AppException
      */
-    public function fClose(){
+    public function fClose()
+    {
         $this->order->refund();
         return $this->message('强制退款成功');
 
     }
+
     /**
      * @return mixed
      * @throws \app\common\exceptions\AppException
@@ -146,11 +148,11 @@ class OperationController extends BaseController
     public function remarks()
     {
         $order = Order::find(request()->input('order_id'));
-        if(!$order){
-            throw new AppException("未找到该订单".request()->input('order_id'));
+        if (!$order) {
+            throw new AppException("未找到该订单" . request()->input('order_id'));
         }
 
-        if(request()->has('remark')){
+        if (request()->has('remark')) {
             $remark = $order->hasOneOrderRemark;
             if (!$remark) {
                 $remark = new Remark([
@@ -158,13 +160,13 @@ class OperationController extends BaseController
                     'remark' => request()->input('remark')
                 ]);
 
-                if(!$remark->save()){
+                if (!$remark->save()) {
                     return $this->errorJson();
                 }
             } else {
-                $reUp = Remark::where('order_id', request()->input('order_id') )
+                $reUp = Remark::where('order_id', request()->input('order_id'))
                     ->where('remark', $remark->remark)
-                    ->update(['remark'=> request()->input('remark')]);
+                    ->update(['remark' => request()->input('remark')]);
 
                 if (!$reUp) {
                     return $this->errorJson();
@@ -182,9 +184,9 @@ class OperationController extends BaseController
     public function invoice()
     {
         $order = Order::find(request()->input('order_id'));
-        
+
         if (!$order) {
-            throw new AppException("未找到该订单".request()->input('order_id'));
+            throw new AppException("未找到该订单" . request()->input('order_id'));
         }
 
         $invoice = trim(request()->input('invoice'));
@@ -208,7 +210,7 @@ class OperationController extends BaseController
         $order = Order::find(request()->input('order_id'));
 
         if (!$order) {
-            throw new AppException("未找到该订单".request()->input('order_id'));
+            throw new AppException("未找到该订单" . request()->input('order_id'));
         }
 
         $invoice_error = trim(request()->input('invoice_error'));
@@ -228,17 +230,17 @@ class OperationController extends BaseController
      */
     public function jushuitanSend()
     {
-        $order = Order::with('address','hasManyOrderGoods','hasOneOrderPay')->find(request()->input('order_id'));
+        $order = Order::with('address', 'hasManyOrderGoods', 'hasOneOrderPay')->find(request()->input('order_id'));
 
         if (!$order) {
-            throw new AppException("未找到该订单".request()->input('order_id'));
+            throw new AppException("未找到该订单" . request()->input('order_id'));
         }
 
         $address = explode(" ", $order->address->address);
         $goods = $order->hasManyOrderGoods->toArray();
         $items = [];
-        foreach ($goods as $k => $val){
-            $items[] =[
+        foreach ($goods as $k => $val) {
+            $items[] = [
                 'sku_id' => $val['goods_sn'],   //ERP内商品编码 长度<=40 （必传项）
                 'shop_sku_id' => $val['goods_sn'],      //店铺商品编码 长度<=128 （必传项）
                 //'i_id' => '',  //ERP内款号/货号 长度<=40
@@ -250,15 +252,14 @@ class OperationController extends BaseController
                 'properties_value' => $val['goods_option_title']  //商品属性；长度<=100 （非必传）
             ];
         }
-        $paramsData = array([
+        $params = array([
             'pay' => [
-                'outer_pay_id' => $order->hasOneOrderPay->pay_sn ,//外部支付单号，最大50 （必传项）$order->order_sn,
+                'outer_pay_id' => $order->hasOneOrderPay->pay_sn,//外部支付单号，最大50 （必传项）$order->order_sn,
                 'pay_date' => $order->pay_time->toDateTimeString(), //支付日期 （必传项）
                 'amount' => $order->price, //支付金额 （必传项）
                 'payment' => $order->hasOneOrderPay->pay_type_name, //支付方式，最大20 （必传项）
                 'seller_account' => $order->address->mobile, //卖家支付账号，最大 50 （必传项）
                 'buyer_account' => $order->shop_name //买家支付账号，最大 200 （必传项）
-
             ],
             'shop_id' => 10820686, //店铺编号 （必传项）
             'so_id' => $order->order_sn,  //订单编号 （必传项）
@@ -279,44 +280,18 @@ class OperationController extends BaseController
             'items' => $items,  //商品明细 （必传项）
         ]);
 
-        echo json_encode($paramsData);die;
-        $params = array(
-            [
-                "pay" => [
-                    "outer_pay_id" => $order_data['order_sn'],
-                    "pay_date" => date('Y-m-d h:i:s', $order_data['pay_time']),
-                    "amount" => floatval($order_data['price']),
-                    "payment" => "微信",
-                    "buyer_account" => $order_data['mobile'],
-                    "seller_account" => "艾居益商城"
-                ],
-                "shop_id" => 10820686,
-                "so_id" => $order_data['order_sn'],
-                "order_date" => date('Y-m-d h:i:s', $order_data['create_time']),
-                "shop_status" => "WAIT_SELLER_SEND_GOODS",
-                "shop_buyer_id" => $order_data['mobile'],
-                "receiver_state" => $province,
-                "receiver_city" => $city,
-                "receiver_district" => $district,
-                "receiver_address" => $address,
-                "receiver_name" => $order_data['realname'],
-                "receiver_phone" => $order_data['mobile'],
-                "receiver_mobile" => $order_data['mobile'],
-                "pay_amount" => floatval($order_data['price']),
-                "freight" => 0.0,
-                "shop_modified" => date('Y-m-d h:i:s', time()),
-                'buyer_message' => $order_data['note'],
-                "items" => $array,
-            ]
-        );
 
         $result = OrderService::post($params, 'jushuitan.orders.upload');
         if (!empty($result) && $result['code'] == 0) {
-            $data['jushuitan_status'] = '1';
+            //$data['jushuitan_status'] = '1';
+            $order->jushuitan_status = 1;
+            $order->save();
             //DB::table('yz_order')->where(['id' => $order_data['id']])->update($data);
             //echo '订单上传成功' . $order_data['id'];
+            return $this->message('订单上传成功');
         } else {
             //echo $result['msg'];
+            return $this->message('订单上传失败','','error');
         }
 
     }

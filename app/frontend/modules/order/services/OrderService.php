@@ -488,7 +488,7 @@ class OrderService
      * 发货，退款消息入库
      *
      */
-    public static function orderMess($order_sn='', $order='',$type='')
+    public static function orderMess($order_sn = '', $order = '', $type = '')
     {
         DB::table('yz_order_messages')->insert([
             'order_sn' => $order_sn,
