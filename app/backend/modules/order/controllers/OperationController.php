@@ -234,8 +234,8 @@ class OperationController extends BaseController
             throw new AppException("未找到该订单".request()->input('order_id'));
         }
 
-        $goodsItem =  $order->hasManyOrderGoods();
-        $address = explode(" ", $order->address->address);
+        //$goodsItem =  $order->hasManyOrderGoods();
+        //$address = explode(" ", $order->address->address);
         var_dump(Carbon::create($order->pay_time));die;
         $paramsData = array(
             'pay' => [
