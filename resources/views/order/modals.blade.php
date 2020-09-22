@@ -8,7 +8,7 @@
 <!-- 上传订单到聚水潭ERP提示 -->
 <div id="modal-jushuitan-send" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" style="width:600px;margin:0px auto;">
     <form class="form-horizontal form" action="{!! yzWebUrl('order.operation.jushuitanSend') !!}" method="post" enctype="multipart/form-data">
-        <input type="hidden" name="route" value="order.operation.close">
+        <input type="hidden" name="route" value="order.operation.jushuitanSend">
         <input type='hidden' name='order_id' value=''/>
         <div class="modal-dialog">
             <div class="modal-content">
