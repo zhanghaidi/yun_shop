@@ -700,7 +700,7 @@
                 <h3>商品价格提示</h3>
             </div>
             <div class="modal-body">
-                <div id="module-prices" style="padding-top:5px;overflow: scroll">商品价格信息</div>
+                <div id="module-prices" class="pre-scrollable" style="max-height:430px;padding-top:5px;">商品价格信息</div>
             </div>
             <div class="modal-footer">
                 <button id="module-prices-submit" type="button" class="btn btn-success" data-dismiss="modal" onclick="$('form').submit();">确认</button>
