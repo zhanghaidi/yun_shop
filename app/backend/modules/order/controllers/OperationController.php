@@ -237,7 +237,7 @@ class OperationController extends BaseController
         //$goodsItem =  $order->hasManyOrderGoods();
         $address = explode(" ", $order->address->address);
         var_dump($address);
-        var_dump($order->pay_time->create());
+        var_dump(Carbon::now());
         die;
         $paramsData = array(
             'pay' => [
