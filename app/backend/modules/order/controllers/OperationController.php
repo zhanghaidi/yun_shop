@@ -14,7 +14,7 @@ use app\common\models\PayType;
 use app\frontend\modules\order\services\OrderService;
 use app\common\models\order\Remark;
 use app\common\exceptions\AppException;
-
+use Carbon\Carbon;
 class OperationController extends BaseController
 {
     protected $param;
@@ -228,7 +228,7 @@ class OperationController extends BaseController
      */
     public function jushuitanSend()
     {
-        $order = Order::find(request()->input('order_id'))->toArray();
+        $order = Order::with('address','hasManyOrderGoods')->find(request()->input('order_id'));
 
         if (!$order) {
             throw new AppException("未找到该订单".request()->input('order_id'));
@@ -236,7 +236,7 @@ class OperationController extends BaseController
 
         $goodsItem =  $order->hasManyOrderGoods();
         $address = explode(" ", $order->address->address);
-        var_dump($order);
+        var_dump(Carbon::create($order->pay_time));die;
         $paramsData = array(
             'pay' => [
                 'outer_pay_id' => $order->order_sn, //外部支付单号，最大50 （必传项）
@@ -249,7 +249,7 @@ class OperationController extends BaseController
             ],
             'shop_id' => 10820686, //店铺编号 （必传项）
             'so_id' => $order->order_sn,  //订单编号 （必传项）
-            'order_date' =>  '',//Carbon::$order->create_time, //订单日期 （必传项）
+            'order_date' => Carbon::create($order->pay_time),//Carbon::$order->create_time, //订单日期 （必传项）
             'shop_status' => 'WAIT_SELLER_SEND_GOODS',  //（必传项）订单：等待买家付款=WAIT_BUYER_PAY，等待卖家发货=WAIT_SELLER_SEND_GOODS,等待买家确认收货=WAIT_BUYER_CONFIRM_GOODS, 交易成功=TRADE_FINISHED, 付款后交易关闭=TRADE_CLOSED,付款前交易关闭=TRADE_CLOSED_BY_TAOBAO；发货前可更新
             'shop_buyer_id' => $order->address->mobile, //买家帐号 长度 <= 50 （必传项）
             'receiver_state' => $address[0], //收货省份 长度 <= 50；发货前可更新 （必传项）
