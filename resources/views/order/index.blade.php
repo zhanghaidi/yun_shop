@@ -292,11 +292,14 @@
                                         @if($order['jushuitan_status']==1)
                                             <label class="label label-success">已发送聚水潭</label>
                                         @else
-                                            {{--<a class="label label-warning">未发送聚水潭</a>--}}
-                                            <a class="label label-warning" href="javascript:;"
-                                               onclick="$('#modal-jushuitan-send').find(':input[name=order_id]').val('{{$order['id']}}')"
-                                               data-toggle="modal" data-target="#modal-jushuitan-send">未发送聚水潭
-                                            </a>
+                                            @if($order['status'] ==1)
+                                                <a class="label label-primary" href="javascript:;"
+                                                   onclick="$('#modal-jushuitan-send').find(':input[name=order_id]').val('{{$order['id']}}')"
+                                                   data-toggle="modal" data-target="#modal-jushuitan-send">点击可发送聚水潭
+                                                </a>
+                                            @else
+                                                <label class="label label-info">未发送聚水潭</label>
+                                            @endif
                                         @endif
 
                                         @if(!empty($order['order_deliver']))
