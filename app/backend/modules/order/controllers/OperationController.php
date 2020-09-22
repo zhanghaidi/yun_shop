@@ -234,8 +234,9 @@ class OperationController extends BaseController
             throw new AppException("未找到该订单".request()->input('order_id'));
         }
 
-       $goodsItem =  $order->hasManyOrderGoods();
+      // $goodsItem =  $order->hasManyOrderGoods();
 
+        var_dump($order);
         $paramsData = array(
             'pay' => [
                 'outer_pay_id' => $order->sn, //外部支付单号，最大50 （必传项）
