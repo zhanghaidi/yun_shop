@@ -14,7 +14,7 @@ use app\common\models\PayType;
 use app\frontend\modules\order\services\OrderService;
 use app\common\models\order\Remark;
 use app\common\exceptions\AppException;
-use Carbon\Carbon;
+
 class OperationController extends BaseController
 {
     protected $param;
@@ -234,15 +234,26 @@ class OperationController extends BaseController
             throw new AppException("未找到该订单".request()->input('order_id'));
         }
 
-        //$goodsItem =  $order->hasManyOrderGoods();
         $address = explode(" ", $order->address->address);
-        var_dump($address);
-        var_dump(Carbon::now());
-        die;
+        $goods = $order->hasManyOrderGoods()->toArray();
+        $items = [];
+        foreach ($goods as $k => $val){
+            $items[] =[
+                'sku_id' => $val['goods_sn'],   //ERP内商品编码 长度<=40 （必传项）
+                'shop_sku_id' => 'SKU A1',      //店铺商品编码 长度<=128 （必传项）
+                //'i_id' => '',  //ERP内款号/货号 长度<=40
+                'amount' => $val['goods_price'], //应付金额，保留两位小数，单位（元）；备注：可能存在人工改价 （必传项）
+                'base_price' => $val['goods_price'], //基本价（拍下价格），保留两位小数，单位（元） （必传项）
+                'qty' => $val['total'], //数量 （必传项）
+                'name' => $val['title'], //商品名称 长度<=100 （必传项）
+                'outer_oi_id' => $val['id'], //商家系统订单商品明细主键,为了拆单合单时溯源，最长不超过 50,保持唯一 （必传项）
+                'properties_value' => $val['goods_option_title']  //商品属性；长度<=100 （非必传）
+            ];
+        }
         $paramsData = array(
             'pay' => [
                 'outer_pay_id' => $order->order_sn, //外部支付单号，最大50 （必传项）
-                'pay_date' => $order->pay_time->create(), //支付日期 （必传项）
+                'pay_date' => $order->pay_time->toDateTimeString(), //支付日期 （必传项）
                 'amount' => $order->price, //支付金额 （必传项）
                 'payment' => $order->hasOnePayType->name, //支付方式，最大20 （必传项）
                 'seller_account' => $order->address->mobile, //卖家支付账号，最大 50 （必传项）
@@ -251,7 +262,7 @@ class OperationController extends BaseController
             ],
             'shop_id' => 10820686, //店铺编号 （必传项）
             'so_id' => $order->order_sn,  //订单编号 （必传项）
-            'order_date' => Carbon::create($order->pay_time),//Carbon::$order->create_time, //订单日期 （必传项）
+            'order_date' => $order->pay_time->toDateTimeString(),//Carbon::$order->create_time, //订单日期 （必传项）
             'shop_status' => 'WAIT_SELLER_SEND_GOODS',  //（必传项）订单：等待买家付款=WAIT_BUYER_PAY，等待卖家发货=WAIT_SELLER_SEND_GOODS,等待买家确认收货=WAIT_BUYER_CONFIRM_GOODS, 交易成功=TRADE_FINISHED, 付款后交易关闭=TRADE_CLOSED,付款前交易关闭=TRADE_CLOSED_BY_TAOBAO；发货前可更新
             'shop_buyer_id' => $order->address->mobile, //买家帐号 长度 <= 50 （必传项）
             'receiver_state' => $address[0], //收货省份 长度 <= 50；发货前可更新 （必传项）
@@ -265,17 +276,7 @@ class OperationController extends BaseController
             'freight' => $order->dispatch_price,    //运费 （必传项）
             'shop_modified' => date('Y-m-d H:i:s', time()), //订单修改日期 （必传项）
             'buyer_message' => $order->note, //买家留言 长度<=400；可更新 （非必传）
-            'items' => $order->hasManyOrderGoods,  //商品明细 （必传项）
-           /* [
-                'sku_id' => $order->hasManyOrderGoods->'goods_sn',
-                'shop_sku_id' => 'SKU A1',
-                'amount' => floatval($val['goods_price']),
-                'base_price' => floatval($val['goods_price']),
-                'qty' => $val['total'],
-                'name' => $val['title'],
-                'outer_oi_id' => strval($val['id']),
-                'properties_value' => $val['goods_option_title']
-            ],*/
+            'items' => $items,  //商品明细 （必传项）
         );
 
         var_dump($paramsData);die;
