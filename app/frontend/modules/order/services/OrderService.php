@@ -437,6 +437,7 @@ class OrderService
 
 
     /**
+     * fixby-ly-jushuitanAPI 2020-07-21 18:11
      * url  聚水潭线上地址
      * data 请求聚水潭参数  参考：https://open.jushuitan.com/document/2137.html
      *action 聚水潭接口名称
