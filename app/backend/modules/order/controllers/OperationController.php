@@ -175,6 +175,10 @@ class OperationController extends BaseController
         echo json_encode(["data" => '', "result" => 1]);
     }
 
+    /**
+     * fixby-lgg-invoice 2020-08-01 10:10
+     * @throws AppException
+     */
     public function invoice()
     {
         $order = Order::find(request()->input('order_id'));
@@ -194,6 +198,11 @@ class OperationController extends BaseController
         echo json_encode(["data" => '', "result" => 1]);
     }
 
+    /**
+     * fixby-lgg-发票驳回 2020-08-01 10:10
+     * @return mixed
+     * @throws AppException
+     */
     public function invoiceRefuse()
     {
         $order = Order::find(request()->input('order_id'));
@@ -212,4 +221,59 @@ class OperationController extends BaseController
         $order->save();
         return $this->message('操作成功');
     }
+
+    /**
+     * fixby-zhd-jushuitanERP订单推送 2020-09-21 18:05
+     * @throws AppException
+     */
+    public function jushuitanSend()
+    {
+        $order = Order::find(request()->input('order_id'));
+
+        if (!$order) {
+            throw new AppException("未找到该订单".request()->input('order_id'));
+        }
+
+        var_dump($order);die;
+        $params = array(
+            [
+                "pay" => [
+                    "outer_pay_id" => $order_data['order_sn'],
+                    "pay_date" => date('Y-m-d h:i:s', $order_data['pay_time']),
+                    "amount" => floatval($order_data['price']),
+                    "payment" => "微信",
+                    "buyer_account" => $order_data['mobile'],
+                    "seller_account" => "艾居益商城"
+                ],
+                "shop_id" => 10820686,
+                "so_id" => $order_data['order_sn'],
+                "order_date" => date('Y-m-d h:i:s', $order_data['create_time']),
+                "shop_status" => "WAIT_SELLER_SEND_GOODS",
+                "shop_buyer_id" => $order_data['mobile'],
+                "receiver_state" => $province,
+                "receiver_city" => $city,
+                "receiver_district" => $district,
+                "receiver_address" => $address,
+                "receiver_name" => $order_data['realname'],
+                "receiver_phone" => $order_data['mobile'],
+                "receiver_mobile" => $order_data['mobile'],
+                "pay_amount" => floatval($order_data['price']),
+                "freight" => 0.0,
+                "shop_modified" => date('Y-m-d h:i:s', time()),
+                'buyer_message' => $order_data['note'],
+                "items" => $array,
+            ]
+        );
+
+        $result = OrderService::post($params, 'jushuitan.orders.upload');
+        if (!empty($result) && $result['code'] == 0) {
+            $data['jushuitan_status'] = '1';
+            //DB::table('yz_order')->where(['id' => $order_data['id']])->update($data);
+            //echo '订单上传成功' . $order_data['id'];
+        } else {
+            //echo $result['msg'];
+        }
+
+    }
+
 }
