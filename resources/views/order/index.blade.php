@@ -293,7 +293,7 @@
                                             <label class="label label-success">已上传聚水潭</label>
                                         @else
                                             @if($order['status'] ==1)
-                                                <a class="label label-info" href="javascript:;"
+                                                <a class="label label-primary" href="javascript:;"
                                                    onclick="$('#modal-jushuitan-send').find(':input[name=order_id]').val('{{$order['id']}}')"
                                                    data-toggle="modal" data-target="#modal-jushuitan-send">可上传聚水潭
                                                 </a>
