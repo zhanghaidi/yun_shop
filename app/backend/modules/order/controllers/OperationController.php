@@ -228,7 +228,7 @@ class OperationController extends BaseController
      */
     public function jushuitanSend()
     {
-        $order = Order::with('address','hasManyOrderGoods')->find(request()->input('order_id'));
+        $order = Order::with('address','hasManyOrderGoods','hasOneOrderPay')->find(request()->input('order_id'));
 
         if (!$order) {
             throw new AppException("未找到该订单".request()->input('order_id'));
@@ -246,16 +246,16 @@ class OperationController extends BaseController
                 'base_price' => $val['goods_price'], //基本价（拍下价格），保留两位小数，单位（元） （必传项）
                 'qty' => $val['total'], //数量 （必传项）
                 'name' => $val['title'], //商品名称 长度<=100 （必传项）
-                'outer_oi_id' => $val['order_id'], //商家系统订单商品明细主键,为了拆单合单时溯源，最长不超过 50,保持唯一 （必传项）
+                'outer_oi_id' => $val['id'], //商家系统订单商品明细主键,为了拆单合单时溯源，最长不超过 50,保持唯一 （必传项）
                 'properties_value' => $val['goods_option_title']  //商品属性；长度<=100 （非必传）
             ];
         }
         $paramsData = array(
             'pay' => [
-                'outer_pay_id' => $order->order_sn, //外部支付单号，最大50 （必传项）
+                'outer_pay_id' => $order->hasOneOrderPay->pay_sn ,//外部支付单号，最大50 （必传项）$order->order_sn,
                 'pay_date' => $order->pay_time->toDateTimeString(), //支付日期 （必传项）
                 'amount' => $order->price, //支付金额 （必传项）
-                'payment' => $order->hasOnePayType->name, //支付方式，最大20 （必传项）
+                'payment' => $order->hasOneOrderPay->pay_type_name, //支付方式，最大20 （必传项）
                 'seller_account' => $order->address->mobile, //卖家支付账号，最大 50 （必传项）
                 'buyer_account' => $order->shop_name //买家支付账号，最大 200 （必传项）
 
