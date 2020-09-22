@@ -235,18 +235,18 @@ class OperationController extends BaseController
         }
 
         $address = explode(" ", $order->address->address);
-        $goods = $order->hasManyOrderGoods()->toArray();
+        $goods = $order->hasManyOrderGoods->toArray();
         $items = [];
         foreach ($goods as $k => $val){
             $items[] =[
                 'sku_id' => $val['goods_sn'],   //ERP内商品编码 长度<=40 （必传项）
-                'shop_sku_id' => 'SKU A1',      //店铺商品编码 长度<=128 （必传项）
+                'shop_sku_id' => $val['goods_sn'],      //店铺商品编码 长度<=128 （必传项）
                 //'i_id' => '',  //ERP内款号/货号 长度<=40
                 'amount' => $val['goods_price'], //应付金额，保留两位小数，单位（元）；备注：可能存在人工改价 （必传项）
                 'base_price' => $val['goods_price'], //基本价（拍下价格），保留两位小数，单位（元） （必传项）
                 'qty' => $val['total'], //数量 （必传项）
                 'name' => $val['title'], //商品名称 长度<=100 （必传项）
-                'outer_oi_id' => $val['id'], //商家系统订单商品明细主键,为了拆单合单时溯源，最长不超过 50,保持唯一 （必传项）
+                'outer_oi_id' => $val['order_id'], //商家系统订单商品明细主键,为了拆单合单时溯源，最长不超过 50,保持唯一 （必传项）
                 'properties_value' => $val['goods_option_title']  //商品属性；长度<=100 （非必传）
             ];
         }
