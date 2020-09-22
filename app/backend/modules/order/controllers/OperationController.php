@@ -250,7 +250,7 @@ class OperationController extends BaseController
                 'properties_value' => $val['goods_option_title']  //商品属性；长度<=100 （非必传）
             ];
         }
-        $paramsData = array(
+        $paramsData = array([
             'pay' => [
                 'outer_pay_id' => $order->hasOneOrderPay->pay_sn ,//外部支付单号，最大50 （必传项）$order->order_sn,
                 'pay_date' => $order->pay_time->toDateTimeString(), //支付日期 （必传项）
@@ -277,9 +277,9 @@ class OperationController extends BaseController
             'shop_modified' => date('Y-m-d H:i:s', time()), //订单修改日期 （必传项）
             'buyer_message' => $order->note ? $order->note : '', //买家留言 长度<=400；可更新 （非必传）
             'items' => $items,  //商品明细 （必传项）
-        );
+        ]);
 
-        var_dump($paramsData);die;
+        echo json_encode($paramsData);die;
         $params = array(
             [
                 "pay" => [
