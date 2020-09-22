@@ -235,8 +235,8 @@ class OperationController extends BaseController
         }
 
         //$goodsItem =  $order->hasManyOrderGoods();
-        //$address = explode(" ", $order->address->address);
-        var_dump(Carbon::create($order->pay_time));die;
+        $address = explode(" ", $order->address->address);
+        var_dump($address);die;
         $paramsData = array(
             'pay' => [
                 'outer_pay_id' => $order->order_sn, //外部支付单号，最大50 （必传项）
