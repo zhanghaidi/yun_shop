@@ -45,6 +45,17 @@
                             {!! yz_tpl_ueditor('desc', $info['desc']) !!}
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">课程状态</label>
+                        <div class="col-sm-9 col-xs-12 col-md-11">
+                            <select name="live_status" class="form-control">
+                                <option value="">请选择课程状态</option>
+                                <option value="0" @if($info['live_status']=='0') selected @endif>筹备中</option>
+                                <option value='1' @if($info['live_status']=='1') selected @endif>更新中</option>
+                                <option value='2' @if($info['live_status']=='2') selected @endif>已完结</option>
+                            </select>
+                        </div>
+                    </div>
                 @endif
 
                 @if($info['type']=='2')
