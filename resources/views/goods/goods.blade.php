@@ -116,6 +116,13 @@
 
         @endif
 
+        //增加商品编码验证 fixby-zlt-checkGoodsSn 2020-09-23 17:11
+        if ($.trim($(':input[name="goods[goods_sn]"]').val()) == '') {
+            $('#myTab a[href="#tab_basic"]').tab('show');
+            Tip.focus(':input[name="goods[goods_sn]"]', '请填写商品编号.');
+            return false;
+        }
+
         if ($.trim($(':input[name="goods[price]"]').val()) == '') {
             $('#myTab a[href="#tab_basic"]').tab('show');
             Tip.focus(':input[name="goods[price]"]', '请填写价格.');
