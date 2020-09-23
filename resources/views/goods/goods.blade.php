@@ -132,6 +132,10 @@
                 $('#myTab a[href="#tab_basic"]').tab('show');
                 Tip.focus(':input[name="goods[price]"]', '价格格式错误,最多两位小数.');
                 return false;
+            }else if(parseFloat($(':input[name="goods[price]"]').val()) <=0 ){
+                $('#myTab a[href="#tab_basic"]').tab('show');
+                Tip.focus(':input[name="goods[price]"]', '价格必须大于0.');
+                return false;
             }
         }
         // if ($.trim($(':input[name="goods[market_price]"]').val()) == '') {
