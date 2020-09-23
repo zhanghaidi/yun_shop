@@ -292,7 +292,7 @@
                                         @if($order['jushuitan_status']==1)
                                             <label class="label label-success">已上传聚水潭</label>
                                         @else
-                                            @if($order['status'] ==1)
+                                            @if($order['status'] ==1 && empty($order['has_one_refund_apply']))
                                                 <a class="label label-primary" href="javascript:;"
                                                    onclick="$('#modal-jushuitan-send').find(':input[name=order_id]').val('{{$order['id']}}')"
                                                    data-toggle="modal" data-target="#modal-jushuitan-send">可上传聚水潭
