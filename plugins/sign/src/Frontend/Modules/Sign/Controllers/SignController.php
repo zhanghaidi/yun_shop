@@ -332,30 +332,33 @@ class SignController extends ApiController
             ->select('id', 'uniacid', 'member_id', 'updated_at')
             ->whereBetween('updated_at', $whereBetweenSign)
             ->get()->toArray();
-        dd($sign_users);die();
+
         if (!empty($sign_users)) {
             // 2、查询签到用户的小程序用户信息(openid)
-            $member_ids = array_unique(array_column($sign_users, 'user_id'));
+            $member_ids = array_unique(array_column($sign_users, 'member_id'));
             $wxapp_user = DB::table('diagnostic_service_user')
-                ->select('ajy_uid', 'unionid', 'openid')
+                ->select('ajy_uid', 'unionid', 'openid','nickname')
                 ->whereIn('ajy_uid', $member_ids)
                 ->get()->toArray();
             //如果小程序 公众号ID
             $subscribed_unionid = array_column($wxapp_user, 'unionid');
             $wechat_user = DB::table('mc_mapping_fans')
-                ->select('uid', 'unionid', 'openid')
+                ->select('uid', 'unionid', 'openid','nickname')
                 ->where('follow', 1)
                 ->where('uniacid', 39)
                 ->whereIn('unionid', $subscribed_unionid)
                 ->get()->toArray();
-            array_walk($subscribed_user, function (&$item) use ($wxapp_user, $wechat_user) {
+            //3 组装数据
+            array_walk($sign_users, function (&$item) use ($wxapp_user, $wechat_user) {
+                //小程序openid
                 foreach ($wxapp_user as $user) {
-                    if ($user['ajy_uid'] == $item['user_id']) {
+                    if ($user['ajy_uid'] == $item['member_id']) {
                         $item['unionid'] = $user['unionid'];
                         $item['wxapp_openid'] = $user['openid'];
                         break;
                     }
                 }
+                //公众号openid
                 $item['wechat_openid'] = '';
                 foreach ($wechat_user as $user) {
                     if ($user['unionid'] == $item['unionid']) {
@@ -364,7 +367,7 @@ class SignController extends ApiController
                     }
                 }
             });
-
+            dd($sign_users);
 
             // 4、组装队列数据
             $job_list = [];
