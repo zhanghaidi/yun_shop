@@ -282,7 +282,7 @@ class OperationController extends BaseController
 
 
         $result = OrderService::post($params, 'jushuitan.orders.upload');
-        \Log::info('----聚水潭订单上传结果---', $result);
+        \Log::info('----'.$order->order_sn.'订单上传结果：', $result);
         if (!empty($result) && $result['code'] == 0) {
             //$data['jushuitan_status'] = '1';
             $order->jushuitan_status = 1;
