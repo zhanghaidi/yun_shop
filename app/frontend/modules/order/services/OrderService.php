@@ -463,7 +463,7 @@ class OrderService
                 print curl_error($ch);
             }
             curl_close($ch);
-            \Log::info('----聚水潭post接口请求成功---'.$url, $post_data);
+            \Log::info('----聚水潭post接口请求成功---'.$url, $data);
             return json_decode($result, true);
 
         } catch (Exception $e) {
