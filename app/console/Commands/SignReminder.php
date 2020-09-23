@@ -168,8 +168,8 @@ class SignReminder extends Command
 
         if ($type == 'wechat') {
 
-            $first_value = '尊敬的用户:'.$users['wechat_nickname'].',每天签到领取健康金啦~';
-            $remark_value = '尊敬的用户,坚持签到可领取健康金，点击领取共同守护家人健康~';
+            $first_value = '尊敬的:'.$users['wechat_nickname'].',每天签到领取健康金啦~';
+            $remark_value = '坚持签到可领取健康金，点击领取共同守护家人健康~';
 
             $param['options'] = $this->options['wechat'];
             $param['page'] = $jump_page;
@@ -184,7 +184,7 @@ class SignReminder extends Command
         } elseif ($type == 'wxapp') {
 
             $thing1_value = '每日签到';
-            $thing2_value = '尊敬的用户:'.$users['wxapp_nickname'].',每天签到领取健康金啦~';
+            $thing2_value = '尊敬的:'.$users['wxapp_nickname'].',每天签到领取健康金啦~';
 
             $param['options'] = $this->options['wxapp'];
             $param['page'] = $jump_page;
