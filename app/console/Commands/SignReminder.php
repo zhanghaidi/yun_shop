@@ -173,11 +173,11 @@ class SignReminder extends Command
 
             $param['options'] = $this->options['wechat'];
             $param['page'] = $jump_page;
-            $param['template_id'] = 'dxY9Gtbwb1A6uD56Ow6D7DvE7DIQESTr0jm7lv3BJQo';
+            $param['template_id'] = 'LeEHrJ8uCb6oB7VTzH-q8UZI9ISdo5o6SNZhezrCU4s';
             $param['notice_data'] = [
                 'first' => ['value' => $first_value, 'color' => '#173177'],
-                'keyword1' => ['value' => $users['wechat_nickname'], 'color' => '#173177'],
-                'keyword2' => ['value' => $users['cumulative_number'], 'color' => '#173177'],
+                'keyword1' => ['value' => '未签到提醒', 'color' => '#173177'],
+                'keyword2' => ['value' => date('Y-m-d H:i', time()), 'color' => '#173177'],
                 'remark' => ['value' => $remark_value, 'color' => '#173177'],
             ];
 
