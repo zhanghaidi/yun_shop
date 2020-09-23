@@ -293,7 +293,7 @@ class OperationController extends BaseController
         } else {
 
             //echo $result['msg'];
-            return $this->message('订单上传失败','','error');
+            return $this->message('订单上传失败:'.$result['msg'],'','error');
         }
 
     }
