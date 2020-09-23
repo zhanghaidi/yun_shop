@@ -276,7 +276,7 @@ class OperationController extends BaseController
             'pay_amount' => floatval($order->price),  //decimal应付金额，保留两位小数，单位元） （必传项）
             'freight' => floatval($order->dispatch_price),    //decimal运费 （必传项）
             'shop_modified' => date('Y-m-d H:i:s', time()), //string订单修改日期 （必传项）
-            'buyer_message' => $order->note ? $order->note : '', //string买家留言 长度<=400；可更新 （非必传）
+            'buyer_message' => $order->note, //string买家留言 长度<=400；可更新 （非必传）
             'items' => $items,  //商品明细 （必传项）
         ]);
 
