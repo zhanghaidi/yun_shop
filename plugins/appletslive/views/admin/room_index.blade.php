@@ -66,6 +66,7 @@
                         <th style='width:15%;'>排序</th>
                         <th style='width:15%;'>封面</th>
                         <th style='width:25%;'>名称</th>
+                        <th style='width:25%;'>状态</th>
                         <th style='width:15%;'>订阅人数</th>
                         <th style='width:20%;'>操作</th>
                     </tr>
@@ -84,6 +85,15 @@
                                 </div>
                             </td>
                             <td>{{ $row['name'] }}</td>
+                            <td>
+                                @if ($row['live_status'] == 1)
+                                    更新中
+                                @elseif ($row['live_status'] == 2)
+                                    已完结
+                                @else
+                                    筹备中
+                                @endif
+                            </td>
                             <td>{{ $row['subscription_num'] }}</td>
                             <td style="overflow:visible;">
                                 <a class='btn btn-default'
