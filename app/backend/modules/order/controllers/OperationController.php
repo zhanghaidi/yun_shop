@@ -241,10 +241,9 @@ class OperationController extends BaseController
         $items = [];
         foreach ($goods as $k => $val) {
             $items[] = [
-                //'sku_id' => $val['goods_sn'],
                 //'shop_sku_id' => 'SKU A1',
                 'sku_id' => $val['goods_sn'],   //ERP内商品编码 长度<=40 （必传项）
-                'shop_sku_id' => 'SKU A1',      //店铺商品编码 长度<=128 （必传项）
+                'shop_sku_id' => $val['goods_sn'],      //店铺商品编码 长度<=128 （必传项）
                 //'i_id' => '',  //ERP内款号/货号 长度<=40
                 'amount' => floatval($val['goods_price']), //decimal应付金额，保留两位小数，单位（元）；备注：可能存在人工改价 （必传项）
                 'base_price' => floatval($val['goods_price']), //decimal基本价（拍下价格），保留两位小数，单位（元） （必传项）
