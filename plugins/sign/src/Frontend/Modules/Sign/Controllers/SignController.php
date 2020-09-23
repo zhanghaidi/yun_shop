@@ -355,6 +355,7 @@ class SignController extends ApiController
                     if ($user['ajy_uid'] == $item['member_id']) {
                         $item['unionid'] = $user['unionid'];
                         $item['wxapp_openid'] = $user['openid'];
+                        $item['wxapp_nickname'] = $user['nickname'];
                         break;
                     }
                 }
@@ -363,11 +364,11 @@ class SignController extends ApiController
                 foreach ($wechat_user as $user) {
                     if ($user['unionid'] == $item['unionid']) {
                         $item['wechat_openid'] = $user['openid'];
+                        $item['wechat_nickname'] = $user['nickname'];
                         break;
                     }
                 }
             });
-            dd($sign_users);
 
             // 4、组装队列数据
             $job_list = [];
@@ -418,33 +419,31 @@ class SignController extends ApiController
 
         if ($type == 'wechat') {
 
-            $first_value = '尊敬的用户,您的签到还未有签到~';
-            $remark_value = '尊敬的用户,您的签到今天还未有签到~';
-
+            $first_value = '尊敬的用户:'.$users['wechat_nickname'].',每天签到领取健康金啦~';
+            $remark_value = '尊敬的用户,坚持签到可领取健康金，点击领取共同守护家人健康~';
 
             $param['options'] = $this->options['wechat'];
             $param['page'] = $jump_page;
-            $param['template_id'] = 'c-tYzcbVnoqT33trwq6ckW_lquLDPmqySXvntFJEMhE';
+            $param['template_id'] = 'dxY9Gtbwb1A6uD56Ow6D7DvE7DIQESTr0jm7lv3BJQo';
             $param['notice_data'] = [
                 'first' => ['value' => $first_value, 'color' => '#173177'],
-                'keyword1' => ['value' => '签到有礼', 'color' => '#173177'],
-                'keyword2' => ['value' => '连续签到送优惠券', 'color' => '#173177'],
-                'keyword3' => ['value' => '优惠持续更新中', 'color' => '#173177'],
+                'keyword1' => ['value' => $users['wechat_nickname'], 'color' => '#173177'],
+                'keyword2' => ['value' => $users['cumulative_number'], 'color' => '#173177'],
                 'remark' => ['value' => $remark_value, 'color' => '#173177'],
             ];
 
         } elseif ($type == 'wxapp') {
 
-            $thing1_value = '尊敬的用户,您的签到还未有签到~';
+            $thing1_value = '每日签到';
+            $thing2_value = '尊敬的用户:'.$users['wxapp_nickname'].',每天签到领取健康金啦~';
 
             $param['options'] = $this->options['wxapp'];
             $param['page'] = $jump_page;
-            $param['template_id'] = 'ABepy-L03XH_iU0tPd03VUV9KQ_Vjii5mClL7Qp8_jc';
+            $param['template_id'] = 'ZQzayZvME4-DaYnkHIBDzPNyttv738hpYkKA4iBbY5Y';
             $param['notice_data'] = [
                 'thing1' => ['value' => $thing1_value, 'color' => '#173177'],
-                'thing2' => ['value' => '连续签到送优惠券', 'color' => '#173177'],
-                'name3' => ['value' => '优惠持续更新中', 'color' => '#173177'],
-                'thing4' => ['value' => date('Y-m-d H:i', time()), 'color' => '#173177'],
+                'thing2' => ['value' => $thing2_value, 'color' => '#173177'],
+                'name3' => ['value' => '坚持签到可领取健康金，点击领取共同守护家人健康~', 'color' => '#173177'],
             ];
         }
 
