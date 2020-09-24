@@ -236,7 +236,7 @@ class GoodsPriceService
             }
             $val['html'] .= "<div style='padding-top: 8px;'>商品计算出最终价格：{$val['final_price']}元</div>";
 
-            if($v['final_price'] > 0){
+            if($val['final_price'] > 0){
                 $res_data_arr['normal'][] = $val;
             }else{
                 $res_data_arr['over'][] = $val;
@@ -246,13 +246,13 @@ class GoodsPriceService
         usort($res_data_arr['over'],function ($a, $b){  //最终价格为负的情况
             if($a['total_discount_rate'] == $b['total_discount_rate'])
                 return 0;
-            return $a['total_discount_rate'] > $b['total_discount_rate'] ? -1 : 1;
+            return ($a['total_discount_rate'] > $b['total_discount_rate']) ? -1 : 1;
         });
 
         usort($res_data_arr['normal'],function ($a, $b){ //最终价格为正的情况
             if($a['total_discount_rate'] == $b['total_discount_rate'])
                 return 0;
-            return $a['total_discount_rate'] > $b['total_discount_rate'] ? 1 : -1;
+            return ($a['total_discount_rate'] > $b['total_discount_rate']) ? 1 : -1;
         });
 
         $res_arr = array_merge($res_data_arr['over'],$res_data_arr['normal']);
