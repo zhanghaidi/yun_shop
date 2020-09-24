@@ -107,8 +107,8 @@
             <!-- 新增加右侧顶部三级菜单 -->
             <div class="right-titpos">
                 <ul class="add-snav">
-                    <li class="active"><a href="#">订单管理 &nbsp; <i class="fa fa-angle-double-right"></i> &nbsp; 订单详情</a>
-                    </li>
+                    <li class="active"><a href="{{yzWebUrl('order.list.index')}}">订单管理</a></li>
+                    <li><a href="#">&nbsp;<i class="fa fa-angle-double-right"></i> &nbsp;订单详情</a></li>
                 </ul>
             </div>
             <!-- 新增加右侧顶部三级菜单结束 -->

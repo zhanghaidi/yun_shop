@@ -287,6 +287,21 @@
                                             <label class='label label-primary'>客户已经寄出快递</label>@endif
 
                                         <label class="label label-info">{{$order['shop_name']}}</label>
+                                        {{--订单发送聚水潭ERP状态--}}
+
+                                        @if($order['jushuitan_status']==1)
+                                            <label class="label label-success">已上传聚水潭</label>
+                                        @else
+                                            @if($order['status'] ==1 && empty($order['has_one_refund_apply']))
+                                                <a class="label label-primary" href="javascript:;"
+                                                   onclick="$('#modal-jushuitan-send').find(':input[name=order_id]').val('{{$order['id']}}')"
+                                                   data-toggle="modal" data-target="#modal-jushuitan-send">可上传聚水潭
+                                                </a>
+                                            @else
+                                                <label class="label label-default">未上传聚水潭</label>
+                                            @endif
+                                        @endif
+
                                         @if(!empty($order['order_deliver']))
                                             <label class="label label-primary">
                                                 @if (app('plugins')->isEnabled('package-deliver'))
@@ -304,13 +319,7 @@
                                             <label class='label label-primary'>首单</label>
                                         @endif
 
-                                        @if($order['jushuitan_status']==1)
-                                            <label class="label label-danger">
-                                                已发送订单到聚水潭</label>
-                                         @else
-                                            <label class="label label-danger" style="background-color: #4caf50;">
-                                                暂未发送聚水潭</label>
-                                        @endif
+
 
 
                                     <td class="right">
