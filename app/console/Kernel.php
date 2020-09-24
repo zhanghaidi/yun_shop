@@ -28,6 +28,7 @@ class Kernel extends ConsoleKernel
         'app\console\Commands\MigrateHFLevelExcelData',
         'app\console\Commands\MigrateMemberDistributor',
         'app\console\Commands\UpdateInviteCode',
+        'app\console\Commands\SignReminder',
         WriteFrame::class,
         CourseReminder::class,
         NotPaidOrderNotice::class,
@@ -73,6 +74,11 @@ class Kernel extends ConsoleKernel
         $schedule->command('command:syncwxappliveroom')
             ->withoutOverlapping()
             ->everyMinute();
+
+        // 定时执行 未签到用户签到提醒
+        $schedule->command('command:signreminder')
+            ->withoutOverlapping()
+           ->cron('0 10,15,18,20 * * *');
     }
 
     /**
