@@ -37,9 +37,7 @@ class OperationController extends ApiController
             'express_sn' => 'required|filled|string',
         ]);
         RefundOperationService::refundSend();
-        /**
-         * fixby-ly-jushuitan售后退货API 2020-07-21 18:11
-         */
+
         if (!empty($request['refund_id'])) {
             $data = Db::table('yz_order_refund')->where(['id' => $request['refund_id']])->first();
             $order_data = Db::table('yz_order')->where(['id' => $data['order_id']])->first();

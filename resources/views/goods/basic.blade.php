@@ -165,7 +165,7 @@
 </div>
 
 <div class="form-group">
-    <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span>*</span>商品编号</label>
+    <label class=" col-sm-3 col-md-2 control-label">商品编号</label>
     <div class="col-sm-4 col-xs-12">
         <input type="text" name="goods[goods_sn]" id="productsn" class="form-control" value="{{$goods['goods_sn']}}" />
     </div>
@@ -245,11 +245,11 @@
 <div class="form-group">
     <label class="col-xs-12 col-sm-3 col-md-2 control-label">减库存方式</label>
     <div class="col-sm-9 col-xs-12">
-        <label for="totalcnf1" class="radio-inline"><input type="radio" name="goods[reduce_stock_method]" value="0" id="totalcnf1" @if (!empty($goods['id']) && $goods['reduce_stock_method'] == 0) checked="true" @endif /> 拍下减库存</label>
+        <label for="totalcnf1" class="radio-inline"><input type="radio" name="goods[reduce_stock_method]" value="0" id="totalcnf1" @if (empty($goods) || $goods['reduce_stock_method'] == 0) checked="true" @endif /> 拍下减库存</label>
         &nbsp;&nbsp;&nbsp;
-        <label for="totalcnf2" class="radio-inline"><input type="radio" name="goods[reduce_stock_method]" value="1" id="totalcnf2"  @if (empty($goods['id']) || $goods['reduce_stock_method'] == 1) checked="true" @endif /> 付款减库存</label>
+        <label for="totalcnf2" class="radio-inline"><input type="radio" name="goods[reduce_stock_method]" value="1" id="totalcnf2"  @if (!empty($goods) && $goods['reduce_stock_method'] == 1) checked="true" @endif /> 付款减库存</label>
         &nbsp;&nbsp;&nbsp;
-        <label for="totalcnf3" class="radio-inline"><input type="radio" name="goods[reduce_stock_method]" value="2" id="totalcnf3"  @if (!empty($goods['id']) && $goods['reduce_stock_method'] == 2) checked="true" @endif /> 永不减库存</label>
+        <label for="totalcnf3" class="radio-inline"><input type="radio" name="goods[reduce_stock_method]" value="2" id="totalcnf3"  @if (!empty($goods) && $goods['reduce_stock_method'] == 2) checked="true" @endif /> 永不减库存</label>
     </div>
 </div>
 

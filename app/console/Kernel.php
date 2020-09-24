@@ -10,6 +10,7 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use app\console\Commands\CourseReminder;
 use app\console\Commands\NotPaidOrderNotice;
 use app\console\Commands\SyncWxappLiveRoom;
+use app\console\Commands\SignReminder;
 
 class Kernel extends ConsoleKernel
 {
@@ -33,6 +34,7 @@ class Kernel extends ConsoleKernel
         CourseReminder::class,
         NotPaidOrderNotice::class,
         SyncWxappLiveRoom::class,
+//        SignReminder::class,
     ];
     /**
      * The bootstrap classes for the application.
