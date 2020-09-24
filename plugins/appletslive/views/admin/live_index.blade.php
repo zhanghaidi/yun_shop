@@ -28,13 +28,27 @@
                     <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
                         <select name="search[live_status]" class="form-control">
                             <option value="">请选择直播状态</option>
-                            <option value="101" @if($request['search']['live_status']=='101') selected @endif>直播中</option>
-                            <option value='102' @if($request['search']['live_status']=='102') selected @endif>未开始</option>
-                            <option value='103' @if($request['search']['live_status']=='103') selected @endif>已结束</option>
-                            <option value='104' @if($request['search']['live_status']=='104') selected @endif>禁播</option>
-                            <option value='105' @if($request['search']['live_status']=='105') selected @endif>暂停</option>
-                            <option value='106' @if($request['search']['live_status']=='106') selected @endif>异常</option>
-                            <option value='107' @if($request['search']['live_status']=='107') selected @endif>已过期</option>
+                            <option value="{{ APPLETSLIVE_ROOM_LIVESTATUS_101 }}"
+                                    @if($request['search']['live_status']==APPLETSLIVE_ROOM_LIVESTATUS_101) selected @endif>
+                                {{ APPLETSLIVE_ROOM_LIVESTATUS_101_TEXT }}</option>
+                            <option value='{{ APPLETSLIVE_ROOM_LIVESTATUS_102 }}'
+                                    @if($request['search']['live_status']==APPLETSLIVE_ROOM_LIVESTATUS_102) selected @endif>
+                                {{ APPLETSLIVE_ROOM_LIVESTATUS_102_TEXT }}</option>
+                            <option value='{{ APPLETSLIVE_ROOM_LIVESTATUS_103 }}'
+                                    @if($request['search']['live_status']==APPLETSLIVE_ROOM_LIVESTATUS_103) selected @endif>
+                                {{ APPLETSLIVE_ROOM_LIVESTATUS_103_TEXT }}</option>
+                            <option value='{{ APPLETSLIVE_ROOM_LIVESTATUS_104 }}'
+                                    @if($request['search']['live_status']==APPLETSLIVE_ROOM_LIVESTATUS_104) selected @endif>
+                                {{ APPLETSLIVE_ROOM_LIVESTATUS_104_TEXT }}</option>
+                            <option value='{{ APPLETSLIVE_ROOM_LIVESTATUS_105 }}'
+                                    @if($request['search']['live_status']==APPLETSLIVE_ROOM_LIVESTATUS_105) selected @endif>
+                                {{ APPLETSLIVE_ROOM_LIVESTATUS_105_TEXT }}</option>
+                            <option value='{{ APPLETSLIVE_ROOM_LIVESTATUS_106 }}'
+                                    @if($request['search']['live_status']==APPLETSLIVE_ROOM_LIVESTATUS_106) selected @endif>
+                                {{ APPLETSLIVE_ROOM_LIVESTATUS_106_TEXT }}</option>
+                            <option value='{{ APPLETSLIVE_ROOM_LIVESTATUS_107 }}'
+                                    @if($request['search']['live_status']==APPLETSLIVE_ROOM_LIVESTATUS_107) selected @endif>
+                                {{ APPLETSLIVE_ROOM_LIVESTATUS_107_TEXT }}</option>
                         </select>
                     </div>
                     <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
@@ -97,38 +111,43 @@
                     <tr>
                         <td>{{ $row['id'] }}</td>
                         <td>{{ $row['roomid'] }}</td>
-                        <td>
-                            <img src="{!! tomedia($row['cover_img']) !!}" style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
+                        <td style="overflow:visible;">
+                            <div class="show-cover-img-big" style="position:relative;width:50px;overflow:visible">
+                                <img src="{!! tomedia($row['cover_img']) !!}" alt=""
+                                     style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
+                                <img class="img-big" src="{!! tomedia($row['cover_img']) !!}" alt=""
+                                     style="z-index:99999;position:absolute;top:0;left:0;border:1px solid #ccc;padding:1px;display: none">
+                            </div>
                         </td>
                         <td>{{ $row['name'] }}</td>
                         <td>{{ date('Y-m-d H:i:s', $row['start_time']) }}</td>
                         <td>{{ date('Y-m-d H:i:s', $row['end_time']) }}</td>
                         <td>
-                            @if ($row['live_status'] == 101)
-                                直播中
-                            @elseif ($row['live_status'] == 102)
-                                未开始
-                            @elseif ($row['live_status'] == 103)
-                                已结束
-                            @elseif ($row['live_status'] == 104)
-                                禁播
-                            @elseif ($row['live_status'] == 105)
-                                暂停
-                            @elseif ($row['live_status'] == 106)
-                                异常
-                            @elseif ($row['live_status'] == 107)
-                                已过期
-                            @elseif ($row['live_status'] == 108)
-                                已删除
+                            @if ($row['live_status'] == APPLETSLIVE_ROOM_LIVESTATUS_101)
+                                {{ APPLETSLIVE_ROOM_LIVESTATUS_101_TEXT }}
+                            @elseif ($row['live_status'] == APPLETSLIVE_ROOM_LIVESTATUS_102)
+                                {{ APPLETSLIVE_ROOM_LIVESTATUS_102_TEXT }}
+                            @elseif ($row['live_status'] == APPLETSLIVE_ROOM_LIVESTATUS_103)
+                                {{ APPLETSLIVE_ROOM_LIVESTATUS_103_TEXT }}
+                            @elseif ($row['live_status'] == APPLETSLIVE_ROOM_LIVESTATUS_104)
+                                {{ APPLETSLIVE_ROOM_LIVESTATUS_104_TEXT }}
+                            @elseif ($row['live_status'] == APPLETSLIVE_ROOM_LIVESTATUS_105)
+                                {{ APPLETSLIVE_ROOM_LIVESTATUS_105_TEXT }}
+                            @elseif ($row['live_status'] == APPLETSLIVE_ROOM_LIVESTATUS_106)
+                                {{ APPLETSLIVE_ROOM_LIVESTATUS_106_TEXT }}
+                            @elseif ($row['live_status'] == APPLETSLIVE_ROOM_LIVESTATUS_107)
+                                {{ APPLETSLIVE_ROOM_LIVESTATUS_107_TEXT }}
+                            @elseif ($row['live_status'] == APPLETSLIVE_ROOM_LIVESTATUS_108)
+                                {{ APPLETSLIVE_ROOM_LIVESTATUS_108_TEXT }}
                             @else
                                 未知
                             @endif
                         </td>
                         <td style="text-align:center;">
-                            @if ($row['live_status'] == 101 || $row['live_status'] == 102)
+                            @if (in_array($row['live_status'], [APPLETSLIVE_ROOM_LIVESTATUS_101,APPLETSLIVE_ROOM_LIVESTATUS_102,APPLETSLIVE_ROOM_LIVESTATUS_105]))
                                 <a class='btn btn-default'
                                    href="{{yzWebUrl('plugin.appletslive.admin.controllers.live.import', ['id' => $row['id']])}}"
-                                   title='设置'><i class='fa fa-edit'></i>导入商品
+                                   title='设置'><i class='fa fa-edit'></i>商品管理
                                 </a>
                             @endif
                         </td>
@@ -143,6 +162,15 @@
     <div id="test-vue" style="width:100%;height:150px;"></div>
 
     <script>
+
+        // 查看直播间封面大图
+        $('.show-cover-img-big').on('mouseover', function () {
+            $(this).find('.img-big').show();
+        });
+        $('.show-cover-img-big').on('mouseout', function () {
+            $(this).find('.img-big').hide();
+        });
+
         var app = new Vue({
             el: '#liveRefreshClean',
             data: {

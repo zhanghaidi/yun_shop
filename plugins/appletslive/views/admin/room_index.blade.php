@@ -66,6 +66,7 @@
                         <th style='width:15%;'>排序</th>
                         <th style='width:15%;'>封面</th>
                         <th style='width:25%;'>名称</th>
+                        <th style='width:25%;'>状态</th>
                         <th style='width:15%;'>订阅人数</th>
                         <th style='width:20%;'>操作</th>
                     </tr>
@@ -75,10 +76,24 @@
                         <tr>
                             <td>{{ $row['id'] }}</td>
                             <td>{{ $row['sort'] }}</td>
-                            <td>
-                                <img src="{!! tomedia($row['cover_img']) !!}" style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
+                            <td style="overflow:visible;">
+                                <div class="show-cover-img-big" style="position:relative;width:50px;overflow:visible">
+                                    <img src="{!! tomedia($row['cover_img']) !!}" alt=""
+                                         style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
+                                    <img class="img-big" src="{!! tomedia($row['cover_img']) !!}" alt=""
+                                         style="z-index:99999;position:absolute;top:0;left:0;border:1px solid #ccc;padding:1px;display: none">
+                                </div>
                             </td>
                             <td>{{ $row['name'] }}</td>
+                            <td>
+                                @if ($row['live_status'] == 1)
+                                    更新中
+                                @elseif ($row['live_status'] == 2)
+                                    已完结
+                                @else
+                                    筹备中
+                                @endif
+                            </td>
                             <td>{{ $row['subscription_num'] }}</td>
                             <td style="overflow:visible;">
                                 <a class='btn btn-default'
@@ -166,8 +181,13 @@
                         <tr>
                             <td>{{ $row['id'] }}</td>
                             <td>{{ $row['sort'] }}</td>
-                            <td>
-                                <img src="{!! tomedia($row['cover_img']) !!}" style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
+                            <td style="overflow:visible;">
+                                <div class="show-cover-img-big" style="position:relative;width:50px;overflow:visible">
+                                    <img src="{!! tomedia($row['cover_img']) !!}" alt=""
+                                         style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
+                                    <img class="img-big" src="{!! tomedia($row['cover_img']) !!}" alt=""
+                                         style="z-index:99999;position:absolute;top:0;left:0;border:1px solid #ccc;padding:1px;display: none">
+                                </div>
                             </td>
                             <td>{{ $row['name'] }}</td>
                             <td>{{ $row['subscription_num'] }}</td>
@@ -204,7 +224,12 @@
     <div style="width:100%;height:150px;"></div>
 
     <script type="text/javascript">
-        $(function() {
+        // 查看课程封面大图
+        $('.show-cover-img-big').on('mouseover', function () {
+            $(this).find('.img-big').show();
+        });
+        $('.show-cover-img-big').on('mouseout', function () {
+            $(this).find('.img-big').hide();
         });
     </script>
 @endsection
