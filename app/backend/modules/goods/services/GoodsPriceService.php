@@ -39,6 +39,8 @@ class GoodsPriceService
         $commission_set = Setting::get('plugin.commission');  //分销设置
         $this->coupon_list = Coupon::uniacid()->pluginId()->orderBy('display_order', 'desc')->get()->toArray(); //优惠券
         $this->member_discount = array_column(MemberLevel::getMemberLevelList(),'discount','id');  //获取会员等级折扣
+        $can_sub = true;
+        $res_data_arr = ['normal'=>[],'over'=>[]];
         foreach ($goods_price_arr as $key => $val){
             if (!empty($this->request->widgets['sale']['max_point_deduct']) && $this->request->widgets['sale']['max_point_deduct'] > $val['price']) {
                 return ['status' => -1, 'msg' => '积分最大抵扣金额大于商品现价'];
@@ -47,12 +49,12 @@ class GoodsPriceService
                 return ['status' => -1, 'msg' => '积分最少抵扣金额大于商品现价'];
             }
 
-            $val['reduction'] = $val['point_deduct'] = 0;
+            $val['reduction'] = $val['point_deduct'] = $val['coupon_discount'] = $val['coupon_info'] = 0;
             if($this->request->widgets['sale']['ed_reduction'] > 0 && $val['price'] >= $this->request->widgets['sale']['ed_full'] ){ //计算单品满减
                 $val['reduction'] = $this->request->widgets['sale']['ed_reduction'];
                 $val['calc_price'] = round($val['calc_price'] - $this->request->widgets['sale']['ed_reduction'],2);
             }
-            $val['coupon_discount'] = $this->calCouponDiscount($this->request,$val['calc_price']);
+            $val['coupon_discount'] = $this->calCouponDiscount($this->request,$val['calc_price'],$val['coupon_info']);
             if($val['coupon_discount'] > 0)
                 $val['calc_price'] = round($val['calc_price'] - $val['coupon_discount'], 2);
 
@@ -150,6 +152,7 @@ class GoodsPriceService
             $commission_amount = 0;
             if(!empty($this->request->widgets['commission']['is_commission'])){
                 if($this->request->widgets['commission']['has_commission']){
+                    $val['commission_type'] = '独立佣金比例';
                     foreach ($this->request->widgets['commission']['rule'] as $cv){
                         $temp = 0;
                         if($cv['first_level_rate'] > 0){
@@ -166,6 +169,7 @@ class GoodsPriceService
                             $commission_amount = $temp;
                     }
                 }else{
+                    $val['commission_type'] = '默认分销比例';
                     if($commission_set['is_commission'] == 1){
                         if($commission_set['first_level'] > 0){
                             $commission_amount += $val['calc_price']  * $commission_set['first_level'] / 100;
@@ -211,17 +215,55 @@ class GoodsPriceService
             $val['dispatch_fee'] = $dispatch_fee;
             */
 
-            $val['html'] = "<div style='padding-top: 10px;'>{$val['goods_title']}：</div><div style='padding-top: 8px;'>商品初始价格为：{$val['price']}元</div>
-<div style='padding-top: 8px;'>单品满额立减金额：{$val['reduction']}元</div><div style='padding-top: 8px;'>折扣金额：{$val['discount']}元</div><div style='padding-top: 8px;'>优惠券优惠金额：{$val['coupon_discount']}元</div><div style='padding-top: 8px;'>赠送余额金额：{$val['award_balance']}元</div><div style='padding-top: 8px;'>赠送积分金额：{$val['point_amount']}元</div><div style='padding-top: 8px;'>积分抵扣金额：{$val['point_deduct']}元</div><div style='padding-top: 8px;'>分销金额：{$val['commission_amount']}元</div><div style='padding-top: 8px;'>商品计算出最终价格为：{$val['final_price']}元</div>";
-            $goods_price_arr[$key] = $val;
+            $val['total_discount'] = round($val['price'] - $val['final_price'],2);
+            $val['total_discount_rate'] = $val['final_price'] > 0 ? round($val['final_price'] / $val['price'] * 10,2) : round($val['total_discount'] / $val['price'] * 10,2);
+
+            $val['html'] = "<div style='padding-top: 10px;border-top: 1px solid #999;'>{$val['goods_title']}：</div><div style='padding-top: 8px;'>商品初始价格为：{$val['price']}元</div>
+<div style='padding-top: 8px;'>单品满额立减金额：{$val['reduction']}元</div><div style='padding-top: 8px;'>折扣金额：{$val['discount']}元</div><div style='padding-top: 8px;'>优惠券优惠金额：{$val['coupon_discount']}元</div>";
+            if($val['coupon_discount'] > 0)
+                $val['html'] .= "<div style='padding-top: 8px;'>{$val['coupon_info']}</div>";
+            $val['html'] .= "<div style='padding-top: 8px;'>赠送余额金额：{$val['award_balance']}元</div><div style='padding-top: 8px;'>赠送积分金额：{$val['point_amount']}元</div><div style='padding-top: 8px;'>积分抵扣金额：{$val['point_deduct']}元</div>";
+            if($val['commission_amount'] > 0){
+                $val['html'] .= "<div style='padding-top: 8px;'>分销金额：{$val['commission_amount']}元&nbsp;&nbsp;&nbsp;&nbsp;{$val['commission_type']}分销模式</div>";
+            }else{
+                $val['html'] .= "<div style='padding-top: 8px;'>分销金额：{$val['commission_amount']}元</div>";
+            }
+            $val['html'] .= "<div style='padding-top: 8px;'>总折扣金额：{$val['total_discount']}元</div>";
+            if($val['total_discount_rate'] > 10){
+                $val['html'] .= "<div style='padding-top: 8px;color:#ff0000;'>总折扣率：超出最大折扣，请检查设置</div>";
+            }else{
+                $val['html'] .= "<div style='padding-top: 8px;" . ($val['total_discount_rate'] <= 7 ? 'color:#ff0000;' : '') ."'>总折扣率：{$val['total_discount_rate']}折</div>";
+            }
+            $val['html'] .= "<div style='padding-top: 8px;'>商品计算出最终价格：{$val['final_price']}元</div>";
+
+            if($v['final_price'] > 0){
+                $res_data_arr['normal'][] = $val;
+            }else{
+                $res_data_arr['over'][] = $val;
+            }
         }
 
+        usort($res_data_arr['over'],function ($a, $b){  //最终价格为负的情况
+            if($a['total_discount_rate'] == $b['total_discount_rate'])
+                return 0;
+            return $a['total_discount_rate'] > $b['total_discount_rate'] ? -1 : 1;
+        });
+
+        usort($res_data_arr['normal'],function ($a, $b){ //最终价格为正的情况
+            if($a['total_discount_rate'] == $b['total_discount_rate'])
+                return 0;
+            return $a['total_discount_rate'] > $b['total_discount_rate'] ? 1 : -1;
+        });
+
+        $res_arr = array_merge($res_data_arr['over'],$res_data_arr['normal']);
         $html = '';
-        foreach ($goods_price_arr as $v){
+        foreach ($res_arr as $v){
             $html .= $v['html'];
+            if($v['final_price'] <= 0)
+                $can_sub = false;
         }
 
-        return ['status'=>1,'data'=>['data_arr'=>$goods_price_arr,'html'=>$html]];
+        return ['status'=>1,'data'=>['data_arr'=>$res_arr,'html'=>$html,'can_sub'=>$can_sub]];
     }
 
     /*
@@ -241,7 +283,7 @@ class GoodsPriceService
                 $res[] = ['price'=>$option_price,'weight'=>$option_weight,'calc_price'=>$option_price,'goods_title'=>'规格-' . $option_title];
             }
         }else{
-            $res[] = ['price'=>$goods_price,'weight'=>$goods_weight,'calc_price'=>$goods_price,'goods_title'=>'默认'];
+            $res[] = ['price'=>$goods_price,'weight'=>$goods_weight,'calc_price'=>$goods_price,'goods_title'=>$request->goods['title']];
         }
         return $res;
     }
@@ -250,7 +292,7 @@ class GoodsPriceService
      * 计算优惠券折扣金额
      */
 
-    protected function calCouponDiscount($request,$price){
+    protected function calCouponDiscount($request,$price,&$coupon_info = ''){
         $max_coupon_discount = 0;
         foreach ($this->coupon_list as $v){
             $coupon_discount = 0;
@@ -297,8 +339,11 @@ class GoodsPriceService
                 }
             }
 
-            if($coupon_discount < $price && $coupon_discount > $max_coupon_discount)
+            if($coupon_discount < $price && $coupon_discount > $max_coupon_discount){
                 $max_coupon_discount = $coupon_discount;
+                $coupon_info = "优惠券名称：{$v['name']},ID：{$v['id']}";
+            }
+
         }
         return $max_coupon_discount;
     }

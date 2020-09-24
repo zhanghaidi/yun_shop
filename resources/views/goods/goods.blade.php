@@ -506,6 +506,14 @@
             , function (resp) {
                 if (resp.result == 1) {
                     $('#module-prices').html(resp.data.html)
+                    if(resp.data.can_sub){
+                        $('#module-prices-submit').attr('disabled',false);
+                    }else{
+                        $('#module-prices-submit').attr('disabled',true);
+                    }
+                    $('#modal-module-goods-price').on('shown.bs.modal', function() {
+                        $('#module-prices').scrollTop(0)
+                    })
                     $('#modal-module-goods-price').modal()
                 }else{
                     alert(resp.msg)
@@ -714,7 +722,7 @@
                 <div id="module-prices" class="pre-scrollable" style="max-height:430px;padding-top:5px;">商品价格信息</div>
             </div>
             <div class="modal-footer">
-                <button id="module-prices-submit" type="button" class="btn btn-success" data-dismiss="modal" onclick="$('form').submit();">确认</button>
+                <button id="module-prices-submit" type="button" class="btn btn-success" data-dismiss="modal" onclick="$('form').submit();" disabled>确认</button>
                 <a href="#" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</a>
             </div>
         </div>
