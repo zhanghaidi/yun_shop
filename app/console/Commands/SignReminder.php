@@ -183,7 +183,7 @@ class SignReminder extends Command
 
         } elseif ($type == 'wxapp') {
 
-            $thing1_value = '每日签到';
+            $thing1_value = '每日签到领取健康金';
             $thing2_value = '尊敬的:'.$users['wxapp_nickname'].',每天签到领取健康金啦~';
 
             $param['options'] = $this->options['wxapp'];
