@@ -23,7 +23,7 @@
                     <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-1 control-label">课程名称</label>
                         <div class="col-sm-9 col-xs-12 col-md-11">
-                            <input name="name" type="text" class="form-control" value="" required/>
+                            <input name="name" type="text" class="form-control" value="" required />
                         </div>
                     </div>
                     <div class="form-group">
@@ -39,24 +39,13 @@
                             {!! yz_tpl_ueditor('desc', $info['desc']) !!}
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">课程状态</label>
-                        <div class="col-sm-9 col-xs-12 col-md-11">
-                            <select name="live_status" class="form-control">
-                                <option value="">请选择课程状态</option>
-                                <option value="0" selected>筹备中</option>
-                                <option value='1'>更新中</option>
-                                <option value='2'>已完结</option>
-                            </select>
-                        </div>
-                    </div>
                 @endif
 
                 @if($type=='2')
                     <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-1 control-label">专辑名称</label>
                         <div class="col-sm-9 col-xs-12 col-md-11">
-                            <input name="name" type="text" class="form-control" value="" required/>
+                            <input name="name" type="text" class="form-control" value="" required />
                         </div>
                     </div>
                     <div class="form-group">
@@ -73,17 +62,18 @@
                         </div>
                     </div>
                 @endif
+
                 <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-1 control-label">排序</label>
                     <div class="col-sm-9 col-xs-12 col-md-11">
-                        <input name="sort" type="number" class="form-control" value="0" required/>
+                        <input name="sort" type="number" class="form-control" value="0" required />
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
                     <div class="col-sm-9 col-xs-12">
-                        <input type="hidden" name="type" value="{{ $type }}"/>
+                        <input type="hidden" name="type" value="{{ $type }}" />
                         <input type="submit" name="submit" value="提交" class="btn btn-success"/>
                     </div>
                 </div>
@@ -94,9 +84,9 @@
 
     <script type="text/javascript">
         var ueditoroption = {
-            'toolbars': [['source', 'preview', '|', 'bold', 'italic', 'underline', 'strikethrough', 'forecolor', 'backcolor', '|',
+            'toolbars' : [['source', 'preview', '|', 'bold', 'italic', 'underline', 'strikethrough', 'forecolor', 'backcolor', '|',
                 'justifyleft', 'justifycenter', 'justifyright', '|', 'insertorderedlist', 'insertunorderedlist', 'blockquote', 'emotion',
-                'link', 'removeformat', '|', 'rowspacingtop', 'rowspacingbottom', 'lineheight', 'indent', 'paragraph', 'fontsize', '|',
+                'link', 'removeformat', '|', 'rowspacingtop', 'rowspacingbottom', 'lineheight','indent', 'paragraph', 'fontsize', '|',
                 'inserttable', 'deletetable', 'insertparagraphbeforetable', 'insertrow', 'deleterow', 'insertcol', 'deletecol',
                 'mergecells', 'mergeright', 'mergedown', 'splittocells', 'splittorows', 'splittocols', '|', 'anchor', 'map', 'print', 'drafts']],
         };

@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * fixby-ly-jushuitanAPI 2020-07-21 18:11
- * Date: 2020/07/21
- * Time: 下午18:11
- */
+
 namespace app\frontend\modules\order\controllers;
 
 use app\common\components\ApiController;
@@ -123,7 +118,7 @@ class JuShuiTanController extends ApiController
     {
         //↓↓↓↓↓这个是物流回调地址，追加打印的数据，聚水潭发货以后这个接口接收，芸众根目录可查看发过来的订单数据（正式上线删除）
         file_put_contents('ceshi.txt',print_r($this->param,true));
-        \Log::info('---聚水潭物流回传参数---', $this->param);
+        \Log::info('聚水潭回传参数', $this->param);
         $order_sn = $this->param['so_id'];
 
         if (!empty($order_sn) && $order_sn) {

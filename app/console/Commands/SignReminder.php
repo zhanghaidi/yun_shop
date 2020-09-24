@@ -73,7 +73,7 @@ class SignReminder extends Command
         $whereBetweenSign = [$startTimes, $time_now];
         //1  查询所有最近三天有签到过的会员 更新时间在三天之内的会员
         $sign_users = DB::table('yz_sign')
-            ->select('id', 'uniacid', 'member_id', 'cumulative_number', 'updated_at')
+            ->select('id', 'uniacid', 'member_id', 'updated_at')
             ->whereBetween('updated_at', $whereBetweenSign)
             ->get()->toArray();
 
@@ -84,13 +84,13 @@ class SignReminder extends Command
             // 2、查询签到用户的小程序用户信息(openid)
             $member_ids = array_unique(array_column($sign_users, 'member_id'));
             $wxapp_user = DB::table('diagnostic_service_user')
-                ->select('ajy_uid', 'unionid', 'openid','nickname')
+                ->select('ajy_uid', 'unionid', 'openid')
                 ->whereIn('ajy_uid', $member_ids)
                 ->get()->toArray();
             //如果小程序 公众号ID
             $subscribed_unionid = array_column($wxapp_user, 'unionid');
             $wechat_user = DB::table('mc_mapping_fans')
-                ->select('uid', 'unionid', 'openid','nickname')
+                ->select('uid', 'unionid', 'openid')
                 ->where('follow', 1)
                 ->where('uniacid', 39)
                 ->whereIn('unionid', $subscribed_unionid)
@@ -102,7 +102,6 @@ class SignReminder extends Command
                     if ($user['ajy_uid'] == $item['member_id']) {
                         $item['unionid'] = $user['unionid'];
                         $item['wxapp_openid'] = $user['openid'];
-                        $item['wxapp_nickname'] = $user['nickname'];
                         break;
                     }
                 }
@@ -111,7 +110,6 @@ class SignReminder extends Command
                 foreach ($wechat_user as $user) {
                     if ($user['unionid'] == $item['unionid']) {
                         $item['wechat_openid'] = $user['openid'];
-                        $item['wechat_nickname'] = $user['nickname'];
                         break;
                     }
                 }
@@ -169,31 +167,32 @@ class SignReminder extends Command
 
         if ($type == 'wechat') {
 
-            $first_value = '尊敬的:'.$users['wechat_nickname'].',您领签到领取健康金资格已审核通话，快去签到领取健康金啦~';
-            $remark_value = '坚持签到可领取健康金，点击领取共同守护家人健康~';
+            $first_value = '尊敬的用户,您的签到还未有签到~';
+            $remark_value = '尊敬的用户,您的签到今天还未有签到~';
 
             $param['options'] = $this->options['wechat'];
             $param['page'] = $jump_page;
-            $param['template_id'] = 'LeEHrJ8uCb6oB7VTzH-q8UZI9ISdo5o6SNZhezrCU4s';
+            $param['template_id'] = 'c-tYzcbVnoqT33trwq6ckW_lquLDPmqySXvntFJEMhE';
             $param['notice_data'] = [
                 'first' => ['value' => $first_value, 'color' => '#173177'],
-                'keyword1' => ['value' => '领取健康金资格审核通过，点击领取共同守护家人健康~', 'color' => '#173177'],
-                'keyword2' => ['value' => date('Y-m-d H:i', time()), 'color' => '#173177'],
+                'keyword1' => ['value' => '签到有礼', 'color' => '#173177'],
+                'keyword2' => ['value' => '连续签到送优惠券', 'color' => '#173177'],
+                'keyword3' => ['value' => '优惠持续更新中', 'color' => '#173177'],
                 'remark' => ['value' => $remark_value, 'color' => '#173177'],
             ];
 
         } elseif ($type == 'wxapp') {
 
-            $thing1_value = '每日签到领取健康金';
-            $thing2_value = '尊敬的:'.$users['wxapp_nickname'].',每天签到领取健康金啦~';
+            $thing1_value = '尊敬的用户,您的签到还未有签到~';
 
             $param['options'] = $this->options['wxapp'];
             $param['page'] = $jump_page;
-            $param['template_id'] = 'ZQzayZvME4-DaYnkHIBDzPNyttv738hpYkKA4iBbY5Y';
+            $param['template_id'] = 'ABepy-L03XH_iU0tPd03VUV9KQ_Vjii5mClL7Qp8_jc';
             $param['notice_data'] = [
                 'thing1' => ['value' => $thing1_value, 'color' => '#173177'],
-                'thing2' => ['value' => $thing2_value, 'color' => '#173177'],
-                'name3' => ['value' => '坚持签到可领取健康金，点击领取共同守护家人健康~', 'color' => '#173177'],
+                'thing2' => ['value' => '连续签到送优惠券', 'color' => '#173177'],
+                'name3' => ['value' => '优惠持续更新中', 'color' => '#173177'],
+                'thing4' => ['value' => date('Y-m-d H:i', time()), 'color' => '#173177'],
             ];
         }
 

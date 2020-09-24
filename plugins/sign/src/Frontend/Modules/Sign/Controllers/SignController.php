@@ -332,43 +332,39 @@ class SignController extends ApiController
             ->select('id', 'uniacid', 'member_id', 'updated_at')
             ->whereBetween('updated_at', $whereBetweenSign)
             ->get()->toArray();
-
+        dd($sign_users);die();
         if (!empty($sign_users)) {
             // 2、查询签到用户的小程序用户信息(openid)
-            $member_ids = array_unique(array_column($sign_users, 'member_id'));
+            $member_ids = array_unique(array_column($sign_users, 'user_id'));
             $wxapp_user = DB::table('diagnostic_service_user')
-                ->select('ajy_uid', 'unionid', 'openid','nickname')
+                ->select('ajy_uid', 'unionid', 'openid')
                 ->whereIn('ajy_uid', $member_ids)
                 ->get()->toArray();
             //如果小程序 公众号ID
             $subscribed_unionid = array_column($wxapp_user, 'unionid');
             $wechat_user = DB::table('mc_mapping_fans')
-                ->select('uid', 'unionid', 'openid','nickname')
+                ->select('uid', 'unionid', 'openid')
                 ->where('follow', 1)
                 ->where('uniacid', 39)
                 ->whereIn('unionid', $subscribed_unionid)
                 ->get()->toArray();
-            //3 组装数据
-            array_walk($sign_users, function (&$item) use ($wxapp_user, $wechat_user) {
-                //小程序openid
+            array_walk($subscribed_user, function (&$item) use ($wxapp_user, $wechat_user) {
                 foreach ($wxapp_user as $user) {
-                    if ($user['ajy_uid'] == $item['member_id']) {
+                    if ($user['ajy_uid'] == $item['user_id']) {
                         $item['unionid'] = $user['unionid'];
                         $item['wxapp_openid'] = $user['openid'];
-                        $item['wxapp_nickname'] = $user['nickname'];
                         break;
                     }
                 }
-                //公众号openid
                 $item['wechat_openid'] = '';
                 foreach ($wechat_user as $user) {
                     if ($user['unionid'] == $item['unionid']) {
                         $item['wechat_openid'] = $user['openid'];
-                        $item['wechat_nickname'] = $user['nickname'];
                         break;
                     }
                 }
             });
+
 
             // 4、组装队列数据
             $job_list = [];
@@ -419,31 +415,33 @@ class SignController extends ApiController
 
         if ($type == 'wechat') {
 
-            $first_value = '尊敬的用户:'.$users['wechat_nickname'].',每天签到领取健康金啦~';
-            $remark_value = '尊敬的用户,坚持签到可领取健康金，点击领取共同守护家人健康~';
+            $first_value = '尊敬的用户,您的签到还未有签到~';
+            $remark_value = '尊敬的用户,您的签到今天还未有签到~';
+
 
             $param['options'] = $this->options['wechat'];
             $param['page'] = $jump_page;
-            $param['template_id'] = 'dxY9Gtbwb1A6uD56Ow6D7DvE7DIQESTr0jm7lv3BJQo';
+            $param['template_id'] = 'c-tYzcbVnoqT33trwq6ckW_lquLDPmqySXvntFJEMhE';
             $param['notice_data'] = [
                 'first' => ['value' => $first_value, 'color' => '#173177'],
-                'keyword1' => ['value' => $users['wechat_nickname'], 'color' => '#173177'],
-                'keyword2' => ['value' => $users['cumulative_number'], 'color' => '#173177'],
+                'keyword1' => ['value' => '签到有礼', 'color' => '#173177'],
+                'keyword2' => ['value' => '连续签到送优惠券', 'color' => '#173177'],
+                'keyword3' => ['value' => '优惠持续更新中', 'color' => '#173177'],
                 'remark' => ['value' => $remark_value, 'color' => '#173177'],
             ];
 
         } elseif ($type == 'wxapp') {
 
-            $thing1_value = '每日签到';
-            $thing2_value = '尊敬的用户:'.$users['wxapp_nickname'].',每天签到领取健康金啦~';
+            $thing1_value = '尊敬的用户,您的签到还未有签到~';
 
             $param['options'] = $this->options['wxapp'];
             $param['page'] = $jump_page;
-            $param['template_id'] = 'ZQzayZvME4-DaYnkHIBDzPNyttv738hpYkKA4iBbY5Y';
+            $param['template_id'] = 'ABepy-L03XH_iU0tPd03VUV9KQ_Vjii5mClL7Qp8_jc';
             $param['notice_data'] = [
                 'thing1' => ['value' => $thing1_value, 'color' => '#173177'],
-                'thing2' => ['value' => $thing2_value, 'color' => '#173177'],
-                'name3' => ['value' => '坚持签到可领取健康金，点击领取共同守护家人健康~', 'color' => '#173177'],
+                'thing2' => ['value' => '连续签到送优惠券', 'color' => '#173177'],
+                'name3' => ['value' => '优惠持续更新中', 'color' => '#173177'],
+                'thing4' => ['value' => date('Y-m-d H:i', time()), 'color' => '#173177'],
             ];
         }
 
