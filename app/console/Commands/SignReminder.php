@@ -162,15 +162,12 @@ class SignReminder extends Command
     private function makeJobParam($type, $users)
     {
         define('SIGN_PATH', 'pages/rumours/signin/index');//签到小程序地址
-
         $param = [];
         $jump_page = SIGN_PATH ;
-
         if ($type == 'wechat') {
 
             $first_value = '尊敬的:'.$users['wechat_nickname'].',您领签到领取健康金资格已审核通话，快去签到领取健康金啦~';
             $remark_value = '坚持签到可领取健康金，点击领取共同守护家人健康~';
-
             $param['options'] = $this->options['wechat'];
             $param['page'] = $jump_page;
             $param['template_id'] = 'LeEHrJ8uCb6oB7VTzH-q8UZI9ISdo5o6SNZhezrCU4s';
@@ -182,10 +179,8 @@ class SignReminder extends Command
             ];
 
         } elseif ($type == 'wxapp') {
-
             $thing1_value = '每日签到领取健康金';
             $thing2_value = '尊敬的:'.$users['wxapp_nickname'].',每天签到领取健康金啦~';
-
             $param['options'] = $this->options['wxapp'];
             $param['page'] = $jump_page;
             $param['template_id'] = 'ZQzayZvME4-DaYnkHIBDzPNyttv738hpYkKA4iBbY5Y';
