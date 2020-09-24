@@ -5,7 +5,30 @@
         margin-bottom: 15px !important;
     }
 </style>
-
+<!-- 上传订单到聚水潭ERP提示 -->
+<div id="modal-jushuitan-send" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" style="width:600px;margin:0px auto;">
+    <form class="form-horizontal form" action="{!! yzWebUrl('order.operation.jushuitanSend') !!}" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="route" value="order.operation.jushuitanSend">
+        <input type='hidden' name='order_id' value=''/>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+                    <h3>是否发送订单到聚水潭?</h3>
+                </div>
+                {{--<div class="modal-body">
+                    <label>关闭订单原因</label>
+                    <textarea style="height:150px;" class="form-control" name="reson" id="reson_close" autocomplete="off"></textarea>
+                    <div id="module-menus"></div>
+                </div>--}}
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" name="jushuitansend" value="yes">确认发送</button>
+                    <a href="#" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
 <!-- 上传发票提示 -->
 <div id="modal-invoice-notice" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" style="width:600px;margin:0px auto;">
     <div class="form-horizontal form">

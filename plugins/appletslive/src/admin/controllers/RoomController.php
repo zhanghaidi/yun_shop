@@ -129,6 +129,9 @@ class RoomController extends BaseController
             if (DB::table('yz_appletslive_room')->where('name', $upd_data['name'])->where('id', '<>', $id)->first()) {
                 return $this->message('名称已存在', Url::absoluteWeb(''), 'danger');
             }
+            if($room['type'] == 1){//课程状态 0筹备中 1更新中 2已完结
+                $upd_data['live_status'] = intval($param['live_status']);
+            }
             DB::table('yz_appletslive_room')->where('id', $id)->update($upd_data);
 
             // 刷新接口数据缓存
@@ -178,10 +181,14 @@ class RoomController extends BaseController
             if (DB::table('yz_appletslive_room')->where('name', $ist_data['name'])->first()) {
                 return $this->message('课程名称已存在', Url::absoluteWeb(''), 'danger');
             }
+            if($param['type'] == 1){//课程状态 0筹备中 1更新中 2已完结
+                $ist_data['live_status'] = intval($param['live_status']);
+            }
             DB::table('yz_appletslive_room')->insert($ist_data);
 
             // 刷新接口数据缓存
             if ($param['type'] == 1) {
+
                 Cache::forget(CacheService::$cache_keys['recorded.roomlist']);
                 Cache::forget(CacheService::$cache_keys['recorded.roominfo']);
             } elseif ($param['type'] == 2) {
