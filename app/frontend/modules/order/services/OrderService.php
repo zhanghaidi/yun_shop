@@ -464,6 +464,7 @@ class OrderService
             }
             curl_close($ch);
             \Log::info('----聚水潭post接口请求成功---'.$url, $data);
+
             return json_decode($result, true);
 
         } catch (Exception $e) {
@@ -473,8 +474,8 @@ class OrderService
     }
 
     /**
-     * 发货，退款消息入库
-     *
+     * 发货，退款消息入库记录
+     * fixby-ly-jushuitanAPI 2020-07-21 18:11
      */
     public static function orderMess($order_sn = '', $order = '', $type = '')
     {
