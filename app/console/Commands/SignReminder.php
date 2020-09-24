@@ -168,7 +168,7 @@ class SignReminder extends Command
 
         if ($type == 'wechat') {
 
-            $first_value = '尊敬的:'.$users['wechat_nickname'].',每天签到领取健康金啦~';
+            $first_value = '尊敬的:'.$users['wechat_nickname'].',您领签到领取健康金资格已审核通话，快去签到领取健康金啦~';
             $remark_value = '坚持签到可领取健康金，点击领取共同守护家人健康~';
 
             $param['options'] = $this->options['wechat'];
@@ -176,14 +176,14 @@ class SignReminder extends Command
             $param['template_id'] = 'LeEHrJ8uCb6oB7VTzH-q8UZI9ISdo5o6SNZhezrCU4s';
             $param['notice_data'] = [
                 'first' => ['value' => $first_value, 'color' => '#173177'],
-                'keyword1' => ['value' => '未签到提醒', 'color' => '#173177'],
+                'keyword1' => ['value' => '领取健康金资格审核通过，点击领取共同守护家人健康~', 'color' => '#173177'],
                 'keyword2' => ['value' => date('Y-m-d H:i', time()), 'color' => '#173177'],
                 'remark' => ['value' => $remark_value, 'color' => '#173177'],
             ];
 
         } elseif ($type == 'wxapp') {
 
-            $thing1_value = '每日签到';
+            $thing1_value = '每日签到领取健康金';
             $thing2_value = '尊敬的:'.$users['wxapp_nickname'].',每天签到领取健康金啦~';
 
             $param['options'] = $this->options['wxapp'];
