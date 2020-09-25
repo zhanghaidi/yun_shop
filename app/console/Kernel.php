@@ -10,6 +10,7 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use app\console\Commands\CourseReminder;
 use app\console\Commands\NotPaidOrderNotice;
 use app\console\Commands\SyncWxappLiveRoom;
+use app\console\Commands\SignReminder;
 
 class Kernel extends ConsoleKernel
 {
@@ -28,10 +29,12 @@ class Kernel extends ConsoleKernel
         'app\console\Commands\MigrateHFLevelExcelData',
         'app\console\Commands\MigrateMemberDistributor',
         'app\console\Commands\UpdateInviteCode',
+        'app\console\Commands\SignReminder',
         WriteFrame::class,
         CourseReminder::class,
         NotPaidOrderNotice::class,
         SyncWxappLiveRoom::class,
+//        SignReminder::class,
     ];
     /**
      * The bootstrap classes for the application.
@@ -73,6 +76,11 @@ class Kernel extends ConsoleKernel
         $schedule->command('command:syncwxappliveroom')
             ->withoutOverlapping()
             ->everyMinute();
+
+        // 定时执行 未签到用户签到提醒
+        $schedule->command('command:signreminder')
+            ->withoutOverlapping()
+           ->cron('0 10,15,18,20 * * *');
     }
 
     /**
