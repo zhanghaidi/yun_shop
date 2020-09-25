@@ -37,6 +37,7 @@ use Yunshop\LeaseToy\models\LeaseOrderModel;
 use Yunshop\LeaseToy\models\LeaseToyGoodsModel;
 use Yunshop\VideoDemand\models\CourseGoodsModel;
 use app\common\helpers\ImageHelper;
+use app\backend\modules\goods\services\GoodsPriceService;
 
 
 class GoodsController extends BaseController
@@ -1104,4 +1105,28 @@ class GoodsController extends BaseController
             });
         })->export('xls');
     }
+
+    /**
+     * 计算分销商品价格 fixby-zlt-calcgoodsprice 2020-09-21 18:15
+     */
+    public function calculationGoodsPrice()
+    {
+        $request = Request();
+        $goods_price_service = new GoodsPriceService($request);
+        $result = $goods_price_service->calculation();
+
+        if (isset($goods_price_service->error)) {
+            $this->errorJson($goods_price_service->error);
+        }
+
+        if ($result['status'] == 1) {
+            return $this->successJson('商品实际价格计算成功', $result['data']);
+        } else {
+            if (isset($result['msg'])) {
+                $this->errorJson($result['msg']);
+            }
+            $this->errorJson('商品实际价格计算失败');
+        }
+    }
+
 }
