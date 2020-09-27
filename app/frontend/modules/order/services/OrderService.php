@@ -8,11 +8,9 @@
  */
 
 namespace app\frontend\modules\order\services;
-
 use app\common\exceptions\AppException;
 use app\common\models\DispatchType;
 use app\common\models\Order;
-
 use app\common\models\order\OrderGoodsChangePriceLog;
 use app\common\modules\orderGoods\OrderGoodsCollection;
 use \app\common\models\MemberCart;
@@ -463,12 +461,18 @@ class OrderService
                 print curl_error($ch);
             }
             curl_close($ch);
-            \Log::info('----聚水潭post接口请求成功---'.$url, $data);
+            //\Log::info('----聚水潭post接口请求成功---'.$url, $data);
 
+            DB::table('yz_order_jushuitan_log')->insert(
+                ['order_sn' => $data['so_id'], 'post_params' => $post_data, 'action' => $action, 'type' => 1, 'status' =>1,'res_content' => $result, 'create_time' => date('Y-m-d H:i:s', time())]
+            );
             return json_decode($result, true);
 
         } catch (Exception $e) {
-            \Log::info('----聚水潭post接口请求失败---', $e);
+            //\Log::info('----聚水潭post接口请求失败---', $e);
+            DB::table('yz_order_jushuitan_log')->insert(
+                ['order_sn' => $data['so_id'], 'post_params' => $post_data, 'action' => $action, 'type' => 1, 'status' => -1,'res_content' => $e, 'create_time' => date('Y-m-d H:i:s', time())]
+            );
             return null;
         }
     }
