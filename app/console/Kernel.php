@@ -80,7 +80,7 @@ class Kernel extends ConsoleKernel
         // 定时执行 未签到用户签到提醒
         $schedule->command('command:signreminder')
             ->withoutOverlapping()
-           ->cron('0 10,15,18,20 * * *');
+            ->cron('0 10,15,18,20 * * *');
     }
 
     /**
