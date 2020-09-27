@@ -418,11 +418,7 @@ class GoodsController extends BaseController
         $result = $service->deleteGoods($info['id']);
 
         if ($result['errcode'] != 0) {
-            $message = $result['errmsg'];
-            if ($result['errcode'] == 300011) {
-                $message = '该商品只能通过小程序官方后台删除';
-            }
-            return $this->errorJson($message, ['result' => $result]);
+            return $this->message($result['errmsg'], Url::absoluteWeb(''), 'danger');
         }
 
         Goods::refresh();
