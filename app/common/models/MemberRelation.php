@@ -218,13 +218,17 @@ class MemberRelation extends BaseModel
     public function becomeChildAgent($mid, \app\common\models\MemberShopInfo $model)
     {
         $set = self::getSetInfo()->first();
-        \Log::debug('becomeChildAgent-getSetInfo:' . var_export($set));
+        \Log::debug('becomeChildAgent-getSetInfo uniacid:'  . \YunShop::app()->uniacid . ' set:' . json_encode($set,320) . ' member_id:' . $model->member_id . ' mid:' . $mid);
 
         if (empty($set) || $set->status == 0) {
             return;
         }
 
+        \Log::debug('becomeChildAgent-getSetInfo status:'  . $set->status);
+
         $member = MemberShopInfo::getMemberShopInfo($model->member_id);
+
+        \Log::debug('becomeChildAgent-member:'  . json_encode($member,320));
 
         if (empty($member)) {
             return;
@@ -253,8 +257,12 @@ class MemberRelation extends BaseModel
             }
         }
 
+        \Log::debug('becomeChildAgent-member:'  . json_encode($parent,320));
+
         $parent_is_agent = !empty($parent) && $parent->is_agent == 1 && $parent->status == 2;
         $curr_parent_id = $model->parent_id;
+
+        \Log::debug('becomeChildAgent-getSetInfo become_child:'  . $become_child . ' parent_is_agent:' . $parent_is_agent . ' inviter:' . $member->inviter);
 
         if ($parent_is_agent && empty($member->inviter)) {
             if ($member->member_id != $parent->member_id) {
