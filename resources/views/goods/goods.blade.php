@@ -117,11 +117,11 @@
         @endif
 
         //增加商品编码验证 fixby-zlt-checkGoodsSn 2020-09-23 17:11
-        if ($.trim($(':input[name="goods[goods_sn]"]').val()) == '') {
-            $('#myTab a[href="#tab_basic"]').tab('show');
-            Tip.focus(':input[name="goods[goods_sn]"]', '请填写商品编号.');
-            return false;
-        }
+        // if ($.trim($(':input[name="goods[goods_sn]"]').val()) == '') {
+        //     $('#myTab a[href="#tab_basic"]').tab('show');
+        //     Tip.focus(':input[name="goods[goods_sn]"]', '请填写商品编号.');
+        //     return false;
+        // }
 
         if ($.trim($(':input[name="goods[price]"]').val()) == '') {
             $('#myTab a[href="#tab_basic"]').tab('show');
@@ -722,7 +722,7 @@
                 <div id="module-prices" class="pre-scrollable" style="max-height:430px;padding-top:5px;">商品价格信息</div>
             </div>
             <div class="modal-footer">
-                <button id="module-prices-submit" type="button" class="btn btn-success" data-dismiss="modal" onclick="$('form').submit();" disabled>确认</button>
+                <button id="module-prices-submit" type="button" class="btn btn-success" data-dismiss="modal" onclick="$('#goods-edit').submit();" disabled>确认</button>
                 <a href="#" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</a>
             </div>
         </div>
