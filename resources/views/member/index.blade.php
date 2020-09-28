@@ -365,10 +365,10 @@
                                                        title='收货地址管理'><i class='fa fa-truck'></i>收货地址管理</a>
                                                 </li>
                                                 <li>
-                                                    {{--<a href="{{yzWebUrl('member.member.delete', ['id'=>$row['uid']])}}"--}}
-                                                       {{--onclick="return confirm('确认删除该用户吗？此操作是不可逆的');return false;" title='删除会员'><i class='fa fa-delicious'></i>删除（危险）</a>--}}
+                                                    <a href="{{yzWebUrl('member.member.delete', ['id'=>$row['uid']])}}"
+                                                       onclick="return confirm('确认删除该用户吗？此操作是不可逆的');return false;" title='删除会员'><i class='fa fa-delicious'></i>删除（危险）</a>
 
-                                                    <a href="javascript:return false;" title='禁用中' style="cursor: default;opacity: 0.5"><i class='fa fa-delicious'></i>删除（危险）</a>
+                                                    {{--<a href="javascript:return false;" title='禁用中' style="cursor: default;opacity: 0.5"><i class='fa fa-delicious'></i>删除（危险）</a>--}}
                                                 </li>
                                             </ul>
                                             @if($row['yz_member']['is_old']==1)
