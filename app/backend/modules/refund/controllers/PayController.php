@@ -50,7 +50,7 @@ class PayController extends BaseController
 
 
         /**
-         * fixby-ly-jushuitan退款-2020-07-21
+         * fixby-ly-jushuitan后台退款操作-2020-07-21
          * date:2020 07 21
          * 小程序消息推送添加
          * 用户申请退货，发送聚水潭
