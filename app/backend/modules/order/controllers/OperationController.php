@@ -225,7 +225,7 @@ class OperationController extends BaseController
     }
 
     /**
-     * fixby-zhd-jushuitanERP订单推送 2020-09-21 18:05
+     * fixby-zhd-jushuitanERP订单手动上报 2020-09-21 18:05
      * @throws AppException
      */
     public function jushuitanSend()
