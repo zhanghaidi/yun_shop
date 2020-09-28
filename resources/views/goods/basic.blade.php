@@ -165,7 +165,7 @@
 </div>
 
 <div class="form-group">
-    <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span>*</span>商品编号</label>
+    <label class=" col-sm-3 col-md-2 control-label">商品编号</label>
     <div class="col-sm-4 col-xs-12">
         <input type="text" name="goods[goods_sn]" id="productsn" class="form-control" value="{{$goods['goods_sn']}}" />
     </div>
