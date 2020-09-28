@@ -165,11 +165,11 @@
                                                                    @click="confirmChange(scope.row.id,'price')">确定
                                                         </el-button>
                                                     </div>
-                                                    <a slot="reference">
+                                                    {{--<a slot="reference">
                                                         <i class="el-icon-edit edit-i"
                                                            :title="scope.row.has_option==1?'多规格不支持快速修改':'点击编辑'"
                                                            @click="editTitle(scope.$index,'price')"></i>
-                                                    </a>
+                                                    </a>--}}
                                                 </el-popover>
                                                 ￥[[scope.row.price]]
                                             </template>
@@ -289,6 +289,24 @@
 
         </div>
     </div>
+    <div id="modal-module-goods-putaway" class="modal fade" tabindex="-1"> {{--上架校验的弹窗--}}
+        <div class="modal-dialog" style='width: 920px;'>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+                    <h3>商品价格提示</h3>
+                </div>
+                <div class="modal-body">
+                    <div id="module-goods-putaway-info" class="pre-scrollable" style="max-height:430px;padding-top:5px;">商品价格信息</div>
+                </div>
+                <div class="modal-footer" @click="setPutAway">
+                    <button id="module-goods-putaway-submit" type="button"  class="btn btn-success" data-dismiss="modal" data-id="" data-index=""  disabled>确认</button>
+                    <a id="module-goods-putaway-cancel" href="#" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
     <script src="{{resource_get('static/js/qrcode.min.js')}}"></script>
     <script>
         var app = new Vue({
@@ -350,6 +368,8 @@
             mounted() {
                 let data = {!! $data !!};
                 this.setData(data);
+                $('#module-goods-putaway-submit')[0].addEventListener('click',this.setPutAway)
+                $('#module-goods-putaway-cancel')[0].addEventListener('click',this.cancelPutAway)
             },
             methods: {
                 setData(data) {
@@ -533,19 +553,84 @@
                     that.table_loading = true;
                     let data = that.goods_list[index].status;
                     let json = {id: id, type: 'status', data: data};
+                    if(data == 0){
+                        that.setPutAway(id,index)
+                    }else{
+                        that.$http.post("{!! yzWebFullUrl('goods.goods.checkPutAway') !!}", json).then(response => {
+                            console.log(response);
+                            if (response.data.result == 1) {
+                                if(typeof response.data.data.html != 'undefined'){
+                                    $('#module-goods-putaway-submit').data('id', id)
+                                    $('#module-goods-putaway-submit').data('index', index)
+                                    $('#module-goods-putaway-info').html(response.data.data.html)
+                                    $('#modal-module-goods-putaway').on('shown.bs.modal', function() {
+                                        $('#module-goods-putaway-info').scrollTop(0)
+                                    })
+                                    if(response.data.data.can_sub){
+                                        $('#module-goods-putaway-submit').attr('disabled',false)
+                                    }else{
+                                        $('#module-goods-putaway-submit').attr('disabled',true)
+                                    }
+                                    $('#modal-module-goods-putaway').modal()
+                                }
+                                that.table_loading = false;
+                            } else {
+                                that.$message.error(response.data.msg);
+                                if(that.goods_list[index].status == 1){
+                                    that.goods_list[index].status = 0;
+                                }else{
+                                    that.goods_list[index].status = 1;
+                                }
+                                that.goods_list[index].is_choose == 1 ? 0 : 1;
+                                that.table_loading = false;
+                            }
+                        }), function (res) {
+                            console.log(res);
+                            that.table_loading = false;
+                        };
+                    }
+                },
+                // 提交上架、下架
+                setPutAway(id, index){
+                    var that = this;
+                    that.table_loading = true;
+                    if(typeof index == 'undefined'){
+                        id = $('#module-goods-putaway-submit').data('id')
+                        index = $('#module-goods-putaway-submit').data('index')
+                    }
+                    let data = that.goods_list[index].status;
+                    let json = {id: id, type: 'status', data: data};
+
                     that.$http.post("{!! yzWebFullUrl('goods.goods.setPutaway') !!}", json).then(response => {
                         console.log(response);
                         if (response.data.result == 1) {
                             that.$message.success('操作成功！');
+                            that.table_loading = false;
                         } else {
                             that.$message.error(response.data.msg);
+                            if(that.goods_list[index].status == 1){
+                                that.goods_list[index].status = 0;
+                            }else{
+                                that.goods_list[index].status = 1;
+                            }
                             that.goods_list[index].is_choose == 1 ? 0 : 1;
+                            that.table_loading = false;
                         }
-                        that.table_loading = false;
                     }), function (res) {
                         console.log(res);
                         that.table_loading = false;
                     };
+                },
+                // 取消上架
+                cancelPutAway(){
+                    var that = this
+                    let index = $('#module-goods-putaway-submit').data('index')
+                    if(that.goods_list[index].status == 1){
+                        that.goods_list[index].status = 0;
+                    }else{
+                        that.goods_list[index].status = 1;
+                    }
+                    that.goods_list[index].is_choose == 1 ? 0 : 1;
                 },
                 // 批量上架、下架
                 batchPutAway(data) {
