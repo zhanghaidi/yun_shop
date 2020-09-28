@@ -317,15 +317,6 @@
                                             <label class='label label-primary'>首单</label>
                                         @endif
 
-                                        @if($order['jushuitan_status']==1)
-                                            <label class="label label-danger">
-                                                已发送订单到聚水潭</label>
-                                         @else
-                                            <label class="label label-danger" style="background-color: #4caf50;">
-                                                暂未发送聚水潭</label>
-                                        @endif
-
-
                                     <td class="right">
                                         @if(empty($order['status']))
                                             <a class="btn btn-default btn-sm" href="javascript:;"
