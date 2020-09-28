@@ -293,7 +293,7 @@
         <div class="modal-dialog" style='width: 920px;'>
             <div class="modal-content">
                 <div class="modal-header">
-                    <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+                    <button aria-hidden="true" data-dismiss="modal" class="close" id="module-goods-putaway-close" type="button">×</button>
                     <h3>商品价格提示</h3>
                 </div>
                 <div class="modal-body">
@@ -369,7 +369,6 @@
                 let data = {!! $data !!};
                 this.setData(data);
                 $('#module-goods-putaway-submit')[0].addEventListener('click',this.setPutAway)
-                $('#module-goods-putaway-cancel')[0].addEventListener('click',this.cancelPutAway)
             },
             methods: {
                 setData(data) {
@@ -566,6 +565,9 @@
                                     $('#modal-module-goods-putaway').on('shown.bs.modal', function() {
                                         $('#module-goods-putaway-info').scrollTop(0)
                                     })
+                                    $('#modal-module-goods-putaway').on('hidden.bs.modal', function() {
+                                        that.cancelPutAway(id,index)
+                                    })
                                     if(response.data.data.can_sub){
                                         $('#module-goods-putaway-submit').attr('disabled',false)
                                     }else{
@@ -605,6 +607,7 @@
                         console.log(response);
                         if (response.data.result == 1) {
                             that.$message.success('操作成功！');
+                            $('#modal-module-goods-putaway').off('hidden.bs.modal')
                             that.table_loading = false;
                         } else {
                             that.$message.error(response.data.msg);
@@ -622,15 +625,12 @@
                     };
                 },
                 // 取消上架
-                cancelPutAway(){
+                cancelPutAway(id,index){
                     var that = this
-                    let index = $('#module-goods-putaway-submit').data('index')
                     if(that.goods_list[index].status == 1){
                         that.goods_list[index].status = 0;
-                    }else{
-                        that.goods_list[index].status = 1;
                     }
-                    that.goods_list[index].is_choose == 1 ? 0 : 1;
+                    that.goods_list[index].is_choose == 0;
                 },
                 // 批量上架、下架
                 batchPutAway(data) {
