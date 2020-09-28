@@ -49,12 +49,12 @@ class MemberRelation extends BaseModel
      */
     public static function getSetInfo()
     {
-        $memberRelation  = self::uniacid();
+        //$memberRelation  = self::uniacid();
         // todo 优化重复查询问题,返回一个元素的集合是为了不影响历史代码的调用方式的,
-//        $memberRelation = MemberRelationRepository::all()->where('uniacid',\YunShop::app()->uniacid);
-//        $memberRelation = $memberRelation->map(function ($item) {
-//           return new MemberRelation($item);
-//        });
+        $memberRelation = MemberRelationRepository::all()->where('uniacid',\YunShop::app()->uniacid);
+        $memberRelation = $memberRelation->map(function ($item) {
+           return new MemberRelation($item);
+        });
         return $memberRelation;
     }
 
@@ -218,6 +218,7 @@ class MemberRelation extends BaseModel
     public function becomeChildAgent($mid, \app\common\models\MemberShopInfo $model)
     {
         $set = self::getSetInfo()->first();
+        \Log::debug('becomeChildAgent-getSetInfo:' . var_export($set));
 
         if (empty($set) || $set->status == 0) {
             return;
