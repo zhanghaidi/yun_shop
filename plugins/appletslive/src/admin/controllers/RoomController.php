@@ -625,6 +625,10 @@ class RoomController extends BaseController
         if ($id_invalid) {
             return $this->message('数据不存在', Url::absoluteWeb(''), 'danger');
         }
+        if($replay->parent_id == 0){
+            //删除子评论
+            RoomComment::where('parent_id', $replay->id)->delete();
+        }
         $del_res = RoomComment::where('id', $replay->id)->delete();
 
         // 刷新接口数据缓存
