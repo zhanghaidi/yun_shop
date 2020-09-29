@@ -719,7 +719,7 @@ class LiveController extends BaseController
 
         //用户禁言
         $user = DiagnosticServiceUser::where('ajy_uid', $this->user_id)->first();
-        dd($user);die;
+
         if ($user->is_black == 1) {
             if ($user->black_end_time > time()) {
                 response()->json([
@@ -1151,7 +1151,6 @@ class LiveController extends BaseController
 
         //用户禁言
         $user = DiagnosticServiceUser::where('ajy_uid', $this->user_id)->first();
-        dd($user);die;
         if ($user->is_black == 1) {
             if ($user->black_end_time > time()) {
                 response()->json([
