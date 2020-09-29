@@ -19,13 +19,7 @@ class GoodsTrackingController extends BaseController
 
         $search = \YunShop::request()->search;
         if ($search) {
-            /*if ($search['searchtime']) {
-                if ($search['time']['start'] != '请选择' && $search['time']['end'] != '请选择') {
-                    $data['starttime'] = strtotime($search['time']['start']);
-                    $data['endtime'] = strtotime($search['time']['end']);
-                }
 
-            }*/
             $records = $records->search($search);
 
         }

@@ -39,33 +39,27 @@
                                         @endforeach
                                     </select>
                                 </div>
+                                <div class="time-select" >
+                                    <select name='search[searchtime]' class='form-control'>
+                                        <option value='' @if(empty($search['searchtime'])) selected @endif>不搜索充值时间</option>
+                                        <option value='1' @if($search['searchtime']==1) selected @endif >搜索充值时间</option>
+                                    </select>
+                                </div>
+                                <div class="time-btn">
+                                    {!! tpl_form_field_daterange(
+                                        'search[time_range]',
+                                        array(
+                                            'starttime'=>array_get($requestSearch,'time_range.start',0),
+                                            'endtime'=>array_get($requestSearch,'time_range.end',0),
+                                            'start'=>0,
+                                            'end'=>0
+                                        ),
+                                        true
+                                    )!!}
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="form-group col-xs-12 col-sm-6 col-lg-6 search-time">
-                        <div class="time-select" >
-                            <select name='search[searchtime]' class='form-control'>
-                                <option value='' @if(empty($search['searchtime'])) selected @endif>不搜索充值时间</option>
-                                <option value='1' @if($search['searchtime']==1) selected @endif >搜索充值时间</option>
-                            </select>
-                        </div>
-                        <div class="time-btn">
-                            {!! tpl_form_field_daterange(
-                                'search[time_range]',
-                                array(
-                                    'starttime'=>array_get($requestSearch,'time_range.start',0),
-                                    'endtime'=>array_get($requestSearch,'time_range.end',0),
-                                    'start'=>0,
-                                    'end'=>0
-                                ),
-                                true
-                            )!!}
-                        </div>
-                    </div>
-
-
-
 
                     <div class="form-group col-xs-12 col-sm-6 col-lg-6 search-btn">
                         <!--<label class="col-xs-12 col-sm-12 col-md-1 col-lg-1 control-label"></label>-->
