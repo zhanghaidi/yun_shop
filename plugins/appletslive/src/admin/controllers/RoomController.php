@@ -647,6 +647,6 @@ class RoomController extends BaseController
             Cache::forget(CacheService::$cache_keys['recorded.roomreplays']);
         }
 
-        return $this->message('删除成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.commentreplylist', ['rid' => $replay->rid]));
+        return $this->message('删除成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.commentlist', ['rid' => $replay->rid]));
     }
 }
