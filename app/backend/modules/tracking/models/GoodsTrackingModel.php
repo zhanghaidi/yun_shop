@@ -149,7 +149,8 @@ class GoodsTrackingModel extends Model
                     ->orWhere('telephone', 'like', '%' . $search['realname'] . '%')
                     ->orWhere('ajy_uid', $search['realname']);
             });
-            $query = $query->where('action_name', $search['realname']);
+
+            $query = $query->where('action', $this->searchNameToId($search['realname']));
         }
         //根据商品筛选
         if ($search['keywords']) {
@@ -170,6 +171,22 @@ class GoodsTrackingModel extends Model
             }
         }
         return $query;
+    }
+
+
+    public function searchNameToId($value){
+        if($value == '查看'){
+            $value = 1;
+        }elseif($value == '收藏'){
+            $value = 2;
+        }elseif($value == '加购'){
+            $value = 3;
+        }elseif($value == '下单'){
+            $value = 4;
+        }elseif($value == '支付'){
+            $value = 5;
+        }
+        return $value;
     }
 
 
