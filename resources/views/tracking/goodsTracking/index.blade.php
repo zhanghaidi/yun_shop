@@ -165,7 +165,6 @@
                     <div class="form-group col-xs-12 col-sm-12 col-md-12 col-lg-6">
 
                         <div class="time">
-
                             <select name='search[search_time]' class='form-control'>
                                 <option value='0' @if($search['search_time']=='0') selected @endif>不搜索时间</option>
                                 <option value='1' @if($search['search_time']=='1') selected @endif>搜索时间</option>
