@@ -30,14 +30,16 @@
                             <td>{{ $row['id'] }}</td>
                             <td style="overflow:visible;">
                                 <div class="show-cover-img-big" style="position:relative;width:50px;overflow:visible">
-                                    <img src="{!! tomedia($row['cover_img']) !!}" alt=""
+                                    <img src="{!! tomedia($row['avatarurl']) !!}" alt=""
                                          style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
-                                    <img class="img-big" src="{!! tomedia($row['cover_img']) !!}" alt=""
+                                    <img class="img-big" src="{!! tomedia($row['avatarurl']) !!}" alt=""
                                          style="z-index:99999;position:absolute;top:0;left:0;border:1px solid #ccc;padding:1px;display: none">
                                 </div>
+                                { $row['nickname'] }}
                             </td>
-                            <td>{{ $row['name'] }}</td>
-                            <td>{{ $row['subscription_num'] }}</td>
+                            <td>{{ $row['content'] }}</td>
+                            <td>{{ $row['create_time'] }}</td>
+                            <td>{{ $row['counts'] }}</td>
                             <td style="overflow:visible;">
                                 <a class='btn btn-default btn-delete'
                                    href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.showhide', ['id' => $row['id']])}}"
