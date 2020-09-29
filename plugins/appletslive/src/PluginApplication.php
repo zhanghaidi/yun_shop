@@ -156,12 +156,21 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'url_params' => '',
                             'parents' => ['appletslive', 'appletslive-room'],
                         ],
-                        'appletslive_room_index' => [
+                        'appletslive_room_commentlist' => [
                             'name' => '评论列表',
                             'permit' => 1,
                             'menu' => 0,
                             'icon' => '',
                             'url' => 'plugin.appletslive.admin.controllers.room.commentlist',
+                            'url_params' => '',
+                            'parents' => ['appletslive', 'appletslive-room'],
+                        ],
+                        'appletslive_room_commentdel' => [
+                            'name' => '评论回复列表',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'icon' => '',
+                            'url' => 'plugin.appletslive.admin.controllers.room.commentdel',
                             'url_params' => '',
                             'parents' => ['appletslive', 'appletslive-room'],
                         ],
