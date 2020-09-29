@@ -148,9 +148,7 @@ class GoodsTrackingModel extends Model
                     ->where('nickname', 'like', '%' . $search['realname'] . '%')
                     ->orWhere('telephone', 'like', '%' . $search['realname'] . '%')
                     ->orWhere('ajy_uid', $search['realname']);
-            });
-
-            $query = $query->where('action', $this->searchNameToId($search['realname']));
+            })->orWhere('action', $this->searchNameToActionId($search['realname']))->orWhere('to_type_id', $this->searchNameToTypeId($search['realname']));
         }
         //根据商品筛选
         if ($search['keywords']) {
@@ -161,20 +159,15 @@ class GoodsTrackingModel extends Model
             });
         }
         //根据时间筛选
-       /* if ($search['searchtime']) {
-            $query = $query->whereBetween('create_time', [strtotime($search['times']['start']),strtotime($search['times']['end'])]);
-        }*/
-        if ($search['searchtime']) {
-            if ($search['starttime'] != '请选择' && $search['endtime'] != '请选择') {
-                $range = [$search['starttime'], $search['endtime']];
-                $query = $query->whereBetween('created_time', $range);
-            }
+        if ($search['searchtime'] == 1) {
+            $query = $query->whereBetween('create_time', [strtotime($search['time_range']['start']),strtotime($search['time_range']['end'])]);
         }
         return $query;
     }
 
 
-    public function searchNameToId($value){
+    //根据搜索关键词转换成相应的动作类型
+    public function searchNameToActionId($value){
         if($value == '查看'){
             $value = 1;
         }elseif($value == '收藏'){
@@ -189,5 +182,31 @@ class GoodsTrackingModel extends Model
         return $value;
     }
 
+
+    //根据搜索关键词转换成相应的动作类型
+    public function searchNameToTypeId($value){
+        if($value == '穴位'){
+            $value = 1;
+        }elseif($value == '文章'){
+            $value = 3;
+        }elseif($value == '帖子'){
+            $value = 4;
+        }elseif($value == '灸师'){
+            $value = 6;
+        }elseif($value == '课时'){
+            $value = 7;
+        }elseif($value == '直播'){
+            $value = 8;
+        }elseif($value == '商城'){
+            $value = 9;
+        }elseif($value == '活动'){
+            $value = 10;
+        }elseif($value == '分享'){
+            $value = 11;
+        }elseif($value == '未知'){
+            $value = 12;
+        }
+        return $value;
+    }
 
 }
