@@ -165,8 +165,17 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'url_params' => '',
                             'parents' => ['appletslive', 'appletslive-room'],
                         ],
+                        'appletslive_room_commentreplylist' => [
+                            'name' => '评论回复删除',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'icon' => '',
+                            'url' => 'plugin.appletslive.admin.controllers.room.commentreplylist',
+                            'url_params' => '',
+                            'parents' => ['appletslive', 'appletslive-room'],
+                        ],
                         'appletslive_room_commentdel' => [
-                            'name' => '评论回复列表',
+                            'name' => '评论回复删除',
                             'permit' => 1,
                             'menu' => 0,
                             'icon' => '',
