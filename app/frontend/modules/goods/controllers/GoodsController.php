@@ -1481,7 +1481,7 @@ class GoodsController extends GoodsApiController
             ->get()->toArray();
 
         if(count($list) <= 5){
-            $list1 = [
+            $list_new = [
                 [
                     "avatarurl" => "https://wx.qlogo.cn/mmhead/MqIfMcqo5NyAajjVxSDZMr91Qrpy6WwrRL4yhQM2oY0/132",
                     "address" => "河南省 郑州市 管城回族区 商都路心怡路西南角正岩大厦508"
@@ -1523,7 +1523,7 @@ class GoodsController extends GoodsApiController
                     "address" => "四川省 攀枝花市 仁和区 四川省攀枝花市仁和区大田镇大田街8号"
                 ]
             ];
-            $list = array_merge($list,$list1);
+            $list = array_merge($list,$list_new);
         }
 
         return $this->successJson('获取成功', $list);
