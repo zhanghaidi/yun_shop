@@ -17,6 +17,7 @@ use app\common\services\goods\SaleGoods;
 use app\common\services\goods\VideoDemandCourseGoods;
 use app\common\models\MemberShopInfo;
 use app\frontend\modules\member\controllers\ServiceController;
+use app\frontend\modules\member\listeners\Order;
 use app\frontend\modules\member\services\MemberService;
 use Illuminate\Support\Facades\DB;
 use Monolog\Handler\IFTTTHandler;
@@ -1462,6 +1463,27 @@ class GoodsController extends GoodsApiController
         $data['list']=$list;
         $data['level']=$user_data['level_id'];
         return $this->successJson('获取促销商品成功', $data);
+    }
+
+    //增加商品详情热度展示 fixby-wk-goodsHotOrders 2020-09-29
+    public function getGoodsHotOrders(){
+        $goods_id = intval(request()->goods_id);
+
+        $list = \app\frontend\models\Order::scopeOrders()->get();
+        dd($list);
+        if ($list) {
+            foreach ($list as &$item) {
+                $item->reply_count = $item->hasManyReply->count('id');
+                $item->head_img_url = $item->head_img_url ? replace_yunshop(yz_tomedia($item->head_img_url)) : yz_tomedia(\Setting::get('shop.shop.logo'));
+            }
+            //对评论图片进行处理，反序列化并组装完整图片url
+            $list = $list->toArray();
+            foreach ($list['data'] as &$item) {
+                self::unSerializeImage($item);
+            }
+            return  $list;
+        }
+        return  $list;
     }
 
 }
