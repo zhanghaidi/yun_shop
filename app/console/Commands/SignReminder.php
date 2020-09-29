@@ -162,7 +162,7 @@ class SignReminder extends Command
     private function makeJobParam($type, $users)
     {
 
-        define('SIGN_PATH', 'pages/rumours/signin/index');//签到小程序跳转地址地址
+        define('SIGN_PATH', 'pages/template/rumours/index?_source=share&_s_path=/pages/rumours/signin/index');//签到小程序跳转地址地址
 
         $param = [];
         $jump_page = SIGN_PATH ;
