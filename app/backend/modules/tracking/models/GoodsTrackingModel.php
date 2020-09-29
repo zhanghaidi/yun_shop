@@ -149,6 +149,7 @@ class GoodsTrackingModel extends Model
                     ->orWhere('telephone', 'like', '%' . $search['realname'] . '%')
                     ->orWhere('ajy_uid', $search['realname']);
             });
+            $query = $query->where('action_name', $search['realname']);
         }
         //根据商品筛选
         if ($search['keywords']) {
@@ -159,8 +160,14 @@ class GoodsTrackingModel extends Model
             });
         }
         //根据时间筛选
-        if ($search['searchtime']) {
+       /* if ($search['searchtime']) {
             $query = $query->whereBetween('create_time', [strtotime($search['times']['start']),strtotime($search['times']['end'])]);
+        }*/
+        if ($search['searchtime']) {
+            if ($search['starttime'] != '请选择' && $search['endtime'] != '请选择') {
+                $range = [$search['starttime'], $search['endtime']];
+                $query = $query->whereBetween('created_time', $range);
+            }
         }
         return $query;
     }
