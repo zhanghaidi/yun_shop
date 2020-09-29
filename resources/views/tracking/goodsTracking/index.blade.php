@@ -28,7 +28,7 @@
                         <!-- <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">会员信息</label>-->
                         <div class="">
                             <input type="text" class="form-control" name="search[realname]"
-                                   value="{{$search['realname']}}" placeholder="可搜索会员ID/昵称/姓名/手机号"/>
+                                   value="{{$search['realname']}}" placeholder="可搜索会员ID/昵称/姓名/手机号/动作/类型"/>
                         </div>
                     </div>
 
@@ -169,15 +169,16 @@
                                 <option value='0' @if($search['search_time']=='0') selected @endif>不搜索时间</option>
                                 <option value='1' @if($search['search_time']=='1') selected @endif>搜索时间</option>
                             </select>
+                            <div class="search-select">
+                                {!! app\common\helpers\DateRange::tplFormFieldDateRange('search[time]', [
+                                'starttime'=>date('Y-m-d H:i', strtotime($search['time']['start']) ?: strtotime('-1 month')),
+                                'endtime'=>date('Y-m-d H:i',strtotime($search['time']['end']) ?: time()),
+                                'start'=>0,
+                                'end'=>0
+                                ], true) !!}
+                            </div>
                         </div>
-                        <div class="search-select">
-                            {!! app\common\helpers\DateRange::tplFormFieldDateRange('search[time]', [
-                            'starttime'=>date('Y-m-d H:i', strtotime($search['time']['start']) ?: strtotime('-1 month')),
-                            'endtime'=>date('Y-m-d H:i',strtotime($search['time']['end']) ?: time()),
-                            'start'=>0,
-                            'end'=>0
-                            ], true) !!}
-                        </div>
+
                     </div>
 
                     <div class="form-group  col-xs-12 col-md-12 col-lg-6">

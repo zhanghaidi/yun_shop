@@ -159,8 +159,8 @@ class GoodsTrackingModel extends Model
             });
         }
         //根据时间筛选
-        if ($search['searchtime'] == 1) {
-            $query = $query->whereBetween('create_time', [strtotime($search['time_range']['start']),strtotime($search['time_range']['end'])]);
+        if ($search['search_time'] == 1) {
+            $query = $query->whereBetween('create_time', [strtotime($search['time']['start']),strtotime($search['time']['end'])]);
         }
         return $query;
     }
