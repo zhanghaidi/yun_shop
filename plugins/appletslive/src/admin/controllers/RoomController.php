@@ -31,6 +31,7 @@ use Yunshop\Appletslive\common\models\Room;
 use Yunshop\Appletslive\common\models\Replay;
 use Yunshop\Appletslive\common\models\LiveRoom;
 use app\common\helpers\PaginationHelper;
+use Yunshop\Appletslive\common\models\RoomComment;
 
 class RoomController extends BaseController
 {
@@ -513,5 +514,82 @@ class RoomController extends BaseController
         }
 
         return $this->message('修改成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.replaylist', ['rid' => $replay->rid]));
+    }
+
+    // fixBy-wk 评论列表 2020.9.29
+    public function commentlist(){
+
+        $rid = request()->get('rid', 0);
+        $room = DB::table('yz_appletslive_room')->where('id', $rid)->first();
+        $room_type = $room['type'];
+
+        $input = \YunShop::request();
+        $limit = 20;
+
+        // 录播视频
+        if ($room_type == 1) {
+            //课程评论列表
+            $where[] = ['room_id', '=', $rid];
+            $comment_list = RoomComment::where($where)
+                ->orderBy('id', 'desc')
+                ->paginate($limit);
+            dd($comment_list);
+            if($comment_list->total() > 0){
+                foreach ($comment_list as $comment_value){
+
+                }
+            }
+        }
+
+        // 特卖直播
+        if ($room_type == 2) {
+
+            $where[] = ['yz_appletslive_replay.rid', '=', $rid];
+
+            // 处理搜索条件
+            if (isset($input->search)) {
+
+                $search = $input->search;
+                if (intval($search['roomid']) > 0) {
+                    $where[] = ['yz_appletslive_liveroom.roomid', '=', intval($search['roomid'])];
+                }
+                if (trim($search['name']) !== '') {
+                    $where[] = ['yz_appletslive_liveroom.name', 'like', '%' . trim($search['name']) . '%'];
+                }
+                if (trim($search['live_status']) !== '') {
+                    $where[] = ['yz_appletslive_liveroom.live_status', '=', $search['live_status']];
+                }
+                if (trim($search['status']) !== '') {
+                    if ($search['status'] === '0') {
+                        $where[] = ['yz_appletslive_replay.delete_time', '>', 0];
+                    } else {
+                        $where[] = ['yz_appletslive_replay.delete_time', '=', 0];
+                    }
+                }
+            }
+
+            $replay_list = DB::table('yz_appletslive_replay')
+                ->join('yz_appletslive_liveroom', 'yz_appletslive_replay.room_id', '=', 'yz_appletslive_liveroom.id')
+                ->select('yz_appletslive_replay.id', 'yz_appletslive_liveroom.roomid', 'yz_appletslive_liveroom.name',
+                    'yz_appletslive_liveroom.cover_img', 'yz_appletslive_liveroom.anchor_name',
+                    'yz_appletslive_liveroom.anchor_name', 'yz_appletslive_liveroom.live_status',
+                    'yz_appletslive_liveroom.start_time', 'yz_appletslive_liveroom.end_time',
+                    'yz_appletslive_replay.delete_time')
+                ->where($where)
+                ->whereIn('yz_appletslive_liveroom.live_status', [101, 102, 103, 105, 107])
+                ->orderBy('yz_appletslive_liveroom.start_time', 'desc')
+                ->orderBy('yz_appletslive_replay.id', 'desc')
+                ->paginate($limit);
+        }
+
+        $pager = PaginationHelper::show($comment_list->total(), $comment_list->currentPage(), $comment_list->perPage());
+
+        return view('Yunshop\Appletslive::admin.comment_list', [
+            'rid' => $rid,
+            'room_type' => $room_type,
+            'comment_list' => $comment_list,
+            'pager' => $pager,
+            'request' => $input,
+        ])->render();
     }
 }
