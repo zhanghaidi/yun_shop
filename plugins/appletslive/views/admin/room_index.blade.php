@@ -68,6 +68,7 @@
                         <th style='width:25%;'>名称</th>
                         <th style='width:25%;'>状态</th>
                         <th style='width:15%;'>订阅人数</th>
+                        <th style='width:15%;'>评论量</th>
                         <th style='width:20%;'>操作</th>
                     </tr>
                     </thead>
@@ -95,6 +96,7 @@
                                 @endif
                             </td>
                             <td>{{ $row['subscription_num'] }}</td>
+                            <td><i class='fa fa-list'></i>{{ $row['comment_num'] }}</td>
                             <td style="overflow:visible;">
                                 <a class='btn btn-default'
                                    href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.edit', ['id' => $row['id']])}}"
@@ -173,6 +175,7 @@
                         <th style='width:15%;'>封面</th>
                         <th style='width:25%;'>名称</th>
                         <th style='width:15%;'>订阅人数</th>
+                        <th style='width:15%;'>评论量</th>
                         <th style='width:20%;'>操作</th>
                     </tr>
                     </thead>
@@ -191,6 +194,7 @@
                             </td>
                             <td>{{ $row['name'] }}</td>
                             <td>{{ $row['subscription_num'] }}</td>
+                            <td><i class='fa fa-list'></i>{{ $row['comment_num'] }}</td>
                             <td style="overflow:visible;">
                                 <a class='btn btn-default'
                                    href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.edit', ['id' => $row['id']])}}"
