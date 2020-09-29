@@ -41,7 +41,7 @@
                         <td>{{ $row['create_time'] }}</td>
                         <td style="overflow:visible;">
                             <a class='btn btn-default btn-delete'
-                               href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.commentdel', ['id' => $row['id']])}}"
+                               href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.commentdel', ['id' => $row['id'],'type'=>'comment_reply_list'])}}"
                                title='删除'>删除
                             </a>
                         </td>

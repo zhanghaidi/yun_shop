@@ -44,7 +44,7 @@
                                title='回复'><i class='fa fa-list'></i>回复（{{ $row['counts'] }}）
                             </a>
                             <a class='btn btn-default btn-delete'
-                               href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.commentdel', ['id' => $row['id']])}}"
+                               href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.commentdel', ['id' => $row['id'],'type'=>'comment_list'])}}"
                                title='删除'>删除
                             </a>
                         </td>
