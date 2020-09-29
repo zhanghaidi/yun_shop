@@ -197,7 +197,7 @@
                             <td>{{ $row['subscription_num'] }}</td>
                             <td style="overflow:visible;">
                                 <a class='btn btn-default'
-                                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.replaylist', ['rid' => $row['id']])}}"
+                                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.commentlist', ['rid' => $row['id']])}}"
                                    title='评论列表'><i class='fa fa-list'></i>评论量（{{ $row['comment_num']}}）
                                 </a>
                                 <a class='btn btn-default'
