@@ -534,7 +534,7 @@ class RoomController extends BaseController
             ->paginate($limit);
 
         if ($comment_list->total() > 0) {
-            foreach ($comment_list as $k => &$comment_value) {
+            foreach ($comment_list as $k => $comment_value) {
                 //用户昵称 头像
                 $user_info = DB::table('diagnostic_service_user')
                     ->where('ajy_uid', $comment_value['user_id'])
@@ -616,11 +616,14 @@ class RoomController extends BaseController
         // 刷新接口数据缓存
         if ($del_res) {
             Cache::forget(CacheService::$cache_keys['api_live_room_comment|'.$replay->rid]);
+            Cache::forget(CacheService::$cache_keys['brandsale.albumcomment']);
+
             Cache::forget(CacheService::$cache_keys['brandsale.albumlist']);
             Cache::forget(CacheService::$cache_keys['brandsale.albuminfo']);
             Cache::forget(CacheService::$cache_keys['brandsale.albumliverooms']);
         } else {
             Cache::forget(CacheService::$cache_keys['api_live_room_comment|'.$replay->rid]);
+            Cache::forget(CacheService::$cache_keys['brandsale.albumcomment']);
             Cache::forget(CacheService::$cache_keys['recorded.roomlist']);
             Cache::forget(CacheService::$cache_keys['recorded.roominfo']);
             Cache::forget(CacheService::$cache_keys['recorded.roomreplays']);
