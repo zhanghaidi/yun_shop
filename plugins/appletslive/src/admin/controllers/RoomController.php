@@ -616,8 +616,14 @@ class RoomController extends BaseController
         // 刷新接口数据缓存
         if ($del_res) {
             Cache::forget(CacheService::$cache_keys['api_live_room_comment|'.$replay->rid]);
+            Cache::forget(CacheService::$cache_keys['brandsale.albumlist']);
+            Cache::forget(CacheService::$cache_keys['brandsale.albuminfo']);
+            Cache::forget(CacheService::$cache_keys['brandsale.albumliverooms']);
         } else {
             Cache::forget(CacheService::$cache_keys['api_live_room_comment|'.$replay->rid]);
+            Cache::forget(CacheService::$cache_keys['recorded.roomlist']);
+            Cache::forget(CacheService::$cache_keys['recorded.roominfo']);
+            Cache::forget(CacheService::$cache_keys['recorded.roomreplays']);
         }
 
         return $this->message('删除成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.commentreplylist', ['rid' => $replay->rid]));
