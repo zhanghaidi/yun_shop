@@ -9,6 +9,10 @@
     </div>
     <div class='panel panel-default'>
         <div class='panel-body'>
+            <div class="clearfix panel-heading" id="goodsTable">
+                <a id="" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;"
+                   href="javascript:history.go(-1);">返回</a>
+            </div>
 
             <table class="table table-hover" style="overflow:visible;">
                 <thead>
