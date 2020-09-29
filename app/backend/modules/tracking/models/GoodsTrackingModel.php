@@ -148,7 +148,7 @@ class GoodsTrackingModel extends Model
                     ->where('nickname', 'like', '%' . $search['realname'] . '%')
                     ->orWhere('telephone', 'like', '%' . $search['realname'] . '%')
                     ->orWhere('ajy_uid', $search['realname']);
-            })->orWhere('action', $this->searchNameToActionId($search['realname']))->orWhere('to_type_id', $this->searchNameToTypeId($search['realname']));
+            });
         }
         //根据商品筛选
         if ($search['keywords']) {
@@ -157,6 +157,10 @@ class GoodsTrackingModel extends Model
                     ->where('title', 'like', '%' . $search['keywords'] . '%')
                     ->orWhere('id', $search['keywords']);
             });
+        }
+        //根据类型筛选
+        if ($search['type']) {
+            $query = $query->where('action', $this->searchNameToActionId($search['type']))->orWhere('to_type_id', $this->searchNameToTypeId($search['type']));
         }
         //根据时间筛选
         if ($search['search_time'] == 1) {
