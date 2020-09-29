@@ -69,6 +69,11 @@ class RoomController extends BaseController
                 ->orderBy('sort', 'desc')
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
+            if ($list->total() > 0) {
+                foreach ($list as $k => &$comment_value) {
+                    $comment_value['comment_num'] = RoomComment::where([['room_id', '=', $comment_value['id']]])->count();
+                }
+            }
             $pager = PaginationHelper::show($list->total(), $list->currentPage(), $list->perPage());
         }
 
@@ -95,6 +100,11 @@ class RoomController extends BaseController
                 ->orderBy('sort', 'desc')
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
+            if ($list->total() > 0) {
+                foreach ($list as $k => &$comment_value) {
+                    $comment_value['comment_num'] = RoomComment::where([['room_id', '=', $comment_value['id']]])->count();
+                }
+            }
             $pager = PaginationHelper::show($list->total(), $list->currentPage(), $list->perPage());
         }
 
@@ -543,6 +553,10 @@ class RoomController extends BaseController
                 $comment_value['nickname'] = $user_info['nickname'];
                 $comment_value['avatarurl'] = $user_info['avatarurl'];
                 $comment_value['create_time'] = date('Y-m-d H:i',$comment_value['create_time']);
+                $comment_value['comment_num'] = RoomComment::where([
+                    ['room_id', '=', $comment_value['id']],
+                    ['is_reply', '=', 1]
+                ])->count();
                 //回复的条数
                 $comment_value['counts'] = RoomComment::where([
                     ['parent_id', '=', $comment_value['id']],
