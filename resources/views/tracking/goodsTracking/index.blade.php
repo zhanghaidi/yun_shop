@@ -28,7 +28,7 @@
                         <!-- <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">会员信息</label>-->
                         <div class="">
                             <input type="text" class="form-control" name="search[realname]"
-                                   value="{{$search['realname']}}" placeholder="可搜索会员ID/昵称/姓名/手机号/动作/类型"/>
+                                   value="{{$search['realname']}}" placeholder="可搜索会员ID/昵称/姓名/手机号"/>
                         </div>
                     </div>
 
@@ -40,6 +40,13 @@
                         </div>
                     </div>
 
+                    <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2 ">
+                        <!--<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">ID</label>-->
+                        <div class="">
+                            <input type="text" placeholder="搜索动作/类型" class="form-control" name="search[type]"
+                                   value="{{$search['type']}}"/>
+                        </div>
+                    </div>
                     {{--<div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
                         <!-- <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">会员等级</label>-->
                         <div class="">
