@@ -517,7 +517,8 @@ class RoomController extends BaseController
     }
 
     // fixBy-wk 评论列表 2020.9.29
-    public function commentlist(){
+    public function commentlist()
+    {
 
         $rid = request()->get('rid', 0);
         $room = DB::table('yz_appletslive_room')->where('id', $rid)->first();
@@ -526,71 +527,28 @@ class RoomController extends BaseController
         $input = \YunShop::request();
         $limit = 20;
 
-        // 录播视频
-        if ($room_type == 1) {
-            //课程评论列表
-            $where[] = ['room_id', '=', $rid];
-            $comment_list = RoomComment::where($where)
-                ->orderBy('id', 'desc')
-                ->paginate($limit);
 
-            if($comment_list->total() > 0){
-                foreach ($comment_list as $k => &$comment_value){
-                    //用户昵称 头像
-                    $user_info = DB::table('diagnostic_service_user')
-                        ->where('ajy_uid', $comment_value['user_id'])
-                        ->select('ajy_uid', 'nickname', 'avatarurl')
-                        ->first();
-                    $comment_value['nickname']  = $user_info['nickname'];
-                    $comment_value['avatarurl'] = $user_info['avatarurl'];
-                    //回复的条数
-                    $comment_value['counts'] = RoomComment::where([
-                        ['parent_id','=',$comment_value['id']],
-                        ['is_reply','=',1]
-                    ])->count();
-                }
+        //评论列表
+        $where[] = ['room_id', '=', $rid];
+        $comment_list = RoomComment::where($where)
+            ->orderBy('id', 'desc')
+            ->paginate($limit);
+
+        if ($comment_list->total() > 0) {
+            foreach ($comment_list as $k => &$comment_value) {
+                //用户昵称 头像
+                $user_info = DB::table('diagnostic_service_user')
+                    ->where('ajy_uid', $comment_value['user_id'])
+                    ->select('ajy_uid', 'nickname', 'avatarurl')
+                    ->first();
+                $comment_value['nickname'] = $user_info['nickname'];
+                $comment_value['avatarurl'] = $user_info['avatarurl'];
+                //回复的条数
+                $comment_value['counts'] = RoomComment::where([
+                    ['parent_id', '=', $comment_value['id']],
+                    ['is_reply', '=', 1]
+                ])->count();
             }
-        }
-
-        // 特卖直播
-        if ($room_type == 2) {
-
-            $where[] = ['yz_appletslive_replay.rid', '=', $rid];
-
-            // 处理搜索条件
-            if (isset($input->search)) {
-
-                $search = $input->search;
-                if (intval($search['roomid']) > 0) {
-                    $where[] = ['yz_appletslive_liveroom.roomid', '=', intval($search['roomid'])];
-                }
-                if (trim($search['name']) !== '') {
-                    $where[] = ['yz_appletslive_liveroom.name', 'like', '%' . trim($search['name']) . '%'];
-                }
-                if (trim($search['live_status']) !== '') {
-                    $where[] = ['yz_appletslive_liveroom.live_status', '=', $search['live_status']];
-                }
-                if (trim($search['status']) !== '') {
-                    if ($search['status'] === '0') {
-                        $where[] = ['yz_appletslive_replay.delete_time', '>', 0];
-                    } else {
-                        $where[] = ['yz_appletslive_replay.delete_time', '=', 0];
-                    }
-                }
-            }
-
-            $replay_list = DB::table('yz_appletslive_replay')
-                ->join('yz_appletslive_liveroom', 'yz_appletslive_replay.room_id', '=', 'yz_appletslive_liveroom.id')
-                ->select('yz_appletslive_replay.id', 'yz_appletslive_liveroom.roomid', 'yz_appletslive_liveroom.name',
-                    'yz_appletslive_liveroom.cover_img', 'yz_appletslive_liveroom.anchor_name',
-                    'yz_appletslive_liveroom.anchor_name', 'yz_appletslive_liveroom.live_status',
-                    'yz_appletslive_liveroom.start_time', 'yz_appletslive_liveroom.end_time',
-                    'yz_appletslive_replay.delete_time')
-                ->where($where)
-                ->whereIn('yz_appletslive_liveroom.live_status', [101, 102, 103, 105, 107])
-                ->orderBy('yz_appletslive_liveroom.start_time', 'desc')
-                ->orderBy('yz_appletslive_replay.id', 'desc')
-                ->paginate($limit);
         }
 
         $pager = PaginationHelper::show($comment_list->total(), $comment_list->currentPage(), $comment_list->perPage());
