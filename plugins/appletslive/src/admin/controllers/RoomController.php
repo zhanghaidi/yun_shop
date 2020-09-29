@@ -533,10 +533,21 @@ class RoomController extends BaseController
             $comment_list = RoomComment::where($where)
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
-            dd($comment_list);
-            if($comment_list->total() > 0){
-                foreach ($comment_list as $comment_value){
 
+            if($comment_list->total() > 0){
+                foreach ($comment_list as $k => &$comment_value){
+                    //用户昵称 头像
+                    $user_info = DB::table('diagnostic_service_user')
+                        ->where('ajy_uid', $comment_value['user_id'])
+                        ->select('ajy_uid', 'nickname', 'avatarurl')
+                        ->first();
+                    $comment_value['nickname']  = $user_info['nickname'];
+                    $comment_value['avatarurl'] = $user_info['avatarurl'];
+                    //回复的条数
+                    $comment_value['counts'] = RoomComment::where([
+                        ['parent_id','=',$comment_value['id']],
+                        ['is_reply','=',1]
+                    ])->count();
                 }
             }
         }
