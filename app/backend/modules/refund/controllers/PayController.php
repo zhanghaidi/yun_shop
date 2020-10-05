@@ -105,11 +105,12 @@ class PayController extends BaseController
                     'freight' => floatval($order->dispatch_price),    //decimal运费 （必传项）
                     'shop_modified' => date('Y-m-d H:i:s', time()), //string订单修改日期 （必传项）
                     'buyer_message' => $order->note, //string买家留言 长度<=400；可更新 （非必传）
+                    'remark' => $order->hasOneOrderRemark->remark, //string 卖家备注 长度<=150；可更新
                     'question_desc' => '用户退款', //订单异常描述
                     'items' => $items,  //商品明细 （必传项）
                 ]);
 
-                $result = OrderService::post($params, 'jushuitan.orders.upload');
+                $result = OrderService::post('退款处理上报',$params, 'jushuitan.orders.upload');
 
                 if (empty($result) || $result['code'] != 0) {
                     throw new ShopException('退款失败！');

@@ -77,7 +77,7 @@ class JuShuiTanController extends ApiController
                             'remark' => $order->hasOneOrderRemark->remark, //string 卖家备注 长度<=150；可更新
                             'items' => $items,  //商品明细 （必传项）
                         ]);
-                        $result = OrderService::post($params, 'jushuitan.orders.upload');
+                        $result = OrderService::post('定时订单上报',$params, 'jushuitan.orders.upload');
 
                         if (!empty($result) && $result['code'] == 0) {
                             $order->jushuitan_status = 1;
