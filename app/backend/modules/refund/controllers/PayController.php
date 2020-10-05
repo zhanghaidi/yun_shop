@@ -74,7 +74,7 @@ class PayController extends BaseController
                         'base_price' => floatval($val['goods_price']), //decimal基本价（拍下价格），保留两位小数，单位（元） （必传项）
                         'qty' => intval($val['total']), //int数量 （必传项）
                         'name' => $val['title'], //string商品名称 长度<=100 （必传项）
-                        'outer_oi_id' => $val['id'], //string商家系统订单商品明细主键,为了拆单合单时溯源，最长不超过 50,保持唯一 （必传项）
+                        'outer_oi_id' => strval($val['id']), //string商家系统订单商品明细主键,为了拆单合单时溯源，最长不超过 50,保持唯一 （必传项）
                         'properties_value' => $val['goods_option_title'],  //string商品属性；长度<=100 （非必传）
                         'refund_status' => 'success', //string 非必传 PS：值存在，会自动将订单转异常,success 状态的，发货将不发该商品，不支持单商品发部分; 退款状态:可选 退款中=waiting; 退款成功=success,closed=退款关闭:
                         'refund_qty' => intval($val['total'])  //退货数量
