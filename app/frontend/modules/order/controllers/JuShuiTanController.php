@@ -30,7 +30,8 @@ class JuShuiTanController extends ApiController
         $orders = \app\common\models\Order::where(['status' => 1, 'jushuitan_status' => 0])->where('pay_time', '<=', time()-1800)->with('address', 'hasManyOrderGoods', 'hasOneOrderPay')
             ->orderBy('create_time', 'ASC')->chunk(100, function ($orders) {
                 foreach ($orders as $order) {
-                    if(empty($order->has_one_refund_apply)){
+
+                    if(empty($order->hasOneRefundApply)){
                         $address = explode(" ", $order->address->address);
                         $goods = $order->hasManyOrderGoods->toArray();
                         $items = [];
