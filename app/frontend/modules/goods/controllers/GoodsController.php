@@ -905,31 +905,31 @@ class GoodsController extends GoodsApiController
             $data = [];
         }
 
-        //佣金
-        $exist_commission = app('plugins')->isEnabled('commission');
-        if ($exist_commission) {
-            $is_agent = $this->isValidateCommission($member);
-            if ($is_agent) {
-                $commission_data = (new GoodsDetailService($goodsModel))->getGoodsDetailData();
-                if ($commission_data['commission_show'] == 1) {
-                    $data['name'] = '佣金';
-                    $data['key'] = 'commission';
-                    $data['type'] = 'array';
-
-                    if (!empty($commission_data['first_commission']) && ($commission_data['commission_show_level'] > 0)) {
-                        $data['value'][] = '一级佣金' . $commission_data['first_commission'] . '元';
-                    }
-                    if (!empty($commission_data['second_commission']) && ($commission_data['commission_show_level'] > 1)) {
-                        $data['value'][] = '二级佣金' . $commission_data['second_commission'] . '元';
-                    }
-                    if (!empty($commission_data['third_commission']) && ($commission_data['commission_show_level'] > 2)) {
-                        $data['value'][] = '三级佣金' . $commission_data['third_commission'] . '元';
-                    }
-                    array_push($sale, $data);
-                    $data = [];
-                }
-            }
-        }
+        //佣金 fixBy-wk-20201005-注释掉   佣金暂时不显示
+//        $exist_commission = app('plugins')->isEnabled('commission');
+//        if ($exist_commission) {
+//            $is_agent = $this->isValidateCommission($member);
+//            if ($is_agent) {
+//                $commission_data = (new GoodsDetailService($goodsModel))->getGoodsDetailData();
+//                if ($commission_data['commission_show'] == 1) {
+//                    $data['name'] = '佣金';
+//                    $data['key'] = 'commission';
+//                    $data['type'] = 'array';
+//
+//                    if (!empty($commission_data['first_commission']) && ($commission_data['commission_show_level'] > 0)) {
+//                        $data['value'][] = '一级佣金' . $commission_data['first_commission'] . '元';
+//                    }
+//                    if (!empty($commission_data['second_commission']) && ($commission_data['commission_show_level'] > 1)) {
+//                        $data['value'][] = '二级佣金' . $commission_data['second_commission'] . '元';
+//                    }
+//                    if (!empty($commission_data['third_commission']) && ($commission_data['commission_show_level'] > 2)) {
+//                        $data['value'][] = '三级佣金' . $commission_data['third_commission'] . '元';
+//                    }
+//                    array_push($sale, $data);
+//                    $data = [];
+//                }
+//            }
+//        }
 
         //经销商提成
         $exist_team_dividend = app('plugins')->isEnabled('team-dividend');
