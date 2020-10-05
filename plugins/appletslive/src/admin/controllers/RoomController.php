@@ -576,7 +576,7 @@ class RoomController extends BaseController
         ])->render();
 
     }
-    // fixBy-wk 评论列表 2020.9.29
+    // fixBy-wk 评论回复列表 2020.9.29
     public function commentreplylist()
     {
         $rid = request()->get('id', 0);
@@ -610,7 +610,7 @@ class RoomController extends BaseController
 
     }
 
-    // fixBy-wk 评论列表 2020.9.29
+    // fixBy-wk 评论删除 2020.9.29
     public function commentdel()
     {
         $input = request()->all();
