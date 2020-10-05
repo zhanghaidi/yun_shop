@@ -131,7 +131,7 @@ class OperationController extends BaseController
             return redirect($result['url'])->send();
         }
 
-        //fixby-zhd-后台订单退款，上报聚水潭
+        //fixby-zhd-后台订单退款，上报聚水潭 2020-10-05 15：23
         $order = Order::with('address', 'hasManyOrderGoods', 'hasOneOrderPay')->find(request()->input('order_id'));
         if($order['status']==1 && $order['jushuitan_status']==1){
 
