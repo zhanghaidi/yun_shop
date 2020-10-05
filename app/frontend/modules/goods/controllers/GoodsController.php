@@ -567,8 +567,8 @@ class GoodsController extends GoodsApiController
                 $requestSearch['category'] = $categorySearch;
             }
         }
-
-        $build = $goods_model->Search($requestSearch)->selectRaw("thumb,market_price,price,cost_price,title, " . DB::getTablePrefix() . "yz_goods.id as goods_id")
+        //fixBy-wk-20201005 增加虚拟销量 和 销量字段 real_sales show_sales virtual_sales
+        $build = $goods_model->Search($requestSearch)->selectRaw("thumb,market_price,price,cost_price,title,real_sales,show_sales,virtual_sales, " . DB::getTablePrefix() . "yz_goods.id as goods_id")
             ->where("status", 1)
             ->whereInPluginIds();
 
