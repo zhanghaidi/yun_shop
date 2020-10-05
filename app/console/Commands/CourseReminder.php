@@ -91,8 +91,9 @@ class CourseReminder extends Command
 
             // 3、查询关注了这些课程的所有小程序用户信息(openid)
             $subscribed_user = DB::table('yz_appletslive_room_subscription')
-                ->select('user_id', 'room_id')
+                ->where('status', 1)
                 ->whereIn('room_id', array_keys($rela_room))
+                ->select('user_id', 'room_id')
                 ->get()->toArray();
 
             // Log::info('订阅了课程的用户', $subscribed_user);
@@ -209,8 +210,9 @@ class CourseReminder extends Command
 
                 // 8. 查询订阅了相关特卖专辑的用户
                 $subscribed_user = DB::table('yz_appletslive_room_subscription')
-                    ->select('user_id', 'room_id')
+                    ->where('status', 1)
                     ->whereIn('room_id', array_keys($rela_room))
+                    ->select('user_id', 'room_id')
                     ->get()->toArray();
 
                 // Log::info('订阅了特卖专辑的用户', $subscribed_user);
