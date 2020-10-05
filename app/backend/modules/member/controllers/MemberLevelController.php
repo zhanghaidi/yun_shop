@@ -74,7 +74,7 @@ class MemberLevelController extends BaseController
             if ($requestLevel['goods'] ) {
 
                 foreach ($requestLevel['goods'] as $k => $v) {
-                    
+
                     if ($v['goods_id']) {
 
                         $arr[] = $v['goods_id'];
@@ -83,13 +83,13 @@ class MemberLevelController extends BaseController
             } else {
                 $arr[] = [];
             }
-            
+
             if (empty($requestLevel['goods_id'])) {
-                
+
                 $levelModel->goods_id = implode(',', array_unique($arr));
 
             } else {
-                $ids = implode(',', array_unique(array_merge(array_filter($arr), array_values($requestLevel['goods_id']))));  
+                $ids = implode(',', array_unique(array_merge(array_filter($arr), array_values($requestLevel['goods_id']))));
                 $levelModel->goods_id = $ids;
             }
             //字段检测

@@ -642,6 +642,7 @@ class LiveController extends BaseController
         return $this->errorJson('你已加入课程');
     }
 
+
     /**
      * 我订阅的课程
      * @return \Illuminate\Http\JsonResponse
