@@ -82,6 +82,7 @@ class ImageHelper
 								img.get(0).src = url.url;
 							}
 							ipt.val(url.attachment);
+							ipt.attr("value", url.attachment); //修复图片上传问题 fixby-zlt-uploadbug 2020-09-26 16:20
 							ipt.attr("filename",url.filename);
 							ipt.attr("url",url.url);
 						}
@@ -90,6 +91,7 @@ class ImageHelper
 								img.get(0).src = "";
 							}
 							ipt.val(url.media_id);
+							ipt.attr("value", url.media_id);
 						}
 					}, options);
 				});
