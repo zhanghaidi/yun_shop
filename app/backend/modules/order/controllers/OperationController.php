@@ -184,7 +184,7 @@ class OperationController extends BaseController
                 'items' => $items,  //商品明细 （必传项）
             ]);
 
-            $result = OrderService::post('后台退款关闭订单上报',$params, 'jushuitan.orders.upload');
+            $result = OrderService::post('后台退款关闭',$params, 'jushuitan.orders.upload');
 
             if (empty($result) || $result['code'] != 0) {
                 throw new AppException('聚水潭上报失败！');
