@@ -74,7 +74,7 @@ class MemberLevelController extends BaseController
             if ($requestLevel['goods'] ) {
 
                 foreach ($requestLevel['goods'] as $k => $v) {
-                    
+
                     if ($v['goods_id']) {
 
                         $arr[] = $v['goods_id'];
@@ -83,13 +83,13 @@ class MemberLevelController extends BaseController
             } else {
                 $arr[] = [];
             }
-            
+
             if (empty($requestLevel['goods_id'])) {
-                
+
                 $levelModel->goods_id = implode(',', array_unique($arr));
 
             } else {
-                $ids = implode(',', array_unique(array_merge(array_filter($arr), array_values($requestLevel['goods_id']))));  
+                $ids = implode(',', array_unique(array_merge(array_filter($arr), array_values($requestLevel['goods_id']))));
                 $levelModel->goods_id = $ids;
             }
             //字段检测
@@ -125,9 +125,11 @@ class MemberLevelController extends BaseController
         $goods = MemberLevel::getGoodsId($levelModel['goods_id']);
 
         if($requestLevel) {
+            $shopSet = Setting::get('shop.member'); //获取店铺会员设置
             if(!isset($requestLevel['goods_id'])){
                 $requestLevel['goods_id'] = 0;
             }
+
             $levelModel->fill($requestLevel);
 
             if ($requestLevel['goods'] || $requestLevel['goods_id']) {
@@ -156,6 +158,9 @@ class MemberLevelController extends BaseController
                     $levelModel->goods_id = $ids;
                 }
             }
+
+            if($shopSet['level_type'] == 3 && $requestLevel['goods_id'] == 0)  //修复团队业绩会员bug
+                $levelModel->goods_id = 'Array';
 
             $validator = $levelModel->validator();
             if ($validator->fails()) {//检测失败
