@@ -624,8 +624,7 @@ class LiveController extends BaseController
 
         $table = 'yz_appletslive_room_subscription';
         $map = [['room_id', '=', $input['room_id']], ['user_id', '=', $this->user_id]];
-        $subscripInfo = DB::table($table)->where($map)->first();
-        if (!$subscripInfo) {
+        if (!DB::table($table)->where($map)->first()) {
             DB::table($table)->insert([
                 'uniacid' => $this->uniacid,
                 'room_id' => $input['room_id'],
@@ -633,22 +632,15 @@ class LiveController extends BaseController
                 'create_time' => time(),
                 'type' => APPLETSLIVE_ROOM_TYPE_COURSE,
             ]);
-            $msg = '订阅成功';
-        }else{
-            if($subscripInfo->status == 1){
-                DB::table($table)->where($map)->update(['status' => 0]);
-            }else{
-                DB::table($table)->where($map)->update(['status' => 1]);
-            }
-            $msg = '取消订阅成功';
+            CacheService::setRoomNum($input['room_id'], 'subscription_num');
+            CacheService::setUserSubscription($this->user_id, $input['room_id']);
+            CacheService::setRoomSubscription($input['room_id'], $this->user_id);
+            return $this->successJson('订阅成功');
         }
 
-        CacheService::setRoomNum($input['room_id'], 'subscription_num');
-        CacheService::setUserSubscription($this->user_id, $input['room_id']);
-        CacheService::setRoomSubscription($input['room_id'], $this->user_id);
-
-        return $this->successJson($msg);
+        return $this->errorJson('你已加入课程');
     }
+
 
     /**
      * 我订阅的课程
