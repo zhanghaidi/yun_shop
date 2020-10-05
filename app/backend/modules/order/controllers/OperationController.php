@@ -126,11 +126,6 @@ class OperationController extends BaseController
         if ($this->order->isPending()) {
             throw new AppException("订单已锁定,无法继续操作");
         }
-        $result = $this->order->refund();
-        if (isset($result['url'])) {
-            return redirect($result['url'])->send();
-        }
-
         //fixby-zhd-后台订单退款，上报聚水潭 2020-10-05 15：23
         $order = Order::with('address', 'hasManyOrderGoods', 'hasOneOrderPay')->find(request()->input('order_id'));
         if($order['status']==1 && $order['jushuitan_status']==1){
@@ -192,6 +187,12 @@ class OperationController extends BaseController
             }
         }
         OrderService::orderMess($order['order_sn'],$order,2);
+
+        $result = $this->order->refund();
+        if (isset($result['url'])) {
+            return redirect($result['url'])->send();
+        }
+
 
         return $this->message('操作成功');
     }
