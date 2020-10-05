@@ -329,18 +329,18 @@ class CourseReminder extends Command
 
         } elseif ($type == 'wxapp') {
 
-            $thing1_value = '课程更新';
+            $thing1_value = '尊敬的用户,您订阅的课程【' . $room_name . '】,有新视频要发布啦~';
             if ($replay_info['room_id'] > 0) {
                 $jump_tail = LIVE_PATH . '?tid=' . $replay_info['rid'];
                 $thing1_value = '品牌特卖开播提醒';
             }
-
+            $thing2_value = '最新视频【' . $replay_info['title'] . '】要发布啦!';
             $param['options'] = $this->options['wxapp'];
             $param['page'] = $jump_page . urlencode($jump_tail);
             $param['template_id'] = 'ABepy-L03XH_iU0tPd03VUV9KQ_Vjii5mClL7Qp8_jc';
             $param['notice_data'] = [
                 'thing1' => ['value' => $thing1_value, 'color' => '#173177'],
-                'thing2' => ['value' => '【' . $room_name . '】', 'color' => '#173177'],
+                'thing2' => ['value' => $thing2_value, 'color' => '#173177'],
                 'name3' => ['value' => $replay_info['doctor'], 'color' => '#173177'],
                 'thing4' => ['value' => date('Y-m-d H:i', $replay_info['publish_time']), 'color' => '#173177'],
             ];
