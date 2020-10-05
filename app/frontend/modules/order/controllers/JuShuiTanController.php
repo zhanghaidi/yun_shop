@@ -44,7 +44,7 @@ class JuShuiTanController extends ApiController
                                 'base_price' => floatval($val['goods_price']), //decimal基本价（拍下价格），保留两位小数，单位（元） （必传项）
                                 'qty' => intval($val['total']), //int数量 （必传项）
                                 'name' => $val['title'], //string商品名称 长度<=100 （必传项）
-                                'outer_oi_id' => $order->hasOneOrderPay->pay_sn, //string商家系统订单商品明细主键,为了拆单合单时溯源，最长不超过 50,保持唯一 （必传项）
+                                'outer_oi_id' => $val['id'], //string商家系统订单商品明细主键,为了拆单合单时溯源，最长不超过 50,保持唯一 （必传项）
                                 'properties_value' => $val['goods_option_title']  //string商品属性；长度<=100 （非必传）
                             ];
                         }
