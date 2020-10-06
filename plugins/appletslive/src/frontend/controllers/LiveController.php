@@ -27,7 +27,6 @@ use Illuminate\Support\Facades\Cache;
 use Yunshop\Appletslive\common\services\CacheService;
 use Yunshop\Appletslive\common\services\BaseService;
 use app\common\models\AccountWechats;
-use app\backend\modules\tracking\models\DiagnosticServiceUser;
 use app\Jobs\SendTemplateMsgJob;
 
 /**
@@ -625,7 +624,8 @@ class LiveController extends BaseController
 
         $table = 'yz_appletslive_room_subscription';
         $map = [['room_id', '=', $input['room_id']], ['user_id', '=', $this->user_id]];
-        if (!DB::table($table)->where($map)->first()) {
+        $subscripInfo = DB::table($table)->where($map)->first();
+        if (!$subscripInfo) {
             DB::table($table)->insert([
                 'uniacid' => $this->uniacid,
                 'room_id' => $input['room_id'],
@@ -633,15 +633,38 @@ class LiveController extends BaseController
                 'create_time' => time(),
                 'type' => APPLETSLIVE_ROOM_TYPE_COURSE,
             ]);
-            CacheService::setRoomNum($input['room_id'], 'subscription_num');
-            CacheService::setUserSubscription($this->user_id, $input['room_id']);
-            CacheService::setRoomSubscription($input['room_id'], $this->user_id);
-            return $this->successJson('订阅成功');
+
+            $msg = '订阅成功';
+
+        }else{
+
+
+            if($subscripInfo->status == 1){
+                DB::table($table)->where($map)->update(['status' => 0]);
+            }else{
+                DB::table($table)->where($map)->update(['status' => 1]);
+            }
+
+            //刷新缓存
+            $room_id   = $input['room_id'];
+
+            $cache_key = "api_live_room_subscription|$room_id";
+            Cache::forget($cache_key);
+
+            $cache_key_user_subscription = "api_live_user_subscription|$this->user_id";
+            Cache::forget($cache_key_user_subscription);
+
+            Cache::forget(CacheService::$cache_keys['brandsale.albumsubscription']);
+
+            Cache::forget(CacheService::$cache_keys['brandsale.albumusersubscription']);
+
+            $msg = '取消订阅成功';
+
         }
+        
+        return $this->successJson($msg);
 
-        return $this->errorJson('你已加入课程');
     }
-
 
     /**
      * 我订阅的课程
@@ -718,23 +741,6 @@ class LiveController extends BaseController
             return $this->errorJson('评论内容不能为空');
         }
 
-        //用户禁言
-        $user = DiagnosticServiceUser::where('ajy_uid', $this->user_id)->first();
-
-        if ($user->is_black == 1) {
-            if ($user->black_end_time > time()) {
-                response()->json([
-                    'result' => 301,
-                    'msg' => '您已被系统禁言！截止时间至：' . date('Y-m-d H:i:s', $user->black_end_time) . '申诉请联系管理员',
-                    'data' => false,
-                ], 200, ['charset' => 'utf-8'])->send();
-                exit;
-            } else {
-                $user->is_black = 0;
-                $user->black_content = '时间到期,自然解禁';
-                $user->save();
-            }
-        }
         // 评论内容敏感词过滤
         $content = trim($input['content']);
         $wxapp_base_service = new BaseService();
@@ -1150,22 +1156,6 @@ class LiveController extends BaseController
             return $this->errorJson('评论内容不能为空');
         }
 
-        //用户禁言
-        $user = DiagnosticServiceUser::where('ajy_uid', $this->user_id)->first();
-        if ($user->is_black == 1) {
-            if ($user->black_end_time > time()) {
-                response()->json([
-                    'result' => 301,
-                    'msg' => '您已被系统禁言！截止时间至：' . date('Y-m-d H:i:s', $user->black_end_time) . '申诉请联系管理员',
-                    'data' => false,
-                ], 200, ['charset' => 'utf-8'])->send();
-                exit;
-            } else {
-                $user->is_black = 0;
-                $user->black_content = '时间到期,自然解禁';
-                $user->save();
-            }
-        }
         // 评论内容敏感词过滤
         $content = trim($input['content']);
         $wxapp_base_service = new BaseService();

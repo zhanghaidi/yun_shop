@@ -85,7 +85,7 @@ class CacheService
             ->where('delete_time', 0)
             ->count();
         $list = DB::table('yz_appletslive_room')
-            ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num')
+            ->select('id', 'name', 'live_status', 'cover_img', 'subscription_num', 'view_num', 'comment_num')
             ->where('type', 1)
             ->where('delete_time', 0)
             ->orderBy('sort', 'desc')
@@ -132,7 +132,7 @@ class CacheService
         $cache_key = self::$cache_keys['recorded.roominfo'];
         $cache_val = Cache::get($cache_key);
         $info = DB::table('yz_appletslive_room')
-            ->select('id', 'type', 'roomid', 'name', 'anchor_name', 'cover_img', 'start_time', 'end_time','live_status', 'desc')
+            ->select('id', 'type', 'roomid', 'name', 'anchor_name', 'cover_img', 'start_time', 'end_time', 'live_status', 'desc')
             ->where('id', $room_id)
             ->first();
         if (!$cache_val) {
@@ -273,6 +273,7 @@ class CacheService
             $cache_val = DB::table('yz_appletslive_room_subscription')
                 ->where('uniacid', self::$uniacid)
                 ->where('room_id', $room_id)
+                ->where('status', 1) // 0 取消订阅 1 订阅 fixby-wk-20201005 订阅状态
                 ->orderBy('id', 'desc')
                 ->pluck('create_time', 'user_id')
                 ->toArray();
@@ -335,6 +336,7 @@ class CacheService
                 ->where('uniacid', self::$uniacid)
                 ->where('user_id', $user_id)
                 ->where('type', 1)
+                ->where('status', 1) //0 取消订阅 1 订阅 fixby-wk-20201005 订阅状态
                 ->pluck('room_id')->toArray();
         } else {
             if ($room_id && array_search($room_id, $cache_val) === false) {
@@ -1102,6 +1104,7 @@ class CacheService
             $list = DB::table('yz_appletslive_room_subscription')
                 ->where('uniacid', self::$uniacid)
                 ->where('room_id', $album_id)
+                ->where('status', 1) //0 取消订阅 1 订阅 fixby-wk-20201005 订阅状态
                 ->orderBy('id', 'desc')
                 ->pluck('create_time', 'user_id')
                 ->toArray();
@@ -1170,6 +1173,7 @@ class CacheService
                 ->where('uniacid', self::$uniacid)
                 ->where('user_id', $user_id)
                 ->where('type', 2)
+                ->where('status', 1) // 0 取消订阅 1 订阅 fixby-wk-20201005 订阅状态
                 ->pluck('room_id')
                 ->toArray();
             $cache_val[$user_id] = $list;
