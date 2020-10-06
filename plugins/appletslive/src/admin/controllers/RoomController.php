@@ -361,7 +361,8 @@ class RoomController extends BaseController
             $upd_data['time_long'] = ((intval($param['minute']) * 60) + intval($param['second']));
 
             if ($upd_data['type'] != 0) {
-                $upd_data['publish_time'] = strtotime($param['publish_time']) <= time() ? time() : strtotime($param['publish_time']);
+                //$upd_data['publish_time'] = strtotime($param['publish_time']) <= time() ? time() : strtotime($param['publish_time']);
+                $upd_data['publish_time'] = strtotime($param['publish_time']);
             }
 
             $replay = DB::table('yz_appletslive_replay')->where('id', $id)->first();
