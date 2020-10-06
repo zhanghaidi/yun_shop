@@ -296,6 +296,19 @@
                                                 @endif
                                                 :{{$order['order_deliver']['deliver_name']}}</label>
                                         @endif
+                                        {{--fixby-zhd-聚水潭一键上传 2020-09-25订单发送聚水潭ERP状态--}}
+                                        @if($order['jushuitan_status']==1)
+                                            <label class="label label-success">已上传聚水潭</label>
+                                        @else
+                                            @if($order['status'] ==1 && empty($order['has_one_refund_apply']))
+                                                <a class="label label-primary" href="javascript:;"
+                                                   onclick="$('#modal-jushuitan-send').find(':input[name=order_id]').val('{{$order['id']}}')"
+                                                   data-toggle="modal" data-target="#modal-jushuitan-send">可上传聚水潭
+                                                </a>
+                                            @else
+                                                <label class="label label-default">未上传聚水潭</label>
+                                            @endif
+                                        @endif
                                         @if(!empty($order['has_one_refund_apply']))
                                             <label class="label label-danger">{{$order['has_one_refund_apply']['refund_type_name']}}
                                                 :{{$order['has_one_refund_apply']['status_name']}}</label>
@@ -303,15 +316,6 @@
                                         @if($order['has_many_first_order'])
                                             <label class='label label-primary'>首单</label>
                                         @endif
-
-                                        @if($order['jushuitan_status']==1)
-                                            <label class="label label-danger">
-                                                已发送订单到聚水潭</label>
-                                         @else
-                                            <label class="label label-danger" style="background-color: #4caf50;">
-                                                暂未发送聚水潭</label>
-                                        @endif
-
 
                                     <td class="right">
                                         @if(empty($order['status']))

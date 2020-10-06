@@ -40,6 +40,13 @@
                         </div>
                     </div>
 
+                    <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2 ">
+                        <!--<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">ID</label>-->
+                        <div class="">
+                            <input type="text" placeholder="搜索动作/类型" class="form-control" name="search[type]"
+                                   value="{{$search['type']}}"/>
+                        </div>
+                    </div>
                     {{--<div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
                         <!-- <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">会员等级</label>-->
                         <div class="">
@@ -75,11 +82,11 @@
                                         selected
                                         @endif>帖子
                                 </option>
-                                <option value='5'
+                                {{--<option value='5'
                                         @if($search['type_id']=='5')
                                         selected
                                         @endif>体质
-                                </option>
+                                </option>--}}
                                 <option value='6'
                                         @if($search['type_id']=='6')
                                         selected
@@ -109,6 +116,11 @@
                                         @if($search['type_id']=='11')
                                         selected
                                         @endif>分享
+                                </option>
+                                <option value='12'
+                                        @if($search['type_id']=='12')
+                                        selected
+                                        @endif>未知
                                 </option>
                             </select>
                         </div>
@@ -157,15 +169,24 @@
                             </select>
                         </div>
                     </div>
-                    {{--<div class="search-select">
-                        {!! app\common\helpers\DateRange::tplFormFieldDateRange('search[times]', [
-                        'starttime'=>date('Y-m-d H:i', $search['times']['start']),
-                        'endtime'=>date('Y-m-d H:i',$search['times']['start']),
-                        'start'=>0,
-                        'end'=>0
-                        ], true) !!}
-                    </div>--}}
+                    <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
 
+                        <div class="time">
+                            <select name='search[search_time]' class='form-control'>
+                                <option value='0' @if($search['search_time']=='0') selected @endif>不搜索时间</option>
+                                <option value='1' @if($search['search_time']=='1') selected @endif>搜索时间</option>
+                            </select>
+                            <div class="search-select">
+                                {!! app\common\helpers\DateRange::tplFormFieldDateRange('search[time]', [
+                                'starttime'=>date('Y-m-d H:i', strtotime($search['time']['start']) ?: strtotime('-1 month')),
+                                'endtime'=>date('Y-m-d H:i',strtotime($search['time']['end']) ?: time()),
+                                'start'=>0,
+                                'end'=>0
+                                ], true) !!}
+                            </div>
+                        </div>
+
+                    </div>
                     <div class="form-group  col-xs-12 col-md-12 col-lg-6">
                         <!--<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label"></label>-->
                         <div class="">
