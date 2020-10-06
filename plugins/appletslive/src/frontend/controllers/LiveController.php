@@ -649,10 +649,10 @@ class LiveController extends BaseController
             $room_id   = $input['room_id'];
 
             $cache_key = "api_live_room_subscription|$room_id";
-            Cache::forever($cache_key);
+            Cache::forget($cache_key);
 
             $cache_key_user_subscription = "api_live_user_subscription|$this->user_id";
-            Cache::forever($cache_key_user_subscription);
+            Cache::forget($cache_key_user_subscription);
 
             Cache::forget(CacheService::$cache_keys['brandsale.albumsubscription']);
 
