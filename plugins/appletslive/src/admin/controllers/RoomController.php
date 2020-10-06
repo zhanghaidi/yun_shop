@@ -631,16 +631,22 @@ class RoomController extends BaseController
         }
         $del_res = RoomComment::where('id', $replay->id)->delete();
 
+        $cache_key = "api_live_room_comment|$replay->room_id";
+        $cache_key_replay_comment = "api_live_replay_comment|$replay->room_id";
+
         // 刷新接口数据缓存
         if ($del_res) {
-            Cache::forget(CacheService::$cache_keys['api_live_room_comment|'.$replay->rid]);
-            Cache::forget(CacheService::$cache_keys['brandsale.albumcomment']);
+            Cache::forget(CacheService::$cache_keys[$cache_key]);
+            Cache::forget(CacheService::$cache_keys[$cache_key_replay_comment]);
 
+            Cache::forget(CacheService::$cache_keys['brandsale.albumcomment']);
             Cache::forget(CacheService::$cache_keys['brandsale.albumlist']);
             Cache::forget(CacheService::$cache_keys['brandsale.albuminfo']);
             Cache::forget(CacheService::$cache_keys['brandsale.albumliverooms']);
         } else {
-            Cache::forget(CacheService::$cache_keys['api_live_room_comment|'.$replay->rid]);
+            Cache::forget(CacheService::$cache_keys[$cache_key]);
+            Cache::forget(CacheService::$cache_keys[$cache_key_replay_comment]);
+
             Cache::forget(CacheService::$cache_keys['brandsale.albumcomment']);
             Cache::forget(CacheService::$cache_keys['recorded.roomlist']);
             Cache::forget(CacheService::$cache_keys['recorded.roominfo']);
