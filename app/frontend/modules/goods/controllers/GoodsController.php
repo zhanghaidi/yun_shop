@@ -567,8 +567,8 @@ class GoodsController extends GoodsApiController
                 $requestSearch['category'] = $categorySearch;
             }
         }
-        //fixBy-wk-20201005 增加虚拟销量 和 销量字段 real_sales show_sales virtual_sales
-        $build = $goods_model->Search($requestSearch)->selectRaw("thumb,market_price,price,cost_price,title,real_sales,show_sales,virtual_sales, " . DB::getTablePrefix() . "yz_goods.id as goods_id")
+
+        $build = $goods_model->Search($requestSearch)->selectRaw("thumb,market_price,price,cost_price,title, " . DB::getTablePrefix() . "yz_goods.id as goods_id")
             ->where("status", 1)
             ->whereInPluginIds();
 
@@ -610,6 +610,11 @@ class GoodsController extends GoodsApiController
             /*$rGoods = $goods_model->select()
                 ->where('id', $v['goods_id'])
                 ->first();*/
+            //fixBy-wk-20201005 增加虚拟销量 和 销量字段 real_sales show_sales virtual_sales
+            $goodsInfo =  DB::table('yz_goods')->select('virtual_sales','real_sales','show_sales')->where("status", 1)->where('id', $v['goods_id'])->first();
+            $list['data'][$k]['virtual_sales'] = $goodsInfo['virtual_sales'];
+            $list['data'][$k]['real_sales'] = $goodsInfo['real_sales'];
+            $list['data'][$k]['show_sales'] = $goodsInfo['show_sales'];
 
             $list['data'][$k]['vip_price'] = $v->vip_price;
             $list['data'][$k]['vip_next_price'] = $v->vip_next_price;
