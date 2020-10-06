@@ -641,8 +641,10 @@ class LiveController extends BaseController
 
             if($subscripInfo->status == 1){
                 DB::table($table)->where($map)->update(['status' => 0]);
+                $msg = '取消订阅成功';
             }else{
                 DB::table($table)->where($map)->update(['status' => 1]);
+                $msg = '订阅成功';
             }
 
             //刷新缓存
@@ -657,8 +659,6 @@ class LiveController extends BaseController
             Cache::forget(CacheService::$cache_keys['brandsale.albumsubscription']);
 
             Cache::forget(CacheService::$cache_keys['brandsale.albumusersubscription']);
-
-            $msg = '取消订阅成功';
 
         }
         
