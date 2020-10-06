@@ -645,9 +645,18 @@ class LiveController extends BaseController
                 DB::table($table)->where($map)->update(['status' => 1]);
             }
 
-            CacheService::setRoomNum($input['room_id'], 'subscription_num');
-            CacheService::setUserSubscription($this->user_id, $input['room_id']);
-            CacheService::setRoomSubscription($input['room_id'], $this->user_id);
+            //刷新缓存
+            $room_id   = $input['room_id'];
+
+            $cache_key = "api_live_room_subscription|$room_id";
+            Cache::forever($cache_key);
+
+            $cache_key_user_subscription = "api_live_user_subscription|$this->user_id";
+            Cache::forever($cache_key_user_subscription);
+
+            Cache::forget(CacheService::$cache_keys['brandsale.albumsubscription']);
+
+            Cache::forget(CacheService::$cache_keys['brandsale.albumusersubscription']);
 
             $msg = '取消订阅成功';
 
