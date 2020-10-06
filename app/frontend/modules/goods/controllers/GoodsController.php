@@ -568,7 +568,7 @@ class GoodsController extends GoodsApiController
             }
         }
         //fixBy-wk-20201005 增加虚拟销量 和 销量字段 real_sales show_sales virtual_sales
-        $build = $goods_model->Search($requestSearch)->selectRaw("thumb,market_price,price,cost_price,title,real_sales,show_sales,virtual_sales, " . DB::getTablePrefix() . "yz_goods.id as goods_id")
+        $build = $goods_model->Search($requestSearch)->selectRaw("thumb,market_price,price,cost_price,title, " . DB::getTablePrefix() . "yz_goods.real_sales as real_sales, " . DB::getTablePrefix() . "yz_goods.show_sales as show_sales, " . DB::getTablePrefix() . "yz_goods.virtual_sales as virtual_sales, " . DB::getTablePrefix() . "yz_goods.id as goods_id")
             ->where("status", 1)
             ->whereInPluginIds();
 
