@@ -334,7 +334,7 @@ class CourseReminder extends Command
                 $jump_tail = LIVE_PATH . '?tid=' . $replay_info['rid'];
                 $thing1_value = '品牌特卖开播提醒';
             }
-            $thing2_value = '最新视频【' . $replay_info['title'] . '】要发布啦!';
+            $thing2_value = '最新视频【' . $replay_info['title'] . '】，要发布啦!';
             $param['options'] = $this->options['wxapp'];
             $param['page'] = $jump_page . urlencode($jump_tail);
             $param['template_id'] = 'ABepy-L03XH_iU0tPd03VUV9KQ_Vjii5mClL7Qp8_jc';
