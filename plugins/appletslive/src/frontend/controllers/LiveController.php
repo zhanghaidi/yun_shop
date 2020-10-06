@@ -638,20 +638,21 @@ class LiveController extends BaseController
 
         }else{
 
+
             if($subscripInfo->status == 1){
                 DB::table($table)->where($map)->update(['status' => 0]);
             }else{
                 DB::table($table)->where($map)->update(['status' => 1]);
             }
 
+            CacheService::setRoomNum($input['room_id'], 'subscription_num');
+            CacheService::setUserSubscription($this->user_id, $input['room_id']);
+            CacheService::setRoomSubscription($input['room_id'], $this->user_id);
+
             $msg = '取消订阅成功';
 
         }
-
-        CacheService::setRoomNum($input['room_id'], 'subscription_num');
-        CacheService::setUserSubscription($this->user_id, $input['room_id']);
-        CacheService::setRoomSubscription($input['room_id'], $this->user_id);
-
+        
         return $this->successJson($msg);
 
     }
