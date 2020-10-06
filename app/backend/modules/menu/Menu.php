@@ -2522,6 +2522,18 @@ class Menu
                                         'item'       => 'order_operation_manualrefund',
                                         'parents'    => ['Order', 'order_list'],
                                     ],
+                                    //fixby-订单ERP聚水潭上报路由-zhd-2020-10-06
+                                    'order_operation_jushuitansend' => [
+                                        'name'       => '订单聚水潭上传',
+                                        'url'        => 'order.operation.jushuitanSend',
+                                        'url_params' => '',
+                                        'permit'     => 1,
+                                        'menu'       => 0,
+                                        'icon'       => '',
+                                        'sort'       => 1,
+                                        'item'       => 'order_operation_jushuitansend',
+                                        'parents'    => ['Order', 'order_list'],
+                                    ],
 
                                     'order_operation_remark' => [
                                         'name'       => '订单备注',
