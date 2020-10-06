@@ -615,7 +615,7 @@ class LiveController extends BaseController
     public function roomsubscription()
     {
         $this->needLogin();
-        $this->needFollowAccount();
+        //$this->needFollowAccount();
 
         $input = request()->all();
         if (!array_key_exists('room_id', $input)) {
@@ -1059,7 +1059,7 @@ class LiveController extends BaseController
     public function brandsalesubscription()
     {
         $this->needLogin();
-        $this->needFollowAccount();
+        //$this->needFollowAccount();
 
         $input = request()->all();
         if (!array_key_exists('album_id', $input)) {
