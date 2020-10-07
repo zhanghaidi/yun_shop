@@ -1550,6 +1550,19 @@ class Menu
                                 'sort'       => '2',
                                 'item'       => 'goods_tracking_history',
                                 'parents'    => ['Goods', 'goods_tracking',],
+                                'child'      => [],
+                               ],
+
+                            'goods_tracking_report' => [
+                                'name'       => '商品埋点统计',
+                                'url'        => 'tracking.goods-tracking.report',
+                                'url_params' => '',
+                                'permit'     => 1,
+                                'menu'       => 1,
+                                'icon'       => '',
+                                'sort'       => '2',
+                                'item'       => 'goods_tracking_history',
+                                'parents'    => ['Goods', 'goods_tracking',],
                                 'child'      => [
                                     /*'goods_tracking_history_index'  => [
                                         'name'       => '全部记录',
