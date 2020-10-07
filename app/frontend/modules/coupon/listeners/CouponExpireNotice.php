@@ -135,6 +135,7 @@ class CouponExpireNotice
 
     public function subscribe()
     {
+        \Log::info('优惠券到期处理--------事件订阅者开始');
         \Event::listen('cron.collectJobs', function () {
             \Cron::add('Coupon-expire-notice', '*/1 * * * *', function () {
                 \Log::info('优惠券到期处理--------定时执行开始');
