@@ -188,7 +188,7 @@ class EventServiceProvider extends ServiceProvider
 
         orderListener::class,
         IncomeWithdraw::class,
-        CouponExpireNotice::class,
+        \app\frontend\modules\coupon\listeners\CouponExpireNotice::class,
         CouponSend::class,
         MemberLevelValidity::class,
         LimitBuy::class,
