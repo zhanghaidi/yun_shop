@@ -60,7 +60,8 @@
                             </div>
                             <div class="col-sm-2 col-xs-6">
                                 <input class="mui-switch mui-switch-animbg" id="expire" type="checkbox"
-                                       @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['expire']))
+                                       {{--fixBy-wk-20201007getIsDefaultById 修改为  getTempById--}}
+                                       @if(\app\common\models\notice\MessageTemp::getTempById($set['expire']))
                                        checked
                                        @endif
                                        onclick="message_default(this.id)"/>

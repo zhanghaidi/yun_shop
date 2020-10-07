@@ -38,6 +38,7 @@ class CouponExpireNotice
 
     public function sendExpireNotice()
     {
+        Log::info('------------------------ 优惠券过期提醒 BEGIN -------------------------------');
         if ($this->set['every_day'] != date('H')) {
             return;
         }
@@ -96,7 +97,11 @@ class CouponExpireNotice
             if (!$msg) {
                 return;
             }
+
+            Log::info('优惠券过期提醒 running : Message = '.\GuzzleHttp\json_encode($msg));
             \app\common\services\MessageService::notice(MessageTemp::$template_id, $msg, $member->uid, $this->uniacid);
+
+            Log::info('------------------------ 优惠券过期提醒 END -------------------------------');
         }
         return;
     }
