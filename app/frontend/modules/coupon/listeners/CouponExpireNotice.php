@@ -8,6 +8,9 @@ use app\common\models\Member;
 use app\common\models\MemberCoupon;
 use app\common\models\notice\MessageTemp;
 use app\common\models\UniAccount;
+use Illuminate\Console\Scheduling\Event;
+use Liebig\Cron\Cron;
+use think\facade\Log;
 
 /**
  * Author: 芸众商城 www.yunzshop.com
@@ -136,8 +139,9 @@ class CouponExpireNotice
     public function subscribe()
     {
         \Log::info('优惠券到期处理--------事件订阅者开始');
-        \Event::listen('cron.collectJobs', function () {
-            \Cron::add('Coupon-expire-notice', '*/1 * * * *', function () {
+        
+        Event::listen('cron.collectJobs', function () {
+            Cron::add('Coupon-expire-notice', '*/1 * * * *', function () {
                 \Log::info('优惠券到期处理--------定时执行开始');
                 $this->handle();
                 return;
