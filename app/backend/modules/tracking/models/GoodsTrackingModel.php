@@ -216,7 +216,7 @@ class GoodsTrackingModel extends Model
     //根据订单统计
     public function groupByGoods()
     {
-        return GoodsTrackingModel::groupBy('goods_id');
+        return self::groupBy('goods_id')->get();
 
     }
 
