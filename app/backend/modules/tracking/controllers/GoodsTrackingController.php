@@ -39,11 +39,14 @@ class GoodsTrackingController extends BaseController
 
     public function report()
     {
-        $records = GoodsTrackingModel::records()->groupBy('goods_id')->toArray();
+        $goodsRecords = GoodsTrackingModel::groupBy('goods_id')->get()->toArray();
 
-        //$recordList = $records->orderBy('create_time', 'desc')->paginate();
+        foreach ($goodsRecords as $k => $v){
+            $goodsRecords[$k]['user_nums'] = GoodsTrackingModel::where('goods_id',$v['goods_id'])->groupBy('user_id')->toArray();
+        }
 
-        dd($records);
+        dd($goodsRecords);
+
         $pager = PaginationHelper::show($recordList->total(), $recordList->currentPage(), $recordList->perPage());
 
         return view('tracking.goodsTracking.report',[
