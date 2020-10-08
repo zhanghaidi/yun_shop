@@ -10,7 +10,7 @@
         <!-- 新增加右侧顶部三级菜单结束 -->
 
         <div class="panel panel-info">
-            <div class="panel-heading">商品埋点统计</div>
+            <div class="panel-heading">统计报告</div>
             <div class="panel-body">
                 <form action="" method="get" class="form-horizontal" role="form" id="form1">
                     <input type="hidden" name="c" value="site"/>
@@ -200,96 +200,95 @@
 
         </div>
         <div class="clearfix">
-            <div class="panel panel-default">
-                统计分析
-                {{--<div class="panel-heading">记录总数：{{ $pageList->total() }}</div>
-                <div class="panel-body">
-                    <table class="table table-hover" style="overflow:visible;">
-                        <thead class="navbar-inner">
-                        <tr>
-                            <th style='width:6%; text-align: center;'>主键ID</th>
-                            <th style='width:12%; text-align: center;'>来源类型</th>
-                            <th style='width:12%; text-align: center;'>所属资源</th>
-                            <th style='width:12%; text-align: center;'>商品信息</th>
-                            <th style='width:12%; text-align: center;'>操作用户</th>
-                            <th style='width:12%; text-align: center;'>操作动作</th>
-                            <th style='width:12%; text-align: center;'>动作变量</th>
-                            <th style='width:12%; text-align: center;'>订单号</th>
-                            <th style='width:12%; text-align: center;'>报点时间</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach($pageList as $list)
-                            <tr>
-                                <td style="text-align: center;">{{ $list->id }}</td>
-                                <td style="text-align: center;">
-                                    @if($list->type_id == 1) 穴位
-                                    @elseif ($list->type_id == 2) 病例
-                                    @elseif ($list->type_id == 3) 文章
-                                    @elseif ($list->type_id == 4) 帖子
-                                    @elseif ($list->type_id == 5) 体质
-                                    @elseif ($list->type_id == 6) 灸师
-                                    @elseif ($list->type_id == 7) 课时
-                                    @elseif ($list->type_id == 8) 直播
-                                    @elseif ($list->type_id == 9) 商城
-                                    @elseif ($list->type_id == 10) 活动
-                                    @elseif ($list->type_id == 11) 用户分享
-                                    @elseif ($list->type_id == 12) 搜索
-                                    @endif
-                                </td>
+             <div class="panel panel-default">
+               <div class="panel-heading">记录总数：{{ $pageList->total() }}</div>
+                 <div class="panel-body">
+                     <table class="table table-hover" style="overflow:visible;">
+                         <thead class="navbar-inner">
+                         <tr>
+                             <th style='width:6%; text-align: center;'>主键ID</th>
+                             <th style='width:12%; text-align: center;'>来源类型</th>
+                             <th style='width:12%; text-align: center;'>所属资源</th>
+                             <th style='width:12%; text-align: center;'>商品信息</th>
+                             <th style='width:12%; text-align: center;'>操作用户</th>
+                             <th style='width:12%; text-align: center;'>操作动作</th>
+                             <th style='width:12%; text-align: center;'>动作变量</th>
+                             <th style='width:12%; text-align: center;'>订单号</th>
+                             <th style='width:12%; text-align: center;'>报点时间</th>
+                         </tr>
+                         </thead>
+                         <tbody>
+                         @foreach($pageList as $list)
+                             <tr>
+                                 <td style="text-align: center;">{{ $list->id }}</td>
+                                 <td style="text-align: center;">
+                                     @if($list->type_id == 1) 穴位
+                                     @elseif ($list->type_id == 2) 病例
+                                     @elseif ($list->type_id == 3) 文章
+                                     @elseif ($list->type_id == 4) 帖子
+                                     @elseif ($list->type_id == 5) 体质
+                                     @elseif ($list->type_id == 6) 灸师
+                                     @elseif ($list->type_id == 7) 课时
+                                     @elseif ($list->type_id == 8) 直播
+                                     @elseif ($list->type_id == 9) 商城
+                                     @elseif ($list->type_id == 10) 活动
+                                     @elseif ($list->type_id == 11) 用户分享
+                                     @elseif ($list->type_id == 12) 搜索
+                                     @endif
+                                 </td>
 
-                                <td style="text-align: center;">
-                                    {{ $list->resource_id }}<br>
-                                    @if($list->type_id == 1) {{ $list->resource->name }}
-                                    @elseif ($list->type_id == 2) 病例
-                                    @elseif ($list->type_id == 3) {{ $list->resource->title }}
-                                    @elseif ($list->type_id == 4) {{ $list->resource->title }}
-                                    @elseif ($list->type_id == 5) {{ $list->resource->name }}
-                                    @elseif ($list->type_id == 7) {{ $list->resource->title }}
-                                    @elseif ($list->type_id == 8) {{ $list->resource->name }}
-                                    @elseif ($list->type_id == 9) @if ($list->resource_id ==1) 底部菜单商城 @elseif ($list->resource_id ==2)功能导航商城  @endif
-                                    @elseif ($list->type_id == 10) {{ $list->resource->title }}
-                                    @elseif ($list->type_id == 11) {{ $list->user->nickname }}
-                                    @elseif ($list->type_id == 12) @if ($list->resource_id ==1) 全局搜索 @elseif ($list->resource_id ==2)商城搜索  @endif
-                                    @endif
-                                </td>
-                                <td style="text-align: center;">
-                                    <a href="{{yzWebUrl('goods.goods.index')}}" title="{{ $list->goods->title }}">
-                                        <img src="{{yz_tomedia($list->goods->thumb)}}" style='width:45px;height:45px;padding:1px;border:1px solid #ccc' />
-                                        <br/>
-                                        {{ $list->goods_id }}
-                                        <br/>
-                                        {{ $list->goods->title }}
-                                    </a>
-                                </td>
-                                <td style="text-align: center;">
-                                    <a href="{{yzWebUrl('member.member.index',array('search[mid]' => $list->user_id ))}}">
-                                        <img src='{{$list->user->avatarurl}}'
-                                             style='width:30px;height:30px;padding:1px;border:1px solid #ccc'/><br/>
-                                        {{ $list->user->nickname }}
-                                    </a>
-                                </td>
-                                <td style="text-align: center;">{!! $list->action_name !!}</td>
-                                <td style="text-align: center;">{{ $list->val }}</td>
-                                <td style="text-align: center;">
-                                    @if($list->action_id == 4)
-                                    <a href="{{yzWebUrl('order.list.index',array('search[ambiguous][field]'=>'order','search[ambiguous][string]'=> $list->order->order_sn))}}">{{ $list->order->order_sn }}</a>
-                                    @elseif($list->action_id == 5)
-                                    <a href="{{yzWebUrl('order.list.index',array('search[ambiguous][field]'=>'order','search[ambiguous][string]'=> $list->order->pay_sn))}}">{{ $list->order->pay_sn }}</a>
-                                    @endif
-                                </td>
-                                <td style="text-align: center;">{{date('Y-m-d H:i:s', $list->create_time)}}</td>
-                                --}}{{--<td style="overflow:visible; text-align: center;">
-                                    <a class='btn btn-default' href="{{ yzWebUrl('tracking.goods-tracking.index', array('id' => $list->id)) }}" style="margin-bottom: 2px">详细记录</a>
-                                </td>--}}{{--
-                            </tr>
-                        @endforeach
-                        </tbody>
-                    </table>
+                                 <td style="text-align: center;">
+                                     {{ $list->resource_id }}<br>
+                                     @if($list->type_id == 1) {{ $list->resource->name }}
+                                     @elseif ($list->type_id == 2) 病例
+                                     @elseif ($list->type_id == 3) {{ $list->resource->title }}
+                                     @elseif ($list->type_id == 4) {{ $list->resource->title }}
+                                     @elseif ($list->type_id == 5) {{ $list->resource->name }}
+                                     @elseif ($list->type_id == 7) {{ $list->resource->title }}
+                                     @elseif ($list->type_id == 8) {{ $list->resource->name }}
+                                     @elseif ($list->type_id == 9) @if ($list->resource_id ==1) 底部菜单商城 @elseif ($list->resource_id ==2)功能导航商城  @endif
+                                     @elseif ($list->type_id == 10) {{ $list->resource->title }}
+                                     @elseif ($list->type_id == 11) {{ $list->user->nickname }}
+                                     @elseif ($list->type_id == 12) @if ($list->resource_id ==1) 全局搜索 @elseif ($list->resource_id ==2)商城搜索  @endif
+                                     @endif
+                                 </td>
+                                 <td style="text-align: center;">
+                                     <a href="{{yzWebUrl('goods.goods.index')}}" title="{{ $list->goods->title }}">
+                                         <img src="{{yz_tomedia($list->goods->thumb)}}" style='width:45px;height:45px;padding:1px;border:1px solid #ccc' />
+                                         <br/>
+                                         {{ $list->goods_id }}
+                                         <br/>
+                                         {{ $list->goods->title }}
+                                     </a>
+                                 </td>
+                                 <td style="text-align: center;">
+                                     <a href="{{yzWebUrl('member.member.index',array('search[mid]' => $list->user_id ))}}">
+                                         <img src='{{$list->user->avatarurl}}'
+                                              style='width:30px;height:30px;padding:1px;border:1px solid #ccc'/><br/>
+                                         {{ $list->user->nickname }}
+                                     </a>
+                                 </td>
+                                 <td style="text-align: center;">{!! $list->action_name !!}</td>
+                                 <td style="text-align: center;">{{ $list->val }}</td>
+                                 <td style="text-align: center;">
+                                     @if($list->action_id == 4)
+                                     <a href="{{yzWebUrl('order.list.index',array('search[ambiguous][field]'=>'order','search[ambiguous][string]'=> $list->order->order_sn))}}">{{ $list->order->order_sn }}</a>
+                                     @elseif($list->action_id == 5)
+                                     <a href="{{yzWebUrl('order.list.index',array('search[ambiguous][field]'=>'order','search[ambiguous][string]'=> $list->order->pay_sn))}}">{{ $list->order->pay_sn }}</a>
+                                     @endif
+                                 </td>
+                                 <td style="text-align: center;">{{date('Y-m-d H:i:s', $list->create_time)}}</td>
+                                 <td style="overflow:visible; text-align: center;">
+                                     <a class='btn btn-default' href="{{ yzWebUrl('tracking.goods-tracking.index', array('id' => $list->id)) }}" style="margin-bottom: 2px">详细记录</a>
+                                 </td>
+                             </tr>
+                         @endforeach
+                         </tbody>
+                     </table>
 
-                    {!! $page !!}
+                     {!! $page !!}
 
-                </div>--}}
+                 </div>
             </div>
         </div>
 
