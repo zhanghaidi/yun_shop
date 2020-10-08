@@ -214,5 +214,4 @@ class GoodsTrackingModel extends Model
     }
 
 
-
 }
