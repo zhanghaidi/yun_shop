@@ -39,7 +39,7 @@
         </div>
         <div class="clearfix">
 
-             <div class="panel panel-default">
+             <div class="panel panel-info">
                <div class="panel-heading">核心指标监控</div>
                  <div class="panel-body">
                      <!-- 新增加监控卡片 -->
@@ -112,22 +112,35 @@
                                  </div>
                              </div>
                          </div>
-                         <div class="col-md-4">
+                         <div class="col-md-2">
                              <div class="panel panel-default">
                                  <div class="panel-heading">
-                                     <h5>月收入</h5>
-                                     <div>
-                                         <span class="label label-primary">2015.02 更新</span>
-                                     </div>
+                                     <span class="label label-success pull-right">月</span>
+                                     <h5>浏览量</h5>
                                  </div>
-                                 <div class="panel-body no-padding">
-                                     <div class="flot-chart m-t-lg" style="height: 55px;">
-                                         <div class="flot-chart-content" id="flot-chart1"></div>
+                                 <div class="panel-body">
+                                     <h1 class="no-margins">386,200</h1>
+                                     <div class="stat-percent font-bold text-success">98% <i class="fa fa-bolt"></i>
                                      </div>
+                                     <small>总计浏览量</small>
                                  </div>
-
                              </div>
                          </div>
+                         <div class="col-md-2">
+                             <div class="panel panel-default">
+                                 <div class="panel-heading">
+                                     <span class="label label-success pull-right">月</span>
+                                     <h5>浏览量</h5>
+                                 </div>
+                                 <div class="panel-body">
+                                     <h1 class="no-margins">386,200</h1>
+                                     <div class="stat-percent font-bold text-success">98% <i class="fa fa-bolt"></i>
+                                     </div>
+                                     <small>总计浏览量</small>
+                                 </div>
+                             </div>
+                         </div>
+
                      </div>
                      <!-- 新增加监控卡片结束 -->
 
