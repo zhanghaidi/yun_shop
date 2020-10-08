@@ -14,30 +14,27 @@
             <div class="panel-heading">统计报告</div>
             <div class="panel-body">
                 <!-- 新增加统计时间筛选 -->
-
-                <div class="wrapper wrapper-content">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="ibox float-e-margins">
-                                <div class="ibox-content">
-                                    <div class="m-t-md">
-                                        <small class="pull-right">
-                                            <a class="btn btn-default" href="#" role="button">日</a>
-                                            <a class="btn btn-default" href="#" role="button">周</a>
-                                            <a class="btn btn-default" href="#" role="button">月</a>
-                                        </small>
-                                        <small>
-                                            <strong><i class="fa fa-clock-o"> </i> 统计时间：</strong> 2020-10-08
-                                        </small>
-                                    </div>
-
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="ibox float-e-margins">
+                            <div class="ibox-content">
+                                <div class="m-t-md">
+                                    <small class="pull-right">
+                                        <a class="btn btn-default" href="#" role="button">日</a>
+                                        <a class="btn btn-default" href="#" role="button">周</a>
+                                        <a class="btn btn-default" href="#" role="button">月</a>
+                                    </small>
+                                    <small>
+                                        <strong><i class="fa fa-clock-o"> </i> 统计时间：</strong> 2020-10-08
+                                    </small>
                                 </div>
+
                             </div>
                         </div>
                     </div>
-            </div>
-
+                </div>
                 <!-- 新增加统计时间筛选结束 -->
+            </div>
 
         </div>
         <div class="clearfix">
@@ -45,16 +42,15 @@
              <div class="panel panel-default">
                <div class="panel-heading">核心指标监控</div>
                  <div class="panel-body">
-
                      <!-- 新增加监控卡片 -->
                      <div class="row">
                          <div class="col-md-2">
-                             <div class="ibox float-e-margins">
-                                 <div class="ibox-title">
+                             <div class="panel panel-default">
+                                 <div class="panel-heading">
                                      <span class="label label-success pull-right">月</span>
                                      <h5>浏览量</h5>
                                  </div>
-                                 <div class="ibox-content">
+                                 <div class="panel-body">
                                      <h1 class="no-margins">386,200</h1>
                                      <div class="stat-percent font-bold text-success">98% <i class="fa fa-bolt"></i>
                                      </div>
@@ -63,12 +59,12 @@
                              </div>
                          </div>
                          <div class="col-md-2">
-                             <div class="ibox float-e-margins">
-                                 <div class="ibox-title">
+                             <div class="panel panel-default">
+                                 <div class="panel-heading">
                                      <span class="label label-info pull-right">年</span>
                                      <h5>订单</h5>
                                  </div>
-                                 <div class="ibox-content">
+                                 <div class="panel-body">
                                      <h1 class="no-margins">80,800</h1>
                                      <div class="stat-percent font-bold text-info">20% <i class="fa fa-level-up"></i>
                                      </div>
@@ -78,12 +74,12 @@
                          </div>
 
                          <div class="col-md-2">
-                             <div class="ibox float-e-margins">
-                                 <div class="ibox-title">
+                             <div class="panel panel-default">
+                                 <div class="panel-heading">
                                      <span class="label label-primary pull-right">今天</span>
                                      <h5>访问人次</h5>
                                  </div>
-                                 <div class="ibox-content">
+                                 <div class="panel-body">
 
                                      <div class="row">
                                          <div class="col-md-6">
@@ -103,12 +99,12 @@
                              </div>
                          </div>
                          <div class="col-md-2">
-                             <div class="ibox float-e-margins">
-                                 <div class="ibox-title">
+                             <div class="panel panel-default">
+                                 <div class="panel-heading">
                                      <span class="label label-success pull-right">月</span>
                                      <h5>浏览量</h5>
                                  </div>
-                                 <div class="ibox-content">
+                                 <div class="panel-body">
                                      <h1 class="no-margins">386,200</h1>
                                      <div class="stat-percent font-bold text-success">98% <i class="fa fa-bolt"></i>
                                      </div>
@@ -117,14 +113,14 @@
                              </div>
                          </div>
                          <div class="col-md-4">
-                             <div class="ibox float-e-margins">
-                                 <div class="ibox-title">
+                             <div class="panel panel-default">
+                                 <div class="panel-heading">
                                      <h5>月收入</h5>
-                                     <div class="ibox-tools">
+                                     <div>
                                          <span class="label label-primary">2015.02 更新</span>
                                      </div>
                                  </div>
-                                 <div class="ibox-content no-padding">
+                                 <div class="panel-body no-padding">
                                      <div class="flot-chart m-t-lg" style="height: 55px;">
                                          <div class="flot-chart-content" id="flot-chart1"></div>
                                      </div>
@@ -138,8 +134,8 @@
                      <!-- 新增加统计图 -->
                      <div class="row">
                          <div class="col-sm-12">
-                             <div class="ibox float-e-margins">
-                                 <div class="ibox-title">
+                             <div class="panel panel-default">
+                                 <div class="panel-heading">
                                      <h5>订单</h5>
                                      <div class="pull-right">
                                          <div class="btn-group">
@@ -149,7 +145,7 @@
                                          </div>
                                      </div>
                                  </div>
-                                 <div class="ibox-content">
+                                 <div class="panel-body">
                                      <div class="row">
                                          <div class="col-sm-9">
                                              <div class="flot-chart">
