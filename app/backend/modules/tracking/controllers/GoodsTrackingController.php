@@ -37,4 +37,11 @@ class GoodsTrackingController extends BaseController
         ])->render();
     }
 
+    public function report()
+    {
+        return view('tracking.goodsTracking.report',[
+
+        ])->render();
+    }
+
 }
