@@ -40,9 +40,7 @@ class GoodsTrackingController extends BaseController
     public function report()
     {
         $records = GoodsTrackingModel::groupByGoods();
-
-        dd($records);
-
+        
         $recordList = $records->orderBy('create_time', 'desc')->paginate();
 
         //dd($recordList);
