@@ -1542,7 +1542,7 @@ class Menu
                         'child'      => [
 
                             'tracking_report' => [
-                                'name'       => '埋点数据报告',
+                                'name'       => '埋点数据统计',
                                 'url'        => 'tracking.goods-tracking.report',
                                 'url_params' => '',
                                 'permit'     => 1,

@@ -39,7 +39,25 @@ class GoodsTrackingController extends BaseController
 
     public function report()
     {
+        $records = GoodsTrackingModel::records();
+
+        $search = \YunShop::request()->search;
+        if ($search) {
+
+            $records = $records->search($search);
+
+        }
+
+        $recordList = $records->orderBy('create_time', 'desc')->paginate();
+
+        //dd($recordList);
+        $pager = PaginationHelper::show($recordList->total(), $recordList->currentPage(), $recordList->perPage());
+
         return view('tracking.goodsTracking.report',[
+
+            'pageList'    => $recordList,
+            'page'          => $pager,
+            'search'        => $search
 
         ])->render();
     }
