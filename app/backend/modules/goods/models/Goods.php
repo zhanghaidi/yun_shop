@@ -11,7 +11,7 @@ use app\backend\modules\goods\observers\GoodsObserver;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
-class Goods extends \app\common\models\Goo片ds
+class Goods extends \app\common\models\Goods
 {
     public $widgets = [];
 
