@@ -1540,55 +1540,31 @@ class Menu
                         'item'       => 'goods_tracking',
                         'parents'    => ['Goods',],
                         'child'      => [
-                            'goods_tracking_report' => [
-                                'name'       => '商品埋点统计',
+
+                            'tracking_report' => [
+                                'name'       => '埋点数据报告',
                                 'url'        => 'tracking.goods-tracking.report',
                                 'url_params' => '',
                                 'permit'     => 1,
                                 'menu'       => 1,
                                 'icon'       => '',
                                 'sort'       => '2',
-                                'item'       => 'goods_tracking_history',
+                                'item'       => 'tracking_report',
                                 'parents'    => ['Goods', 'goods_tracking',],
-                                'child'      => [
-                                    /*'goods_tracking_history_index'  => [
-                                        'name'       => '全部记录',
-                                        'url'        => 'discount.batch-discount.index',
-                                        'url_params' => '',
-                                        'permit'     => 1,
-                                        'menu'       => 0,
-                                        'icon'       => 'fa-sitemap',
-                                        'sort'       => '2',
-                                        'item'       => 'goods_discount_set_all_index',
-                                        'parents'    => ['Goods', 'discount_set', 'goods_discount_set_all'],
-                                        'child'      => []
-                                    ],
-                                    'goods_tracking_search' => [
-                                        'name'       => '搜索记录',
-                                        'url'        => 'discount.batch-discount.store',
-                                        'url_params' => '',
-                                        'permit'     => 1,
-                                        'menu'       => 0,
-                                        'icon'       => 'fa-sitemap',
-                                        'sort'       => '2',
-                                        'item'       => 'goods_discount_set_all__store',
-                                        'parents'    => ['Goods', 'discount_set', 'goods_discount_set_all'],
-                                        'child'      => []
-                                    ],
-                                    'goods_tracking_history_set'    => [
-                                        'name'       => '查看状态',
-                                        'url'        => 'discount.batch-discount.all-set',
-                                        'url_params' => '',
-                                        'permit'     => 1,
-                                        'menu'       => 0,
-                                        'icon'       => 'fa-sitemap',
-                                        'sort'       => '2',
-                                        'item'       => 'goods_discount_set_all_set',
-                                        'parents'    => ['Goods', 'discount_set', 'goods_discount_set_all'],
-                                        'child'      => []
-                                    ],*/
+                                'child'      => [],
+                            ],
 
-                                    ],
+                            'tracking_history' => [
+                                'name'       => '埋点记录',
+                                'url'        => 'tracking.goods-tracking.index',
+                                'url_params' => '',
+                                'permit'     => 1,
+                                'menu'       => 1,
+                                'icon'       => '',
+                                'sort'       => '3',
+                                'item'       => 'tracking_history',
+                                'parents'    => ['Goods', 'goods_tracking',],
+                                'child'      => [],
                             ],
 
                             /*'goods_discount_set' => [
