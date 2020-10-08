@@ -11,7 +11,7 @@ use app\backend\modules\goods\observers\GoodsObserver;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
-class Goods extends \app\common\models\Goods
+class Goods extends \app\common\models\Goo片ds
 {
     public $widgets = [];
 
@@ -63,4 +63,14 @@ class Goods extends \app\common\models\Goods
         }
         return $res;
     }
+
+    /**
+     * 获取此商品下的所有记录。
+     */
+    public function hasManyGoodsTracking()
+    {
+        return $this->hasMany('App\backend\modules\tracking\models\GoodsTrackingModel');
+    }
+
+
 }
