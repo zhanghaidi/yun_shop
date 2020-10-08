@@ -424,7 +424,7 @@
                                     </a>
                                 </td>
                                 <td style="text-align: center;">
-                                    {{ $list->goods->user_num }}
+                                    {{ $list->goods->users->total() }}
                                 </td>
                                 <td style="text-align: center;">{{ $list->goods->add_num }}</td>
                                 <td style="text-align: center;">{{ $list->goods->pay_num }}</td>
