@@ -5,6 +5,7 @@ use app\common\components\BaseController;
 use app\backend\modules\tracking\models\GoodsTrackingModel;
 use app\common\helpers\PaginationHelper;
 use app\backend\modules\tracking\models\ChartChartuser;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class GoodsTrackingController
@@ -39,13 +40,12 @@ class GoodsTrackingController extends BaseController
 
     public function report()
     {
-        $goodsRecords = GoodsTrackingModel::groupBy('goods_id')->get()->toArray();
-
+        $goodsRecords = GoodsTrackingModel::records()->groupBy('goods_id');
+        $search = \YunShop::request()->search;
         foreach ($goodsRecords as $k => $v){
-            $goodsRecords[$k]['user_nums'] = GoodsTrackingModel::where('goods_id',$v['goods_id'])->groupBy('user_id')->toArray();
+            $goodsRecords[$k]->users = GoodsTrackingModel::where('goods_id',$v['goods_id'])->groupBy('user_id');
         }
-
-        dd($goodsRecords);
+        $recordList = $goodsRecords->orderBy('create_time', 'desc')->paginate();
 
         $pager = PaginationHelper::show($recordList->total(), $recordList->currentPage(), $recordList->perPage());
 
