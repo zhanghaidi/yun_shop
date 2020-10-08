@@ -213,4 +213,12 @@ class GoodsTrackingModel extends Model
         return $value;
     }
 
+    //根据订单统计
+    public function groupByGoods()
+    {
+        return GoodsTrackingModel::groupBy('goods_id');
+
+    }
+
+
 }
