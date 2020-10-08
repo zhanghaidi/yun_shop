@@ -15,7 +15,7 @@
                 </a>
             </div>
 
-
+            @include('layouts.tabs')
             <div class="panel-body">
                 <form action="" method="get" class="form-horizontal" role="form" id="form1">
                     <input type="hidden" name="c" value="site"/>
