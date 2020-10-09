@@ -42,7 +42,7 @@ class GoodsTrackingController extends BaseController
     {
        // $goodsRecords = DB::table('diagnostic_service_goods_tracking')->groupBy('goods_id')->get()->toArray();
         $search = \YunShop::request()->search;
-        $goodsRecords = GoodsTrackingModel::records()->groupBy('goods_id')->get();
+        $goodsRecords = GoodsTrackingModel::records()->groupBy('goods_id');
 
        /* $list = $goodsRecords->map(function ($item){
             return $item->append(['user_num']);
