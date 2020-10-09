@@ -530,10 +530,11 @@ class RegisterController extends ApiController
             //$type为1是注册，2是找回密码
             if (!is_null($sms_type) && $sms_type == 2) {
                 $response = $ssender->sendWithParam($state, $mobile, $sms['tx_templateCodeForget'],
-                    [$code], $sms['tx_signname'], "", "");  // 签名参数不能为空串
+                    [$code,5], $sms['tx_signname'], "", "");  // 签名参数不能为空串
             } else {
+                //fixBy--wk--20201009 发送短信接口修复
                 $response = $ssender->sendWithParam($state, $mobile, $sms['tx_templateCode'],
-                    [$code], $sms['tx_signname'], "", "");  // 签名参数不能为空串
+                    [$code,5], $sms['tx_signname'], "", "");  // 签名参数不能为空串
             }
             $response = json_decode($response);
             if ($response->result == 0 && $response->errmsg == 'OK') {
