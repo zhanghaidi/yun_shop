@@ -19,6 +19,7 @@ use app\frontend\modules\coupon\models\ShoppingShareCoupon;
 use app\frontend\modules\coupon\services\ShareCouponService;
 use Carbon\Carbon;
 use Yunshop\Hotel\common\models\CouponHotel;
+use Illuminate\Support\Facades\DB;
 
 class ShareCouponController extends ApiController
 {
@@ -55,20 +56,49 @@ class ShareCouponController extends ApiController
 
 
         $this->share_model->map(function ($model) {
+
             $model->coupon_num = count($model->share_coupon);
+            $model->coupon_money = DB::table('yz_coupon')->where('id', $model->share_coupon)->value('deduct');
         });
-
-
 
         $data = [
             'set' => $this->set,
             'share_limit' => $share_limit,
             'coupon_num' => $this->share_model->sum('coupon_num'),
+            'coupon_total_money' =>number_format($this->share_model->sum('coupon_num')*$this->share_model->sum('coupon_money'),2),
         ];
 
 
         return $this->successJson('share', $data);
 
+    }
+
+    //领取页面
+    public function index()
+    {
+        /*foreach ($this->share_model as $model) {
+
+            $result = ShareCouponService::fen($model);
+
+            if ($result['state'] == 'YES' || $result['state'] == 'ER') {
+                break;
+            }
+
+        }
+
+        if ($result['state'] == 'ER') {
+            throw new AppException($result['msg']);
+        }*/
+
+        /*$data = [
+            'set' =>  $this->set,
+            'member_name' => $this->member->nickname?:$this->member->realname,
+            'code' => $result['state'],
+            'msg'  => $result['msg'],
+            'coupon' =>  $this->handleCoupon($result['data']),
+        ];*/
+
+        //return $this->successJson('share', $data);
     }
 
     //领取页面
