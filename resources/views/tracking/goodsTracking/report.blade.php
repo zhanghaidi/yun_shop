@@ -426,10 +426,10 @@
                                 <td style="text-align: center;">
                                     {{ $list->goods->user_num }}
                                 </td>
-                                <td style="text-align: center;">{{ $list->goods->add_num }}</td>
-                                <td style="text-align: center;">{{ $list->goods->pay_num }}</td>
-                                <td style="text-align: center;">{{ $list->goods->pay_price }}</td>
-                                <td style="text-align: center;">{{ $list->goods->pay_rate }}</td>
+                                <td style="text-align: center;">{{ $list->add_num }}</td>
+                                <td style="text-align: center;">{{ $list->pay_num }}</td>
+                                <td style="text-align: center;">{{ $list->pay_price }}</td>
+                                <td style="text-align: center;">{{ $list->pay_rate }}</td>
                             </tr>
                         @endforeach
                         </tbody>
