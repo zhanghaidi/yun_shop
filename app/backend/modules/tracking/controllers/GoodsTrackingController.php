@@ -51,7 +51,7 @@ class GoodsTrackingController extends BaseController
             $record->add_num = GoodsTrackingModel::where(['goods_id', $record->goods_id, 'action' => 3])->groupBy('user_id')->count();
             //$goodsRecords[$k]['add_num'] = DB::table('diagnostic_service_goods_tracking')->where(['goods_id' => $v['goods_id'],'action' => 3])->sum('val');
             //支付数
-            $record->buy_num = GoodsTrackingModel::where(['goods_id', $record->goods_id, 'action' => 5])->groupBy('user_id')->count();
+            $record->pay_num = GoodsTrackingModel::where(['goods_id', $record->goods_id, 'action' => 5])->groupBy('user_id')->count();
             //$goodsRecords[$k]['buy_num'] = DB::table('diagnostic_service_goods_tracking')->where(['goods_id' => $v['goods_id'],'action' => 5])->count();
             //支付金额
             //$goodsRecords[$k]['buy_price'] = DB::table('diagnostic_service_goods_tracking')->where(['goods_id' => $v['goods_id'],'action' => 5])->count();
