@@ -33,13 +33,13 @@ class ShareCouponService
         $share_log = ShoppingShareCouponLog::uniacid()->shareCouponId($share_model->id)->shareUid($share_model->member_id)->receiveUid(\YunShop::app()->getMemberId())->first();
 
         if ($share_log) {
-            return self::toData('RT1', '已领取不可重复领取');
+            return self::toData('RT1', '已领取不可重复领取', $couponModel->toArray());
         } elseif(!$couponModel->status) {
-            return self::toData('RT2', '该优惠券已下架');
+            return self::toData('RT2', '该优惠券已下架', $couponModel->toArray());
         } elseif (($couponModel->total != -1) && (1 > $lastTotal)) {
-            return self::toData('RT3', '已经被抢光了');
+            return self::toData('RT3', '已经被抢光了', $couponModel->toArray());
         } elseif ((!$share_model->obtain_restriction) && $share_model->member_id == \YunShop::app()->getMemberId()) {
-            return self::toData('RT4', '分享者不可领取');
+            return self::toData('RT4', '分享者不可领取', $couponModel->toArray());
         }
 
 
@@ -49,7 +49,7 @@ class ShareCouponService
         if ($bool) {
             return self::toData('YES', '成功' ,  $couponModel->toArray());
         }
-        return self::toData('ER', '数据保存失败', $couponModel->toArray());
+        return self::toData('ER', '数据保存失败');
     }
 
     protected static function sendCoupon($share_model, $couponModel, $receiveUid, $coupon_key)
