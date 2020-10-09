@@ -24,6 +24,7 @@ class CouponExpireNotice
 
     public function handle()
     {
+        \Cron::log('info','优惠券到期处理--------开始');
         Log::info('优惠券到期处理');
         set_time_limit(0);
         $uniAccount = UniAccount::getEnable();
@@ -140,7 +141,7 @@ class CouponExpireNotice
         Log::info('优惠券到期处理--------事件订阅者开始');
         \Event::listen('cron.collectJobs', function () {
             \Cron::add('Coupon-expire-notice', '*/2 * * * *', function () {
-                Log::info('优惠券到期处理--------定时执行开始');
+                \Cron::log('info','优惠券到期处理--------定时执行开始');
                 $this->handle();
                 return;
             });
