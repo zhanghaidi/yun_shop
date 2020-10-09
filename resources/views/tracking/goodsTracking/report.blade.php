@@ -424,7 +424,7 @@
                                     </a>
                                 </td>
                                 <td style="text-align: center;">
-                                    {{ $list->goods->user_num }}
+                                    {{ $list->user_num }}
                                 </td>
                                 <td style="text-align: center;">{{ $list->add_num }}</td>
                                 <td style="text-align: center;">{{ $list->pay_num }}</td>
