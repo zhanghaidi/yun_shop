@@ -407,8 +407,8 @@
                             <th style='width:12%; text-align: center;'>商品访客数</th>
                             <th style='width:12%; text-align: center;'>商品加购件数</th>
                             <th style='width:12%; text-align: center;'>支付件数</th>
-                            <th style='width:12%; text-align: center;'>支付金额</th>
-                            <th style='width:12%; text-align: center;'>支付转化率</th>
+                            {{--<th style='width:12%; text-align: center;'>支付金额</th>
+                            <th style='width:12%; text-align: center;'>支付转化率</th>--}}
                         </tr>
                         </thead>
                         <tbody>
@@ -428,8 +428,8 @@
                                 </td>
                                 <td style="text-align: center;">{{ $list->add_num }}</td>
                                 <td style="text-align: center;">{{ $list->pay_num }}</td>
-                                <td style="text-align: center;">{{ $list->pay_price }}</td>
-                                <td style="text-align: center;">{{ $list->pay_rate }}</td>
+                                {{--<td style="text-align: center;">{{ $list->pay_price }}</td>
+                                <td style="text-align: center;">{{ $list->pay_rate }}</td>--}}
                             </tr>
                         @endforeach
                         </tbody>
