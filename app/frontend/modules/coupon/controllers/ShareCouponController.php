@@ -74,6 +74,34 @@ class ShareCouponController extends ApiController
     }
 
     //领取页面
+    public function index()
+    {
+        /*foreach ($this->share_model as $model) {
+
+            $result = ShareCouponService::fen($model);
+
+            if ($result['state'] == 'YES' || $result['state'] == 'ER') {
+                break;
+            }
+
+        }
+
+        if ($result['state'] == 'ER') {
+            throw new AppException($result['msg']);
+        }*/
+
+        /*$data = [
+            'set' =>  $this->set,
+            'member_name' => $this->member->nickname?:$this->member->realname,
+            'code' => $result['state'],
+            'msg'  => $result['msg'],
+            'coupon' =>  $this->handleCoupon($result['data']),
+        ];*/
+
+        //return $this->successJson('share', $data);
+    }
+
+    //领取页面
     public function receive()
     {
         if(!\YunShop::app()->getMemberId()){
