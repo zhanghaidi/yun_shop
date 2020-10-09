@@ -41,6 +41,8 @@ class CouponExpireNotice
     public function sendExpireNotice()
     {
         Log::info('------------------------ 优惠券过期提醒 BEGIN -------------------------------');
+        Log::info('优惠券过期提醒 every_day =' .$this->set['every_day'].' now = '. date('H'));
+        Log::info('优惠券过期提醒 current_d =' .$this->set['current_d'].' now_d = '. date('H'));
         if ($this->set['every_day'] != date('H')) {
             return;
         }
