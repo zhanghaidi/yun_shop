@@ -72,6 +72,18 @@ class GoodsTrackingModel extends Model
 
     }
 
+    //添加商品id对应字段
+    public function getGoodsIdAttribute($value)
+    {
+       $this->user_num = self::where('goods_id', $value)->groupBy('user_id')->count();
+       $this->add_num = self::where(['goods_id' => $value, 'action' => 3])->sum('val');
+       $this->pay_num = self::where(['goods_id' => $value,'action' => 5])->count();
+
+       return $value;
+
+    }
+
+
     /**
      * 获取与上报埋点相关的商品。
      * return $this->hasOne('App\Goods', 'foreign_key', 'local_key');

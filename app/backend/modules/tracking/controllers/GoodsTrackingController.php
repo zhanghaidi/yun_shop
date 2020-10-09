@@ -42,10 +42,14 @@ class GoodsTrackingController extends BaseController
     {
        // $goodsRecords = DB::table('diagnostic_service_goods_tracking')->groupBy('goods_id')->get()->toArray();
         $search = \YunShop::request()->search;
-        $goodsRecords = GoodsTrackingModel::records()->groupBy('goods_id');
-        foreach ($goodsRecords as $record){
-            //用户浏览数量
+        $goodsRecords = GoodsTrackingModel::records()->groupBy('goods_id')->get();
 
+       /* $list = $goodsRecords->map(function ($item){
+            return $item->append(['user_num']);
+        });*/
+
+        /*foreach ($goodsRecords as $record){
+            //用户浏览数量
             $record->user_num = GoodsTrackingModel::where('goods_id', $record->goods_id)->groupBy('user_id')->count();
             //$goodsRecords[$k]['user_num'] = DB::table('diagnostic_service_goods_tracking')->where('goods_id', $v['goods_id'])->groupBy('user_id')->count();
             //商品加购件数
@@ -57,9 +61,9 @@ class GoodsTrackingController extends BaseController
             //支付金额
             //$goodsRecords[$k]['buy_price'] = DB::table('diagnostic_service_goods_tracking')->where(['goods_id' => $v['goods_id'],'action' => 5])->count();
             //支付转化率
-        }
+        }*/
         $recordList = $goodsRecords->paginate();
-        dd($goodsRecords);
+        dd($recordList);
         $pager = PaginationHelper::show($recordList->total(), $recordList->currentPage(), $recordList->perPage());
 
         return view('tracking.goodsTracking.report',[
