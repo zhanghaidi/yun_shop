@@ -46,7 +46,7 @@ class CouponExpireNotice
         }
         if ($this->setLog['current_d'] == date('d')) {
             Log::info('优惠券过期提醒 current_d =' . $this->setLog['current_d'] .' now_d = '. date('d'));
-//            return;
+            return;
         }
 
         $this->setLog['current_d'] = date('d');
