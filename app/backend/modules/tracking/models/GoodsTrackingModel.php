@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 class GoodsTrackingModel extends Model
 {
     protected $table = 'diagnostic_service_goods_tracking';
-    protected $appends = ['type_id','action_id','action_name'];
+    protected $appends = ['type_id','action_id','action_name','user_num','add_num','pay_num'];
 
     public $timestamps = false;
 

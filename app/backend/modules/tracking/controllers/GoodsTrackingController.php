@@ -43,15 +43,16 @@ class GoodsTrackingController extends BaseController
        // $goodsRecords = DB::table('diagnostic_service_goods_tracking')->groupBy('goods_id')->get()->toArray();
         $search = \YunShop::request()->search;
         $goodsRecords = GoodsTrackingModel::records()->groupBy('goods_id');
-        foreach ($goodsRecords as $k => $record){
+        foreach ($goodsRecords as $record){
             //用户浏览数量
-            $goodsRecords[$k]->user_num = GoodsTrackingModel::where('goods_id', $record->goods_id)->groupBy('user_id')->count();
+
+            $record->user_num = GoodsTrackingModel::where('goods_id', $record->goods_id)->groupBy('user_id')->count();
             //$goodsRecords[$k]['user_num'] = DB::table('diagnostic_service_goods_tracking')->where('goods_id', $v['goods_id'])->groupBy('user_id')->count();
             //商品加购件数
-            $goodsRecords[$k]->add_num = GoodsTrackingModel::where(['goods_id', $record->goods_id, 'action' => 3])->groupBy('user_id')->count();
+            $record->add_num = GoodsTrackingModel::where(['goods_id', $record->goods_id, 'action' => 3])->groupBy('user_id')->count();
             //$goodsRecords[$k]['add_num'] = DB::table('diagnostic_service_goods_tracking')->where(['goods_id' => $v['goods_id'],'action' => 3])->sum('val');
             //支付数
-            $goodsRecords[$k]->pay_num = GoodsTrackingModel::where(['goods_id', $record->goods_id, 'action' => 5])->groupBy('user_id')->count();
+            $record->pay_num = GoodsTrackingModel::where(['goods_id', $record->goods_id, 'action' => 5])->groupBy('user_id')->count();
             //$goodsRecords[$k]['buy_num'] = DB::table('diagnostic_service_goods_tracking')->where(['goods_id' => $v['goods_id'],'action' => 5])->count();
             //支付金额
             //$goodsRecords[$k]['buy_price'] = DB::table('diagnostic_service_goods_tracking')->where(['goods_id' => $v['goods_id'],'action' => 5])->count();
