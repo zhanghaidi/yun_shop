@@ -45,7 +45,7 @@ class CouponExpireNotice
             return;
         }
         if ($this->setLog['current_d'] == date('d')) {
-            Log::info('优惠券过期提醒 current_d =' . $this->set['current_d'] .' now_d = '. date('d'));
+            Log::info('优惠券过期提醒 current_d =' . $this->setLog['current_d'] .' now_d = '. date('d'));
 //            return;
         }
 
@@ -53,7 +53,7 @@ class CouponExpireNotice
         Setting::set('shop.coupon_log', $this->setLog);
 
         $memberCoupons = MemberCoupon::getExpireCoupon($this->set)->get();
-        Log::info('过期提醒优惠券 list =' . \GuzzleHttp\json_encode($memberCoupons->toArray()));
+
         foreach ($memberCoupons as $memberCoupon) {
             if ($memberCoupon->time_end == '不限时间') {
                 continue;
