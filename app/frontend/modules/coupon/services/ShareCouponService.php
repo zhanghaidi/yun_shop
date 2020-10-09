@@ -25,7 +25,10 @@ class ShareCouponService
         $key = array_rand($coupon_ids,1);
 
         $couponModel = Coupon::find($coupon_ids[$key]);
-//dd($couponModel);
+
+        if(!\YunShop::app()->getMemberId()){
+            return self::toData('RT0', '未登陆无法领取优惠券', $couponModel->toArray());
+        }
         $getTotal = MemberCoupon::uniacid()->where("coupon_id", $coupon_ids[$key])->count();
 
         $lastTotal = $couponModel->total - $getTotal;
