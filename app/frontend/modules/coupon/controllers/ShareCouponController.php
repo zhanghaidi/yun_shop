@@ -104,9 +104,6 @@ class ShareCouponController extends ApiController
     //领取页面
     public function receive()
     {
-        if(!\YunShop::app()->getMemberId()){
-            throw new AppException('请登录后操作');
-        }
 
         foreach ($this->share_model as $model) {
 
