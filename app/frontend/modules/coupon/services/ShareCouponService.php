@@ -49,7 +49,7 @@ class ShareCouponService
         if ($bool) {
             return self::toData('YES', '成功' ,  $couponModel->toArray());
         }
-        return self::toData('ER', '数据保存失败', $couponModel->toArray());
+        return self::toData('ER', '数据保存失败');
     }
 
     protected static function sendCoupon($share_model, $couponModel, $receiveUid, $coupon_key)
