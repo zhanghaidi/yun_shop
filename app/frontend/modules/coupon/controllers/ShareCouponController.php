@@ -58,6 +58,7 @@ class ShareCouponController extends ApiController
         $this->share_model->map(function ($model) {
 
             $model->coupon_num = count($model->share_coupon);
+            //fixby zhd 分享优惠券总金额-2020-10-10
             $model->coupon_money = DB::table('yz_coupon')->where('id', $model->share_coupon)->value('deduct');
         });
 
@@ -71,34 +72,6 @@ class ShareCouponController extends ApiController
 
         return $this->successJson('share', $data);
 
-    }
-
-    //领取页面
-    public function index()
-    {
-        /*foreach ($this->share_model as $model) {
-
-            $result = ShareCouponService::fen($model);
-
-            if ($result['state'] == 'YES' || $result['state'] == 'ER') {
-                break;
-            }
-
-        }
-
-        if ($result['state'] == 'ER') {
-            throw new AppException($result['msg']);
-        }*/
-
-        /*$data = [
-            'set' =>  $this->set,
-            'member_name' => $this->member->nickname?:$this->member->realname,
-            'code' => $result['state'],
-            'msg'  => $result['msg'],
-            'coupon' =>  $this->handleCoupon($result['data']),
-        ];*/
-
-        //return $this->successJson('share', $data);
     }
 
     //领取页面

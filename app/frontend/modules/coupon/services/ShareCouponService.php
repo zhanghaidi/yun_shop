@@ -26,6 +26,7 @@ class ShareCouponService
 
         $couponModel = Coupon::find($coupon_ids[$key]);
 
+        //fixby-zhd-增加优惠券未登陆下提醒和修改区分状态值，RT 1-4 并返回优惠券详情
         if(!\YunShop::app()->getMemberId()){
             return self::toData('RT0', '未登陆无法领取优惠券', $couponModel->toArray());
         }
