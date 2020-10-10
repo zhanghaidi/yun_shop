@@ -10,7 +10,7 @@
         <!-- 新增加右侧顶部三级菜单结束 -->
 
 
-        <div class="panel panel-info">
+        {{--<div class="panel panel-info">
             <div class="panel-heading">统计报告</div>
             <div class="panel-body">
                 <!-- 新增加统计时间筛选 -->
@@ -36,7 +36,7 @@
                 <!-- 新增加统计时间筛选结束 -->
             </div>
 
-        </div>
+        </div>--}}
         {{--<div class="clearfix">
 
              <div class="panel panel-info">
@@ -210,7 +210,7 @@
         <div class="panel panel-info">
             <div class="panel-heading">全量商品排行</div>
             <div class="panel-body">
-                <form action="" method="get" class="form-horizontal" role="form" id="form1">
+                {{--<form action="" method="get" class="form-horizontal" role="form" id="form1">
                     <input type="hidden" name="c" value="site"/>
                     <input type="hidden" name="a" value="entry"/>
                     <input type="hidden" name="m" value="yun_shop"/>
@@ -240,7 +240,7 @@
                                    value="{{$search['type']}}"/>
                         </div>
                     </div>
-                    {{--<div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                    --}}{{--<div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
                         <!-- <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">会员等级</label>-->
                         <div class="">
                             <select name='search[level]' class='form-control'>
@@ -254,7 +254,7 @@
                                 @endforeach
                             </select>
                         </div>
-                    </div>--}}
+                    </div>--}}{{--
                     <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
                         <!--  <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">会员分组</label>-->
                         <div class="">
@@ -275,11 +275,11 @@
                                         selected
                                         @endif>帖子
                                 </option>
-                                {{--<option value='5'
+                                --}}{{--<option value='5'
                                         @if($search['type_id']=='5')
                                         selected
                                         @endif>体质
-                                </option>--}}
+                                </option>--}}{{--
                                 <option value='6'
                                         @if($search['type_id']=='6')
                                         selected
@@ -384,14 +384,14 @@
                         <!--<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label"></label>-->
                         <div class="">
                             <button class="btn btn-success "><i class="fa fa-search"></i> 搜索</button>
-                            {{--<button type="button" name="export" value="1" id="export" class="btn btn-default">导出
+                            --}}{{--<button type="button" name="export" value="1" id="export" class="btn btn-default">导出
                                 Excel
-                            </button>--}}
+                            </button>--}}{{--
 
                         </div>
                     </div>
 
-                </form>
+                </form>--}}
 
             </div>
 
