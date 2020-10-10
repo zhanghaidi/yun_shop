@@ -4,6 +4,7 @@
 namespace app\frontend\modules\order\services;
 
 
+use app\common\models\order\Express;
 use app\common\services\txyunsms\SmsSingleSender;
 
 class SmsMessageService
@@ -59,9 +60,16 @@ class SmsMessageService
     {
         //查询手机号
         $mobile = \app\common\models\Member::find($this->orderModel->uid)->mobile;
+
+//      fixBy--wk--订单发货短信通知短息提醒变量调整，用户名称，快递商名称，运单号码，20201010  \Setting::get('shop.shop')['name']
+        $realname = \app\common\models\Member::find($this->orderModel->uid)->realname;
+        $orderExpressInfo = Express::select('express_company_name', 'express_sn')->where('order_id',$this->orderModel->id)->first();  //物流信息
+
+        $param =  [$realname,$orderExpressInfo->express_company_name,$orderExpressInfo->express_sn];
+
         $ssender = new SmsSingleSender(trim($set['tx_sdkappid']), trim($set['tx_appkey']));
         $response = $ssender->sendWithParam('86', $mobile, $set['tx_templateSendMessageCode'],
-            [\Setting::get('shop.shop')['name']], $set['tx_signname'], "", "");  // 签名参数不能为空串
+            $param, $set['tx_signname'], "", "");  // 签名参数不能为空串
         $response = json_decode($response);
         if ($response->result == 0 && $response->errmsg == 'OK') {
             \Log::debug('模板腾讯云短信发送成功');
