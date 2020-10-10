@@ -112,6 +112,12 @@ class MessageTemp extends BaseModel
                     'color' => $temp->remark_color
                 ]
             ];
+            if(!empty($temp->pagepath)){
+                $msg['miniprogram'] = [
+                    'appid' => $temp->appid,
+                    'pagepath' => self::replaceTemplate($temp->pagepath, $params),
+                ];
+            }
             foreach ($temp->data as $row) {
                 $msg[$row['keywords']] = [
                     'value' => self::replaceTemplate($row['value'], $params),

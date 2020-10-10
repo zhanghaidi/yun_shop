@@ -32,6 +32,7 @@ class RefundMessageService extends MessageService
             $params = [
                 ['name' => '商城名称', 'value' => \Setting::get('shop.shop')['name']],
                 ['name' => '粉丝昵称', 'value' => $memberDate['nickname']],
+                ['name' => '订单ID', 'value' => $refundApply->order_id],
                 ['name' => '退款单号', 'value' => $refundApply->refund_sn],
 //            ['name' => '下单时间', 'value' => $orderDate['create_time']],
 //            ['name' => '订单金额', 'value' => $orderDate['price']],
@@ -86,6 +87,7 @@ class RefundMessageService extends MessageService
             $params = [
                 ['name' => '商城名称', 'value' => \Setting::get('shop.shop')['name']],
                 ['name' => '粉丝昵称', 'value' => $memberDate['nickname']],
+                ['name' => '订单ID', 'value' => $refundApply->order_id],
                 ['name' => '退款单号', 'value' => $refundApply->refund_sn],
 //            ['name' => '下单时间', 'value' => $orderDate['create_time']],
 //            ['name' => '订单金额', 'value' => $orderDate['price']],

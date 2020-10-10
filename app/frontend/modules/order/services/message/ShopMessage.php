@@ -69,6 +69,7 @@ class ShopMessage extends Message
             $params = [
                 ['name' => '商城名称', 'value' => \Setting::get('shop.shop')['name']],
                 ['name' => '粉丝昵称', 'value' => $this->order->belongsToMember->nickname],
+                ['name' => '订单ID', 'value' => $this->order->id],
                 ['name' => '订单号', 'value' => $this->order->order_sn],
                 ['name' => '下单时间', 'value' => $this->order['create_time']->toDateTimeString()],
                 ['name' => '订单金额', 'value' => $this->order['price']],
@@ -110,6 +111,7 @@ class ShopMessage extends Message
             $address = $this->order['address'];
             $params = [
                 ['name' => '粉丝昵称', 'value' => $this->order->belongsToMember->nickname],
+                ['name' => '订单ID', 'value' => $this->order->id],
                 ['name' => '订单号', 'value' => $this->order->order_sn],
                 ['name' => '下单时间', 'value' => $this->order['create_time']->toDateTimeString()],
                 ['name' => '支付时间', 'value' => $this->order['pay_time']->toDateTimeString()],
@@ -155,6 +157,7 @@ class ShopMessage extends Message
             $address = $this->order['address'];
             $params = [
                 ['name' => '粉丝昵称', 'value' => $this->order->belongsToMember->nickname],
+                ['name' => '订单ID', 'value' => $this->order->id],
                 ['name' => '订单号', 'value' => $this->order->order_sn],
                 ['name' => '确认收货时间', 'value' => $this->order['finish_time']->toDateTimeString()],
                 ['name' => '运费', 'value' => $this->order['dispatch_price']],
