@@ -100,6 +100,9 @@
                     <span class="icon-bar"></span>
                 </button>--}}
                 <ul class="clearfix pull-left">
+                    <li style="">
+                        <a class="fa fa-circle-o" id="mp-links" href="javascript:void 0;">小程序页面路径</a>
+                    </li>
                     {{--<li class=" active" style="">
                         <a ui-sref="shop.dashboard" href="/shop">商城</a>
                     </li>--}}
@@ -137,12 +140,43 @@
         <!-- </div> -->
     </nav>
 </div>
+<div class="modal fade" id="mp-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 1280px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title">
+                    小程序页面路径
+                </h4>
+            </div>
+            <div class="modal-body">
+                <style>
+                    .mp-iframe {
+                        width: 100%;
+                        height: 480px;
+                        border: 0;
+                    }
+                </style>
+                <iframe class="mp-iframe" src="//www.aijuyi.net/static/protocol/links.html"></iframe>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     $(function () {
         $("#sys_logout").click(function () {
             $.get("/admin/logout",function(data,status){
                 location.href = '/';
             });
+        });
+        $('#mp-links').click(function() {
+            $('#mp-modal').modal()
         });
     });
 </script>
