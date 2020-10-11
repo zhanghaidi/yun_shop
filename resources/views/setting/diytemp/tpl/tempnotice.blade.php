@@ -135,10 +135,8 @@
         <div class="form-group">
             <label class="col-xs-12 col-sm-3 col-md-2 control-label" >小程序页面路径</label>
             <div class="col-sm-9 col-xs-12">
-                <div class="input-group ">
                     <input class="form-control" type="text" data-id="PAL-00012" placeholder="请填写小程序页面路径" value="{{ $temp['pagepath'] }}" name="temp[pagepath]">
                     {{-- <span class="input-group-btn"><button class="btn btn-default nav-link" type="button" data-id="PAL-00012">选择链接</button></span>    --}}
-                </div>
             </div>
         </div>
     </div>

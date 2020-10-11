@@ -33,6 +33,7 @@ class orderListener
     public function onCreated(AfterOrderCreatedEvent $event)
     {
         $order = Order::find($event->getOrderModel()->id);
+        \log::debug('AfterOrderCreatedEvent:' . $order->id);
         (new MessageService($order))->created();
 
         (new OtherMessageService($order))->created();
@@ -41,9 +42,11 @@ class orderListener
     public function onPaid(AfterOrderPaidEvent $event)
     {
         $order = Order::find($event->getOrderModel()->id);
-        (new MiniMessageService($order))->received();
+        \log::debug('AfterOrderPaidEvent:' . $order->id);
+        (new MessageService($order))->paid();
+        //(new MiniMessageService($order))->received();
         if (!$order->isVirtual()) {
-            (new MessageService($order))->paid();
+            //(new MessageService($order))->paid();
             (new OtherMessageService($order))->paid();
         }
         // todo 预扣库存转化为实际库存
@@ -52,6 +55,7 @@ class orderListener
     public function onCanceled(AfterOrderCanceledEvent $event)
     {
         $order = Order::find($event->getOrderModel()->id);
+        \log::debug('AfterOrderCanceledEvent:' . $order->id);
         (new MessageService($order))->canceled();
     }
 
