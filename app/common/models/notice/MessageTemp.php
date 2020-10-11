@@ -94,6 +94,8 @@ class MessageTemp extends BaseModel
 
     public static function getSendMsg($temp_id, $params)
     {
+            \Log::debug("getSendMsg:{$temp_id},params:" . json_encode($params));
+
             if (!intval($temp_id)) {
                 return false;
             }
@@ -124,6 +126,7 @@ class MessageTemp extends BaseModel
                     'color' => $row['color']
                 ];
             }
+            \Log::debug("getSendMsg:{$temp_id},msg:" . json_encode($msg));
 
         return $msg;
     }
