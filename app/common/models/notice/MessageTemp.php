@@ -87,6 +87,15 @@ class MessageTemp extends BaseModel
                 'color' => $data['tp_color'][$key]
             ];
         }
+
+        if($data['sel_h5_mini'] == 1){
+            $data['news_link'] = '';
+        }else{
+            $data['appid'] = '';
+            $data['pagepath'] = '';
+        }
+        unset($data['sel_h5_mini']);
+
         return array_except($data, ['tp_kw', 'tp_value', 'tp_color']);
     }
 
