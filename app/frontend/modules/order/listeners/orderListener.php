@@ -43,10 +43,9 @@ class orderListener
     {
         $order = Order::find($event->getOrderModel()->id);
         \log::debug('AfterOrderPaidEvent:' . $order->id);
-        (new MessageService($order))->paid();
-        //(new MiniMessageService($order))->received();
+        (new MiniMessageService($order))->received();
         if (!$order->isVirtual()) {
-            //(new MessageService($order))->paid();
+            (new MessageService($order))->paid();
             (new OtherMessageService($order))->paid();
         }
         // todo 预扣库存转化为实际库存
