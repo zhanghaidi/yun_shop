@@ -58,6 +58,7 @@ class MessageNoticeJob implements  ShouldQueue
             $this->pagepath = $pagepath ?:'pages/template/user/user'; //默认小程序用户中心路径
             $this->miniApp = ['miniprogram' => ['appid' => 'wxcaa8acf49f845662', 'pagepath' => $this->pagepath]]; //封装成小程序参数
         }
+        \Log::debug('MessageNoticeJob:miniprogram params ' . json_encode($this->miniApp));
     }
 
     /**
@@ -67,6 +68,7 @@ class MessageNoticeJob implements  ShouldQueue
      */
     public function handle()
     {
+        \Log::debug('MessageNoticeJob attempts:' . $this->attempts());
         if ($this->attempts() > 1) {
             \Log::info('消息通知测试，执行大于两次终止');
             return true;
@@ -78,7 +80,8 @@ class MessageNoticeJob implements  ShouldQueue
         ];
         $app = new Application($options);
         $app = $app->notice;
-        $app->uses($this->templateId)->andData($this->noticeData)->andReceiver($this->openId)->andUrl($this->url)->send($this->miniApp);
+        $res = $app->uses($this->templateId)->andData($this->noticeData)->andReceiver($this->openId)->andUrl($this->url)->send($this->miniApp);
+        \Log::debug('MessageNoticeJob sendRes:' . json_encode($res));
         return true;
     }
 }
