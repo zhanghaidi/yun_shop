@@ -33,7 +33,7 @@ class orderListener
     public function onCreated(AfterOrderCreatedEvent $event)
     {
         $order = Order::find($event->getOrderModel()->id);
-        \log::debug('AfterOrderCreatedEvent:' . $order->id);
+        \log::debug('AfterOrderCreatedEvent orderId:' . $order->id);
         (new MessageService($order))->created();
 
         (new OtherMessageService($order))->created();
@@ -42,10 +42,10 @@ class orderListener
     public function onPaid(AfterOrderPaidEvent $event)
     {
         $order = Order::find($event->getOrderModel()->id);
-        \log::debug('AfterOrderPaidEvent:' . $order->id);
+        \log::debug('AfterOrderPaidEvent orderId:' . $order->id);
         (new MiniMessageService($order))->received();
         if (!$order->isVirtual()) {
-            \log::debug('AfterOrderPaidEvent:' . $order->id);
+            \log::debug('AfterOrderPaidEvent orderId:' . $order->id);
             (new MessageService($order))->paid();
             (new OtherMessageService($order))->paid();
         }
@@ -55,7 +55,7 @@ class orderListener
     public function onCanceled(AfterOrderCanceledEvent $event)
     {
         $order = Order::find($event->getOrderModel()->id);
-        \log::debug('AfterOrderCanceledEvent:' . $order->id);
+        \log::debug('AfterOrderCanceledEvent orderId:' . $order->id);
         (new MessageService($order))->canceled();
     }
 
