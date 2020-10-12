@@ -110,6 +110,7 @@ class ShopMessage extends Message
         if ($temp_id) {
             $address = $this->order['address'];
             $params = [
+                ['name' => '商城名称', 'value' => \Setting::get('shop.shop')['name']],
                 ['name' => '粉丝昵称', 'value' => $this->order->belongsToMember->nickname],
                 ['name' => '订单ID', 'value' => $this->order->id],
                 ['name' => '订单号', 'value' => $this->order->order_sn],
@@ -156,6 +157,7 @@ class ShopMessage extends Message
         if ($temp_id) {
             $address = $this->order['address'];
             $params = [
+                ['name' => '商城名称', 'value' => \Setting::get('shop.shop')['name']],
                 ['name' => '粉丝昵称', 'value' => $this->order->belongsToMember->nickname],
                 ['name' => '订单ID', 'value' => $this->order->id],
                 ['name' => '订单号', 'value' => $this->order->order_sn],
@@ -208,8 +210,10 @@ class ShopMessage extends Message
             $temp_id = \Setting::get('shop.notice')['buy_goods_msg'];
             if ($temp_id) {
                 $params = [
+                    ['name' => '商城名称', 'value' => \Setting::get('shop.shop')['name']],
                     ['name' => '会员昵称', 'value' => $this->order->belongsToMember->nickname],
                     ['name' => '订单编号', 'value' => $this->order->order_sn],
+                    ['name' => '订单ID', 'value' => $this->order->id],
                     ['name' => '商品名称（含规格）', 'value' => $this->getGoodsTitle($goods)],
                     ['name' => '商品金额', 'value' => $goods->price],
                     ['name' => '商品数量', 'value' => $goods->total],
