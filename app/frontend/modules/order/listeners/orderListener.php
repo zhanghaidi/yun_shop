@@ -45,6 +45,7 @@ class orderListener
         \log::debug('AfterOrderPaidEvent:' . $order->id);
         (new MiniMessageService($order))->received();
         if (!$order->isVirtual()) {
+            \log::debug('AfterOrderPaidEvent:' . $order->id);
             (new MessageService($order))->paid();
             (new OtherMessageService($order))->paid();
         }
