@@ -88,6 +88,7 @@ class MessageTemp extends BaseModel
             ];
         }
 
+        //fixby-zlt-sel_h5_mini 2020-10-11 增加网页链接和小程序选择设置
         if($data['sel_h5_mini'] == 1){
             $data['news_link'] = '';
         }else{
@@ -123,6 +124,8 @@ class MessageTemp extends BaseModel
                     'color' => $temp->remark_color
                 ]
             ];
+
+            //fixby-zlt-miniprogram 2020-10-11 优化小程序路径
             if(!empty($temp->pagepath)){
                 $msg['miniprogram'] = [
                     'appid' => $temp->appid,

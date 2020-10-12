@@ -51,9 +51,13 @@ class MessageNoticeJob implements  ShouldQueue
         $this->openId = $openId;
         $this->url = $url;
         $this->uniacid = \YunShop::app()->uniacid;
+
+        //fixby-zlt-miniprogram 2020-10-11 优化小程序路径
         if(!empty($noticeData['miniprogram'])){  //接收自定义的小程序路径
             $this->miniApp = ['miniprogram' => $noticeData['miniprogram']];
             unset($noticeData['miniprogram']);
+        }elseif(!empty($this->url)){
+            $this->miniApp = [];
         }else{
             $this->pagepath = $pagepath ?:'pages/template/user/user'; //默认小程序用户中心路径
             $this->miniApp = ['miniprogram' => ['appid' => 'wxcaa8acf49f845662', 'pagepath' => $this->pagepath]]; //封装成小程序参数
