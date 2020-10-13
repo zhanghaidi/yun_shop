@@ -77,18 +77,24 @@ class DefaultNoticeController extends BaseController
     public function store()
     {
         $notice_name = \YunShop::request()->notice_name;
+        $notice_id = request()->notice_id;
         $setting_name = \YunShop::request()->setting_name;
 
         $message_template = $this->MessageTempModel->getTempIdByNoticeType($notice_name);//获取消息通知模版
         $has_template_id = $this->wechat_list->where('template_id',$message_template->template_id)->first();//查询是否存在template_id,不存在则新建
 
-        if ($has_template_id){
-            $item = (string)$message_template->id;
-        } else {
-            if ($message_template) {
-                $message_template->delete();
+        //fixby-zlt-templateset 2020-10-13
+        if(!empty($notice_id)){
+            $notice[$notice_name] = $notice_id;
+        }else {
+            if ($has_template_id) {
+                $item = (string)$message_template->id;
+            } else {
+                if ($message_template) {
+                    $message_template->delete();
+                }
+                $item = $this->createDefaultMessageTemp($notice_name);
             }
-            $item = $this->createDefaultMessageTemp($notice_name);
         }
         \Setting::set($setting_name, $item);
         $setting = explode('.',$setting_name);
