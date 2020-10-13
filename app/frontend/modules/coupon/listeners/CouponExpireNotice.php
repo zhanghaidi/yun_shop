@@ -9,7 +9,6 @@ use app\common\models\MemberCoupon;
 use app\common\models\notice\MessageTemp;
 use app\common\models\UniAccount;
 use app\framework\Support\Facades\Log;
-use Illuminate\Support\Facades\Cache;
 
 
 /**
@@ -42,14 +41,12 @@ class CouponExpireNotice
     public function sendExpireNotice()
     {
         Log::info('------------------------ 优惠券过期提醒 BEGIN -------------------------------');
-        $cache_key = 'send_expire_notice.' . date('Ymd');
-        $cache_val = Cache::get($cache_key);
-        if ($this->set['every_day'] != date('H') || $cache_val) {
+        if ($this->set['every_day'] != date('H')) {
             return;
         }
         if ($this->setLog['current_d'] == date('d')) {
             Log::info('优惠券过期提醒 current_d =' . $this->setLog['current_d'] .' now_d = '. date('d'));
-//            return;
+            return;
         }
 
         $this->setLog['current_d'] = date('d');
@@ -74,8 +71,6 @@ class CouponExpireNotice
             ];
             $this->sendNotice($couponData, $member);
         }
-
-        Cache::put($cache_key, 1, 60 * 24);
     }
 
     public function sendNotice($ouponData, $member)
