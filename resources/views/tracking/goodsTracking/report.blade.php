@@ -363,7 +363,7 @@
                         </div>
                     </div>
                     <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">--}}
-
+                    <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2 ">
                         <div class="time">
                             <select name='search[search_time]' class='form-control'>
                                 <option value='0' @if($search['search_time']=='0') selected @endif>不搜索时间</option>
