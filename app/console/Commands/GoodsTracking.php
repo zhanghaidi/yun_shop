@@ -66,10 +66,10 @@ class GoodsTracking extends Command
                     $favorites_num = DB::table('diagnostic_service_goods_tracking')->where(['goods_id' => $value['id'],'action' => 2])->whereBetween('create_time', $whereBetween)->count();
                     $add_purchase_num = DB::table('diagnostic_service_goods_tracking')->where(['goods_id' => $value['id'],'action' => 3])->whereBetween('create_time', $whereBetween)->sum('val');
                     $create_order_num = DB::table('diagnostic_service_goods_tracking')->where(['goods_id' => $value['id'],'action' => 4])->whereBetween('create_time', $whereBetween)->count();
-                    $order_Payment_num = DB::table('diagnostic_service_goods_tracking')->where(['goods_id' => $value['id'],'action' => 5])->whereBetween('create_time', $whereBetween)->count();
+                    $order_payment_num = DB::table('diagnostic_service_goods_tracking')->where(['goods_id' => $value['id'],'action' => 5])->whereBetween('create_time', $whereBetween)->count();
 
                     // todo 统计该商品支付金额 ，和开得义确认 ，他说不确定的需求 ，暂定订单完成状态下的金额，需要再次确认。
-                    $order_Payment_amount = DB::table('yz_order_goods as og')
+                    $order_payment_amount = DB::table('yz_order_goods as og')
                         ->join('yz_order as o', 'og.order_id', '=', 'o.id')
                         ->select('u.avatarurl', 'p.address')
                         ->where('o.status', 4)
@@ -84,8 +84,8 @@ class GoodsTracking extends Command
                         'favorites_num' => $favorites_num,
                         'add_purchase_num' => $add_purchase_num,
                         'create_order_num' => $create_order_num,
-                        'order_Payment_num' => $order_Payment_num,
-                        'order_Payment_amount' => $order_Payment_amount,
+                        'order_payment_num' => $order_payment_num,
+                        'order_payment_amount' => $order_payment_amount,
                         'created_at' => date('Y-m-d H:i:s', $time_now),
                         'updated_at' => date('Y-m-d H:i:s', $time_now),
                         'statistics_time' => $todayTimestamp
