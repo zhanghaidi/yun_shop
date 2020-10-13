@@ -59,7 +59,10 @@ class ShareCouponController extends ApiController
 
             $model->coupon_num = count($model->share_coupon);
             //fixby zhd 分享优惠券总金额-2020-10-10
-            $model->coupon_money = DB::table('yz_coupon')->where('id', $model->share_coupon)->value('deduct');
+            if($model->coupon_num > 0){
+                $model->coupon_money = DB::table('yz_coupon')->where('id', $model->share_coupon)->value('deduct');
+            }
+
         });
 
         $data = [
