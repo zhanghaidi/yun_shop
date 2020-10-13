@@ -8,6 +8,8 @@ use app\common\models\Member;
 use app\common\models\MemberCoupon;
 use app\common\models\notice\MessageTemp;
 use app\common\models\UniAccount;
+use app\framework\Support\Facades\Log;
+
 
 /**
  * Author: 芸众商城 www.yunzshop.com
@@ -22,7 +24,7 @@ class CouponExpireNotice
 
     public function handle()
     {
-        \Log::info('优惠券到期处理');
+        Log::info('优惠券到期处理');
         set_time_limit(0);
         $uniAccount = UniAccount::getEnable();
         foreach ($uniAccount as $u) {
@@ -38,12 +40,15 @@ class CouponExpireNotice
 
     public function sendExpireNotice()
     {
+        Log::info('------------------------ 优惠券过期提醒 BEGIN -------------------------------');
         if ($this->set['every_day'] != date('H')) {
             return;
         }
         if ($this->setLog['current_d'] == date('d')) {
-            return;
+            Log::info('优惠券过期提醒 current_d =' . $this->setLog['current_d'] .' now_d = '. date('d'));
+//            return;
         }
+
         $this->setLog['current_d'] = date('d');
         Setting::set('shop.coupon_log', $this->setLog);
 
@@ -96,7 +101,11 @@ class CouponExpireNotice
             if (!$msg) {
                 return;
             }
+
+            Log::info('优惠券过期提醒 running : Message = '.\GuzzleHttp\json_encode($msg));
             \app\common\services\MessageService::notice(MessageTemp::$template_id, $msg, $member->uid, $this->uniacid);
+
+            Log::info('------------------------ 优惠券过期提醒 END -------------------------------');
         }
         return;
     }
@@ -131,7 +140,7 @@ class CouponExpireNotice
     public function subscribe()
     {
         \Event::listen('cron.collectJobs', function () {
-            \Cron::add('Coupon-expire-notice', '*/10 * * * *', function () {
+            \Cron::add('Coupon-expire-notice', '*/1 * * * *', function () {
                 $this->handle();
                 return;
             });
