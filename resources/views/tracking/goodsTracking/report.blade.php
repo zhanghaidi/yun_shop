@@ -210,20 +210,20 @@
         <div class="panel panel-info">
             <div class="panel-heading">全量商品排行</div>
             <div class="panel-body">
-                {{--<form action="" method="get" class="form-horizontal" role="form" id="form1">
+                <form action="" method="get" class="form-horizontal" role="form" id="form1">
                     <input type="hidden" name="c" value="site"/>
                     <input type="hidden" name="a" value="entry"/>
                     <input type="hidden" name="m" value="yun_shop"/>
                     <input type="hidden" name="do" value="tracking" id="form_do"/>
-                    <input type="hidden" name="route" value="tracking.goods-tracking.index" id="route"/>
+                    <input type="hidden" name="route" value="tracking.goods-tracking.report" id="route"/>
 
-                    <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                   {{-- <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
                         <!-- <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">会员信息</label>-->
                         <div class="">
                             <input type="text" class="form-control" name="search[realname]"
                                    value="{{$search['realname']}}" placeholder="可搜索会员ID/昵称/姓名/手机号"/>
                         </div>
-                    </div>
+                    </div>--}}
 
                     <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2 ">
                         <!--<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">ID</label>-->
@@ -233,14 +233,14 @@
                         </div>
                     </div>
 
-                    <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2 ">
+                   {{-- <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2 ">
                         <!--<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">ID</label>-->
                         <div class="">
                             <input type="text" placeholder="搜索动作/类型" class="form-control" name="search[type]"
                                    value="{{$search['type']}}"/>
                         </div>
                     </div>
-                    --}}{{--<div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                    <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
                         <!-- <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">会员等级</label>-->
                         <div class="">
                             <select name='search[level]' class='form-control'>
@@ -254,7 +254,7 @@
                                 @endforeach
                             </select>
                         </div>
-                    </div>--}}{{--
+                    </div>
                     <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
                         <!--  <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">会员分组</label>-->
                         <div class="">
@@ -275,11 +275,11 @@
                                         selected
                                         @endif>帖子
                                 </option>
-                                --}}{{--<option value='5'
+                                <option value='5'
                                         @if($search['type_id']=='5')
                                         selected
                                         @endif>体质
-                                </option>--}}{{--
+                                </option>
                                 <option value='6'
                                         @if($search['type_id']=='6')
                                         selected
@@ -362,7 +362,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                    <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">--}}
 
                         <div class="time">
                             <select name='search[search_time]' class='form-control'>
@@ -384,14 +384,14 @@
                         <!--<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label"></label>-->
                         <div class="">
                             <button class="btn btn-success "><i class="fa fa-search"></i> 搜索</button>
-                            --}}{{--<button type="button" name="export" value="1" id="export" class="btn btn-default">导出
+                           {{-- <button type="button" name="export" value="1" id="export" class="btn btn-default">导出
                                 Excel
-                            </button>--}}{{--
+                            </button>--}}
 
                         </div>
                     </div>
 
-                </form>--}}
+                </form>
 
             </div>
 
