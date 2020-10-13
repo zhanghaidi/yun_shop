@@ -215,7 +215,7 @@
                     <input type="hidden" name="a" value="entry"/>
                     <input type="hidden" name="m" value="yun_shop"/>
                     <input type="hidden" name="do" value="tracking" id="form_do"/>
-                    <input type="hidden" name="route" value="tracking.goods-tracking.index" id="route"/>
+                    <input type="hidden" name="route" value="tracking.goods-tracking.report" id="route"/>
 
                    {{-- <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
                         <!-- <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">会员信息</label>-->
