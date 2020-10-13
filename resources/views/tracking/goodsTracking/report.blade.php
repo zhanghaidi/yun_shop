@@ -405,10 +405,11 @@
                         <tr>
                             <th style='width:12%; text-align: center;'>商品</th>
                             <th style='width:12%; text-align: center;'>商品访客数</th>
+                            <th style='width:12%; text-align: center;'>商品收藏数</th>
                             <th style='width:12%; text-align: center;'>商品加购件数</th>
-                            <th style='width:12%; text-align: center;'>支付件数</th>
-                            {{--<th style='width:12%; text-align: center;'>支付金额</th>
-                            <th style='width:12%; text-align: center;'>支付转化率</th>--}}
+                            <th style='width:12%; text-align: center;'>付款件数</th>
+                            <th style='width:12%; text-align: center;'>付款金额</th>
+                            <th style='width:12%; text-align: center;'>支付转化率</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -424,12 +425,14 @@
                                     </a>
                                 </td>
                                 <td style="text-align: center;">
-                                    {{ $list->user_num }}
+                                    {{ $list->view_num }}
                                 </td>
-                                <td style="text-align: center;">{{ $list->add_num }}</td>
-                                <td style="text-align: center;">{{ $list->pay_num }}</td>
-                                {{--<td style="text-align: center;">{{ $list->pay_price }}</td>
-                                <td style="text-align: center;">{{ $list->pay_rate }}</td>--}}
+                                <td style="text-align: center;">{{ $list->favorites_num }}</td>
+                                <td style="text-align: center;">{{ $list->add_purchase_num }}</td>
+                                <td style="text-align: center;">{{ $list->order_Payment_num }}</td>
+                                <td style="text-align: center;">{{ $list->order_Payment_amount }}</td>
+                                <td style="text-align: center;">{{ $list->order_ext }}</td>
+                                <td style="text-align: center;">{{ $list->order_created_at }}</td>
                             </tr>
                         @endforeach
                         </tbody>
