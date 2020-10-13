@@ -1,6 +1,7 @@
 <?php
 namespace app\backend\modules\tracking\controllers;
 
+use app\backend\modules\tracking\models\GoodsTrackingStatistics;
 use app\common\components\BaseController;
 use app\backend\modules\tracking\models\GoodsTrackingModel;
 use app\common\helpers\PaginationHelper;
@@ -40,10 +41,16 @@ class GoodsTrackingController extends BaseController
 
     public function report()
     {
-        $search = \YunShop::request()->search;
-        $goodsRecords = GoodsTrackingModel::records()->groupBy('goods_id');
+        $records = GoodsTrackingStatistics::records();
 
-        $recordList = $goodsRecords->paginate();
+        $search = \YunShop::request()->search;
+        if ($search) {
+
+            $records = $records->search($search);
+
+        }
+
+        $recordList =  $records->orderBy('created_at', 'desc')->paginate();
 
         $pager = PaginationHelper::show($recordList->total(), $recordList->currentPage(), $recordList->perPage());
 
