@@ -48,25 +48,25 @@ class GoodsTracking extends Command
         Log::info('------------------------ 商品埋点数据统计定时任务 BEGIN -------------------------------');
         try {
             //防止重复执行定时任务 判断如果有当天的数据就return
-            $exist_data = DB::table('diagnostic_service_goods_tracking_statistics')->where('created_at', strtotime(date('Y-m-d', time())))->first();
+            $exist_data = DB::table('diagnostic_service_goods_tracking_statistics')->where('statistics_time', date('Y-m-d', time()))->first();
             if($exist_data){
                 Log::info('商品埋点数据统计定时任务，重复执行！');
                 return ;
             }
             //1  查询所有商品  分块处理
-            DB::table('yz_goods')->select('id', 'uniacid')->chunk(100, function ($goods) {
+            DB::table('yz_goods')->where('status',1)->select('id', 'uniacid')->chunk(100, function ($goods) {
 
-                $time_now = strtotime(date('Y-m-d', time()));
-                $startTimes = strtotime(date('Y-m-d', strtotime("-1 day")));
-                $whereBetween = [$startTimes, $time_now];
+                $time_now = time();
+                $todayTimestamp = strtotime(date('Y-m-d', $time_now));
+                $yesterdayTimestamp = strtotime(date('Y-m-d', strtotime("-1 day")));
+                $whereBetween = [$todayTimestamp, $yesterdayTimestamp];
                 //2 遍历商品 统计商品前一天的数据 根据商品ID 统计埋点表的相应数据 1：查看 2、收藏 3、加购 4：下单 5：支付
                 foreach ($goods as $value){
-
-                    $view_num = DB::table('diagnostic_service_goods_tracking')->where('goods_id', $value['id'])->where('action', 1)->whereBetween('create_time', $whereBetween)->count();
-                    $favorites_num = DB::table('diagnostic_service_goods_tracking')->where('goods_id', $value['id'])->where('action', 2)->whereBetween('create_time', $whereBetween)->count();
-                    $add_purchase_num = DB::table('diagnostic_service_goods_tracking')->where('goods_id', $value['id'])->where('action', 3)->whereBetween('create_time', $whereBetween)->count();
-                    $create_order_num = DB::table('diagnostic_service_goods_tracking')->where('goods_id', $value['id'])->where('action', 4)->whereBetween('create_time', $whereBetween)->count();
-                    $order_Payment_num = DB::table('diagnostic_service_goods_tracking')->where('goods_id', $value['id'])->where('action', 5)->whereBetween('create_time', $whereBetween)->count();
+                    $view_num = count(DB::table('diagnostic_service_goods_tracking')->where(['goods_id' => $value['id'],'action' => 1])->whereBetween('create_time', $whereBetween)->groupBy('user_id')->get());
+                    $favorites_num = DB::table('diagnostic_service_goods_tracking')->where(['goods_id' => $value['id'],'action' => 2])->whereBetween('create_time', $whereBetween)->count();
+                    $add_purchase_num = DB::table('diagnostic_service_goods_tracking')->where(['goods_id' => $value['id'],'action' => 3])->whereBetween('create_time', $whereBetween)->sum('val');
+                    $create_order_num = DB::table('diagnostic_service_goods_tracking')->where(['goods_id' => $value['id'],'action' => 4])->whereBetween('create_time', $whereBetween)->count();
+                    $order_Payment_num = DB::table('diagnostic_service_goods_tracking')->where(['goods_id' => $value['id'],'action' => 5])->whereBetween('create_time', $whereBetween)->count();
 
                     // todo 统计该商品支付金额 ，和开得义确认 ，他说不确定的需求 ，暂定订单完成状态下的金额，需要再次确认。
                     $order_Payment_amount = DB::table('yz_order_goods as og')
@@ -86,8 +86,9 @@ class GoodsTracking extends Command
                         'create_order_num' => $create_order_num,
                         'order_Payment_num' => $order_Payment_num,
                         'order_Payment_amount' => $order_Payment_amount,
-                        'created_at' => $time_now,
-                        'updated_at' => $time_now,
+                        'created_at' => date('Y-m-d H:i:s', $time_now),
+                        'updated_at' => date('Y-m-d H:i:s', $time_now),
+                        'statistics_time' => $todayTimestamp
                     ];
                     DB::table('diagnostic_service_goods_tracking_statistics')->insert($data);
                 }
