@@ -54,7 +54,7 @@ class GoodsTracking extends Command
                 return ;
             }
             //1  查询所有商品  分块处理
-            DB::table('yz_goods')->where('status',1)->select('id', 'uniacid')->chunk(100, function ($goods) {
+            DB::table('yz_goods')->where('status',1)->select('id', 'uniacid')->whereNull('deleted_at')->chunk(100, function ($goods) {
 
                 $time_now = time();
                 $todayTimestamp = strtotime(date('Y-m-d', $time_now));
