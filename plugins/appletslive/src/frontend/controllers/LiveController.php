@@ -625,7 +625,8 @@ class LiveController extends BaseController
 
         $table = 'yz_appletslive_room_subscription';
         $map = [['room_id', '=', $input['room_id']], ['user_id', '=', $this->user_id]];
-        if (!DB::table($table)->where($map)->first()) {
+        $subscripInfo = DB::table($table)->where($map)->first();
+        if (!$subscripInfo) {
             DB::table($table)->insert([
                 'uniacid' => $this->uniacid,
                 'room_id' => $input['room_id'],
@@ -636,10 +637,40 @@ class LiveController extends BaseController
             CacheService::setRoomNum($input['room_id'], 'subscription_num');
             CacheService::setUserSubscription($this->user_id, $input['room_id']);
             CacheService::setRoomSubscription($input['room_id'], $this->user_id);
-            return $this->successJson('订阅成功');
-        }
 
-        return $this->errorJson('你已加入课程');
+            $msg = '订阅成功';
+
+        }else{
+
+            if($subscripInfo['status'] == 1){
+                DB::table($table)->where($map)->update(['status' => 0]);
+                $msg = '取消订阅成功';
+            }else{
+                DB::table($table)->where($map)->update(['status' => 1]);
+//                CacheService::setRoomNum($input['room_id'], 'subscription_num');
+//                CacheService::setUserSubscription($this->user_id, $input['room_id']);
+//                CacheService::setRoomSubscription($input['room_id'], $this->user_id);
+                $msg = '订阅成功';
+            }
+            //刷新缓存
+            $room_id   = $input['room_id'];
+
+            $cache_key = "api_live_room_subscription|$room_id";
+            Cache::forget($cache_key);
+
+            $cache_key_user_subscription = "api_live_user_subscription|$this->user_id";
+            Cache::forget($cache_key_user_subscription);
+
+            Cache::forget(CacheService::$cache_keys['brandsale.albumsubscription']);
+
+            Cache::forget(CacheService::$cache_keys['brandsale.albumusersubscription']);
+
+            $cache_key_room_num = 'api_live_room_num';
+            Cache::forget($cache_key_room_num);
+        }
+        
+        return $this->successJson($msg);
+
     }
 
 
@@ -1062,7 +1093,8 @@ class LiveController extends BaseController
 
         $table = 'yz_appletslive_room_subscription';
         $map = [['room_id', '=', $input['album_id']], ['user_id', '=', $this->user_id]];
-        if (!DB::table($table)->where($map)->first()) {
+        $subscripInfo = DB::table($table)->where($map)->first();
+        if (!$subscripInfo) {
             DB::table($table)->insert([
                 'uniacid' => $this->uniacid,
                 'room_id' => $input['album_id'],
@@ -1073,10 +1105,23 @@ class LiveController extends BaseController
             CacheService::setBrandSaleAlbumNum($input['album_id'], 'subscription_num');
             CacheService::setUserBrandSaleAlbumSubscription($this->user_id, $input['album_id']);
             CacheService::setBrandSaleAlbumSubscription($input['album_id'], $this->user_id);
-            return $this->successJson('订阅成功');
-        }
+            $msg = '订阅成功';
+        } else {
+            if ($subscripInfo['status'] == 1) {
+                DB::table($table)->where($map)->update(['status' => 0]);
+                $msg = '取消订阅成功';
+            } else {
+                DB::table($table)->where($map)->update(['status' => 1]);
+                $msg = '订阅成功';
+            }
 
-        return $this->errorJson('你已订阅该专辑');
+            //刷新缓存
+            Cache::forget(CacheService::$cache_keys['brandsale.albumnum']);
+            Cache::forget(CacheService::$cache_keys['brandsale.albumusersubscription']);
+            Cache::forget(CacheService::$cache_keys['brandsale.albumsubscription']);
+        }
+        return $this->successJson($msg);
+
     }
 
     /**
