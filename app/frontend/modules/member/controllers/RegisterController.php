@@ -314,6 +314,8 @@ class RegisterController extends ApiController
         }
     }
 
+    //public function sendCode
+
     public function sendWithdrawCode()
     {
         $mobile = \YunShop::request()->mobile;
