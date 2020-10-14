@@ -32,6 +32,7 @@ use app\frontend\modules\member\models\MemberWechatModel;
 use app\frontend\modules\member\models\smsSendLimitModel;
 use app\frontend\modules\member\models\SubMemberModel;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\DB;
 
 class MemberService
 {
@@ -373,6 +374,23 @@ class MemberService
     {
         $code = \YunShop::request()->code;
         $mobile = \YunShop::request()->mobile;
+
+        //$codeResArr = pdo_getall('diagnostic_service_sms_code', array('telephone' => $mobile), '', '', 'id DESC', '1');
+        //fixby-zhd-手机号验证码校验更改为数据库验证 20201014
+        $codeResArr = DB::table('diagnostic_service_sms_code')->where('telephone', $mobile)->orderBy('id', 'desc')->first();
+
+        if(!$codeResArr){
+            return show_json('0', '手机号错误,请重新获取');
+        }
+        $time_interval = time() - $codeResArr['add_time'];
+
+
+        if ($time_interval > 300) {
+            return show_json('0', '验证码已过期,请重新获取');
+        }
+        if ($code != $codeResArr['code']) {
+            return show_json('0', '验证码错误,请重新获取');
+        }
 
         /*if ((Session::get('codetime') + 60 * 5) < time()) {
             return show_json('0', '验证码已过期,请重新获取');
