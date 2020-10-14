@@ -88,7 +88,7 @@ class GoodsTracking extends Command
                         'order_payment_amount' => $order_payment_amount,
                         'created_at' => date('Y-m-d H:i:s', $time_now),
                         'updated_at' => date('Y-m-d H:i:s', $time_now),
-                        'statistics_time' => $todayTimestamp
+                        'statistics_time' => date('Y-m-d', $time_now)
                     ];
                    $res =  DB::table('diagnostic_service_goods_tracking_statistics')->insert($data);
                    if(!$res){
