@@ -233,10 +233,13 @@ class RegisterController extends ApiController
         }
 
         $code = rand(1000, 9999);
-        Session::set('codetime', time());
-        Session::set('code', $code);
-        Session::set('code_mobile', $mobile);
-
+        //Session::set('codetime', time());
+        //Session::set('code', $code);
+        //Session::set('code_mobile', $mobile);
+        $res = DB::table('diagnostic_service_sms_code')->insert(['telephone' => $mobile, 'code' => $code, 'send_time' => date('Y-m-d H:i:s', time()), 'add_time' => time()]);
+        if(!$res){
+            \Log::info('验证短信插入失败');
+        }
         //$content = "您的验证码是：". $code ."。请不要把验证码泄露给其他人。如非本人操作，可不用理会！";
         return $this->sendSmsV2($mobile, $code, $state, 'reg', $sms_type);
     }
@@ -293,10 +296,14 @@ class RegisterController extends ApiController
 
         $code = rand(1000, 9999);
 
-        Session::set('codetime', time());
-        Session::set('code', $code);
-        Session::set('code_mobile', $mobile);
+        //Session::set('codetime', time());
+        //Session::set('code', $code);
+        //Session::set('code_mobile', $mobile);
+        $res = DB::table('diagnostic_service_sms_code')->insert(['telephone' => $mobile, 'code' => $code, 'send_time' => date('Y-m-d H:i:s', time()), 'add_time' => time()]);
 
+        if(!$res){
+            \Log::info('验证短信插入失败');
+        }
         //$content = "您的验证码是：". $code ."。请不要把验证码泄露给其他人。如非本人操作，可不用理会！";
 
 
@@ -317,9 +324,9 @@ class RegisterController extends ApiController
         }
         $code = rand(1000, 9999);
 
-        Session::set('codetime', time());
-        Session::set('code', $code);
-        Session::set('code_mobile', $mobile);
+        //Session::set('codetime', time());
+        //Session::set('code', $code);
+        //Session::set('code_mobile', $mobile);
 
         //$content = "您的验证码是：". $code ."。请不要把验证码泄露给其他人。如非本人操作，可不用理会！";
 
