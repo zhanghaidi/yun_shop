@@ -72,7 +72,7 @@
                         <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">积分变动通知</label>
                             <div class="col-sm-8 col-xs-12">
-                                <select name='yz_notice[point_change]' class='form-control diy-notice'>
+                                <select name='yz_notice[point_change]' class='form-control diy-notice' onchange="if($('#point_change').is(':checked') && confirm('确定要更换积分变动通知模板？')){message_default('point_change')}">
                                     <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['point_change'])) value="{{$set['point_change']}}"
                                     selected @else value=""
                                             @endif
@@ -93,7 +93,7 @@
                             </div>
                             <div class="col-sm-2 col-xs-6">
                                 <input class="mui-switch mui-switch-animbg" id="point_change" type="checkbox"
-                                       @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['point_change']))
+                                       @if($set['point_change'])
                                        checked
                                        @endif
                                        onclick="message_default(this.id)"/>
@@ -132,7 +132,7 @@
                         <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">余额变动通知</label>
                             <div class="col-sm-8 col-xs-12">
-                                <select name='yz_notice[balance_change]' class='form-control diy-notice'>
+                                <select name='yz_notice[balance_change]' class='form-control diy-notice' onchange="if($('#balance_change').is(':checked') && confirm('确定要更换余额变动通知模板？')){message_default('balance_change')}">
                                     <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['balance_change'])) value="{{$set['balance_change']}}"
                                             selected @else value=""
                                             @endif
@@ -150,7 +150,7 @@
                             </div>
                             <div class="col-sm-2 col-xs-6">
                                 <input class="mui-switch mui-switch-animbg" id="balance_change" type="checkbox"
-                                       @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['balance_change']))
+                                       @if($set['balance_change'])
                                        checked
                                        @endif
                                        onclick="message_default(this.id)"/>
@@ -185,7 +185,7 @@
                         <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">购买商品通知</label>
                             <div class="col-sm-8 col-xs-12">
-                                <select name='yz_notice[buy_goods_msg]' class='form-control diy-notice'>
+                                <select name='yz_notice[buy_goods_msg]' class='form-control diy-notice' onchange="if($('#buy_goods_msg').is(':checked') && confirm('确定要更换购买商品通知模板？')){message_default('buy_goods_msg')}">
                                     <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['buy_goods_msg'])) value="{{$set['buy_goods_msg']}}"
                                             selected @else value=""
                                             @endif
@@ -202,7 +202,7 @@
                             </div>
                             <div class="col-sm-2 col-xs-6">
                                 <input class="mui-switch mui-switch-animbg" id="buy_goods_msg" type="checkbox"
-                                       @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['buy_goods_msg']))
+                                       @if($set['buy_goods_msg'])
                                        checked
                                        @endif
                                        onclick="message_default(this.id)"/>
@@ -213,7 +213,7 @@
                         <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">订单生成通知[卖家]</label>
                             <div class="col-sm-8 col-xs-12">
-                                <select name='yz_notice[seller_order_create]' class='form-control diy-notice'>
+                                <select name='yz_notice[seller_order_create]' class='form-control diy-notice' onchange="if($('#seller_order_create').is(':checked') && confirm('确定要更换订单生成通知[卖家]模板？')){message_default('seller_order_create')}">
                                     <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['seller_order_create'])) value="{{$set['seller_order_create']}}"
                                             selected @else value=""
                                             @endif
@@ -230,7 +230,7 @@
                             </div>
                             <div class="col-sm-2 col-xs-6">
                                 <input class="mui-switch mui-switch-animbg" id="seller_order_create" type="checkbox"
-                                       @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['seller_order_create']))
+                                       @if($set['seller_order_create'])
                                        checked
                                        @endif
                                        onclick="message_default(this.id)"/>
@@ -241,7 +241,7 @@
                         <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">订单支付通知[卖家]</label>
                             <div class="col-sm-8 col-xs-12">
-                                <select name='yz_notice[seller_order_pay]' class='form-control diy-notice'>
+                                <select name='yz_notice[seller_order_pay]' class='form-control diy-notice' onchange="if($('#seller_order_pay').is(':checked') && confirm('确定要更换订单支付通知[卖家]模板？')){message_default('seller_order_pay')}">
                                     <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['seller_order_pay'])) value="{{$set['seller_order_pay']}}"
                                             selected @else value=""
                                             @endif
@@ -259,7 +259,7 @@
                             </div>
                             <div class="col-sm-2 col-xs-6">
                                 <input class="mui-switch mui-switch-animbg" id="seller_order_pay" type="checkbox"
-                                       @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['seller_order_pay']))
+                                       @if($set['seller_order_pay'])
                                        checked
                                        @endif
                                        onclick="message_default(this.id)"/>
@@ -270,7 +270,7 @@
                         <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">订单完成通知[卖家]</label>
                             <div class="col-sm-8 col-xs-12">
-                                <select name='yz_notice[seller_order_finish]' class='form-control diy-notice'>
+                                <select name='yz_notice[seller_order_finish]' class='form-control diy-notice' onchange="if($('#seller_order_finish').is(':checked') && confirm('确定要更换订单完成通知[卖家]模板？')){message_default('seller_order_finish')}">
                                     <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['seller_order_finish'])) value="{{$set['seller_order_finish']}}"
                                             selected @else value=""
                                             @endif
@@ -288,7 +288,7 @@
                             </div>
                             <div class="col-sm-2 col-xs-6">
                                 <input class="mui-switch mui-switch-animbg" id="seller_order_finish" type="checkbox"
-                                       @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['seller_order_finish']))
+                                       @if($set['seller_order_finish'])
                                        checked
                                        @endif
                                        onclick="message_default(this.id)"/>
@@ -298,7 +298,7 @@
                         <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">申请退款/退货/换货申请通知[卖家]</label>
                             <div class="col-sm-8 col-xs-12">
-                                <select name='yz_notice[order_refund_apply_to_saler]' class='form-control diy-notice'>
+                                <select name='yz_notice[order_refund_apply_to_saler]' class='form-control diy-notice' onchange="if($('#order_refund_apply_to_saler').is(':checked') && confirm('确定要更换申请退款/退货/换货申请通知[卖家]模板？')){message_default('order_refund_apply_to_saler')}">
                                     <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['order_refund_apply_to_saler'])) value="{{$set['order_refund_apply_to_saler']}}"
                                             selected @else value=""
                                             @endif
@@ -316,7 +316,7 @@
                             </div>
                             <div class="col-sm-2 col-xs-6">
                                 <input class="mui-switch mui-switch-animbg" id="order_refund_apply_to_saler" type="checkbox"
-                                       @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['order_refund_apply_to_saler']))
+                                       @if($set['order_refund_apply_to_saler'])
                                        checked
                                        @endif
                                        onclick="message_default(this.id)"/>
@@ -427,7 +427,7 @@
                         <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
                             <div class="col-sm-8 col-xs-12">
-                                <select name='yz_notice[other_toggle_temp]' class='form-control diy-notice'>
+                                <select name='yz_notice[other_toggle_temp]' class='form-control diy-notice' onchange="if($('#other_toggle_temp').is(':checked') && confirm('确定要更换两级消息通知模板？')){message_default('other_toggle_temp')}">
                                     <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['other_toggle_temp'])) value="{{$set['other_toggle_temp']}}"
                                             selected @else value=""
                                             @endif
@@ -444,7 +444,7 @@
                             </div>
                             <div class="col-sm-2 col-xs-6">
                                 <input class="mui-switch mui-switch-animbg" id="other_toggle_temp" type="checkbox"
-                                       @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['other_toggle_temp']))
+                                       @if($set['other_toggle_temp'])
                                        checked
                                        @endif
                                        onclick="message_default(this.id)"/>
@@ -459,7 +459,7 @@
                             <div class="form-group">
                                 <label class="col-xs-12 col-sm-3 col-md-2 control-label">订单提交成功通知</label>
                                 <div class="col-sm-8 col-xs-12">
-                                    <select name='yz_notice[order_submit_success]' class='form-control diy-notice'>
+                                    <select name='yz_notice[order_submit_success]' class='form-control diy-notice' onchange="if($('#order_submit_success').is(':checked') && confirm('确定要更换订单提交成功通知模板？')){message_default('order_submit_success')}">
                                         <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['order_submit_success'])) value="{{$set['order_submit_success']}}"
                                                 selected @else value=""
                                                 @endif
@@ -477,7 +477,7 @@
                                 </div>
                                 <div class="col-sm-2 col-xs-6">
                                     <input class="mui-switch mui-switch-animbg" id="order_submit_success" type="checkbox"
-                                           @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['order_submit_success']))
+                                           @if($set['order_submit_success'])
                                            checked
                                            @endif
                                            onclick="message_default(this.id)"/>
@@ -489,7 +489,7 @@
                             <div class="form-group">
                                 <label class="col-xs-12 col-sm-3 col-md-2 control-label">订单未支付通知</label>
                                 <div class="col-sm-8 col-xs-12">
-                                    <select name='yz_notice[order_not_paid]' class='form-control diy-notice'>
+                                    <select name='yz_notice[order_not_paid]' class='form-control diy-notice' onchange="if($('#order_not_paid').is(':checked') && confirm('确定要更换订单未支付通知模板？')){message_default('order_not_paid')}">
                                         <option
                                             @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['order_not_paid']))
                                                 value="{{$set['order_not_paid']}}" selected
@@ -512,7 +512,7 @@
                                 <div class="col-sm-2 col-xs-6">
                                     <input
                                         class="mui-switch mui-switch-animbg" id="order_not_paid" type="checkbox"
-                                        @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['order_not_paid']))
+                                        @if($set['order_not_paid'])
                                            checked
                                         @endif
                                         onclick="message_default(this.id)"/>
@@ -524,7 +524,7 @@
                             <div class="form-group">
                                 <label class="col-xs-12 col-sm-3 col-md-2 control-label">订单取消通知</label>
                                 <div class="col-sm-8 col-xs-12">
-                                    <select name='yz_notice[order_cancel]' class='form-control diy-notice'>
+                                    <select name='yz_notice[order_cancel]' class='form-control diy-notice' onchange="if($('#order_cancel').is(':checked') && confirm('确定要更换订单取消通知模板？')){message_default('order_cancel')}">
                                         <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['order_cancel'])) value="{{$set['order_cancel']}}"
                                                 selected @else value=""
                                                 @endif
@@ -542,7 +542,7 @@
                                 </div>
                                 <div class="col-sm-2 col-xs-6">
                                     <input class="mui-switch mui-switch-animbg" id="order_cancel" type="checkbox"
-                                           @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['order_cancel']))
+                                           @if($set['order_cancel'])
                                            checked
                                            @endif
                                            onclick="message_default(this.id)"/>
@@ -553,7 +553,7 @@
                             <div class="form-group">
                                 <label class="col-xs-12 col-sm-3 col-md-2 control-label">订单支付成功通知</label>
                                 <div class="col-sm-8 col-xs-12">
-                                    <select name='yz_notice[order_pay_success]' class='form-control diy-notice'>
+                                    <select name='yz_notice[order_pay_success]' class='form-control diy-notice' onchange="if($('#order_pay_success').is(':checked') && confirm('确定要更换订单支付成功通知模板？')){message_default('order_pay_success')}">
                                         <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['order_pay_success'])) value="{{$set['order_pay_success']}}"
                                                 selected @else value=""
                                                 @endif
@@ -571,7 +571,7 @@
                                 </div>
                                 <div class="col-sm-2 col-xs-6">
                                     <input class="mui-switch mui-switch-animbg" id="order_pay_success" type="checkbox"
-                                           @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['order_pay_success']))
+                                           @if($set['order_pay_success'])
                                            checked
                                            @endif
                                            onclick="message_default(this.id)"/>
@@ -582,7 +582,7 @@
                             <div class="form-group">
                                 <label class="col-xs-12 col-sm-3 col-md-2 control-label">订单发货通知</label>
                                 <div class="col-sm-8 col-xs-12">
-                                    <select name='yz_notice[order_send]' class='form-control diy-notice'>
+                                    <select name='yz_notice[order_send]' class='form-control diy-notice' onchange="if($('#order_send').is(':checked') && confirm('确定要更换订单发货通知模板？')){message_default('order_send')}">
                                         <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['order_send'])) value="{{$set['order_send']}}"
                                                 selected @else value=""
                                                 @endif
@@ -600,7 +600,7 @@
                                 </div>
                                 <div class="col-sm-2 col-xs-6">
                                     <input class="mui-switch mui-switch-animbg" id="order_send" type="checkbox"
-                                           @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['order_send']))
+                                           @if($set['order_send'])
                                            checked
                                            @endif
                                            onclick="message_default(this.id)"/>
@@ -611,7 +611,7 @@
                             <div class="form-group">
                                 <label class="col-xs-12 col-sm-3 col-md-2 control-label">订单确认收货通知</label>
                                 <div class="col-sm-8 col-xs-12">
-                                    <select name='yz_notice[order_finish]' class='form-control diy-notice'>
+                                    <select name='yz_notice[order_finish]' class='form-control diy-notice' onchange="if($('#order_finish').is(':checked') && confirm('确定要更换订单确认收货通知模板？')){message_default('order_finish')}">
                                         <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['order_finish'])) value="{{$set['order_finish']}}"
                                                 selected @else value=""
                                                 @endif
@@ -629,7 +629,7 @@
                                 </div>
                                 <div class="col-sm-2 col-xs-6">
                                     <input class="mui-switch mui-switch-animbg" id="order_finish" type="checkbox"
-                                           @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['order_finish']))
+                                           @if($set['order_finish'])
                                            checked
                                            @endif
                                            onclick="message_default(this.id)"/>
@@ -640,7 +640,7 @@
                             <div class="form-group">
                                 <label class="col-xs-12 col-sm-3 col-md-2 control-label">退款申请通知</label>
                                 <div class="col-sm-8 col-xs-12">
-                                    <select name='yz_notice[order_refund_apply]' class='form-control diy-notice'>
+                                    <select name='yz_notice[order_refund_apply]' class='form-control diy-notice' onchange="if($('#order_refund_apply').is(':checked') && confirm('确定要更换退款申请通知模板？')){message_default('order_refund_apply')}">
                                         <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['order_refund_apply'])) value="{{$set['order_refund_apply']}}"
                                                 selected @else value=""
                                                 @endif
@@ -658,7 +658,7 @@
                                 </div>
                                 <div class="col-sm-2 col-xs-6">
                                     <input class="mui-switch mui-switch-animbg" id="order_refund_apply" type="checkbox"
-                                           @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['order_refund_apply']))
+                                           @if($set['order_refund_apply'])
                                            checked
                                            @endif
                                            onclick="message_default(this.id)"/>
@@ -669,7 +669,7 @@
                             <div class="form-group">
                                 <label class="col-xs-12 col-sm-3 col-md-2 control-label">退款成功通知</label>
                                 <div class="col-sm-8 col-xs-12">
-                                    <select name='yz_notice[order_refund_success]' class='form-control diy-notice'>
+                                    <select name='yz_notice[order_refund_success]' class='form-control diy-notice' onchange="if($('#order_refund_success').is(':checked') && confirm('确定要更换退款成功通知模板？')){message_default('order_refund_success')}">
                                         <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['order_refund_success'])) value="{{$set['order_refund_success']}}"
                                                 selected @else value=""
                                                 @endif
@@ -687,7 +687,7 @@
                                 </div>
                                 <div class="col-sm-2 col-xs-6">
                                     <input class="mui-switch mui-switch-animbg" id="order_refund_success" type="checkbox"
-                                           @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['order_refund_success']))
+                                           @if($set['order_refund_success'])
                                            checked
                                            @endif
                                            onclick="message_default(this.id)"/>
@@ -698,7 +698,7 @@
                             <div class="form-group">
                                 <label class="col-xs-12 col-sm-3 col-md-2 control-label">退款申请驳回通知</label>
                                 <div class="col-sm-8 col-xs-12">
-                                    <select name='yz_notice[order_refund_reject]' class='form-control diy-notice'>
+                                    <select name='yz_notice[order_refund_reject]' class='form-control diy-notice' onchange="if($('#order_refund_reject').is(':checked') && confirm('确定要更换退款申请驳回通知模板？')){message_default('order_refund_reject')}">
                                         <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['order_refund_reject'])) value="{{$set['order_refund_reject']}}"
                                                 selected @else value=""
                                                 @endif
@@ -716,7 +716,7 @@
                                 </div>
                                 <div class="col-sm-2 col-xs-6">
                                     <input class="mui-switch mui-switch-animbg" id="order_refund_reject" type="checkbox"
-                                           @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['order_refund_reject']))
+                                           @if($set['order_refund_reject'])
                                            checked
                                            @endif
                                            onclick="message_default(this.id)"/>
@@ -727,7 +727,7 @@
                             <div class="form-group">
                                 <label class="col-xs-12 col-sm-3 col-md-2 control-label">会员升级通知</label>
                                 <div class="col-sm-8 col-xs-12">
-                                    <select name='yz_notice[customer_upgrade]' class='form-control diy-notice'>
+                                    <select name='yz_notice[customer_upgrade]' class='form-control diy-notice' onchange="if($('#customer_upgrade').is(':checked') && confirm('确定要更换会员升级通知模板？')){message_default('customer_upgrade')}">
                                         <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['customer_upgrade'])) value="{{$set['customer_upgrade']}}"
                                                 selected @else value=""
                                                 @endif
@@ -745,7 +745,7 @@
                                 </div>
                                 <div class="col-sm-2 col-xs-6">
                                     <input class="mui-switch mui-switch-animbg" id="customer_upgrade" type="checkbox"
-                                           @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['customer_upgrade']))
+                                           @if($set['customer_upgrade'])
                                            checked
                                            @endif
                                            onclick="message_default(this.id)"/>
@@ -756,7 +756,7 @@
                             <div class="form-group">
                                 <label class="col-xs-12 col-sm-3 col-md-2 control-label">余额提现提交通知</label>
                                 <div class="col-sm-8 col-xs-12">
-                                    <select name='yz_notice[withdraw_submit]' class='form-control diy-notice'>
+                                    <select name='yz_notice[withdraw_submit]' class='form-control diy-notice' onchange="if($('#withdraw_submit').is(':checked') && confirm('确定要更换余额提现提交通知模板？')){message_default('withdraw_submit')}">
                                         <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['withdraw_submit'])) value="{{$set['withdraw_submit']}}"
                                                 selected @else value=""
                                                 @endif
@@ -774,7 +774,7 @@
                                 </div>
                                 <div class="col-sm-2 col-xs-6">
                                     <input class="mui-switch mui-switch-animbg" id="withdraw_submit" type="checkbox"
-                                           @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['withdraw_submit']))
+                                           @if($set['withdraw_submit'])
                                            checked
                                            @endif
                                            onclick="message_default(this.id)"/>
@@ -785,7 +785,7 @@
                             <div class="form-group">
                                 <label class="col-xs-12 col-sm-3 col-md-2 control-label">余额提现成功通知</label>
                                 <div class="col-sm-8 col-xs-12">
-                                    <select name='yz_notice[withdraw_success]' class='form-control diy-notice'>
+                                    <select name='yz_notice[withdraw_success]' class='form-control diy-notice' onchange="if($('#withdraw_success').is(':checked') && confirm('确定要更换余额提现成功通知模板？')){message_default('withdraw_success')}">
                                         <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['withdraw_success'])) value="{{$set['withdraw_success']}}"
                                                 selected @else value=""
                                                 @endif
@@ -803,7 +803,7 @@
                                 </div>
                                 <div class="col-sm-2 col-xs-6">
                                     <input class="mui-switch mui-switch-animbg" id="withdraw_success" type="checkbox"
-                                           @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['withdraw_success']))
+                                           @if($set['withdraw_success'])
                                            checked
                                            @endif
                                            onclick="message_default(this.id)"/>
@@ -814,7 +814,7 @@
                             <div class="form-group">
                                 <label class="col-xs-12 col-sm-3 col-md-2 control-label">余额提现失败通知</label>
                                 <div class="col-sm-8 col-xs-12">
-                                    <select name='yz_notice[withdraw_fail]' class='form-control diy-notice'>
+                                    <select name='yz_notice[withdraw_fail]' class='form-control diy-notice' onchange="if($('#withdraw_fail').is(':checked') && confirm('确定要更换余额提现失败通知模板？')){message_default('withdraw_fail')}">
                                         <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['withdraw_fail'])) value="{{$set['withdraw_fail']}}"
                                                 selected @else value=""
                                                 @endif
@@ -832,7 +832,7 @@
                                 </div>
                                 <div class="col-sm-2 col-xs-6">
                                     <input class="mui-switch mui-switch-animbg" id="withdraw_fail" type="checkbox"
-                                           @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['withdraw_fail']))
+                                           @if($set['withdraw_fail'])
                                            checked
                                            @endif
                                            onclick="message_default(this.id)"/>
@@ -844,7 +844,7 @@
                                 <div class="form-group">
                                     <label class="col-xs-12 col-sm-3 col-md-2 control-label">余额提现驳回通知</label>
                                     <div class="col-sm-8 col-xs-12">
-                                        <select name='yz_notice[withdraw_reject]' class='form-control diy-notice'>
+                                        <select name='yz_notice[withdraw_reject]' class='form-control diy-notice' onchange="if($('#withdraw_reject').is(':checked') && confirm('确定要更换余额提现驳回通知模板？')){message_default('withdraw_reject')}">
                                             <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['withdraw_reject'])) value="{{$set['withdraw_reject']}}"
                                                     selected @else value=""
                                                     @endif
@@ -881,7 +881,8 @@
                             var url_close = "{!! yzWebUrl('setting.default-notice.cancel') !!}"
                             var postdata = {
                                 notice_name: name,
-                                setting_name: setting_name
+                                notice_id: $(select_name).val(),
+                                setting_name: setting_name,
                             };
                             if ($(id).is(':checked')) {
                                 //开
@@ -897,7 +898,7 @@
                             } else {
                                 //关
                                 $.post(url_close,postdata,function(data){
-                                    $(select_name).val('');
+                                    //$(select_name).val('');
                                     showPopover($(id),"关闭成功")
                                 }, "json");
                             }

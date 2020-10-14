@@ -63,4 +63,14 @@ class Goods extends \app\common\models\Goods
         }
         return $res;
     }
+
+    /**
+     * 获取此商品下的所有记录。
+     */
+    public function hasManyGoodsTracking()
+    {
+        return $this->hasMany('App\backend\modules\tracking\models\GoodsTrackingModel');
+    }
+
+
 }

@@ -39,7 +39,8 @@
     <label class="col-xs-12 col-sm-3 col-md-2 control-label">分享图标</label>
     <div class="col-sm-9 col-xs-12">
         {!! app\common\helpers\ImageHelper::tplFormFieldImage('widgets[share][share_thumb]', $share->share_thumb) !!}
-        <span class='help-block'>如果不选择，默认为商品缩略图片</span>
+        <span class='help-block'>如果不选择，默认为商品缩略图片。</span>
+        <span class='help-block'>支持PNG及JPG，图片最佳长宽比为 5:4。</span>
     </div>
 </div>
 <div class="form-group">
