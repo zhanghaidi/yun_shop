@@ -79,7 +79,7 @@ class GoodsTracking extends Command
 
                     //组装数据
                     $data = [
-                        'good_id' => $value['id'],
+                        'goods_id' => $value['id'],
                         'view_num' => $view_num,
                         'favorites_num' => $favorites_num,
                         'add_purchase_num' => $add_purchase_num,
