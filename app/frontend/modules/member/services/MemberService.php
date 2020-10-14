@@ -379,13 +379,13 @@ class MemberService
         }*/
 
 
-        if (Session::get('code_mobile') != $mobile) {
+       /* if (Session::get('code_mobile') != $mobile) {
             return show_json('0', '手机号错误,请重新获取');
         }
 
         if (Session::get('code') != $code) {
             return show_json('0', '验证码错误,请重新获取');
-        }
+        }*/
         return show_json('1');
     }
 
