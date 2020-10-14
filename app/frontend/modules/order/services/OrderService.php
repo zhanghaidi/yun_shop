@@ -8,11 +8,9 @@
  */
 
 namespace app\frontend\modules\order\services;
-
 use app\common\exceptions\AppException;
 use app\common\models\DispatchType;
 use app\common\models\Order;
-
 use app\common\models\order\OrderGoodsChangePriceLog;
 use app\common\modules\orderGoods\OrderGoodsCollection;
 use \app\common\models\MemberCart;
@@ -396,72 +394,60 @@ class OrderService
     }
 
     /**
-     *聚水潭签名
+     * 聚水潭签名
+     * 请求方式: post,业务参数以json的格式放入http-body中,系统参数跟随url
+     * sign的组成方式:key,value 为传入的系统参数，按传递顺序)(加密 key中排除sign，method，partnerid,partnerkey)
+     * MD5(method +partnerid + (key1+value1+key2+value2+……) +partnerkey)
+     * 举例:以调用店铺查询接口为例:
+     * sign的源串:shops.queryywv5jGT8ge6Pvlq3FZSPol345asdtoken181ee8952a88f5a57db52587472c3798ts1540370062ywv5jGT8ge6Pvlq3FZSPol2323
+     * 请求的链接:https://c.jushuitan.com/api/open/query.aspx?method=shops.query&partnerid=ywv5jGT8ge6Pvlq3FZSPol345asd&token=181ee8952a88f5a57db52587472c3798&ts=1540370062&sign=aebf9d0146764d578d9c86e3b7783204
+     * 注:请求的业务参数在http-body中
      */
     public static function generate_signature($action = '')
     {
-
         $sign_str = '';
-        // ksort($system_params);
+        //系统参数
         $system_params = array(
             'method' => $action,
             'partnerid' => config('jushuitan')['partnerid'],
             'ts' => time(),
             'token' => config('jushuitan')['token'],
-
         );
-        //奇门接口
-        if (strstr($system_params['method'], 'jst')) {
 
-        } else  //普通接口
-        {
-            $no_exists_array = array('method', 'sign', 'partnerid', 'partnerkey');
+        //普通接口:  加密key中排除sign，method，partnerid,partnerkey
+        $no_exists_array = array('method', 'sign', 'partnerid', 'partnerkey');
 
-            $sign_str = $system_params['method'] . $system_params['partnerid'];
+        $sign_str = $system_params['method'] . $system_params['partnerid'];
 
-            foreach ($system_params as $key => $value) {
-
-                if (in_array($key, $no_exists_array)) {
-                    continue;
-                }
-                $sign_str .= $key . strval($value);
+        foreach ($system_params as $key => $value) {
+            if (in_array($key, $no_exists_array)) {
+                continue;
             }
-
-            $sign_str .= config('jushuitan')['partnerkey'];
-            $system_params['sign'] = md5($sign_str);
+            $sign_str .= $key . strval($value);
         }
 
+        $sign_str .= config('jushuitan')['partnerkey'];
+        $system_params['sign'] = md5($sign_str);
+        \Log::info('----聚水潭签名参数---', $system_params);
         return $system_params;
-
     }
 
 
     /**
+     * fixby-ly-jushuitanAPI 2020-07-21 18:11
      * url  聚水潭线上地址
      * data 请求聚水潭参数  参考：https://open.jushuitan.com/document/2137.html
      *action 聚水潭接口名称
      */
-    public static function post($data, $action)
+    public static function post($type= '', $data, $action)
     {
         $url = OrderService::$ju_url;
+        //生成带签名的系统参数
         $url_params = OrderService::generate_signature($action);
-        $post_data = '';
+        $post_data = json_encode($data);
+
         try {
-            if (strstr($action, 'jst')) {
-                foreach ($data as $key => $value) {
-                    if (is_array($value)) {
-                        $url_params[$key] = join(',', $value);
-                        continue;
-                    }
-                    $url_params[$key] = $value;
-                }
-            } else {
-                $post_data = json_encode($data);
-
-            }
-
             $url .= '?' . http_build_query($url_params);
-            //  if ($this->config->debug_mode) echo $url;
             $ch = curl_init($url);
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
             curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
@@ -475,19 +461,27 @@ class OrderService
                 print curl_error($ch);
             }
             curl_close($ch);
+            \Log::info('----聚水潭'.$type.'请求success---'.$url, $data);
+
+            DB::table('yz_order_jushuitan_log')->insert(
+                ['order_sn' => $data[0]['so_id'], 'post_params' => $post_data, 'action' => $action, 'type' => $type, 'status' =>1,'res_content' => $result, 'create_time' => date('Y-m-d H:i:s', time())]
+            );
             return json_decode($result, true);
 
         } catch (Exception $e) {
+            \Log::info('----聚水潭'.$type.'请求失败---', $e);
+            DB::table('yz_order_jushuitan_log')->insert(
+                ['order_sn' => $data[0]['so_id'], 'post_params' => $post_data, 'action' => $action, 'type' => $type, 'status' => -1,'res_content' => $e, 'create_time' => date('Y-m-d H:i:s', time())]
+            );
             return null;
         }
-
     }
 
     /**
-     * 发货，退款消息入库
-     *
+     * 发货，退款消息入库记录
+     * fixby-ly-jushuitanAPI 2020-07-21 18:11
      */
-    public static function orderMess($order_sn='', $order='',$type='')
+    public static function orderMess($order_sn = '', $order = '', $type = '')
     {
         DB::table('yz_order_messages')->insert([
             'order_sn' => $order_sn,

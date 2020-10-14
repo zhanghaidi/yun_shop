@@ -158,12 +158,59 @@ class GoodsTrackingModel extends Model
                     ->orWhere('id', $search['keywords']);
             });
         }
+        //根据类型筛选
+        if ($search['type']) {
+            $query = $query->where('action', $this->searchNameToActionId($search['type']))->orWhere('to_type_id', $this->searchNameToTypeId($search['type']));
+        }
         //根据时间筛选
-        /*if ($search['searchtime']) {
-            $query = $query->whereBetween('create_time', [strtotime($search['times']['start']),strtotime($search['times']['end'])]);
-        }*/
+        if ($search['search_time'] == 1) {
+            $query = $query->whereBetween('create_time', [strtotime($search['time']['start']),strtotime($search['time']['end'])]);
+        }
         return $query;
     }
 
+
+    //根据搜索关键词转换成相应的动作类型
+    public function searchNameToActionId($value){
+        if($value == '查看'){
+            $value = 1;
+        }elseif($value == '收藏'){
+            $value = 2;
+        }elseif($value == '加购'){
+            $value = 3;
+        }elseif($value == '下单'){
+            $value = 4;
+        }elseif($value == '支付'){
+            $value = 5;
+        }
+        return $value;
+    }
+
+
+    //根据搜索关键词转换成相应的动作类型
+    public function searchNameToTypeId($value){
+        if($value == '穴位'){
+            $value = 1;
+        }elseif($value == '文章'){
+            $value = 3;
+        }elseif($value == '帖子'){
+            $value = 4;
+        }elseif($value == '灸师'){
+            $value = 6;
+        }elseif($value == '课时'){
+            $value = 7;
+        }elseif($value == '直播'){
+            $value = 8;
+        }elseif($value == '商城'){
+            $value = 9;
+        }elseif($value == '活动'){
+            $value = 10;
+        }elseif($value == '分享'){
+            $value = 11;
+        }elseif($value == '未知'){
+            $value = 12;
+        }
+        return $value;
+    }
 
 }

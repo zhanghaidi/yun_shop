@@ -19,7 +19,9 @@ class GoodsTrackingController extends BaseController
 
         $search = \YunShop::request()->search;
         if ($search) {
+
             $records = $records->search($search);
+
         }
 
         $recordList = $records->orderBy('create_time', 'desc')->paginate();
@@ -31,6 +33,7 @@ class GoodsTrackingController extends BaseController
             'pageList'    => $recordList,
             'page'          => $pager,
             'search'        => $search
+
         ])->render();
     }
 
