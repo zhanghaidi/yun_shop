@@ -375,9 +375,12 @@ class BalanceChange extends Credit
     {
         //查询手机号
         $mobile = $this->memberModel->mobile;
-        $name = \Setting::get('shop.shop')['name'];
-        $param =  [$name, date("m月d日",time()), $this->change_value, $this->new_value, $name];
+//        fixBy--wk--用户充值短息提醒变量调整，用户名称，充值金额，20201010
+//        $name = \Setting::get('shop.shop')['name'];
+//        $param =  [$name, date("m月d日",time()), $this->change_value, $this->new_value, $name];
+        $param =  [$this->memberModel->realname,$this->change_value];
         $ssender = new SmsSingleSender(trim($smsSet['tx_sdkappid']), trim($smsSet['tx_appkey']));
+
         $response = $ssender->sendWithParam('86', $mobile, $smsSet['tx_templatereChargeCode'],
             $param, $smsSet['tx_signname'], "", "");  // 签名参数不能为空串
         $response = json_decode($response);
