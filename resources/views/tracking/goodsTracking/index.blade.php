@@ -3,18 +3,12 @@
 
 @section('content')
     <div id="member-blade" class="rightlist">
+        <div class="right-titpos">
+            @include('layouts.tabs')
+        </div>
+        <!-- 新增加右侧顶部三级菜单结束 -->
         <div class="panel panel-info">
-            <div class="panel-heading">
-                <span>当前位置：</span>
-                <a href="{{yzWebUrl('tracking.goods-tracking.index')}}">
-                    <span>商品埋点</span>
-                </a>
-                <span>>></span>
-                <a href="#">
-                    <span>埋点列表</span>
-                </a>
-            </div>
-
+            <div class="panel-heading">记录筛选</div>
 
             <div class="panel-body">
                 <form action="" method="get" class="form-horizontal" role="form" id="form1">
