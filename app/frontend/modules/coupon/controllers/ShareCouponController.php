@@ -56,7 +56,6 @@ class ShareCouponController extends ApiController
 
 
         $this->share_model->map(function ($model) {
-
             $model->coupon_num = count($model->share_coupon);
             //fixby zhd 分享优惠券总金额-2020-10-10
             if($model->coupon_num > 0){
@@ -64,6 +63,7 @@ class ShareCouponController extends ApiController
             }
 
         });
+
 
         $data = [
             'set' => $this->set,

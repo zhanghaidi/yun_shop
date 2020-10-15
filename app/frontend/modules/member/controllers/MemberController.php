@@ -927,6 +927,45 @@ class MemberController extends ApiController
         }
     }
 
+    //fixby-zhd-增加小程序关系绑定手机号 20201014
+    public function bindMinAppMobile(){
+
+        $mobile = \YunShop::request()->mobile;
+        $uid = \YunShop::app()->getMemberId();
+
+        if (empty($mobile)) {
+            return $this->errorJson('输入手机号码为空');
+        }
+
+        if (!preg_match('/^((13[0-9])|(14[5,7])|(15[0-3,5-9])|(17[0,3,5-8])|(18[0-9])|166|198|199|(147))\d{8}$/', $mobile)) {
+            return $this->errorJson('输入正确格式手机号码');
+        }
+
+        $check_code = MemberService::checkCode();
+
+        if ($check_code['status'] != 1) {
+            return $this->errorJson($check_code['json']);
+        }
+
+        //查询绑定手机号会员
+        $memberinfo_model = MemberModel::getMemberinfo(\YunShop::app()->uniacid, $mobile);
+
+        if($memberinfo_model){
+            return $this->errorJson('该手机号已经被绑定');
+        }
+        $member_model = MemberModel::getMemberById($uid);
+        $member_model->mobile = $mobile;
+
+        if ($member_model->save()) {
+            //fixby-zhd-手机号更新小程序member表
+            DB::table('diagnostic_service_user')->where('ajy_uid', $uid)->update(['telephone' => $mobile, 'account' => $mobile, 'is_verify' => 1]);
+            return $this->successJson('手机号码绑定成功');
+        } else {
+            return $this->errorJson('手机号码绑定失败');
+        }
+
+    }
+
     public function phoneMemberSave($uid, $memberinfo_model, $member_model, $mobile, $password, $type)
     {
         //app注册的会员信息id

@@ -201,9 +201,9 @@ class RegisterController extends ApiController
         }
         $code = rand(1000, 9999);
 
-        Session::set('codetime', time());
-        Session::set('code', $code);
-        Session::set('code_mobile', $mobile);
+//        Session::set('codetime', time());
+//        Session::set('code', $code);
+//        Session::set('code_mobile', $mobile);
 
         //$content = "您的验证码是：". $code ."。请不要把验证码泄露给其他人。如非本人操作，可不用理会！";
 
@@ -232,9 +232,9 @@ class RegisterController extends ApiController
         }
 
         $code = rand(1000, 9999);
-        Session::set('codetime', time());
-        Session::set('code', $code);
-        Session::set('code_mobile', $mobile);
+//        Session::set('codetime', time());
+//        Session::set('code', $code);
+//        Session::set('code_mobile', $mobile);
 
         //$content = "您的验证码是：". $code ."。请不要把验证码泄露给其他人。如非本人操作，可不用理会！";
         return $this->sendSmsV2($mobile, $code, $state, 'reg', $sms_type);
@@ -292,9 +292,9 @@ class RegisterController extends ApiController
 
         $code = rand(1000, 9999);
 
-        Session::set('codetime', time());
-        Session::set('code', $code);
-        Session::set('code_mobile', $mobile);
+//        Session::set('codetime', time());
+//        Session::set('code', $code);
+//        Session::set('code_mobile', $mobile);
 
         //$content = "您的验证码是：". $code ."。请不要把验证码泄露给其他人。如非本人操作，可不用理会！";
 
@@ -315,9 +315,9 @@ class RegisterController extends ApiController
         }
         $code = rand(1000, 9999);
 
-        Session::set('codetime', time());
-        Session::set('code', $code);
-        Session::set('code_mobile', $mobile);
+//        Session::set('codetime', time());
+//        Session::set('code', $code);
+//        Session::set('code_mobile', $mobile);
 
         //$content = "您的验证码是：". $code ."。请不要把验证码泄露给其他人。如非本人操作，可不用理会！";
 
@@ -409,6 +409,7 @@ class RegisterController extends ApiController
             );
 
             if ($response->Code == 'OK' && $response->Message == 'OK') {
+                DB::table('diagnostic_service_sms_code')->insert(['uniacid' =>\YunShop::app()->uniacid, 'user_id' =>\YunShop::app()->getMemberId(), 'telephone' => $mobile, 'code' => $code, 'os'=>1, 'send_time' => date('Y-m-d H:i:s', time()), 'add_time' => time()]);
                 return $this->successJson();
             } else {
                 return $this->errorJson($response->Message);
@@ -538,6 +539,7 @@ class RegisterController extends ApiController
             }
             $response = json_decode($response);
             if ($response->result == 0 && $response->errmsg == 'OK') {
+                DB::table('diagnostic_service_sms_code')->insert(['uniacid' =>\YunShop::app()->uniacid, 'user_id' =>\YunShop::app()->getMemberId(), 'telephone' => $mobile, 'code' => $code, 'os'=>2, 'send_time' => date('Y-m-d H:i:s', time()), 'add_time' => time()]);
                 return $this->successJson();
             } else {
                 return $this->errorJson($response->errmsg);

@@ -8,8 +8,6 @@
             @include('layouts.tabs')
         </div>
         <!-- 新增加右侧顶部三级菜单结束 -->
-
-
         {{--<div class="panel panel-info">
             <div class="panel-heading">统计报告</div>
             <div class="panel-body">
@@ -217,14 +215,6 @@
                     <input type="hidden" name="do" value="tracking" id="form_do"/>
                     <input type="hidden" name="route" value="tracking.goods-tracking.report" id="route"/>
 
-                   {{-- <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                        <!-- <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">会员信息</label>-->
-                        <div class="">
-                            <input type="text" class="form-control" name="search[realname]"
-                                   value="{{$search['realname']}}" placeholder="可搜索会员ID/昵称/姓名/手机号"/>
-                        </div>
-                    </div>--}}
-
                     <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2 ">
                         <!--<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">ID</label>-->
                         <div class="">
@@ -233,136 +223,6 @@
                         </div>
                     </div>
 
-                   {{-- <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2 ">
-                        <!--<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">ID</label>-->
-                        <div class="">
-                            <input type="text" placeholder="搜索动作/类型" class="form-control" name="search[type]"
-                                   value="{{$search['type']}}"/>
-                        </div>
-                    </div>
-                    <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                        <!-- <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">会员等级</label>-->
-                        <div class="">
-                            <select name='search[level]' class='form-control'>
-                                <option value=''>会员等级不限</option>
-                                @foreach($levels as $level)
-                                    <option value='{{$level['id']}}'
-                                            @if($request['search']['level']==$level['id'])
-                                            selected
-                                            @endif
-                                    >{{$level['level_name']}}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                        <!--  <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">会员分组</label>-->
-                        <div class="">
-                            <select name='search[type_id]' class='form-control'>
-                                <option value=''>来源类型不限</option>
-                                <option value='1'
-                                        @if($search['type_id']=='1')
-                                        selected
-                                        @endif>穴位
-                                </option>
-                                <option value='3'
-                                        @if($search['type_id']=='3')
-                                        selected
-                                        @endif>文章
-                                </option>
-                                <option value='4'
-                                        @if($search['type_id']=='4')
-                                        selected
-                                        @endif>帖子
-                                </option>
-                                <option value='5'
-                                        @if($search['type_id']=='5')
-                                        selected
-                                        @endif>体质
-                                </option>
-                                <option value='6'
-                                        @if($search['type_id']=='6')
-                                        selected
-                                        @endif>灸师
-                                </option>
-                                <option value='7'
-                                        @if($search['type_id']=='7')
-                                        selected
-                                        @endif>课时
-                                </option>
-                                <option value='8'
-                                        @if($search['type_id']=='8')
-                                        selected
-                                        @endif>直播
-                                </option>
-                                <option value='9'
-                                        @if($search['type_id']=='9')
-                                        selected
-                                        @endif>商城
-                                </option>
-                                <option value='10'
-                                        @if($search['type_id']=='10')
-                                        selected
-                                        @endif>活动
-                                </option>
-                                <option value='11'
-                                        @if($search['type_id']=='11')
-                                        selected
-                                        @endif>分享
-                                </option>
-                                <option value='12'
-                                        @if($search['type_id']=='12')
-                                        selected
-                                        @endif>未知
-                                </option>
-                            </select>
-                        </div>
-                    </div>
-
-
-                    <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                        <!--      <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">是否关注</label>-->
-                        <div class="">
-                            <select name='search[action_id]' class='form-control'>
-                                <option value=''>操作动作不限</option>
-                                </option>
-                                <option value='1'
-                                        @if($search['action_id']=='1')
-                                        selected
-                                        @endif
-                                >查看
-                                </option>
-                                <option value='2'
-                                        @if($search['action_id']=='2')
-                                        selected
-                                        @endif
-                                >收藏
-                                </option>
-                                <option value='3'
-                                        @if($search['action_id']=='3')
-                                        selected
-                                        @endif
-                                >加购
-                                </option>
-
-                                <option value='4'
-                                        @if($search['action_id']=='4')
-                                        selected
-                                        @endif
-                                >下单
-                                </option>
-
-                                <option value='5'
-                                        @if($search['action_id']=='5')
-                                        selected
-                                        @endif
-                                >支付
-                                </option>
-
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">--}}
                     <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2 ">
                         <div class="time">
                             <select name='search[search_time]' class='form-control'>
@@ -384,9 +244,9 @@
                         <!--<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label"></label>-->
                         <div class="">
                             <button class="btn btn-success "><i class="fa fa-search"></i> 搜索</button>
-                           {{-- <button type="button" name="export" value="1" id="export" class="btn btn-default">导出
-                                Excel
-                            </button>--}}
+                            {{-- <button type="button" name="export" value="1" id="export" class="btn btn-default">导出
+                                 Excel
+                             </button>--}}
 
                         </div>
                     </div>

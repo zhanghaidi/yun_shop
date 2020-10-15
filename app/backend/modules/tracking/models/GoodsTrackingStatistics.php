@@ -5,7 +5,6 @@
  * Date: 17/2/23
  * Time: 下午10:57
  */
-
 namespace app\backend\modules\tracking\models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -31,8 +30,8 @@ class GoodsTrackingStatistics extends Model
     public function scopeRecords($query)
     {
         return $query->with(['goods' => function ($goods) {
-                return $goods->select('id','title','thumb','price');
-            }]);
+            return $goods->select('id','title','thumb','price');
+        }]);
     }
 
     //搜索条件
@@ -49,7 +48,5 @@ class GoodsTrackingStatistics extends Model
 
         return $query;
     }
-
-
 
 }

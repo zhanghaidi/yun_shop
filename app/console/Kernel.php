@@ -87,8 +87,8 @@ class Kernel extends ConsoleKernel
         // 定时执行 埋点统计数据 每到午夜执行一次任务
         $schedule->command('command:goodstracking')
             ->withoutOverlapping()
-            ->cron('30 3 * * *');
-            //->dailyAt('00:01');
+            ->cron('0 3 * * *');
+
     }
 
     /**
