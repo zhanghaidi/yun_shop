@@ -38,6 +38,7 @@ use Mews\Captcha\Captcha;
 use app\common\facades\Setting;
 use app\common\services\alipay\OnekeyLogin;
 use app\common\models\McMappingFans;
+use Illuminate\Support\Facades\DB;
 
 
 class RegisterController extends ApiController
