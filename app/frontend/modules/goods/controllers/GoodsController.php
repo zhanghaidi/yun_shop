@@ -1470,66 +1470,20 @@ class GoodsController extends GoodsApiController
         return $this->successJson('获取促销商品成功', $data);
     }
 
-    //增加商品详情热度展示 fixby-wk-goodsHotOrders 2020-09-29
+    //增加商品详情热度展示 fixby-wk-goodsHotOrders 2020-09-29  2020-10-10  优化显示全部完成订单的20条
     public function getGoodsHotOrders(){
 
-        $goods_id = intval(request()->goods_id);
-        $list = DB::table('yz_order_goods as og')
-            ->join('yz_order as o', 'og.order_id', '=', 'o.id')
-            ->join('yz_order_address as p', 'og.order_id', '=', 'p.order_id')
-            ->join('diagnostic_service_user as u', 'og.uid', '=', 'u.ajy_uid')
+//        $goods_id = intval(request()->goods_id);
+        $list = DB::table('yz_order as o')
+//            ->join('yz_order as o', 'og.order_id', '=', 'o.id')
+            ->join('yz_order_address as p', 'o.id', '=', 'p.order_id')
+            ->join('diagnostic_service_user as u', 'o.uid', '=', 'u.ajy_uid')
             ->select('u.avatarurl', 'p.address')
-            ->where('o.status', 1)
-            ->where('og.goods_id', $goods_id)
-            ->orderBy('o.create_time', 'ASC')
-            ->take(10)
+            ->where('o.status', 3)
+//            ->where('og.goods_id', $goods_id)
+            ->orderBy('o.create_time', 'DESC')
+            ->take(20)
             ->get()->toArray();
-
-        if(count($list) <= 5){
-            $list_new = [
-                [
-                    "avatarurl" => "https://wx.qlogo.cn/mmhead/MqIfMcqo5NyAajjVxSDZMr91Qrpy6WwrRL4yhQM2oY0/132",
-                    "address" => "河南省 郑州市 管城回族区 商都路心怡路西南角正岩大厦508"
-                ],
-                [
-                    "avatarurl" => "https://wx.qlogo.cn/mmopen/vi_32/PEPXRunLfTK88x1dmPrQx5uskicS2Pic6VbUOaw0dUQFMovktsDKI3oL9NH8icRX4nkhYEht46CZ5RT9ZBTfmzCEQ/132",
-                    "address" => "辽宁省 本溪市 明山区 ",
-                ],
-                [
-                    "avatarurl" => "https://wx.qlogo.cn/mmopen/vi_32/PEPXRunLfTK88x1dmPrQx5uskicS2Pic6VbUOaw0dUQFMovktsDKI3oL9NH8icRX4nkhYEht46CZ5RT9ZBTfmzCEQ/132",
-                    "address" => "河北省 唐山市 路南区 "
-                ],
-                [
-                    "avatarurl" => "https://wx.qlogo.cn/mmopen/vi_32/Ahrr8YIVib903zcgaibune7e4l9mj2rW04jqnEuYIDnIPb9GicT7NlHvUcGebaS4lwLnCq1lDzAcx8NDicCrIbOYgQ/132",
-                    "address" => "北京 北京市 门头沟区"
-                ],
-                [
-                    "avatarurl" => "https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTJAmaEicsjOTgd9uOIDbKTuV1V8cG68frJafakluEZUIW2QAycsg8Ijon2W5SERrv88INsVA7ibd5Bg/132",
-                    "address" => "山西省 长治市 长治县 管城回族区区"
-                ],
-                [
-                    "avatarurl" => "https://wx.qlogo.cn/mmopen/vi_32/JkZibJWnxYvL5icJ8kfwB51MgBh7iab4lH8Ln9YBK4eNPYjUAic4VtHpru4egwYmEO1nOV7xdw9RLEPA4gia3LKia7lg/132",
-                    "address" => "广东省 广州市 黄埔区",
-                ],
-                [
-                    "avatarurl" => "https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTKicQ5Jyv6xKyAPs7GhxAkyqx5uKAnCiaHPAKKECZUR0dOgKT2umrGyvriaB1NswhmibIzzHkCMB1iadOA/132",
-                    "address" => "内蒙古自治区 乌海市 海南区",
-                ],
-                [
-                    "avatarurl" => "https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTK89mOkx2ZB3kiaDojWFCib1Hcp0gqzJlRcz0nNE9DWeA2EMPqnPDlu5cdbsfWb3Pvt0XDMqP90lo3g/132",
-                    "address" => "河南省 郑州市 管城回族区 郑汴路与东明路交叉口御玺大厦A座1108室"
-                ],
-                [
-                    "avatarurl" => "https://thirdwx.qlogo.cn/mmopen/vi_32/Q3auHgzwzM7xthPV0iciaSu0OzSIxJolstzTQjrpK4YbUgRLYt4xIYNlaKQrWfZ5MAoibSiavYsItQWI57iarDEUGug/132",
-                    "address" => "重庆 重庆市 渝北区 北部新区金渝大道9号",
-                ],
-                [
-                    "avatarurl" => "https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTKaUe7HQ12N06Lic0pX22ooZs1dK0gKJutzKRBP3uGJvILT91gujD4BTlbiaY1yibGVR9VNFRGF3h6xQ/132",
-                    "address" => "四川省 攀枝花市 仁和区 四川省攀枝花市仁和区大田镇大田街8号"
-                ]
-            ];
-            $list = array_merge($list,$list_new);
-        }
 
         return $this->successJson('获取成功', $list);
     }
