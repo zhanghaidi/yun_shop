@@ -538,7 +538,7 @@
 <script language="javascript">
 
 
-    $('.diy-notice').select2();
+    var select2_obj = $('.diy-notice').select2();
 
     $(function () {
         $(":radio[name='withdraw[balance][status]']").click(function () {
