@@ -932,31 +932,8 @@ class MemberController extends ApiController
         }
     }
 
+    //fixby-zhd-增加小程序关系绑定手机号 20201014
     public function bindMinAppMobile(){
-
-
-        /*$mobile = \YunShop::request()->mobile;
-
-        $member_model = MemberShopInfo::getMemberShopInfo(\YunShop::app()->getMemberId());
-
-        if (\YunShop::app()->getMemberId() && \YunShop::app()->getMemberId() > 0) {
-            $check_code = MemberService::checkCode();
-
-            if ($check_code['status'] != 1) {
-                return $this->errorJson($check_code['json']);
-            }
-
-            $salt = Str::random(8);
-            $member_model->withdraw_mobile = $mobile;
-
-            if ($member_model->save()) {
-                return $this->successJson('手机号码绑定成功');
-            } else {
-                return $this->errorJson('手机号码绑定失败');
-            }
-        } else {
-            return $this->errorJson('手机号或密码格式错误');
-        }*/
 
         $mobile = \YunShop::request()->mobile;
         $uid = \YunShop::app()->getMemberId();
