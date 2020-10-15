@@ -69,7 +69,7 @@ class JuShuiTanController extends ApiController
                             'receiver_address' => $address[3], //string收货地址 长度<=200；发货前可更新 （必传项）
                             'receiver_name' => $order->address->realname, //string收件人 长度<=50；发货前可更新 （必传项）
                             'receiver_phone' => $order->address->mobile, //string联系电话 长度<=50；发货前可更新 （必传项）
-                            'receiver_mobile' => $order->address->mobile, //string 手机号
+//                            'receiver_mobile' => $order->address->mobile, //string 手机号
                             'pay_amount' => floatval($order->price),  //decimal应付金额，保留两位小数，单位元） （必传项）
                             'freight' => floatval($order->dispatch_price),    //decimal运费 （必传项）
                             'shop_modified' => date('Y-m-d H:i:s', time()), //string订单修改日期 （必传项）

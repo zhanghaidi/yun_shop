@@ -19,6 +19,7 @@ use app\frontend\modules\coupon\models\ShoppingShareCoupon;
 use app\frontend\modules\coupon\services\ShareCouponService;
 use Carbon\Carbon;
 use Yunshop\Hotel\common\models\CouponHotel;
+use Illuminate\Support\Facades\DB;
 
 class ShareCouponController extends ApiController
 {
@@ -56,6 +57,11 @@ class ShareCouponController extends ApiController
 
         $this->share_model->map(function ($model) {
             $model->coupon_num = count($model->share_coupon);
+            //fixby zhd 分享优惠券总金额-2020-10-10
+            if($model->coupon_num > 0){
+                $model->coupon_money = DB::table('yz_coupon')->where('id', $model->share_coupon)->value('deduct');
+            }
+
         });
 
 
@@ -63,6 +69,7 @@ class ShareCouponController extends ApiController
             'set' => $this->set,
             'share_limit' => $share_limit,
             'coupon_num' => $this->share_model->sum('coupon_num'),
+            'coupon_total_money' =>number_format($this->share_model->sum('coupon_num')*$this->share_model->sum('coupon_money'),2),
         ];
 
 
