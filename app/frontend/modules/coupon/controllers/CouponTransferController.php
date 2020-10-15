@@ -77,7 +77,7 @@ class CouponTransferController extends ApiController
         }
 
         $record_id = trim(\YunShop::request()->record_id);
-        $_model = MemberCoupon::select('id','coupon_id')->where('id',$record_id)->with(['belongsToCoupon'])->first();
+        $_model = MemberCoupon::select('id','coupon_id', 'uid', 'lock_expire_time', 'get_time', 'transfer_times')->where('id',$record_id)->with(['belongsToCoupon'])->first();
         if (!$_model) {
             return $this->errorJson('未获取到该优惠券记录ID');
         }
@@ -110,7 +110,7 @@ class CouponTransferController extends ApiController
         }
 
         $record_id = trim(\YunShop::request()->record_id);
-        $_model = MemberCoupon::select('id','coupon_id')->where('id',$record_id)->with(['belongsToCoupon'])->first();
+        $_model = MemberCoupon::select('id','coupon_id', 'uid', 'lock_expire_time', 'get_time')->where('id',$record_id)->with(['belongsToCoupon'])->first();
         if (!$_model) {
             return $this->errorJson('未获取到该优惠券记录ID');
         }
@@ -133,7 +133,7 @@ class CouponTransferController extends ApiController
         }
 
         $couponService = new CouponSendService();
-        $result = $couponService->receiveTransferCoupon($this->memberModel->uid,[$_model->coupon_id],'5','', $_model->uid, $_model->get_time);
+        $result = $couponService->receiveTransferCoupon($this->memberModel->uid,[$_model->coupon_id],'5','', $_model->uid, strtotime($_model->get_time));
         if (!$result) {
             return $this->errorJson('接收优惠券失败：(写入出错)');
         }

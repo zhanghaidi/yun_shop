@@ -34,7 +34,7 @@ class CouponLock
 
     public function processLockedCoupon()
     {
-        $lockedCoupons = MemberCoupon::whereBetween('lock_expire_time', [1, time()])->where([['used','=',0],['deleted_at','=','']])->get()->toArray();
+        $lockedCoupons = MemberCoupon::whereBetween('lock_expire_time', [1, time()])->where([['used','=',0]])->get()->toArray();
 
         foreach ($lockedCoupons as $coupon) {
             Log::info('解除优惠券转让锁定,优惠券ID:' . $coupon['id']);
