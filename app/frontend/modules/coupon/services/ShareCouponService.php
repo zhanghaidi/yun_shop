@@ -25,6 +25,7 @@ class ShareCouponService
         $key = array_rand($coupon_ids,1);
 
         $couponModel = Coupon::find($coupon_ids[$key]);
+
         //fixby-wk- 优惠券领取完了， $couponModel = null 修复问题  Call to a member function toArray() on null
         if(is_null($couponModel)){
             return self::toData('RT3', '已经被抢光了');
@@ -33,6 +34,7 @@ class ShareCouponService
         if(!\YunShop::app()->getMemberId()){
             return self::toData('RT0', '未登陆无法领取优惠券', $couponModel->toArray());
         }
+
         $getTotal = MemberCoupon::uniacid()->where("coupon_id", $coupon_ids[$key])->count();
 
         $lastTotal = $couponModel->total - $getTotal;

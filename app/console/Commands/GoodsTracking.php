@@ -90,10 +90,10 @@ class GoodsTracking extends Command
                         'updated_at' => date('Y-m-d H:i:s', $time_now),
                         'statistics_time' => date('Y-m-d', $time_now)
                     ];
-                   $res =  DB::table('diagnostic_service_goods_tracking_statistics')->insert($data);
-                   if(!$res){
-                       Log::info("---- 统计数据入库更新ERROR -------\n");
-                   }
+                    $res =  DB::table('diagnostic_service_goods_tracking_statistics')->insert($data);
+                    if(!$res){
+                        Log::info("---- 统计数据入库更新ERROR -------\n");
+                    }
                 }
             });
 

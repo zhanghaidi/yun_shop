@@ -38,7 +38,6 @@ use Mews\Captcha\Captcha;
 use app\common\facades\Setting;
 use app\common\services\alipay\OnekeyLogin;
 use app\common\models\McMappingFans;
-use Illuminate\Support\Facades\DB;
 
 
 class RegisterController extends ApiController
@@ -202,9 +201,11 @@ class RegisterController extends ApiController
         }
         $code = rand(1000, 9999);
 
-        //Session::set('codetime', time());
-        //Session::set('code', $code);
-        //Session::set('code_mobile', $mobile);
+//        Session::set('codetime', time());
+//        Session::set('code', $code);
+//        Session::set('code_mobile', $mobile);
+
+        //$content = "您的验证码是：". $code ."。请不要把验证码泄露给其他人。如非本人操作，可不用理会！";
 
         if (!MemberService::smsSendLimit(\YunShop::app()->uniacid, $mobile)) {
             return $this->errorJson('发送短信数量达到今日上限');
@@ -231,9 +232,10 @@ class RegisterController extends ApiController
         }
 
         $code = rand(1000, 9999);
-        //Session::set('codetime', time());
-        //Session::set('code', $code);
-        //Session::set('code_mobile', $mobile);
+//        Session::set('codetime', time());
+//        Session::set('code', $code);
+//        Session::set('code_mobile', $mobile);
+
         //$content = "您的验证码是：". $code ."。请不要把验证码泄露给其他人。如非本人操作，可不用理会！";
         return $this->sendSmsV2($mobile, $code, $state, 'reg', $sms_type);
     }
@@ -290,11 +292,11 @@ class RegisterController extends ApiController
 
         $code = rand(1000, 9999);
 
-        //Session::set('codetime', time());
-        //Session::set('code', $code);
-        //Session::set('code_mobile', $mobile);
-        //$content = "您的验证码是：". $code ."。请不要把验证码泄露给其他人。如非本人操作，可不用理会！";
+//        Session::set('codetime', time());
+//        Session::set('code', $code);
+//        Session::set('code_mobile', $mobile);
 
+        //$content = "您的验证码是：". $code ."。请不要把验证码泄露给其他人。如非本人操作，可不用理会！";
 
         if (!MemberService::smsSendLimit(\YunShop::app()->uniacid, $mobile)) {
             return $this->errorJson('发送短信数量达到今日上限');
@@ -302,8 +304,6 @@ class RegisterController extends ApiController
             return $this->sendSmsV2($mobile, $code, $state, 'reg', $sms_type);
         }
     }
-
-    //public function sendCode
 
     public function sendWithdrawCode()
     {
@@ -315,9 +315,9 @@ class RegisterController extends ApiController
         }
         $code = rand(1000, 9999);
 
-        //Session::set('codetime', time());
-        //Session::set('code', $code);
-        //Session::set('code_mobile', $mobile);
+//        Session::set('codetime', time());
+//        Session::set('code', $code);
+//        Session::set('code_mobile', $mobile);
 
         //$content = "您的验证码是：". $code ."。请不要把验证码泄露给其他人。如非本人操作，可不用理会！";
 

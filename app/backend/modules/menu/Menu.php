@@ -1540,7 +1540,6 @@ class Menu
                         'item'       => 'goods_tracking',
                         'parents'    => ['Goods',],
                         'child'      => [
-
                             'tracking_report' => [
                                 'name'       => '埋点数据统计',
                                 'url'        => 'tracking.goods-tracking.report',
@@ -1553,7 +1552,6 @@ class Menu
                                 'parents'    => ['Goods', 'goods_tracking',],
                                 'child'      => [],
                             ],
-
                             'tracking_history' => [
                                 'name'       => '商品埋点记录',
                                 'url'        => 'tracking.goods-tracking.index',
@@ -1566,7 +1564,6 @@ class Menu
                                 'parents'    => ['Goods', 'goods_tracking',],
                                 'child'      => [],
                             ],
-
                         ],
                     ],
 
@@ -2349,18 +2346,6 @@ class Menu
                                         'icon'       => '',
                                         'sort'       => 1,
                                         'item'       => 'order_operation_manualrefund',
-                                        'parents'    => ['Order', 'order_list'],
-                                    ],
-                                    //fixby-订单ERP聚水潭上报路由-zhd-2020-10-06
-                                    'order_operation_jushuitansend' => [
-                                        'name'       => '订单聚水潭上传',
-                                        'url'        => 'order.operation.jushuitanSend',
-                                        'url_params' => '',
-                                        'permit'     => 1,
-                                        'menu'       => 0,
-                                        'icon'       => '',
-                                        'sort'       => 1,
-                                        'item'       => 'order_operation_jushuitansend',
                                         'parents'    => ['Order', 'order_list'],
                                     ],
 

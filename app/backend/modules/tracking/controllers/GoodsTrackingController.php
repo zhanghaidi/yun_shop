@@ -1,12 +1,13 @@
 <?php
 namespace app\backend\modules\tracking\controllers;
 
-use app\backend\modules\tracking\models\GoodsTrackingStatistics;
 use app\common\components\BaseController;
 use app\backend\modules\tracking\models\GoodsTrackingModel;
 use app\common\helpers\PaginationHelper;
 use app\backend\modules\tracking\models\ChartChartuser;
+use app\backend\modules\tracking\models\GoodsTrackingStatistics;
 use Illuminate\Support\Facades\DB;
+
 
 /**
  * Class GoodsTrackingController
