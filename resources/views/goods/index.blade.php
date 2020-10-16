@@ -80,6 +80,11 @@
                                         <el-button type="primary" icon="el-icon-search" @click="search(1)">搜索
                                         </el-button>
                                     </a>
+
+                                    <a href="#">
+                                        <el-button type="primary" icon="el-icon-search" @click="export_sku">导出商品编号
+                                        </el-button>
+                                    </a>
                                     </el-col>
                                 </el-row>
                             </el-form>
@@ -547,6 +552,25 @@
                         that.table_loading = false;
                     };
                 },
+
+                //fixby-zhd-导出商品编码
+                export_sku(){
+                    var that = this;
+                    that.$http.post("{!! yzWebFullUrl('goods.goods.exportGoodsSku') !!}", json).then(response => {
+                        console.log(response);
+                        if (response.data.result == 1) {
+                            that.$message.success('导出成功！');
+                        } else {
+                            that.$message.error(response.data.msg);
+                            that.goods_list[index].is_choose == 1 ? 0 : 1;
+                        }
+                        that.table_loading = false;
+                    }), function (res) {
+                        console.log(res);
+                        that.table_loading = false;
+                    };
+                },
+
                 // 批量上架、下架
                 batchPutAway(data) {
                     var that = this;
