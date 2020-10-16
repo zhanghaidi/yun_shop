@@ -30,7 +30,7 @@
         <div class="form-group">
             <label class="col-xs-12 col-sm-3 col-md-2 control-label">提现申请通知</label>
             <div class="col-sm-8 col-xs-12">
-                <select name='withdraw[notice][income_withdraw]' class='form-control diy-notice'>
+                <select name='withdraw[notice][income_withdraw]' class='form-control diy-notice' onchange="if($('#income_withdraw').is(':checked') && confirm('确定要更换提现申请通知模板？')){message_default('income_withdraw')}">
                     <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['income_withdraw'])) value="{{$set['income_withdraw']}}"
                             selected @else value="" @endif>
                         默认消息模版
@@ -45,7 +45,7 @@
             </div>
             <div class="col-sm-2 col-xs-6">
                 <input class="mui-switch mui-switch-animbg" id="income_withdraw" type="checkbox"
-                       @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['income_withdraw']))
+                       @if($set['income_withdraw'])
                        checked
                        @endif
                        onclick="message_default(this.id)"/>
@@ -58,7 +58,7 @@
         <div class="form-group">
             <label class="col-xs-12 col-sm-3 col-md-2 control-label">提现审核通知</label>
             <div class="col-sm-8 col-xs-12">
-                <select name='withdraw[notice][income_withdraw_check]' class='form-control diy-notice'>
+                <select name='withdraw[notice][income_withdraw_check]' class='form-control diy-notice' onchange="if($('#income_withdraw_check').is(':checked') && confirm('确定要更换提现审核通知模板？')){message_default('income_withdraw_check')}">
                     <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['income_withdraw_check'])) value="{{$set['income_withdraw_check']}}"
                             selected @else value="" @endif>
                         默认消息模版
@@ -73,7 +73,7 @@
             </div>
             <div class="col-sm-2 col-xs-6">
                 <input class="mui-switch mui-switch-animbg" id="income_withdraw_check" type="checkbox"
-                       @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['income_withdraw_check']))
+                       @if($set['income_withdraw_check'])
                        checked
                        @endif
                        onclick="message_default(this.id)"/>
@@ -86,7 +86,7 @@
         <div class="form-group">
             <label class="col-xs-12 col-sm-3 col-md-2 control-label">提现打款通知</label>
             <div class="col-sm-8 col-xs-12">
-                <select name='withdraw[notice][income_withdraw_pay]' class='form-control diy-notice'>
+                <select name='withdraw[notice][income_withdraw_pay]' class='form-control diy-notice' onchange="if($('#income_withdraw_pay').is(':checked') && confirm('确定要更换提现打款通知模板？')){message_default('income_withdraw_pay')}">
                     <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['income_withdraw_pay'])) value="{{$set['income_withdraw_pay']}}"
                             selected @else value="" @endif>
                         默认消息模版
@@ -101,7 +101,7 @@
             </div>
             <div class="col-sm-2 col-xs-6">
                 <input class="mui-switch mui-switch-animbg" id="income_withdraw_pay" type="checkbox"
-                       @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['income_withdraw_pay']))
+                       @if($set['income_withdraw_pay'])
                        checked
                        @endif
                        onclick="message_default(this.id)"/>
@@ -114,7 +114,7 @@
         <div class="form-group">
             <label class="col-xs-12 col-sm-3 col-md-2 control-label">提现到账通知</label>
             <div class="col-sm-8 col-xs-12">
-                <select name='withdraw[notice][income_withdraw_arrival]' class='form-control diy-notice'>
+                <select name='withdraw[notice][income_withdraw_arrival]' class='form-control diy-notice' onchange="if($('#income_withdraw_arrival').is(':checked') && confirm('确定要更换提现到账通知模板？')){message_default('income_withdraw_fail')}">
                     <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['income_withdraw_arrival'])) value="{{$set['income_withdraw_arrival']}}"
                             selected @else value="" @endif>
                         默认消息模版
@@ -129,7 +129,7 @@
             </div>
             <div class="col-sm-2 col-xs-6">
                 <input class="mui-switch mui-switch-animbg" id="income_withdraw_arrival" type="checkbox"
-                       @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['income_withdraw_arrival']))
+                       @if($set['income_withdraw_arrival'])
                        checked
                        @endif
                        onclick="message_default(this.id)"/>
@@ -137,12 +137,12 @@
         </div>
     </div>
 @endif
-@if(YunShop::notice()->getNotSend('withdraw.income_withdraw_arrival_title'))
+@if(YunShop::notice()->getNotSend('withdraw.income_withdraw_fail_title'))
     <div class='panel-body'>
         <div class="form-group">
             <label class="col-xs-12 col-sm-3 col-md-2 control-label">提现失败管理员通知</label>
             <div class="col-sm-8 col-xs-12">
-                <select name='withdraw[notice][income_withdraw_fail]' class='form-control diy-notice'>
+                <select name='withdraw[notice][income_withdraw_fail]' class='form-control diy-notice' onchange="if($('#income_withdraw_fail').is(':checked') && confirm('确定要更换提现失败管理员通知模板？')){message_default('income_withdraw_fail')}">
                     <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['income_withdraw_fail'])) value="{{$set['income_withdraw_fail']}}"
                             selected @else value="" @endif>
                         默认消息模版
@@ -155,13 +155,13 @@
                     @endforeach
                 </select>
             </div>
-          <!--   <div class="col-sm-2 col-xs-6">
+            <div class="col-sm-2 col-xs-6">
                 <input class="mui-switch mui-switch-animbg" id="income_withdraw_fail" type="checkbox"
-                       @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['income_withdraw_fail']))
+                       @if($set['income_withdraw_fail'])
                        checked
                        @endif
                        onclick="message_default(this.id)"/>
-            </div> -->
+            </div>
         </div>
     </div>
 @endif
@@ -169,7 +169,7 @@
     <div class="form-group">
         <label class="col-xs-12 col-sm-3 col-md-2 control-label">会员提现管理员通知</label>
         <div class="col-sm-8 col-xs-12">
-            <select name='withdraw[notice][member_withdraw]' class='form-control diy-notice'>
+            <select name='withdraw[notice][member_withdraw]' class='form-control diy-notice' onchange="if($('#member_withdraw').is(':checked') && confirm('确定要更换会员提现管理员通知模板？')){message_default('member_withdraw')}">
                 <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['member_withdraw'])) value="{{$set['member_withdraw']}}"
                         selected @else value=""
                         @endif
@@ -187,7 +187,7 @@
         </div>
         <div class="col-sm-2 col-xs-6">
             <input class="mui-switch mui-switch-animbg" id="member_withdraw" type="checkbox"
-                   @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['member_withdraw']))
+                   @if($set['member_withdraw'])
                    checked
                    @endif
                    onclick="message_default(this.id)"/>
@@ -267,6 +267,7 @@
         var url_close = "{!! yzWebUrl('setting.default-notice.cancel') !!}"
         var postdata = {
             notice_name: name,
+            notice_id: $(select_name).val(),
             setting_name: setting_name
         };
         if ($(id).is(':checked')) {
@@ -283,7 +284,13 @@
         } else {
             //关
             $.post(url_close,postdata,function(data){
-                $(select_name).val('');
+                $(select_name).find("option").eq(0).val('')
+                select2_obj.each(function (key,item) {
+                    if($(this).attr('name') == ('withdraw[notice][' + name + ']') && $(this).val() != ''){
+                        select2_obj.eq(key).val('').trigger("change");
+                    }
+                })
+                // $(select_name).val('');
                 showPopover($(id),"关闭成功")
             }, "json");
         }

@@ -33,16 +33,26 @@
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label">优惠券转让：</label>
                         <div class="col-sm-4 col-xs-6">
                             <label class="radio-inline">
-                                <input type="radio" name="coupon[transfer]" value="1" @if ($coupon['transfer'] == 1) checked="checked" @endif />
+                                <input disabled="true" type="radio" name="coupon[transfer]" value="1" @if ($coupon['transfer'] == 1) checked="checked" @endif />
                                 开启
                             </label>
                             <label class="radio-inline">
-                                <input type="radio" name="coupon[transfer]" value="0" @if ($coupon['transfer'] == 0) checked="checked" @endif />
+                                <input disabled="true" type="radio" name="coupon[transfer]" value="0" @if ($coupon['transfer'] == 0) checked="checked" @endif />
                                 关闭
                             </label>
                             <div class="help-block">
-                                优惠券转让：会员之间可以转让自己拥有的优惠券。
+                                优惠券转让：会员之间可以转让自己拥有的优惠券，默认关闭，不允许修改。
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class='panel-body'>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">优惠券转让锁定时间：</label>
+                        <div class="col-sm-4 col-xs-6">
+                            <input type="text" name="coupon[lock_time]" value="{{$coupon['lock_time']}}" />&nbsp;分钟
+                            <span class="help-block">单个优惠券可以开启优惠券转让,锁定时间对其生效,单位为分钟</span>
                         </div>
                     </div>
                 </div>
@@ -108,14 +118,14 @@
                     <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label">通知设置：</label>
                         <div class="col-sm-4 col-xs-6">
-                            <select name='coupon[coupon_notice]' class='form-control diy-notice'>
-                                <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($coupon['coupon_notice'])) value="{{$coupon['coupon_notice']}}"
+                            <select name='coupon[coupon_notice]' class='form-control diy-notice' onchange="if($('#coupon_notice').is(':checked') && confirm('确定要更换优惠券通知设置模板？')){message_default('coupon_notice')}">
+                                <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($coupon['coupon_notice'])) value="{{$coupon['coupon_notice']['coupon_notice']}}"
                                         selected @else value="" @endif>
                                     默认消息模板
                                 </option>
                                 @foreach ($temp_list as $item)
                                     <option value="{{$item['id']}}"
-                                            @if($coupon['coupon_notice'] == $item['id'])
+                                            @if($coupon['coupon_notice']['coupon_notice'] == $item['id'])
                                             selected
                                             @endif>{{$item['title']}}
                                     </option>
@@ -124,7 +134,7 @@
                         </div>
                         <div class="col-sm-2 col-xs-6">
                             <input class="mui-switch mui-switch-animbg" id="coupon_notice" type="checkbox"
-                                   @if(\app\common\models\notice\MessageTemp::getIsDefaultById($coupon['coupon_notice']))
+                                   @if($coupon['coupon_notice']['coupon_notice'])
                                    checked
                                    @endif
                                    onclick="message_default(this.id)"/>
@@ -235,6 +245,7 @@
             var url_close = "{!! yzWebUrl('setting.default-notice.storeCancel') !!}"
             var postdata = {
                 notice_name: name,
+                notice_id: $(select_name).val(),
                 setting_name: setting_name
             };
             if ($(id).is(':checked')) {
@@ -253,7 +264,9 @@
             } else {
                 //关
                 $.post(url_close,postdata,function(data){
-                    $(select_name).val('');
+                    $(select_name).find("option").eq(0).val('')
+                    select2_obj.val('').trigger("change");
+                    // $(select_name).val('');
                     showPopover($(id),"关闭成功")
                 }, "json");
             }
@@ -272,7 +285,7 @@
         }
     </script>
     <script>
-        $('.diy-notice').select2();
+        var select2_obj = $('.diy-notice').select2();
     </script>
 
 

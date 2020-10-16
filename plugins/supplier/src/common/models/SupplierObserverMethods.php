@@ -191,6 +191,7 @@ class SupplierObserverMethods extends BaseModel
             $params = [
                 ['name' => '商城名称', 'value' => \Setting::get('shop.shop')['name']],
                 ['name' => '粉丝昵称', 'value' => $order_model->belongsToMember->nickname],
+                ['name' => '订单ID', 'value' => $order_model->id],
                 ['name' => '订单号', 'value' => $order_model->order_sn],
                 ['name' => '下单时间', 'value' => $order_model['create_time']->toDateTimeString()],
                 ['name' => '订单金额', 'value' => $order_model['price']],
@@ -225,6 +226,7 @@ class SupplierObserverMethods extends BaseModel
                 $params = [
                     ['name' => '商城名称', 'value' => \Setting::get('shop.shop')['name']],
                     ['name' => '粉丝昵称', 'value' => $order_model->belongsToMember->nickname],
+                    ['name' => '订单ID', 'value' => $order_model->id],
                     ['name' => '订单号', 'value' => $order_model->order_sn],
                     ['name' => '下单时间', 'value' => $order_model['create_time']->toDateTimeString()],
                     ['name' => '订单金额', 'value' => $order_model['price']],
@@ -246,6 +248,7 @@ class SupplierObserverMethods extends BaseModel
                 $params = [
                     ['name' => '商城名称', 'value' => \Setting::get('shop.shop')['name']],
                     ['name' => '粉丝昵称', 'value' => $order_model->belongsToMember->nickname],
+                    ['name' => '订单ID', 'value' => $order_model->id],
                     ['name' => '订单号', 'value' => $order_model->order_sn],
                     ['name' => '下单时间', 'value' => $order_model['create_time']->toDateTimeString()],
                     ['name' => '订单金额', 'value' => $order_model['price']],
@@ -266,6 +269,7 @@ class SupplierObserverMethods extends BaseModel
                 $params = [
                     ['name' => '商城名称', 'value' => \Setting::get('shop.shop')['name']],
                     ['name' => '粉丝昵称', 'value' => $order_model->belongsToMember->nickname],
+                    ['name' => '订单ID', 'value' => $order_model->id],
                     ['name' => '订单号', 'value' => $order_model->order_sn],
                     ['name' => '下单时间', 'value' => date('Y-m-d H:i:s', $order_model['create_time'])],
                     ['name' => '订单金额', 'value' => $order_model['price']],

@@ -48,7 +48,7 @@ class OrderPaidEventQueueJob implements ShouldQueue
             \YunShop::app()->uniacid = $this->order->uniacid;
             Setting::$uniqueAccountId = $this->order->uniacid;
             if(!$this->order->orderPaidJob){
-                Log::error('订单付款事件触发失败',"{$this->orderId}未找到orderPaidJob记录");
+                Log::error('订单付款事件触发失败-' . "{$this->orderId}未找到orderPaidJob记录");
                 return;
             }
             if($this->order->orderPaidJob->status == 'finished'){
