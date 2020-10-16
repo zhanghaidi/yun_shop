@@ -898,6 +898,12 @@
                             } else {
                                 //关
                                 $.post(url_close,postdata,function(data){
+                                    $(select_name).find("option").eq(0).val('')
+                                    select2_obj.each(function (key,item) {
+                                        if($(this).attr('name') == ('yz_notice[' + name + ']') && $(this).val() != ''){
+                                            select2_obj.eq(key).val('').trigger("change");
+                                        }
+                                    })
                                     //$(select_name).val('');
                                     showPopover($(id),"关闭成功")
                                 }, "json");
@@ -961,7 +967,7 @@
                         }
                     </script>
                     <script type="text/javascript">
-                        $('.diy-notice').select2();
+                        var select2_obj = $('.diy-notice').select2();
                     </script>
                 </div>
             </form>
