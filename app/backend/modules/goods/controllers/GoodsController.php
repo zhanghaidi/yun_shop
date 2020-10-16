@@ -1114,6 +1114,67 @@ class GoodsController extends BaseController
     }
 
     /**
+     * fixby-zhd-商品编码导出 2020-10-16 11:15
+     *
+     */
+    public function exportGoodsSku()
+    {
+        //$member_builder = Member::searchMembers(\YunShop::request());
+        //$export_page = request()->export_page ? request()->export_page : 1;
+        //$export_model = new ExportService($member_builder, $export_page);
+        $goods = Goods::where('status',1)->with('hasManyOptions')->toArray();
+        dd($goods);die;
+
+        $file_name = date('Ymdhis', time()) . '芸众商品编号';
+
+        $export_data[0] = ['商品ID', '商品名称','商品编号'];
+
+        foreach ($goods as $key => $item) {
+            /*if (!empty($item['yz_member']) && !empty($item['yz_member']['agent'])) {
+                $agent = $item['yz_member']['agent']['nickname'];
+
+            } else {
+                $agent = '总店';
+            }
+            if (!empty($item['yz_member']) && !empty($item['yz_member']['group'])) {
+                $group = $item['yz_member']['group']['group_name'];
+
+            } else {
+                $group = '';
+            }
+
+            if (!empty($item['yz_member']) && !empty($item['yz_member']['level'])) {
+                $level = $item['yz_member']['level']['level_name'];
+
+            } else {
+                $level = '';
+            }
+
+            $order = $item['has_one_order']['total']?:0;
+            $price = $item['has_one_order']['sum']?:0;
+
+            if (!empty($item['has_one_fans'])) {
+                if ($item['has_one_fans']['followed'] == 1) {
+                    $fans = '已关注';
+                } else {
+                    $fans = '未关注';
+                }
+            } else {
+                $fans = '未关注';
+            }
+            if (substr($item['nickname'], 0, strlen('=')) === '=') {
+                $item['nickname'] = '，' . $item['nickname'];
+            }*/
+
+            $export_data[$key + 1] = [$item['id'],$agent, $item['title'], $item['realname'], $item['mobile'],
+                $level, $group, date('YmdHis', $item['createtime']), $item['credit1'], $item['credit2'], $order,
+                $price, $fans, $item['yz_member']['withdraw_mobile']];
+        }
+
+        $export_model->export($file_name, $export_data, \Request::query('route'));
+    }
+
+    /**
      * 计算分销商品价格 fixby-zlt-calcgoodsprice 2020-09-21 18:15
      */
     public function calculationGoodsPrice()
