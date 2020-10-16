@@ -1122,9 +1122,9 @@ class GoodsController extends BaseController
         //$member_builder = Member::searchMembers(\YunShop::request());
         //$export_page = request()->export_page ? request()->export_page : 1;
         //$export_model = new ExportService($member_builder, $export_page);
-        $goods = Goods::where('status',1)->with('hasManyOptions')->toArray();
-        dd($goods);die;
+        $goods = $this->goodsListData();
 
+        var_dump($goods);die;
         $file_name = date('Ymdhis', time()) . '芸众商品编号';
 
         $export_data[0] = ['商品ID', '商品名称','商品编号'];
@@ -1166,12 +1166,21 @@ class GoodsController extends BaseController
                 $item['nickname'] = '，' . $item['nickname'];
             }*/
 
-            $export_data[$key + 1] = [$item['id'],$agent, $item['title'], $item['realname'], $item['mobile'],
-                $level, $group, date('YmdHis', $item['createtime']), $item['credit1'], $item['credit2'], $order,
-                $price, $fans, $item['yz_member']['withdraw_mobile']];
+            $export_data[$key + 1] = [$item['id']];
         }
 
-        $export_model->export($file_name, $export_data, \Request::query('route'));
+        \Excel::create('商品批量导入模板', function ($excel) use ($exportData) {
+            $excel->setTitle('Office 2005 XLSX Document');
+            $excel->setCreator('芸众商城');
+            $excel->setLastModifiedBy("芸众商城");
+            $excel->setSubject("Office 2005 XLSX Test Document");
+            $excel->setDescription("Test document for Office 2005 XLSX, generated using PHP classes.");
+            $excel->setKeywords("office 2005 openxml php");
+            $excel->setCategory("report file");
+            $excel->sheet('info', function ($sheet) use ($exportData) {
+                $sheet->rows($exportData);
+            });
+        })->export('xls');
     }
 
     /**
