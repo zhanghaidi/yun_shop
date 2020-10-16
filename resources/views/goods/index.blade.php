@@ -82,7 +82,7 @@
                                     </a>
 
                                     <a href="#">
-                                        <el-button type="primary" icon="el-icon-search" @click="export_sku">导出商品编号
+                                        <el-button type="info" {{--icon="el-icon-search"--}} @click="export_sku">导出商品编号
                                         </el-button>
                                     </a>
                                     </el-col>

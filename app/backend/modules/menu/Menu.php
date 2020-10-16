@@ -560,18 +560,18 @@ class Menu
                                 'parents'    => ['Goods', 'goods_goods',],
                             ],
 
-//                            'goods_goods_import' => [
-//                                'name'       => 'excel导入商品',
-//                                'url'        => 'goods.goods.import',
-//                                'url_params' => '',
-//                                'permit'     => 1,
-//                                'menu'       => 1,
-//                                'icon'       => '',
-//                                'sort'       => 0,
-//                                'item'       => 'goods_goods_import',
-//                                'parents'    => ['Goods', 'goods_goods',],
+                            'goods_goods_export' => [
+                                'name'       => 'excel导出商品编码',
+                                'url'        => 'goods.goods.exportGoodsSku',
+                                'url_params' => '',
+                                'permit'     => 1,
+                                'menu'       => 1,
+                                'icon'       => '',
+                                'sort'       => 0,
+                                'item'       => 'goods_goods_export',
+                                'parents'    => ['Goods', 'goods_goods',],
 
-//                            ],
+                            ],
 
                             'goods_goods_batch_property' => [
                                 'name'       => '批量上下架',
