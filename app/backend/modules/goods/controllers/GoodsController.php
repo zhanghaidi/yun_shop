@@ -1122,8 +1122,7 @@ class GoodsController extends BaseController
         //$member_builder = Member::searchMembers(\YunShop::request());
         //$export_page = request()->export_page ? request()->export_page : 1;
         //$export_model = new ExportService($member_builder, $export_page);
-        $goods = $this->goodsListData();
-
+        $goods = Goods::where('status',1)->select('id', 'title','goods_sn','price','deleted_at')->with('hasManyOptions')->get();
         var_dump($goods);die;
         $file_name = date('Ymdhis', time()) . '芸众商品编号';
 
