@@ -633,6 +633,8 @@
                 //fixby-zhd-导出商品编码
                 export_sku(){
                     var that = this;
+                    that.table_loading = true;
+                    let json = {};
                     that.$http.post("{!! yzWebFullUrl('goods.goods.exportGoodsSku') !!}", json).then(response => {
                         console.log(response);
                         if (response.data.result == 1) {
