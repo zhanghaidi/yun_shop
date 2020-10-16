@@ -532,6 +532,13 @@ class GoodsController extends BaseController
     {
         $ids = request()->ids;
         $data = request()->data;
+        if($data == 1){
+            foreach ($ids as $v){
+                $res = $this->_checkGoodsPrice($v);
+                if($res['status'] == 0 || !$res['data']['can_sub'])
+                    $this->errorJson("上架失败，请检查商品{$v}设置！",$res['data']);
+            }
+        }
         foreach ($ids as $id) {
             $goods = \app\common\models\Goods::find($id);
             $goods->status = $data;
@@ -1176,10 +1183,6 @@ class GoodsController extends BaseController
         $goods_price_service = new GoodsPriceService($request);
         $result = $goods_price_service->calculation();
 
-        if (isset($goods_price_service->error)) {
-            $this->errorJson($goods_price_service->error);
-        }
-
         if ($result['status'] == 1) {
             return $this->successJson('商品实际价格计算成功', $result['data']);
         } else {
@@ -1188,6 +1191,24 @@ class GoodsController extends BaseController
             }
             $this->errorJson('商品实际价格计算失败');
         }
+    }
+
+    /**
+     * 商品上架校验 fixby-zlt-checkPutAway 2020-09-25 14:30
+     */
+    public function checkPutAway(){
+        $res = $this->_checkGoodsPrice(request()->id);
+        if($res['status'] == 1){
+            return $this->successJson('商品上架校验成功',$res['data']);
+        }else{
+            $this->errorJson($res['msg']);
+        }
+    }
+
+    public function _checkGoodsPrice($id){
+        $goods_price_service = new GoodsPriceService();
+        $goods_price_service->getPriceDataById($id);
+        return $goods_price_service->calculation();
     }
 
 }

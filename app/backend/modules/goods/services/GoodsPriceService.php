@@ -11,18 +11,25 @@ use app\backend\modules\goods\models\Dispatch;
 use app\backend\modules\member\models\MemberLevel;
 use app\backend\modules\coupon\models\Coupon;
 use app\common\facades\Setting;
+use app\common\requests\Request;
+
+use app\common\models\Goods;
+use Yunshop\Commission\models\Commission;
+
 
 class GoodsPriceService
 {
     public $params;
+    public $goods_model;
     public $request;
     public $coupon_list;
     public $member_discount;
     public $error = null;
 
-    public function __construct($request)
+    public function __construct($request = null)
     {
-        $this->request = $request;
+        if(!empty($request))
+            $this->request = $request;
     }
 
     /*
@@ -32,8 +39,7 @@ class GoodsPriceService
     public function calculation(){
         $goods_data = $this->request->goods;
         if(!isset($goods_data['price'])){
-            $this->error = '商品价格不能为空！';
-            return;
+            return ['status' => -1, 'msg' => '商品价格不能为空!'];
         }
         $goods_price_arr = $this->getGoodsPrice($this->request,$goods_data['price'],$goods_data['weight']);
         $commission_set = Setting::get('plugin.commission');  //分销设置
@@ -346,6 +352,77 @@ class GoodsPriceService
 
         }
         return $max_coupon_discount;
+    }
+
+    /*
+     * 获取商品营销价格计算数据
+     */
+    public function getPriceDataById($id){
+        $this->request = request();
+        $this->request->id = $id;
+        $this->request->widgets = ['sale'=>[],'discount'=>[],'commission'=>[]];
+        $this->request->category = ['parentid'=>[],'childid'=>[]];
+        $this->request->goods = Goods::with(['hasManyDiscount' => function ($query){
+            return $query->orderBy('level_id', 'asc');
+        }])->with(['hasOneSale' => function ($query) {
+            return $query;
+        }])->with(['hasManyParams' => function ($query) {
+            return $query->orderBy('displayorder', 'asc');
+        }])->with(['hasManySpecs' => function ($query) {
+            return $query->orderBy('display_order', 'asc');
+        }])->with(['hasManyOptions' => function ($query) {
+            return $query->orderBy('display_order', 'asc');
+        }])->with('hasManyGoodsCategory')->find($this->request->id)->toArray();
+//        var_dump($this->request->goods);die;
+        if(!empty($this->request->goods)){
+            if(!empty($this->request->goods['has_many_options'])){  //组装规格数据
+                $this->request->option_ids = [];
+                foreach ($this->request->goods['has_many_options'] as $v){
+                    $this->request->option_ids[] = $v['id'];
+                    $this->request['option_productprice_' . $v['id']] = [$v['product_price']];
+                    $this->request['option_weight_' . $v['id']] = [$v['weight']];
+                    $this->request['option_title_' . $v['id']] = [$v['title']];
+                }
+            }
+
+            if(!empty($this->request->goods['has_many_goods_category'])){  //组装分类数据
+                foreach ($this->request->goods['has_many_goods_category'] as $v){
+                    $t_arr = explode(',',$v['category_ids']);
+                    $this->request->category['parentid'][] = $t_arr[0] ?? 0;
+                    $this->request->category['childid'][] = $t_arr[1] ?? 0;
+                }
+            }
+
+            if(!empty($this->request->goods['has_one_sale'])){  //组装商品营销数据
+                $this->request->widgets['sale'] = $this->request->goods['has_one_sale'];
+                /*$this->request->widgets['sale']['max_point_deduct'] = $this->request->goods['has_one_sale']['max_point_deduct'];
+                $this->request->widgets['sale']['min_point_deduct'] = $this->request->goods['has_one_sale']['min_point_deduct'];
+                $this->request->widgets['sale']['ed_reduction'] = $this->request->goods['has_one_sale']['ed_reduction'];
+                $this->request->widgets['sale']['max_point_deduct'] = $this->request->goods['has_one_sale']['max_point_deduct'];
+                $this->request->widgets['sale']['min_point_deduct'] = $this->request->goods['has_one_sale']['min_point_deduct'];
+                $this->request->widgets['sale']['award_balance'] = $this->request->goods['has_one_sale']['award_balance'];
+                $this->request->widgets['sale']['point'] = $this->request->goods['has_one_sale']['point'];
+                $this->request->widgets['sale']['has_all_point_deduct'] = $this->request->goods['has_one_sale']['has_all_point_deduct'];
+                $this->request->widgets['sale']['all_point_deduct'] = $this->request->goods['has_one_sale']['all_point_deduct'];*/
+            }
+
+            if(!empty($this->request->goods['has_many_discount'])) {  //组装商品折扣数据
+                $this->request->widgets['discount']['discount_method'] = $this->request->goods['has_many_discount'][0]['discount_method'];
+                $this->request->widgets['discount']['level_discount_type'] = $this->request->goods['has_many_discount'][0]['level_discount_type'];
+                foreach ($this->request->goods['has_many_discount'] as $v){
+                    $this->request->widgets['discount']['discount_value'][] = $v['discount_value'];
+                }
+            }
+
+            $goods_commission = Commission::getGoodsSet($this->request->id);
+            $this->request->widgets['commission']['is_commission'] = $goods_commission['is_commission'];
+            $this->request->widgets['commission']['has_commission'] = $goods_commission['has_commission'];
+            if($this->request->widgets['commission']['has_commission'] == 1){
+                $this->request->widgets['commission']['rule'] = unserialize($goods_commission['rule']);
+            }
+//            var_dump($this->request->goods,$this->request->widgets);die;
+        }
+        return $this->request;
     }
 
 }

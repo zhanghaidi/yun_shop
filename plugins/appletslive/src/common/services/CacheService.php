@@ -85,7 +85,7 @@ class CacheService
             ->where('delete_time', 0)
             ->count();
         $list = DB::table('yz_appletslive_room')
-            ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num')
+            ->select('id', 'name', 'live_status', 'cover_img', 'subscription_num', 'view_num', 'comment_num')
             ->where('type', 1)
             ->where('delete_time', 0)
             ->orderBy('sort', 'desc')
@@ -132,7 +132,7 @@ class CacheService
         $cache_key = self::$cache_keys['recorded.roominfo'];
         $cache_val = Cache::get($cache_key);
         $info = DB::table('yz_appletslive_room')
-            ->select('id', 'type', 'roomid', 'name', 'anchor_name', 'cover_img', 'start_time', 'end_time','live_status', 'desc')
+            ->select('id', 'type', 'roomid', 'name', 'anchor_name', 'cover_img', 'start_time', 'end_time', 'live_status', 'desc')
             ->where('id', $room_id)
             ->first();
         if (!$cache_val) {

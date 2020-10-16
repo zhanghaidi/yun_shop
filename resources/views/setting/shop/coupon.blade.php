@@ -45,7 +45,7 @@
                         <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">优惠券过期提醒</label>
                             <div class="col-sm-8 col-xs-12">
-                                <select name='coupon[expire]' class='form-control diy-notice'>
+                                <select name='coupon[expire]' class='form-control diy-notice'  onchange="if($('#expire').is(':checked') && confirm('确定要更换优惠券通知设置模板？')){message_default('expire')}">
                                     <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['expire'])) value="{{$set['expire']}}"
                                             selected @else value="" @endif>
                                         默认消息模板
@@ -61,7 +61,7 @@
                             <div class="col-sm-2 col-xs-6">
                                 <input class="mui-switch mui-switch-animbg" id="expire" type="checkbox"
                                        {{--fixBy-wk-20201007getIsDefaultById 修改为  getTempById--}}
-                                       @if(\app\common\models\notice\MessageTemp::getTempById($set['expire']))
+                                       @if($set['expire'])
                                        checked
                                        @endif
                                        onclick="message_default(this.id)"/>
@@ -91,6 +91,7 @@
         var url_close = "{!! yzWebUrl('setting.default-notice.cancel') !!}"
         var postdata = {
             notice_name: name,
+            notice_id: $(select_name).val(),
             setting_name: setting_name
         };
         if ($(id).is(':checked')) {
@@ -107,7 +108,9 @@
         } else {
             //关
             $.post(url_close,postdata,function(data){
-                $(select_name).val('');
+                $(select_name).find("option").eq(0).val('')
+                select2_obj.val('').trigger("change");
+                // $(select_name).val('');
                 showPopover($(id),"关闭成功")
             }, "json");
         }
@@ -126,6 +129,6 @@
     }
 </script>
 <script>
-    $('.diy-notice').select2();
+    var select2_obj = $('.diy-notice').select2();
 </script>
 @endsection

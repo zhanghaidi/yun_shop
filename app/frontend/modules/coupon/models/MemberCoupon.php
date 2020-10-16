@@ -1,6 +1,7 @@
 <?php
 
 namespace app\frontend\modules\coupon\models;
+use app\common\facades\Setting;
 
 
 class MemberCoupon extends \app\common\models\MemberCoupon
@@ -42,5 +43,13 @@ class MemberCoupon extends \app\common\models\MemberCoupon
         return $coupons;
     }
 
+    //fixby-zlt-coupontransfer 2020-10-15 13:50 锁定优惠券
+    public static function lockMemberCoupon(MemberCoupon $_model){
+        $lock_time = Setting::get('shop.coupon.lock_time',30);
+        $update = [
+            'lock_expire_time' => time() + 60 * $lock_time,
+        ];
+        return self::where('id',$_model->id)->update($update);
+    }
 
 }
