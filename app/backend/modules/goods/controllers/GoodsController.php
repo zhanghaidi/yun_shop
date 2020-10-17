@@ -38,6 +38,7 @@ use Yunshop\LeaseToy\models\LeaseToyGoodsModel;
 use Yunshop\VideoDemand\models\CourseGoodsModel;
 use app\common\helpers\ImageHelper;
 use app\backend\modules\goods\services\GoodsPriceService;
+use app\common\services\ExportService;
 
 
 class GoodsController extends BaseController
@@ -1119,57 +1120,19 @@ class GoodsController extends BaseController
      */
     public function exportGoodsSku()
     {
-        //$member_builder = Member::searchMembers(\YunShop::request());
-        //$export_page = request()->export_page ? request()->export_page : 1;
-        //$export_model = new ExportService($member_builder, $export_page);
         $goods = Goods::where('status',1)->select('id', 'title','goods_sn','price','deleted_at')->with('hasManyOptions')->get()->toArray();
 
         $file_name = date('Ymdhis', time()) . '芸众商品编号';
 
-        $export_data[0] = ['商品ID', '商品名称','商品编号','参数'];
+        $export_data[0] = ['商品ID', '商品名称','商品价格','商品编码','规格'];
 
         foreach ($goods as $key => $item) {
-            /*if (!empty($item['yz_member']) && !empty($item['yz_member']['agent'])) {
-                $agent = $item['yz_member']['agent']['nickname'];
-
-            } else {
-                $agent = '总店';
-            }
-            if (!empty($item['yz_member']) && !empty($item['yz_member']['group'])) {
-                $group = $item['yz_member']['group']['group_name'];
-
-            } else {
-                $group = '';
-            }
-
-            if (!empty($item['yz_member']) && !empty($item['yz_member']['level'])) {
-                $level = $item['yz_member']['level']['level_name'];
-
-            } else {
-                $level = '';
-            }
-
-            $order = $item['has_one_order']['total']?:0;
-            $price = $item['has_one_order']['sum']?:0;
-
-            if (!empty($item['has_one_fans'])) {
-                if ($item['has_one_fans']['followed'] == 1) {
-                    $fans = '已关注';
-                } else {
-                    $fans = '未关注';
-                }
-            } else {
-                $fans = '未关注';
-            }
-            if (substr($item['nickname'], 0, strlen('=')) === '=') {
-                $item['nickname'] = '，' . $item['nickname'];
-            }*/
 
             $export_data[$key + 1] = [$item['id'],$item['title'],$item['price'],$item['goods_sn']];
             if($item['has_many_options']){
                 $num = count($item['has_many_options']);
-                foreach ($item['has_many_options'] as $k=>$v){
-                    $export_data[$key + 1]['has_many_options'][] = [$v['title'],$v['product_price'],$v['goods_sn']];
+                foreach ($item['has_many_options'] as $k => $v){
+                    $export_data[$key + 1+ $num] = [$item['id'],$v['title'],$v['product_price'],$v['goods_sn']];
                 }
             }
         }
