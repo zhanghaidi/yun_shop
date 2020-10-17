@@ -32,4 +32,8 @@ class ShoppingShareCoupon extends BaseModel
     {
         return $query->where('member_id', $member_id);
     }
+
+    public function hasOneOrder(){
+        return $this->hasOne('app\common\models\order\Order');
+    }
 }
