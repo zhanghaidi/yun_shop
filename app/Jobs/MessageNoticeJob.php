@@ -88,10 +88,10 @@ class MessageNoticeJob implements  ShouldQueue
         try{
             $log_data = [
                 'uniacid' => $this->uniacid,
-                'member_id' => McMappingFans::getUId($this->uniacid,$this->openId),
+                'member_id' => McMappingFans::getUId($this->uniacid,$this->openId)->uid,
                 'template_id' => $this->templateId,
                 'openid' => $this->openId,
-                'message' => $this->noticeData,
+                'message' => json_encode($this->noticeData,320),
                 'weapp_appid' => $this->miniApp['miniprogram']['appid'] ?? '',
                 'weapp_pagepath' => $this->miniApp['miniprogram']['pagepath'] ?? '',
                 'news_link' => $this->url,
