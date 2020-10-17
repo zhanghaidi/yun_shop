@@ -230,6 +230,7 @@ class ShareCouponController extends ApiController
             throw new AppException('无分享优惠卷');
         }
 
+
         $set = \Setting::get('coupon.shopping_share');
         array_set($set, 'banner', yz_tomedia($set['banner']));
 
