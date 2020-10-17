@@ -38,6 +38,7 @@ class OtherMessageService
         $params = [
             ['name' => '下级昵称', 'value' => $this->getMemberName()],
             ['name' => '订单状态', 'value' => '下单（未付款）'],
+            ['name' => '订单ID', 'value' => $this->orderModel->id],
             ['name' => '订单号', 'value' => $this->orderModel->order_sn],
             ['name' => '订单金额', 'value' => $this->orderModel->price],
         ];
@@ -51,6 +52,7 @@ class OtherMessageService
         $params = [
             ['name' => '下级昵称', 'value' => $this->getMemberName()],
             ['name' => '订单状态', 'value' => '已支付'],
+            ['name' => '订单ID', 'value' => $this->orderModel->id],
             ['name' => '订单号', 'value' => $this->orderModel->order_sn],
             ['name' => '订单金额', 'value' => $this->orderModel->price],
         ];
@@ -63,6 +65,7 @@ class OtherMessageService
         $params = [
             ['name' => '下级昵称', 'value' => $this->getMemberName()],
             ['name' => '订单状态', 'value' => '已发货'],
+            ['name' => '订单ID', 'value' => $this->orderModel->id],
             ['name' => '订单号', 'value' => $this->orderModel->order_sn],
             ['name' => '订单金额', 'value' => $this->orderModel->price],
         ];
@@ -75,6 +78,7 @@ class OtherMessageService
         $params = [
             ['name' => '下级昵称', 'value' => $this->getMemberName()],
             ['name' => '订单状态', 'value' => '已完成'],
+            ['name' => '订单ID', 'value' => $this->orderModel->id],
             ['name' => '订单号', 'value' => $this->orderModel->order_sn],
             ['name' => '订单金额', 'value' => $this->orderModel->price],
         ];
