@@ -1122,11 +1122,11 @@ class GoodsController extends BaseController
         //$member_builder = Member::searchMembers(\YunShop::request());
         //$export_page = request()->export_page ? request()->export_page : 1;
         //$export_model = new ExportService($member_builder, $export_page);
-        $goods = Goods::where('status',1)->select('id', 'title','goods_sn','price','deleted_at')->with('hasManyOptions')->get();
-        var_dump($goods);die;
+        $goods = Goods::where('status',1)->select('id', 'title','goods_sn','price','deleted_at')->with('hasManyOptions')->get()->toArray();
+
         $file_name = date('Ymdhis', time()) . '芸众商品编号';
 
-        $export_data[0] = ['商品ID', '商品名称','商品编号'];
+        $export_data[0] = ['商品ID', '商品名称','商品编号','参数'];
 
         foreach ($goods as $key => $item) {
             /*if (!empty($item['yz_member']) && !empty($item['yz_member']['agent'])) {
@@ -1165,21 +1165,29 @@ class GoodsController extends BaseController
                 $item['nickname'] = '，' . $item['nickname'];
             }*/
 
-            $export_data[$key + 1] = [$item['id']];
+            $export_data[$key + 1] = [$item['id'],$item['title'],$item['price'],$item['goods_sn']];
+            if($item['has_many_options']){
+                $num = count($item['has_many_options']);
+                foreach ($item['has_many_options'] as $k=>$v){
+                    $export_data[$key + 1]['has_many_options'][] = [$v['title'],$v['product_price'],$v['goods_sn']];
+                }
+            }
         }
 
-        \Excel::create('商品批量导入模板', function ($excel) use ($exportData) {
+        \Excel::create('商品批量导入模板', function ($excel) use ($export_data) {
             $excel->setTitle('Office 2005 XLSX Document');
-            $excel->setCreator('芸众商城');
-            $excel->setLastModifiedBy("芸众商城");
+            $excel->setCreator('芸众商城商品编号');
+            $excel->setLastModifiedBy("芸众商城商品编号");
             $excel->setSubject("Office 2005 XLSX Test Document");
             $excel->setDescription("Test document for Office 2005 XLSX, generated using PHP classes.");
             $excel->setKeywords("office 2005 openxml php");
             $excel->setCategory("report file");
-            $excel->sheet('info', function ($sheet) use ($exportData) {
-                $sheet->rows($exportData);
+            $excel->sheet('info', function ($sheet) use ($export_data) {
+                $sheet->rows($export_data);
             });
         })->export('xls');
+
+        return $this->successJson('导出成功');
     }
 
     /**
