@@ -42,11 +42,11 @@ class CouponExpireNotice
     {
         Log::info('------------------------ 优惠券过期提醒 BEGIN -------------------------------');
         if ($this->set['every_day'] != date('H')) {
-//            return;
+            return;
         }
         if ($this->setLog['current_d'] == date('d')) {
             Log::info('优惠券过期提醒 current_d =' . $this->setLog['current_d'] .' now_d = '. date('d'));
-//            return;
+            return;
         }
 
         $this->setLog['current_d'] = date('d');
@@ -54,7 +54,7 @@ class CouponExpireNotice
 
         $expiredCoupon = [];
         $present = time();
-        foreach(\app\common\models\MemberCoupon::where([['used','=',0],['uid','=',129424]])->cursor() as $coupon) {
+        foreach(\app\common\models\MemberCoupon::where([['used','=',0]])->cursor() as $coupon) {
             if ($coupon->time_end == '不限时间') {
                 continue;
             }
@@ -67,7 +67,7 @@ class CouponExpireNotice
                 if($expiredCoupon[$t_key]['time_end'] > $coupon->time_end)
                     $expiredCoupon[$t_key]['time_end'] = $coupon->time_end;
                 $expiredCoupon[$t_key]['total_num'] += 1;
-                if ($coupon->belongs_to_coupon->coupon_method == 1) {
+                if ($coupon->belongsToCoupon->coupon_method == 1) {
                     $expiredCoupon[$t_key]['total_detect'] += $coupon->belongsToCoupon->deduct;
                 }
             } else {
@@ -164,7 +164,7 @@ class CouponExpireNotice
     public function subscribe()
     {
         \Event::listen('cron.collectJobs', function () {
-            \Cron::add('Coupon-expire-notice', '*/5 * * * *', function () {
+            \Cron::add('Coupon-expire-notice', '*/1 * * * *', function () {
                 $this->handle();
                 return;
             });
