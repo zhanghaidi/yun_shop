@@ -14,6 +14,8 @@ class TemplateMsgLog extends BaseModel
 
     public $table = 'yz_template_msg_log';
 
+    public $timestamps = false;
+
     public $dates = ['deleted_at'];
 
     protected $guarded = [];

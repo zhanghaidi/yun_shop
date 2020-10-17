@@ -98,6 +98,7 @@ class MessageNoticeJob implements  ShouldQueue
                 'respon_code' => $res->errcode,
                 'respon_data' => json_encode($res),
                 'remark' => '公众号消息模板推送',
+                'created_at' => time()
             ];
             TemplateMsgLog::insert($log_data);
         }catch (\ErrorException $e){
