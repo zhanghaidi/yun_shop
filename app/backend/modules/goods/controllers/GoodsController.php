@@ -1127,17 +1127,16 @@ class GoodsController extends BaseController
         $export_data[0] = ['商品ID', '商品名称','商品价格','商品编码','规格'];
 
         foreach ($goods as $key => $item) {
-
-            $export_data[$key + 1] = [$item['id'],$item['title'],$item['price'],$item['goods_sn']];
+            $options = '';
             if($item['has_many_options']){
-                $num = count($item['has_many_options']);
                 foreach ($item['has_many_options'] as $k => $v){
-                    $export_data[$key + 1+ $num] = [$item['id'],$v['title'],$v['product_price'],$v['goods_sn']];
+                    $options .= '【' . $v['title'] . '】'.'【'.$v['goods_sn'].'】';
                 }
             }
+            $export_data[$key + 1] = [$item['id'],$item['title'],$item['price'],$options];
         }
 
-        \Excel::create('商品批量导入模板', function ($excel) use ($export_data) {
+        \Excel::create($file_name, function ($excel) use ($export_data) {
             $excel->setTitle('Office 2005 XLSX Document');
             $excel->setCreator('芸众商城商品编号');
             $excel->setLastModifiedBy("芸众商城商品编号");
