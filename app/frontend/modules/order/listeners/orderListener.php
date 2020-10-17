@@ -21,6 +21,7 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /** 
  * Created by PhpStorm.
@@ -33,7 +34,6 @@ class orderListener
     public function onCreated(AfterOrderCreatedEvent $event)
     {
         $order = Order::find($event->getOrderModel()->id);
-        \log::debug('AfterOrderCreatedEvent orderId:' . $order->id);
         (new MessageService($order))->created();
 
         (new OtherMessageService($order))->created();
@@ -42,10 +42,8 @@ class orderListener
     public function onPaid(AfterOrderPaidEvent $event)
     {
         $order = Order::find($event->getOrderModel()->id);
-        \log::debug('AfterOrderPaidEvent orderId:' . $order->id);
         (new MiniMessageService($order))->received();
         if (!$order->isVirtual()) {
-            \log::debug('AfterOrderPaidEvent orderId:' . $order->id);
             (new MessageService($order))->paid();
             (new OtherMessageService($order))->paid();
         }
@@ -55,7 +53,6 @@ class orderListener
     public function onCanceled(AfterOrderCanceledEvent $event)
     {
         $order = Order::find($event->getOrderModel()->id);
-        \log::debug('AfterOrderCanceledEvent orderId:' . $order->id);
         (new MessageService($order))->canceled();
     }
 
@@ -131,7 +128,7 @@ class orderListener
                 }
             });
             // 虚拟订单修复
-            \Log::info("--虚拟订单修复--");
+            Log::info("--虚拟订单修复--");
             \Cron::add("VirtualOrderFix", '* */1 * * *', function () {
                 $orders = DB::table('yz_order')->whereIn('status', [1, 2])->where('is_virtual', 1)->where('refund_id',0)->where('is_pending',0)->get();
                 // 所有超时未收货的订单,遍历执行收货
@@ -151,9 +148,9 @@ class orderListener
 
                 if ((int)\Setting::get('shop.trade.receive')) {
                     // 开启自动收货时
-                    \Log::info("--{$u->uniacid}订单自动完成任务注册--");
+                    Log::info("--{$u->uniacid}订单自动完成任务注册--");
                     \Cron::add("OrderReceive{$u->uniacid}", '*/' . $receive_min . ' * * * *', function () use ($uniacid) {
-                        \Log::info("--{$uniacid}订单自动完成开始执行--");
+                        Log::info("--{$uniacid}订单自动完成开始执行--");
 
                         // 所有超时未收货的订单,遍历执行收货
                         OrderService::autoReceive($uniacid);
@@ -167,7 +164,7 @@ class orderListener
 
                 if ((int)\Setting::get('shop.trade.close_order_days')) {
                     // 开启自动关闭时
-                    \Log::info("--订单自动关闭start--");
+                    Log::info("--订单自动关闭start--");
                     \Cron::add("OrderClose{$u->uniacid}", '*/' . $close_min . ' * * * * ', function () use ($uniacid) {
                         // 所有超时付款的订单,遍历执行关闭
                         OrderService::autoClose($uniacid);
@@ -177,7 +174,7 @@ class orderListener
             // todo 预扣库存超过两小时自动加回
 
                 // 收银台订单检测 自动收货
-//                \Log::info("--收银台订单自动完成start--");
+//                Log::info("--收银台订单自动完成start--");
 //                \Cron::add("CashireOrderReceive{$u->uniacid}", '*/1 * * * * *', function () {
 //                    $start_time = time() - (60 * 60 * 24);
 //                    $end_time = time();
