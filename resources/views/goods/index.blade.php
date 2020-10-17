@@ -81,8 +81,8 @@
                                         </el-button>
                                     </a>
 
-                                    <a href="#">
-                                        <el-button type="info" {{--icon="el-icon-search"--}} @click="export_sku">导出商品编号
+                                    <a href="{!! yzWebFullUrl('goods.goods.exportGoodsSku') !!}">
+                                        <el-button type="default">导出商品编码
                                         </el-button>
                                     </a>
                                     </el-col>
@@ -624,26 +624,6 @@
                             that.goods_list[index].is_choose == 1 ? 0 : 1;
                             that.table_loading = false;
                         }
-                    }), function (res) {
-                        console.log(res);
-                        that.table_loading = false;
-                    };
-                },
-
-                //fixby-zhd-导出商品编码
-                export_sku(){
-                    var that = this;
-                    that.table_loading = true;
-                    let json = {};
-                    that.$http.post("{!! yzWebFullUrl('goods.goods.exportGoodsSku') !!}", json).then(response => {
-                        console.log(response);
-                        if (response.data.result == 1) {
-                            that.$message.success('导出成功！');
-                        } else {
-                            that.$message.error(response.data.msg);
-                            that.goods_list[index].is_choose == 1 ? 0 : 1;
-                        }
-                        that.table_loading = false;
                     }), function (res) {
                         console.log(res);
                         that.table_loading = false;
