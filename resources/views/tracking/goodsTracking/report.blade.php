@@ -293,8 +293,8 @@
                                 <td style="text-align: center;">{{ $list->add_purchase_num }}</td>
                                 <td style="text-align: center;">{{ $list->create_order_num }}</td>
 
-                                <td style="text-align: center;">{{ $list->order_Payment_num }}</td>
-                                <td style="text-align: center;">{{ $list->order_Payment_amount }}</td>
+                                <td style="text-align: center;">{{ $list->order_payment_num }}</td>
+                                <td style="text-align: center;">{{ $list->order_payment_amount }}</td>
                                {{-- <td style="text-align: center;">{{ $list->ext }}</td>--}}
                                 <td style="text-align: center;">{{date('Y-m-d H:i:s', $list->create_time)}}</td>
                             </tr>
