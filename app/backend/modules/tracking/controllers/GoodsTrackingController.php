@@ -51,7 +51,7 @@ class GoodsTrackingController extends BaseController
 
         }
 
-        $recordList =  $records->orderBy('view_num', 'desc')->paginate();
+        $recordList =  $records->orderBy('create_time', 'desc')->paginate();
 
         $pager = PaginationHelper::show($recordList->total(), $recordList->currentPage(), $recordList->perPage());
 
