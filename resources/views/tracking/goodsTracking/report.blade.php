@@ -269,8 +269,8 @@
                             <th style='width:12%; text-align: center;'>商品加购件数</th>
                             <th style='width:12%; text-align: center;'>下单件数</th>
                             <th style='width:12%; text-align: center;'>付款件数</th>
-                           {{-- <th style='width:12%; text-align: center;'>付款金额</th>
-                            <th style='width:12%; text-align: center;'>支付转化率</th>--}}
+                           <th style='width:12%; text-align: center;'>付款金额</th>
+                           {{--  <th style='width:12%; text-align: center;'>支付转化率</th>--}}
                             <th style='width:12%; text-align: center;'>统计时间</th>
                         </tr>
                         </thead>
@@ -294,9 +294,9 @@
                                 <td style="text-align: center;">{{ $list->create_order_num }}</td>
 
                                 <td style="text-align: center;">{{ $list->order_Payment_num }}</td>
-                                {{--<td style="text-align: center;">{{ $list->order_Payment_amount }}</td>
-                                <td style="text-align: center;">{{ $list->ext }}</td>--}}
-                                <td style="text-align: center;">{{ $list->created_at }}</td>
+                                <td style="text-align: center;">{{ $list->order_Payment_amount }}</td>
+                               {{-- <td style="text-align: center;">{{ $list->ext }}</td>--}}
+                                <td style="text-align: center;">{{date('Y-m-d H:i:s', $list->create_time)}}</td>
                             </tr>
                         @endforeach
                         </tbody>
