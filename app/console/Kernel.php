@@ -85,9 +85,9 @@ class Kernel extends ConsoleKernel
             ->cron('0 10,15,18,20 * * *');
 
         // 定时执行 埋点统计数据 每到午夜执行一次任务
-        $schedule->command('command:goodstracking')
+        /*$schedule->command('command:goodstracking')
             ->withoutOverlapping()
-            ->cron('0 3 * * *');
+            ->cron('0 3 * * *');*/
 
     }
 
