@@ -1124,16 +1124,34 @@ class GoodsController extends BaseController
 
         $file_name = date('Ymdhis', time()) . '芸众商品编号';
 
-        $export_data[0] = ['商品ID', '商品名称','商品价格','商品编码','规格'];
+        $export_data[0] = ['商品ID', '商品名称','商品价格','商品编码','规格编码'];
+
+        /*$list = [];
+        foreach ($goods as $key => $value) {
+                foreach ($value['has_many_options'] as $k => $v){
+                    $list[] = array(
+                        $value['id'],
+                        $value['title'].'【'.$v['title'].'】',
+                        $value['price'],
+                        $value['goods_sn'].'【'.$v['goods_sn'].'】',
+                        $value['option'] => [
+                            $v['goods_id'],
+                            $v['title'],
+                            $v['product_price'],
+                            $v['goods_sn']
+                        ]
+                    );
+                }
+        }*/
 
         foreach ($goods as $key => $item) {
             $options = '';
             if($item['has_many_options']){
                 foreach ($item['has_many_options'] as $k => $v){
-                    $options .= '【' . $v['title'] . '】'.'【'.$v['goods_sn'].'】';
+                    $options .= '【' . $v['title'] .' : '.$v['goods_sn'].'】';
                 }
             }
-            $export_data[$key + 1] = [$item['id'],$item['title'],$item['price'],$options];
+            $export_data[$key + 1] = [$item['id'],$item['title'],$item['price'],$item['goods_sn'],$options];
         }
 
         \Excel::create($file_name, function ($excel) use ($export_data) {
