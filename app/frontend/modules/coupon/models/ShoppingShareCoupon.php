@@ -19,4 +19,8 @@ class ShoppingShareCoupon extends \app\common\models\coupon\ShoppingShareCoupon
             $builder->uniacid();
         });
     }
+
+    public function hasOneOrder(){
+        return $this->hasOne('App\common\models\Order','id','order_id');
+    }
 }
