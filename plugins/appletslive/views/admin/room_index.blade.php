@@ -11,7 +11,7 @@
     <div class="panel panel-info">
         <ul class="add-shopnav">
             <li @if($type=='1') class="active" @endif>
-                <a href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.index', ['type' => 1])}}">课程列表</a>
+                <a href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.index', ['type' => 1])}}">录播课程</a>
             </li>
             <li @if($type=='2') class="active" @endif>
                 <a href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.index', ['type' => 2])}}">品牌特卖</a>
@@ -68,6 +68,7 @@
                         <th style='width:25%;'>名称</th>
                         <th style='width:25%;'>状态</th>
                         <th style='width:15%;'>订阅人数</th>
+                        <th style='width:15%;'>是否精选</th>
                         <th style='width:15%;'>评论量</th>
                         <th style='width:30%;'>操作</th>
                     </tr>
@@ -96,6 +97,13 @@
                                 @endif
                             </td>
                             <td>{{ $row['subscription_num'] }}</td>
+                            <td>
+                                @if ($row['is_selected'] == 1)
+                                    是
+                                @else
+                                    否
+                                @endif
+                            </td>
                             <td>
                                 <a class='btn btn-default'
                                     href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.commentlist', ['rid' => $row['id']])}}"
