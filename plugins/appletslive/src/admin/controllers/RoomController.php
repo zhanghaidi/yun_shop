@@ -142,6 +142,7 @@ class RoomController extends BaseController
             }
             if($room['type'] == 1){//课程状态 0筹备中 1更新中 2已完结
                 $upd_data['live_status'] = intval($param['live_status']);
+                $upd_data['is_selected'] = intval($param['is_selected']);//是否精选 0否 1是
             }
             DB::table('yz_appletslive_room')->where('id', $id)->update($upd_data);
 

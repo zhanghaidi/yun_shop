@@ -56,6 +56,19 @@
                             </select>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">是否精选</label>
+                        <div class="col-sm-9 col-xs-12 col-md-11">
+                            <label class="radio-inline">
+                                <input type="radio" name="is_selected" value="1" @if ($info['is_selected'] == 1) checked="checked" @endif />
+                               是
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="is_selected" value="0" @if ($info['is_selected'] == 0) checked="checked" @endif />
+                                否
+                            </label>
+                        </div>
+                    </div>
                 @endif
 
                 @if($info['type']=='2')

@@ -11,7 +11,7 @@
     <div class="panel panel-info">
         <ul class="add-shopnav">
             <li @if($type=='1') class="active" @endif>
-                <a href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.index', ['type' => 1])}}">录播</a>
+                <a href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.index', ['type' => 1])}}">课程列表</a>
             </li>
             <li @if($type=='2') class="active" @endif>
                 <a href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.index', ['type' => 2])}}">品牌特卖</a>
