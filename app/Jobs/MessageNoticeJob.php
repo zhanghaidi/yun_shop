@@ -8,6 +8,8 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use EasyWeChat\Foundation\Application;
+use app\common\models\TemplateMsgLog;
+use app\common\models\McMappingFans;
 
 class MessageNoticeJob implements  ShouldQueue
 {
@@ -62,7 +64,6 @@ class MessageNoticeJob implements  ShouldQueue
             $this->pagepath = $pagepath ?:'pages/template/user/user'; //默认小程序用户中心路径
             $this->miniApp = ['miniprogram' => ['appid' => 'wxcaa8acf49f845662', 'pagepath' => $this->pagepath]]; //封装成小程序参数
         }
-        \Log::debug('MessageNoticeJob miniprogram params: ' . json_encode($this->miniApp) . ",openId:{$this->openId}");
     }
 
     /**
@@ -72,7 +73,6 @@ class MessageNoticeJob implements  ShouldQueue
      */
     public function handle()
     {
-        \Log::info('MessageNoticeJob attempts:' . $this->attempts());
         if ($this->attempts() > 1) {
             \Log::info('消息通知测试，执行大于两次终止');
             return true;
@@ -85,7 +85,25 @@ class MessageNoticeJob implements  ShouldQueue
         $app = new Application($options);
         $app = $app->notice;
         $res = $app->uses($this->templateId)->andData($this->noticeData)->andReceiver($this->openId)->andUrl($this->url)->send($this->miniApp);
-        \Log::info('MessageNoticeJob sendRes:' . json_encode($res) . ",openId:{$this->openId},templateId:{$this->templateId}");
+        try{
+            $log_data = [
+                'uniacid' => $this->uniacid,
+                'member_id' => McMappingFans::getUId($this->uniacid,$this->openId)->uid,
+                'template_id' => $this->templateId,
+                'openid' => $this->openId,
+                'message' => json_encode($this->noticeData,320),
+                'weapp_appid' => $this->miniApp['miniprogram']['appid'] ?? '',
+                'weapp_pagepath' => $this->miniApp['miniprogram']['pagepath'] ?? '',
+                'news_link' => $this->url,
+                'respon_code' => $res->errcode,
+                'respon_data' => json_encode($res),
+                'remark' => '公众号消息模板推送',
+                'created_at' => time()
+            ];
+            TemplateMsgLog::insert($log_data);
+        }catch (\ErrorException $e){
+            \Log::info('记录消息发送日志报错，error：' . $e->getMessage());
+        }
         return true;
     }
 }
