@@ -144,7 +144,7 @@ class RoomController extends BaseController
             if($room['type'] == 1){//课程状态 0筹备中 1更新中 2已完结
                 $upd_data['live_status'] = intval($param['live_status']);
                 $upd_data['is_selected'] = intval($param['is_selected']);//是否精选 0否 1是
-                $upd_data['tag'] = intval($param['tag']);//课程标签
+                $upd_data['tag'] = $param['tag'];//课程标签
             }
             DB::table('yz_appletslive_room')->where('id', $id)->update($upd_data);
 
@@ -199,7 +199,7 @@ class RoomController extends BaseController
             if($param['type'] == 1){//课程状态 0筹备中 1更新中 2已完结
                 $ist_data['live_status'] = intval($param['live_status']);
                 $ist_data['is_selected'] = intval($param['is_selected']);//是否精选 0否 1是
-                $ist_data['tag'] = intval($param['tag']);//课程标签
+                $ist_data['tag'] = $param['tag'];//课程标签
             }
             DB::table('yz_appletslive_room')->insert($ist_data);
 
