@@ -1297,7 +1297,7 @@ class LiveController extends BaseController
     public function roomselectedlist()
     {
         $page = request()->get('page', 1);
-        $limit = request()->get('limit', 10);
+        $limit = request()->get('limit', 3);
 
         $page_val = CacheService::getRecordedSelectedRoomList($page, $limit);
         if (!empty($page_val['list'])) {
