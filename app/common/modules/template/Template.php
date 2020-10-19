@@ -262,7 +262,7 @@ class Template
                 'subtitle' => '优惠券过期提醒',
                 'value' => 'coupon_expire',
                 'param' => [
-                    '优惠券名称', '优惠券使用范围', '过期时间'
+                    '优惠券名称', '优惠券使用范围', '过期时间', '优惠券张数', '优惠券优惠金额'
                 ]
             ],
             'buy_goods_message' => [
