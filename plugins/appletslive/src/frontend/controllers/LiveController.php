@@ -1271,7 +1271,6 @@ class LiveController extends BaseController
             $my_subscription = ($this->user_id ? CacheService::getUserSubscription($this->user_id) : []);
             foreach ($page_val['list'] as $k => $v) {
                 $key = 'key_' . $v['id'];
-                $page_val['list'][$k]['tag'] = $numdata[$key]['tag'];
                 $page_val['list'][$k]['hot_num'] = $numdata[$key]['hot_num'];
                 $page_val['list'][$k]['subscription_num'] = $numdata[$key]['subscription_num'];
                 $page_val['list'][$k]['view_num'] = $numdata[$key]['view_num'];
