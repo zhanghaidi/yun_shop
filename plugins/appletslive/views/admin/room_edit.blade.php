@@ -33,6 +33,12 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">课程标签</label>
+                        <div class="col-sm-9 col-xs-12 col-md-11">
+                            <input name="tag" type="text" class="form-control" value="{{ $info['tag'] }}" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-1 control-label">课程封面</label>
                         <div class="col-sm-9 col-xs-12 col-md-10">
                             {!! app\common\helpers\ImageHelper::tplFormFieldImage('cover_img', $info['cover_img']) !!}
