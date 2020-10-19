@@ -21,7 +21,7 @@
                     <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label">成为分销商通知</label>
                         <div class="col-sm-8 col-xs-12">
-                            <select name='yz_notice[become_agent]' class='form-control diy-notice'>
+                            <select name='yz_notice[become_agent]' class='form-control diy-notice' onchange="if($('#become_agent').is(':checked') && confirm('确定要更换成为分销商通知模板？')){message_default('become_agent')}">
                                 <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['become_agent'])) value="{{$set['become_agent']}}"
                                         selected @else value="" @endif>
                                     默认消息模版
@@ -36,7 +36,7 @@
                         </div>
                         <div class="col-sm-2 col-xs-6">
                             <input class="mui-switch mui-switch-animbg" id="become_agent" type="checkbox"
-                                   @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['become_agent']))
+                                   @if($set['become_agent'])
                                    checked
                                    @endif
                                    onclick="message_default(this.id)"/>
@@ -48,7 +48,7 @@
                         <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">下级下单通知</label>
                             <div class="col-sm-8 col-xs-12">
-                                <select name='yz_notice[commission_order]' class='form-control diy-notice'>
+                                <select name='yz_notice[commission_order]' class='form-control diy-notice' onchange="if($('#commission_order').is(':checked') && confirm('确定要更换下级下单通知模板？')){message_default('commission_order')}">
                                     <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['commission_order'])) value="{{$set['commission_order']}}"
                                             selected @else value="" @endif>
                                         默认消息模版
@@ -63,7 +63,7 @@
                             </div>
                             <div class="col-sm-2 col-xs-6">
                                 <input class="mui-switch mui-switch-animbg" id="commission_order" type="checkbox"
-                                       @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['commission_order']))
+                                       @if($set['commission_order'])
                                        checked
                                        @endif
                                        onclick="message_default(this.id)"/>
@@ -76,7 +76,7 @@
                         <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">下级确认收货通知</label>
                             <div class="col-sm-8 col-xs-12">
-                                <select name='yz_notice[commission_order_finish]' class='form-control diy-notice'>
+                                <select name='yz_notice[commission_order_finish]' class='form-control diy-notice' onchange="if($('#commission_order_finish').is(':checked') && confirm('确定要更换下级确认收货通知模板？')){message_default('commission_order_finish')}">
                                     <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['commission_order_finish'])) value="{{$set['commission_order_finish']}}"
                                             selected @else value="" @endif>
                                         默认消息模版
@@ -91,7 +91,7 @@
                             </div>
                             <div class="col-sm-2 col-xs-6">
                                 <input class="mui-switch mui-switch-animbg" id="commission_order_finish" type="checkbox"
-                                       @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['commission_order_finish']))
+                                       @if($set['commission_order_finish'])
                                        checked
                                        @endif
                                        onclick="message_default(this.id)"/>
@@ -105,7 +105,7 @@
                         <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">分销商等级升级通知</label>
                             <div class="col-sm-8 col-xs-12">
-                                <select name='yz_notice[commission_upgrade]' class='form-control diy-notice'>
+                                <select name='yz_notice[commission_upgrade]' class='form-control diy-notice' onchange="if($('#commission_upgrade').is(':checked') && confirm('确定要更换分销商等级升级通知模板？')){message_default('commission_upgrade')}">
                                     <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['commission_upgrade'])) value="{{$set['commission_upgrade']}}"
                                             selected @else value="" @endif>
                                         默认消息模版
@@ -120,7 +120,7 @@
                             </div>
                             <div class="col-sm-2 col-xs-6">
                                 <input class="mui-switch mui-switch-animbg" id="commission_upgrade" type="checkbox"
-                                       @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['commission_upgrade']))
+                                       @if($set['commission_upgrade'])
                                        checked
                                        @endif
                                        onclick="message_default(this.id)"/>
@@ -133,7 +133,7 @@
                         <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">分销佣金结算通知</label>
                             <div class="col-sm-8 col-xs-12">
-                                <select name='yz_notice[statement]' class='form-control diy-notice'>
+                                <select name='yz_notice[statement]' class='form-control diy-notice' onchange="if($('#statement').is(':checked') && confirm('确定要更换分销佣金结算通知模板？')){message_default('statement')}">
                                     <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['statement'])) value="{{$set['statement']}}"
                                             selected @else value="" @endif>
                                         默认消息模版
@@ -148,7 +148,7 @@
                             </div>
                             <div class="col-sm-2 col-xs-6">
                                 <input class="mui-switch mui-switch-animbg" id="statement" type="checkbox"
-                                       @if(\app\common\models\notice\MessageTemp::getIsDefaultById($set['statement']))
+                                       @if($set['statement'])
                                        checked
                                        @endif
                                        onclick="message_default(this.id)"/>
@@ -177,6 +177,7 @@
         var url_close = "{!! yzWebUrl('setting.default-notice.cancel') !!}"
         var postdata = {
             notice_name: name,
+            notice_id: $(select_name).val(),
             setting_name: setting_name
         };
         if ($(id).is(':checked')) {
@@ -193,7 +194,13 @@
         } else {
             //关
             $.post(url_close,postdata,function(data){
-                $(select_name).val('');
+                $(select_name).find("option").eq(0).val('')
+                select2_obj.each(function (key,item) {
+                    if($(this).attr('name') == ('yz_notice[' + name + ']') && $(this).val() != ''){
+                        select2_obj.eq(key).val('').trigger("change");
+                    }
+                })
+                // $(select_name).val('');
                 showPopover($(id),"关闭成功")
             }, "json");
         }
@@ -212,6 +219,6 @@
     }
 </script>
 <script>
-    $('.diy-notice').select2();
+    var select2_obj = $('.diy-notice').select2();
 </script>
 @endsection

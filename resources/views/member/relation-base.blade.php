@@ -49,7 +49,7 @@
                     <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label">获得推广权限通知</label>
                         <div class="col-sm-8 col-xs-12">
-                            <select name='base[member_agent]' class='form-control diy-notice'>
+                            <select name='base[member_agent]' class='form-control diy-notice' onchange="if($('#member_agent').is(':checked') && confirm('确定要更换获得推广权限通知模板？')){message_default('member_agent')}">
                                 <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($base['member_agent'])) value="{{$base['member_agent']}}"
                                         selected @else value="" @endif>
                                     默认消息模板
@@ -63,7 +63,7 @@
                             </select>
                         </div>
                         <input class="mui-switch mui-switch-animbg" id="member_agent" type="checkbox"
-                               @if(\app\common\models\notice\MessageTemp::getIsDefaultById($base['member_agent']))
+                               @if($base['member_agent'])
                                checked @endif
                                onclick="message_default(this.id)"/>
                     </div>
@@ -87,7 +87,7 @@
                     <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label">新增下线通知</label>
                         <div class="col-sm-8 col-xs-12">
-                            <select name='base[member_new_lower]' class='form-control diy-notice'>
+                            <select name='base[member_new_lower]' class='form-control diy-notice' onchange="if($('#member_new_lower').is(':checked') && confirm('确定要更换新增下线通知模板？')){message_default('member_new_lower')}">
                                 <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($base['member_new_lower'])) value="{{$base['member_new_lower']}}"
                                         selected @else value="" @endif>
                                     默认消息模板
@@ -101,7 +101,7 @@
                             </select>
                         </div>
                         <input class="mui-switch mui-switch-animbg" id="member_new_lower" type="checkbox"
-                               @if(\app\common\models\notice\MessageTemp::getIsDefaultById($base['member_new_lower']))
+                               @if($base['member_new_lower'])
                                checked @endif
                                onclick="message_default(this.id)"/>
                     </div>
@@ -272,7 +272,7 @@
         </form>
 
         <script>
-            $('.diy-notice').select2();
+            var select2_obj = $('.diy-notice').select2();
         </script>
         <script>
             function message_default(name) {
@@ -283,6 +283,7 @@
                 var url_close = "{!! yzWebUrl('setting.default-notice.cancel') !!}"
                 var postdata = {
                     notice_name: name,
+                    notice_id: $(select_name).val(),
                     setting_name: setting_name
                 };
                 if ($(id).is(':checked')) {
@@ -299,7 +300,13 @@
                 } else {
                     //关
                     $.post(url_close,postdata,function(data){
-                        $(select_name).val('');
+                        $(select_name).find("option").eq(0).val('')
+                        select2_obj.each(function (key,item) {
+                            if($(this).attr('name') == ('base[' + name + ']')){
+                                select2_obj.eq(key).val('').trigger("change");
+                            }
+                        })
+                        //$(select_name).val('');
                         showPopover($(id),"关闭成功")
                     }, "json");
                 }

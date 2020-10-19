@@ -117,6 +117,8 @@ class AccessToken
 
         if ($forceRefresh || empty($cached)) {
             $token = $this->getTokenFromServer();
+            $this->getCache()->save($cacheKey, $token, 200);
+            return $token;
 
             // XXX: T_T... 7200 - 1500
             $this->getCache()->save($cacheKey, $token[$this->tokenJsonKey], $token['expires_in'] - 1500);
@@ -229,6 +231,9 @@ class AccessToken
      */
     public function getTokenFromServer()
     {
+        $token = \app\common\modules\wechat\UnifyAccesstoken::getAccessToken($this->appId);
+        return $token;
+
         $params = [
             'appid' => $this->appId,
             'secret' => $this->secret,

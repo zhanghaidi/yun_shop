@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 class GoodsTrackingModel extends Model
 {
     protected $table = 'diagnostic_service_goods_tracking';
-    protected $appends = ['type_id','action_id','action_name'];
+    protected $appends = ['type_id','action_id','action_name','user_num','add_num','pay_num'];
 
     public $timestamps = false;
 
@@ -71,6 +71,18 @@ class GoodsTrackingModel extends Model
         return $map[$value];
 
     }
+
+    //添加商品id对应字段
+    public function getGoodsIdAttribute($value)
+    {
+       $this->user_num = self::where('goods_id', $value)->groupBy('user_id')->count();
+       $this->add_num = self::where(['goods_id' => $value, 'action' => 3])->sum('val');
+       $this->pay_num = self::where(['goods_id' => $value,'action' => 5])->count();
+
+       return $value;
+
+    }
+
 
     /**
      * 获取与上报埋点相关的商品。
@@ -212,5 +224,6 @@ class GoodsTrackingModel extends Model
         }
         return $value;
     }
+
 
 }
