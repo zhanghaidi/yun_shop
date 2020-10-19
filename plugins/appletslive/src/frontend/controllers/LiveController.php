@@ -548,34 +548,6 @@ class LiveController extends BaseController
     /************************ 课程/录播 相关接口 BEGIN ************************/
 
     /**
-     * 分页获取课程列表 fixby--wk -20201019 获取精选课程
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function roomselectedlist()
-    {
-        $page = request()->get('page', 1);
-        $limit = request()->get('limit', 10);
-
-        $page_val = CacheService::getRecordedSelectedRoomList($page, $limit);
-        if (!empty($page_val['list'])) {
-            $page_val['list'] = $page_val['list']->toArray();
-            $numdata = CacheService::getRoomNum(array_column($page_val['list'], 'id'));
-            $my_subscription = ($this->user_id ? CacheService::getUserSubscription($this->user_id) : []);
-            foreach ($page_val['list'] as $k => $v) {
-                $key = 'key_' . $v['id'];
-                $page_val['list'][$k]['tag'] = $numdata[$key]['tag'];
-                $page_val['list'][$k]['hot_num'] = $numdata[$key]['hot_num'];
-                $page_val['list'][$k]['subscription_num'] = $numdata[$key]['subscription_num'];
-                $page_val['list'][$k]['view_num'] = $numdata[$key]['view_num'];
-                $page_val['list'][$k]['comment_num'] = $numdata[$key]['comment_num'];
-                $page_val['list'][$k]['has_subscription'] = (array_search($page_val['list'][$k]['id'], $my_subscription) === false) ? false : true;
-            }
-        }
-
-        return $this->successJson('获取成功', $page_val);
-    }
-
-    /**
      * 分页获取课程列表
      * @return \Illuminate\Http\JsonResponse
      */
@@ -1317,4 +1289,32 @@ class LiveController extends BaseController
     }
 
     /************************ 课程/品牌特卖 相关接口 END ************************/
+
+    /**
+     * 分页获取精选课程列表 fixby--wk -20201019 获取精选课程
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function roomselectedlist()
+    {
+        $page = request()->get('page', 1);
+        $limit = request()->get('limit', 10);
+
+        $page_val = CacheService::getRecordedSelectedRoomList($page, $limit);
+        if (!empty($page_val['list'])) {
+            $page_val['list'] = $page_val['list']->toArray();
+            $numdata = CacheService::getRoomNum(array_column($page_val['list'], 'id'));
+            $my_subscription = ($this->user_id ? CacheService::getUserSubscription($this->user_id) : []);
+            foreach ($page_val['list'] as $k => $v) {
+                $key = 'key_' . $v['id'];
+                $page_val['list'][$k]['tag'] = $numdata[$key]['tag'];
+                $page_val['list'][$k]['hot_num'] = $numdata[$key]['hot_num'];
+                $page_val['list'][$k]['subscription_num'] = $numdata[$key]['subscription_num'];
+                $page_val['list'][$k]['view_num'] = $numdata[$key]['view_num'];
+                $page_val['list'][$k]['comment_num'] = $numdata[$key]['comment_num'];
+                $page_val['list'][$k]['has_subscription'] = (array_search($page_val['list'][$k]['id'], $my_subscription) === false) ? false : true;
+            }
+        }
+
+        return $this->successJson('获取成功', $page_val);
+    }
 }
