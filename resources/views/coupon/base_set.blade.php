@@ -119,13 +119,13 @@
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label">通知设置：</label>
                         <div class="col-sm-4 col-xs-6">
                             <select name='coupon[coupon_notice]' class='form-control diy-notice' onchange="if($('#coupon_notice').is(':checked') && confirm('确定要更换优惠券通知设置模板？')){message_default('coupon_notice')}">
-                                <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($coupon['coupon_notice'])) value="{{$coupon['coupon_notice']['coupon_notice']}}"
+                                <option @if(\app\common\models\notice\MessageTemp::getIsDefaultById($coupon['coupon_notice'])) value="{{$coupon['coupon_notice']}}"
                                         selected @else value="" @endif>
                                     默认消息模板
                                 </option>
                                 @foreach ($temp_list as $item)
                                     <option value="{{$item['id']}}"
-                                            @if($coupon['coupon_notice']['coupon_notice'] == $item['id'])
+                                            @if($coupon['coupon_notice'] == $item['id'])
                                             selected
                                             @endif>{{$item['title']}}
                                     </option>
@@ -134,7 +134,7 @@
                         </div>
                         <div class="col-sm-2 col-xs-6">
                             <input class="mui-switch mui-switch-animbg" id="coupon_notice" type="checkbox"
-                                   @if($coupon['coupon_notice']['coupon_notice'])
+                                   yunshop                   @if($coupon['coupon_notice'])
                                    checked
                                    @endif
                                    onclick="message_default(this.id)"/>

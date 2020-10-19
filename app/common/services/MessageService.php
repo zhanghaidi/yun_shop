@@ -56,14 +56,22 @@ class MessageService
             return false;
         }
 
-        $send_msg = $this->getSendMsg($temp, $params);
+//        $send_msg = $this->getSendMsg($temp, $params);
+        $send_msg = MessageTemp::getSendMsg($template_id, $params);
 
         $memberModel = $this->getMemberModel($member_id);
 
         if (!$memberModel) {
             return false;
         }
-        $miniApp = ['miniprogram' => ['appid' => 'wxcaa8acf49f845662', 'pagepath' => $pagepath]];
+        if(!empty($send_msg['miniprogram'])){  //接收自定义的小程序路径
+            $miniApp = ['miniprogram' => $send_msg['miniprogram']];
+            unset($send_msg['miniprogram']);
+        }elseif(!empty($url)){
+            $miniApp = [];
+        }else{
+            $miniApp = ['miniprogram' => ['appid' => 'wxcaa8acf49f845662', 'pagepath' => $pagepath]];
+        }
         $config = $this->getConfiguration($uniacid);
 
         try {
@@ -76,7 +84,23 @@ class MessageService
             $app = $app->andUrl($url);
             //$app = $app->andminiApp($miniApp);
             //$miniApp = ['miniprogram' => ['appid' => 'wxcaa8acf49f845662', 'pagepath' => 'pages/template/rumours/index']]
-            $app->send($miniApp);
+            $res = $app->send($miniApp);
+
+            $log_data = [
+                'uniacid' => $this->uniacid,
+                'member_id' => $memberModel->hasOneFans->uid,
+                'template_id' => $template_id,
+                'openid' => $memberModel->hasOneFans->openid,
+                'message' => json_encode($send_msg,320),
+                'weapp_appid' => $miniApp['miniprogram']['appid'] ?? '',
+                'weapp_pagepath' => $miniApp['miniprogram']['pagepath'] ?? '',
+                'news_link' => $url,
+                'respon_code' => $res->errcode,
+                'respon_data' => json_encode($res),
+                'remark' => '公众号消息模板推送',
+                'created_at' => time()
+            ];
+            TemplateMsgLog::insert($log_data);
 
         } catch (Exception $error) {
 

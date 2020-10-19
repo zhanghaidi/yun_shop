@@ -85,7 +85,7 @@ class DefaultNoticeController extends BaseController
 
         //fixby-zlt-templateset 2020-10-13
         if(!empty($notice_id)){
-            $item[$notice_name] = $notice_id;
+            $item = $notice_id;
         }else {
             if ($has_template_id) {
                 $item = (string)$message_template->id;
