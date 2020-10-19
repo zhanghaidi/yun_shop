@@ -472,7 +472,8 @@
     <label class="col-xs-12 col-sm-3 col-md-2 control-label">发放总数</label>
     <div class="col-sm-9 col-xs-12">
         <input type="text" name="coupon[total]" class="form-control" value="{{isset($coupon['total']) ? $coupon['total'] : 0}}"  />
-        <span class='help-block' >优惠券总数量，没有则不能领取或发放, -1 为不限制数量</span>
+{{--        <span class='help-block' >优惠券总数量，没有则不能领取或发放, -1 为不限制数量</span>--}}
+        <span class='help-block' >优惠券总数量，必须为大于0的整数</span>
     </div>
 </div>
 　

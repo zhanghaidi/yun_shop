@@ -78,7 +78,7 @@ class Coupon extends \app\common\models\Coupon
             'deduct' => 'required|'.$deduct,
             'discount' => 'required|'.$discount,
             'get_max' => 'required|integer',
-            'total' => 'required|integer',
+            'total' => 'required|integer|min:1',
             'resp_title' => 'nullable|string',
             'resp_desc' => 'nullable|string',
             'resp_url' => 'nullable|url',

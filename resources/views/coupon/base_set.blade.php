@@ -33,16 +33,26 @@
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label">优惠券转让：</label>
                         <div class="col-sm-4 col-xs-6">
                             <label class="radio-inline">
-                                <input type="radio" name="coupon[transfer]" value="1" @if ($coupon['transfer'] == 1) checked="checked" @endif />
+                                <input disabled="true" type="radio" name="coupon[transfer]" value="1" @if ($coupon['transfer'] == 1) checked="checked" @endif />
                                 开启
                             </label>
                             <label class="radio-inline">
-                                <input type="radio" name="coupon[transfer]" value="0" @if ($coupon['transfer'] == 0) checked="checked" @endif />
+                                <input disabled="true" type="radio" name="coupon[transfer]" value="0" @if ($coupon['transfer'] == 0) checked="checked" @endif />
                                 关闭
                             </label>
                             <div class="help-block">
-                                优惠券转让：会员之间可以转让自己拥有的优惠券。
+                                优惠券转让：会员之间可以转让自己拥有的优惠券，默认关闭，不允许修改。
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class='panel-body'>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">优惠券转让锁定时间：</label>
+                        <div class="col-sm-4 col-xs-6">
+                            <input type="text" name="coupon[lock_time]" value="{{$coupon['lock_time']}}" />&nbsp;分钟
+                            <span class="help-block">单个优惠券可以开启优惠券转让,锁定时间对其生效,单位为分钟</span>
                         </div>
                     </div>
                 </div>
@@ -124,7 +134,7 @@
                         </div>
                         <div class="col-sm-2 col-xs-6">
                             <input class="mui-switch mui-switch-animbg" id="coupon_notice" type="checkbox"
-                                   @if($coupon['coupon_notice'])
+                                   yunshop                   @if($coupon['coupon_notice'])
                                    checked
                                    @endif
                                    onclick="message_default(this.id)"/>
