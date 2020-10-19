@@ -16,6 +16,8 @@ use EasyWeChat\Foundation\Application;
 use app\Jobs\MiniMessageNoticeJob;
 use app\common\models\MemberMiniAppModel;
 use app\common\models\FormId;
+use app\common\models\TemplateMsgLog;
+
 class MessageService
 {
 
@@ -57,7 +59,7 @@ class MessageService
         }
 
 //        $send_msg = $this->getSendMsg($temp, $params);
-        $send_msg = MessageTemp::getSendMsg($template_id, $params);
+        $send_msg = MessageTemp::getSendMsg($temp_id, $params);
 
         $memberModel = $this->getMemberModel($member_id);
 
@@ -87,7 +89,7 @@ class MessageService
             $res = $app->send($miniApp);
 
             $log_data = [
-                'uniacid' => $this->uniacid,
+                'uniacid' => $uniacid,
                 'member_id' => $memberModel->hasOneFans->uid,
                 'template_id' => $template_id,
                 'openid' => $memberModel->hasOneFans->openid,
