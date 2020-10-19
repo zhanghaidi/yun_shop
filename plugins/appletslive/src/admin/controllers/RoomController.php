@@ -140,6 +140,7 @@ class RoomController extends BaseController
             if (DB::table('yz_appletslive_room')->where('name', $upd_data['name'])->where('id', '<>', $id)->first()) {
                 return $this->message('名称已存在', Url::absoluteWeb(''), 'danger');
             }
+//            {{--fixby-wk-课程设置精选 20201019--}}
             if($room['type'] == 1){//课程状态 0筹备中 1更新中 2已完结
                 $upd_data['live_status'] = intval($param['live_status']);
                 $upd_data['is_selected'] = intval($param['is_selected']);//是否精选 0否 1是
