@@ -99,9 +99,9 @@
                             <td>{{ $row['subscription_num'] }}</td>
                             <td>
                                 @if ($row['is_selected'] == 1)
-                                    是
+                                    <span style="color: green">是</span>
                                 @else
-                                    否
+                                    <span style="color: red">否</span>
                                 @endif
                             </td>
                             <td>
