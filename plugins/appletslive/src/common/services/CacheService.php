@@ -33,6 +33,7 @@ class CacheService
     protected static $uniacid = 45;
 
     public static $cache_keys = [
+        'recorded.roomselectedlist' => 'appletslive_api_recorded_roomselectedlist',
         'recorded.roomlist' => 'appletslive_api_recorded_roomlist',
         'recorded.roominfo' => 'appletslive_api_recorded_roominfo',
         'recorded.roomreplays' => 'appletslive_api_recorded_roomreplays',
@@ -49,6 +50,65 @@ class CacheService
     ];
 
     /************************ 课程/录播 相关缓存处理 BEGIN ************************/
+
+    /**
+     * 获取录播课程列表缓存数据
+     * @param int $room_id
+     * @return mixed|null
+     */
+    public static function getRecordedSelectedRoomList($page, $limit = 10)
+    {
+        $page_key = "$limit|$page";
+        $cache_key = self::$cache_keys['recorded.roomselectedlist'];
+        $cache_val = Cache::get($cache_key);
+        if (!$cache_val || !array_key_exists($page_key, $cache_val)) {
+            self::setRecordedSelectedRoomList($page, $limit);
+        }
+        $cache_val = Cache::get($cache_key);
+        return $cache_val[$page_key];
+    }
+
+    /**
+     * 设置录播课程列表缓存数据
+     *
+     * @param $page
+     * @param $limit
+     */
+    public static function setRecordedSelectedRoomList($page, $limit)
+    {
+        $page_key = "$limit|$page";
+        $cache_key = self::$cache_keys['recorded.roomselectedlist'];
+        $cache_val = Cache::get($cache_key);
+
+        $offset = ($page - 1) * $limit;
+        $total = DB::table('yz_appletslive_room')
+            ->where('type', 1)
+            ->where('is_selected', 1)
+            ->where('delete_time', 0)
+            ->count();
+        $list = DB::table('yz_appletslive_room')
+            ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag')
+            ->where('type', 1)
+            ->where('is_selected', 1)
+            ->where('delete_time', 0)
+            ->orderBy('sort', 'desc')
+            ->orderBy('id', 'asc')
+            ->offset($offset)
+            ->limit($limit)
+            ->get();
+        if (!$cache_val) {
+            $cache_val = [];
+        }
+        $cache_val[$page_key] = [
+            'total' => $total,
+            'totalPage' => ceil($total / $limit),
+            'list' => $list,
+        ];
+
+        Cache::forget($cache_key);
+        Cache::add($cache_key, $cache_val, 1);
+    }
+
 
     /**
      * 获取录播课程列表缓存数据
@@ -85,7 +145,7 @@ class CacheService
             ->where('delete_time', 0)
             ->count();
         $list = DB::table('yz_appletslive_room')
-            ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num')
+            ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag')
             ->where('type', 1)
             ->where('delete_time', 0)
             ->orderBy('sort', 'desc')
