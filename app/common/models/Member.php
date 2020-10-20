@@ -831,9 +831,9 @@ class Member extends BackendModel
         switch ($type) {
             case 2:
                 $mini_app = MemberMiniAppModel::getFansById($member_id);
-                return $mini_app->openid;
-//                $mini_app = DB::table('diagnostic_service_user')->where(['ajy_uid'=>$member_id])->first();
-//                return $mini_app['openid'];
+                //return $mini_app->openid;
+                //fixby-zhd-支付小程序拆分shop_openid
+                return $mini_app->shop_openid;
                 break;
             case 9:
                 $mini_app = MemberWechatModel::getFansById($member_id);
