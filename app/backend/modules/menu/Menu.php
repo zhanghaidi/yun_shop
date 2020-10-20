@@ -505,7 +505,7 @@ class Menu
                                 'parents'    => ['Goods', 'goods_goods',],
                             ],
                             'goods_goods_calprice'           => [
-                                'name'       => '添加商品',
+                                'name'       => '商品价格校验',
                                 'url'        => 'goods.goods.calculationGoodsPrice',
                                 'url_params' => '',
                                 'permit'     => 1,
@@ -515,7 +515,7 @@ class Menu
                                 'parents'    => ['Goods', 'goods_goods'],
                             ],
                             'goods_goods_checkputaway'       => [
-                                'name'       => '商品上架',
+                                'name'       => '商品上架校验',
                                 'url'        => 'goods.goods.checkPutAway',
                                 'url_params' => '',
                                 'permit'     => 1,
