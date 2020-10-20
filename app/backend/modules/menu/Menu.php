@@ -504,6 +504,27 @@ class Menu
                                 'item'       => 'goods_goods_destroy',
                                 'parents'    => ['Goods', 'goods_goods',],
                             ],
+                            'goods_goods_calprice'           => [
+                                'name'       => '添加商品',
+                                'url'        => 'goods.goods.calculationGoodsPrice',
+                                'url_params' => '',
+                                'permit'     => 1,
+                                'menu'       => 0,
+                                'icon'       => '',
+                                'item'       => 'goods_goods_calprice',
+                                'parents'    => ['Goods', 'goods_goods'],
+                            ],
+                            'goods_goods_checkputaway'       => [
+                                'name'       => '商品上架',
+                                'url'        => 'goods.goods.checkPutAway',
+                                'url_params' => '',
+                                'permit'     => 1,
+                                'menu'       => 0,
+                                'icon'       => '',
+                                'sort'       => 0,
+                                'item'       => 'goods_goods_checkputaway',
+                                'parents'    => ['Goods', 'goods_goods',],
+                            ],
                             'goods_goods_copy'          => [
                                 'name'       => '复制商品',
                                 'url'        => 'goods.goods.copy',
@@ -5002,6 +5023,17 @@ class Menu
                         'parents'    => ['system',],
                     ]
                 ]
+            ],
+            'message_log'      => [
+                'name'       => '模板消息日志',
+                'url'        => 'setting.message-log.index',
+                'url_params' => '',
+                'permit'     => 1,
+                'menu'       => 1,
+                'icon'       => 'fa-list-ul',
+                'sort'       => '5',
+                'item'       => 'log-viewer',
+                'parents'    => ['system',],
             ],
 //    'log_viewer'      => [
 //        'name'              => '系统日志',
