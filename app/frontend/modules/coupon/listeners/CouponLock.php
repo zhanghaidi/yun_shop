@@ -34,12 +34,12 @@ class CouponLock
 
     public function processLockedCoupon()
     {
-        $lockedCoupons = MemberCoupon::whereBetween('lock_expire_time', [1, time()])->where([['used','=',0]])->get()->toArray();
+        $lockedCoupons = MemberCoupon::uniacid()->whereBetween('lock_expire_time', [1, time()])->where([['used','=',0]])->get()->toArray();
 
         foreach ($lockedCoupons as $coupon) {
             Log::info('解除优惠券转让锁定,优惠券ID:' . $coupon['id']);
             try{
-                MemberCoupon::where(id,$coupon['id'])->update(['lock_expire_time' => 0]);
+                MemberCoupon::uniacid()->where(id,$coupon['id'])->update(['lock_expire_time' => 0]);
             }catch (\ErrorException $exception){
                 Log::error('processLockedCoupon error:' . $exception->getMessage());
             }
