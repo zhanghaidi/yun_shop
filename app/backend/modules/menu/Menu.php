@@ -504,6 +504,27 @@ class Menu
                                 'item'       => 'goods_goods_destroy',
                                 'parents'    => ['Goods', 'goods_goods',],
                             ],
+                            'goods_goods_calprice'           => [
+                                'name'       => '商品价格校验',
+                                'url'        => 'goods.goods.calculationGoodsPrice',
+                                'url_params' => '',
+                                'permit'     => 1,
+                                'menu'       => 0,
+                                'icon'       => '',
+                                'item'       => 'goods_goods_calprice',
+                                'parents'    => ['Goods', 'goods_goods'],
+                            ],
+                            'goods_goods_checkputaway'       => [
+                                'name'       => '商品上架校验',
+                                'url'        => 'goods.goods.checkPutAway',
+                                'url_params' => '',
+                                'permit'     => 1,
+                                'menu'       => 0,
+                                'icon'       => '',
+                                'sort'       => 0,
+                                'item'       => 'goods_goods_checkputaway',
+                                'parents'    => ['Goods', 'goods_goods',],
+                            ],
                             'goods_goods_copy'          => [
                                 'name'       => '复制商品',
                                 'url'        => 'goods.goods.copy',
@@ -560,18 +581,18 @@ class Menu
                                 'parents'    => ['Goods', 'goods_goods',],
                             ],
 
-//                            'goods_goods_import' => [
-//                                'name'       => 'excel导入商品',
-//                                'url'        => 'goods.goods.import',
-//                                'url_params' => '',
-//                                'permit'     => 1,
-//                                'menu'       => 1,
-//                                'icon'       => '',
-//                                'sort'       => 0,
-//                                'item'       => 'goods_goods_import',
-//                                'parents'    => ['Goods', 'goods_goods',],
+                            'goods_goods_export' => [
+                                'name'       => 'excel导出商品编码',
+                                'url'        => 'goods.goods.exportGoodsSku',
+                                'url_params' => '',
+                                'permit'     => 1,
+                                'menu'       => 1,
+                                'icon'       => '',
+                                'sort'       => 0,
+                                'item'       => 'goods_goods_export',
+                                'parents'    => ['Goods', 'goods_goods',],
 
-//                            ],
+                            ],
 
                             'goods_goods_batch_property' => [
                                 'name'       => '批量上下架',
@@ -4764,7 +4785,17 @@ class Menu
                         'item'       => 'operation_log',
                         'parents'    => ['system',],
                     ],
-
+                    'message_log'      => [
+                        'name'       => '模板消息日志',
+                        'url'        => 'setting.message-log.index',
+                        'url_params' => '',
+                        'permit'     => 1,
+                        'menu'       => 1,
+                        'icon'       => 'fa-list-ul',
+                        'sort'       => '5',
+                        'item'       => 'log-viewer',
+                        'parents'    => ['system',],
+                    ],
                 ],
             ],
         ];

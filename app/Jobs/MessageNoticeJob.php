@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use EasyWeChat\Foundation\Application;
 use app\common\models\TemplateMsgLog;
 use app\common\models\McMappingFans;
+use Illuminate\Support\Facades\Log;
 
 class MessageNoticeJob implements  ShouldQueue
 {
@@ -57,9 +58,11 @@ class MessageNoticeJob implements  ShouldQueue
         //fixby-zlt-miniprogram 2020-10-11 优化小程序路径
         if(!empty($noticeData['miniprogram'])){  //接收自定义的小程序路径
             $this->miniApp = ['miniprogram' => $noticeData['miniprogram']];
-            unset($noticeData['miniprogram']);
-        }elseif(!empty($this->url)){
+            unset($this->noticeData['miniprogram']);
+        }elseif(!empty($noticeData['news_link'])){
+            $this->url = $noticeData['news_link'];
             $this->miniApp = [];
+            unset($this->noticeData['news_link']);
         }else{
             $this->pagepath = $pagepath ?:'pages/template/user/user'; //默认小程序用户中心路径
             $this->miniApp = ['miniprogram' => ['appid' => 'wxcaa8acf49f845662', 'pagepath' => $this->pagepath]]; //封装成小程序参数
@@ -74,7 +77,7 @@ class MessageNoticeJob implements  ShouldQueue
     public function handle()
     {
         if ($this->attempts() > 1) {
-            \Log::info('消息通知测试，执行大于两次终止');
+            Log::info('消息通知测试，执行大于两次终止');
             return true;
         }
         $res = AccountWechats::getAccountByUniacid($this->uniacid);
@@ -102,7 +105,7 @@ class MessageNoticeJob implements  ShouldQueue
             ];
             TemplateMsgLog::insert($log_data);
         }catch (\ErrorException $e){
-            \Log::info('记录消息发送日志报错，error：' . $e->getMessage());
+            Log::info('记录消息发送日志报错，error：' . $e->getMessage());
         }
         return true;
     }
