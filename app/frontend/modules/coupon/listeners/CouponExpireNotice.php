@@ -52,34 +52,57 @@ class CouponExpireNotice
         $this->setLog['current_d'] = date('d');
         Setting::set('shop.coupon_log', $this->setLog);
 
-        $memberCoupons = MemberCoupon::getExpireCoupon($this->set)->get();
+        $expiredCoupon = [];
+        $present = time();
+        foreach(\app\common\models\MemberCoupon::uniacid()->where([['used','=',0]])->cursor() as $coupon) {
+            if ($coupon->time_end == '不限时间') {
+                continue;
+            }
+            $end = strtotime($coupon->time_end) - $this->set['delayed'] * 86400;
+            if ($present < $end || strtotime($coupon->time_end) < $present) {
+                continue;
+            }
+            $t_key = $coupon->uid . '_' . $coupon->coupon_id;
+            if (key_exists($t_key, $expiredCoupon)) {
+                if($expiredCoupon[$t_key]['time_end'] > $coupon->time_end)
+                    $expiredCoupon[$t_key]['time_end'] = $coupon->time_end;
+                $expiredCoupon[$t_key]['total_num'] += 1;
+                if ($coupon->belongsToCoupon->coupon_method == 1) {
+                    $expiredCoupon[$t_key]['total_detect'] += $coupon->belongsToCoupon->deduct;
+                }
+            } else {
+                $expiredCoupon[$t_key] = $coupon->toArray();
+                $expiredCoupon[$t_key]['total_num'] = 1;
+                if ($coupon->belongsToCoupon->coupon_method == 1) {
+                    $expiredCoupon[$t_key]['total_detect'] = $coupon->belongsToCoupon->deduct;
+                } else {
+                    $expiredCoupon[$t_key]['total_detect'] = $coupon->belongsToCoupon->discount;
+                }
+            }
+        }
 
-        foreach ($memberCoupons as $memberCoupon) {
-            if ($memberCoupon->time_end == '不限时间') {
-                continue;
-            }
-            $present = time();
-            $end = strtotime(date('Y-m-d H:i:s', strtotime($memberCoupon->time_end) - $this->set['delayed'] * 86400));
-            if ($present < $end || strtotime($memberCoupon->time_end) < $present) {
-                continue;
-            }
-            $member = Member::getMemberByUid($memberCoupon->uid)->with('hasOneFans')->first();
+        foreach ($expiredCoupon as $value) {
+            $member = Member::getMemberByUid($value['uid'])->with('hasOneFans')->first();
             $couponData = [
-                'name' => $memberCoupon->belongsToCoupon->name,
-                'api_limit' => $this->apiLimit($memberCoupon->belongsToCoupon),
-                'time_end' => $memberCoupon->time_end
+                'name' => $value['belongs_to_coupon']['name'],
+                'api_limit' => $this->apiLimit($value['belongs_to_coupon']),
+                'time_end' => $value['time_end'],
+                'total_num' => $value['total_num'],
+                'total_detect' => $value['total_detect'],
             ];
             $this->sendNotice($couponData, $member);
         }
+
+        Log::info('------------------------ 优惠券过期提醒 END -------------------------------');
     }
 
-    public function sendNotice($ouponData, $member)
+    public function sendNotice($couponData, $member)
     {
         if ($member->hasOneFans->follow == 1) {
 //            $message = $this->set['expire'];
-//            $message = str_replace('[优惠券名称]', $ouponData['name'], $message);
-//            $message = str_replace('[优惠券使用范围]', $ouponData['api_limit'], $message);
-//            $message = str_replace('[过期时间]', $ouponData['time_end'], $message);
+//            $message = str_replace('[优惠券名称]', $couponData['name'], $message);
+//            $message = str_replace('[优惠券使用范围]', $couponData['api_limit'], $message);
+//            $message = str_replace('[过期时间]', $couponData['time_end'], $message);
 //            $msg = [
 //                "first" => '您好',
 //                "keyword1" => $this->set['expire_title'] ? $this->set['expire_title'] : '优惠券过期提醒',
@@ -92,10 +115,12 @@ class CouponExpireNotice
                 return;
             }
             $params = [
-                ['name' => '优惠券名称', 'value' => $ouponData['name']],
+                ['name' => '优惠券名称', 'value' => $couponData['name']],
                 ['name' => '昵称', 'value' => $member['nickname']],
-                ['name' => '优惠券使用范围', 'value' => $ouponData['api_limit']],
-                ['name' => '过期时间', 'value' => $ouponData['time_end']],
+                ['name' => '优惠券使用范围', 'value' => $couponData['api_limit']],
+                ['name' => '过期时间', 'value' => $couponData['time_end']],
+                ['name' => '优惠券张数', 'value' => $couponData['total_num']],
+                ['name' => '优惠券优惠金额', 'value' => $couponData['total_detect']],
             ];
             $msg = MessageTemp::getSendMsg($temp_id, $params);
             if (!$msg) {
@@ -105,7 +130,6 @@ class CouponExpireNotice
             Log::info('优惠券过期提醒 running : Message = '.\GuzzleHttp\json_encode($msg));
             \app\common\services\MessageService::notice(MessageTemp::$template_id, $msg, $member->uid, $this->uniacid);
 
-            Log::info('------------------------ 优惠券过期提醒 END -------------------------------');
         }
         return;
     }
@@ -113,7 +137,7 @@ class CouponExpireNotice
     public function apiLimit($coupon)
     {
         $api_limit = '';
-        switch ($coupon->use_type) {
+        switch ($coupon['use_type']) {
             case Coupon::COUPON_SHOP_USE:
                 $api_limit = '商城通用';
                 break;
