@@ -131,7 +131,10 @@ class MessageTemp extends BaseModel
                     'appid' => $temp->appid,
                     'pagepath' => self::replaceTemplate($temp->pagepath, $params),
                 ];
+            }elseif (!empty($temp->news_link)){
+                $msg['news_link'] = $temp->news_link;
             }
+            
             foreach ($temp->data as $row) {
                 $msg[$row['keywords']] = [
                     'value' => self::replaceTemplate($row['value'], $params),

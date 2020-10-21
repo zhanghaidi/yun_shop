@@ -18,12 +18,36 @@ class TemplateMsgLog extends BaseModel
 
     public $dates = ['deleted_at'];
 
-    protected $guarded = [];
+    protected $guarded = ['id'];
 
     public $selected;
 
+    protected $casts = ['created_at' => 'date'];
+
     protected $hidden = ['uniacid', 'deleted_at'];
 
+    public function scopeSearch(Builder $query, $search)
+    {
+        $model = $query->uniacid();
+
+        if ($search['member_id']) {
+            $model->where('member_id', '=', $search['member_id']);
+        }
+
+        if ($search['tpl_id']) {
+            $model->where('template_id', '=', $search['tpl_id']);
+        }
+
+        if ($search['is_time']) {
+            if ($search['time']['start'] != '请选择' && $search['time']['end'] != '请选择') {
+                $range = [strtotime($search['time']['start']), strtotime($search['time']['end'])];
+                $model->whereBetween('created_at', $range);
+            }
+        }
+
+        return $model;
+
+    }
 
     /**
      * 定义字段名
@@ -73,7 +97,13 @@ class TemplateMsgLog extends BaseModel
      */
     public function member()
     {
-        return $this->belongsTo(Member::class, 'member_id');
+        return $this->belongsTo(\app\common\models\McMappingFans::class, 'member_id');
+    }
+
+    static public function del($start, $end)
+    {
+        $range = [strtotime($start), strtotime($end)];
+        return static::whereBetween('created_at', $range);
     }
 
 }
