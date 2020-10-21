@@ -50,6 +50,10 @@ class WechatPay extends Pay
         } else {
             $client_type = $payType;
         }
+
+        //fixbyzhd-支付改造兼容 20201021
+        $app_type = \YunShop::request()->app_type;
+        \Log::debug('-----wechat支付走了这里-----'. $app_type.'::::``'.$this->pay_type);
         $openid = Member::getOpenIdForType(\YunShop::app()->getMemberId(), $client_type);
         \Log::debug('-----pay_member_id-----'. \YunShop::app()->getMemberId());
         //不同支付类型选择参数
