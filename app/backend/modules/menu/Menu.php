@@ -4785,7 +4785,17 @@ class Menu
                         'item'       => 'operation_log',
                         'parents'    => ['system',],
                     ],
-
+                    'message_log'      => [
+                        'name'       => '模板消息日志',
+                        'url'        => 'setting.message-log.index',
+                        'url_params' => '',
+                        'permit'     => 1,
+                        'menu'       => 1,
+                        'icon'       => 'fa-list-ul',
+                        'sort'       => '5',
+                        'item'       => 'log-viewer',
+                        'parents'    => ['system',],
+                    ],
                 ],
             ],
         ];
@@ -5023,17 +5033,6 @@ class Menu
                         'parents'    => ['system',],
                     ]
                 ]
-            ],
-            'message_log'      => [
-                'name'       => '模板消息日志',
-                'url'        => 'setting.message-log.index',
-                'url_params' => '',
-                'permit'     => 1,
-                'menu'       => 1,
-                'icon'       => 'fa-list-ul',
-                'sort'       => '5',
-                'item'       => 'log-viewer',
-                'parents'    => ['system',],
             ],
 //    'log_viewer'      => [
 //        'name'              => '系统日志',
