@@ -46,6 +46,13 @@
                             </select>
                         </div>
                         <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                            <select name="search[is_selected]" class="form-control">
+                                <option value="">是否精选</option>
+                                <option value="1" @if($request['search']['is_selected']=='1') selected @endif>是</option>
+                                <option value='0' @if($request['search']['is_selected']=='0') selected @endif>否</option>
+                            </select>
+                        </div>
+                        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
                             <button type="submit" class="btn btn-success"><i class="fa fa-search"></i>搜索</button>
                         </div>
                     </div>

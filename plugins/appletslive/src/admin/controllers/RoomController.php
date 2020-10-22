@@ -64,6 +64,13 @@ class RoomController extends BaseController
                         $where[] = ['delete_time', '=', 0];
                     }
                 }
+                if (trim($search['is_selected']) !== '') {
+                    if ($search['is_selected'] === '0') {
+                        $where[] = ['is_selected', '=', 0];
+                    } else {
+                        $where[] = ['is_selected', '=', 1];
+                    }
+                }
             }
             $list = Room::where($where)
                 ->orderBy('sort', 'desc')
