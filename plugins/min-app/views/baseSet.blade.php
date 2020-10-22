@@ -33,6 +33,20 @@
                                 <input type="text" name="min[secret]" class="form-control" value="{{ $set['secret'] }}"/>
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">商城App ID</label>
+                            <div class="col-sm-9 col-xs-12">
+                                <input type="text" name="min[shop_key]" class="form-control" value="{{ $set['shop_key'] }}"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">商城App Secret</label>
+                            <div class="col-sm-9 col-xs-12">
+                                <input type="text" name="min[shop_secret]" class="form-control" value="{{ $set['shop_secret'] }}"/>
+                            </div>
+                        </div>
+
                     </div>
                     <div class='panel-heading'>腾讯位置服务</div>
                     <div class='panel-body'>
