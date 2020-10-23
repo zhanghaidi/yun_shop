@@ -223,11 +223,17 @@ class ShareCouponController extends ApiController
 
         $order_ids = explode('_', rtrim(\YunShop::request()->order_ids, '_'));
 
-        $share_model = ShoppingShareCoupon::whereIn('order_id', $order_ids)->get();
+        $share_model = ShoppingShareCoupon::whereIn('order_id', $order_ids)->with('hasOneOrder')->get();
 
 
         if ($share_model->isEmpty()) {
             throw new AppException('无分享优惠卷');
+        }
+
+        foreach ($share_model as $share){
+            if($share->hasOneOrder->hasOneRefundApply){
+                throw new AppException('该订单已申请退款');
+            }
         }
 
         $set = \Setting::get('coupon.shopping_share');
