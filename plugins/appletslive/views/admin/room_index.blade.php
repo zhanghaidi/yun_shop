@@ -11,7 +11,7 @@
     <div class="panel panel-info">
         <ul class="add-shopnav">
             <li @if($type=='1') class="active" @endif>
-                <a href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.index', ['type' => 1])}}">录播</a>
+                <a href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.index', ['type' => 1])}}">录播课程</a>
             </li>
             <li @if($type=='2') class="active" @endif>
                 <a href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.index', ['type' => 2])}}">品牌特卖</a>
@@ -46,6 +46,13 @@
                             </select>
                         </div>
                         <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                            <select name="search[is_selected]" class="form-control">
+                                <option value="">是否精选</option>
+                                <option value="1" @if($request['search']['is_selected']=='1') selected @endif>是</option>
+                                <option value='0' @if($request['search']['is_selected']=='0') selected @endif>否</option>
+                            </select>
+                        </div>
+                        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
                             <button type="submit" class="btn btn-success"><i class="fa fa-search"></i>搜索</button>
                         </div>
                     </div>
@@ -68,6 +75,7 @@
                         <th style='width:25%;'>名称</th>
                         <th style='width:25%;'>状态</th>
                         <th style='width:15%;'>订阅人数</th>
+                        <th style='width:15%;'>是否精选</th>
                         <th style='width:15%;'>评论量</th>
                         <th style='width:30%;'>操作</th>
                     </tr>
@@ -96,6 +104,13 @@
                                 @endif
                             </td>
                             <td>{{ $row['subscription_num'] }}</td>
+                            <td>
+                                @if ($row['is_selected'] == 1)
+                                    <span style="color: green">是</span>
+                                @else
+                                    <span style="color: red">否</span>
+                                @endif
+                            </td>
                             <td>
                                 <a class='btn btn-default'
                                     href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.commentlist', ['rid' => $row['id']])}}"
