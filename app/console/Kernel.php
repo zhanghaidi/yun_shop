@@ -11,7 +11,6 @@ use app\console\Commands\CourseReminder;
 use app\console\Commands\NotPaidOrderNotice;
 use app\console\Commands\SyncWxappLiveRoom;
 use app\console\Commands\SignReminder;
-use app\Console\Commands\GoodsTracking;
 
 class Kernel extends ConsoleKernel
 {
@@ -31,7 +30,6 @@ class Kernel extends ConsoleKernel
         'app\console\Commands\MigrateMemberDistributor',
         'app\console\Commands\UpdateInviteCode',
         'app\console\Commands\SignReminder',
-        'app\console\Commands\GoodsTracking',
         WriteFrame::class,
         CourseReminder::class,
         NotPaidOrderNotice::class,
@@ -83,11 +81,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('command:signreminder')
             ->withoutOverlapping()
             ->cron('0 10,15,18,20 * * *');
-
-        // 定时执行 埋点统计数据 每到午夜执行一次任务
-        $schedule->command('command:goodstracking')
-            ->withoutOverlapping()
-            ->cron('0 3 * * *');
 
     }
 

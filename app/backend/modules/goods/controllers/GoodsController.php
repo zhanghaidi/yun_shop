@@ -1114,6 +1114,44 @@ class GoodsController extends BaseController
     }
 
     /**
+     * fixby-zhd-商品编码导出 2020-10-16 11:15
+     *
+     */
+    public function exportGoodsSku()
+    {
+        $goods = Goods::where('status',1)->select('id', 'title','goods_sn','price','deleted_at')->with('hasManyOptions')->get()->toArray();
+
+        $file_name = date('Ymdhis', time()) . '芸众商品编号';
+
+        $export_data[0] = ['商品ID', '商品名称','商品价格','商品编码','规格'];
+
+        foreach ($goods as $key => $item) {
+            $options = '';
+            if($item['has_many_options']){
+                foreach ($item['has_many_options'] as $k => $v){
+                    $options .= '【' . $v['title'] .' : '.$v['goods_sn'].'】';
+                }
+            }
+            $export_data[$key + 1] = [$item['id'],$item['title'],$item['price'],$item['goods_sn'],$options];
+        }
+
+        \Excel::create($file_name, function ($excel) use ($export_data) {
+            $excel->setTitle('Office 2005 XLSX Document');
+            $excel->setCreator('芸众商城商品编号');
+            $excel->setLastModifiedBy("芸众商城商品编号");
+            $excel->setSubject("Office 2005 XLSX Test Document");
+            $excel->setDescription("Test document for Office 2005 XLSX, generated using PHP classes.");
+            $excel->setKeywords("office 2005 openxml php");
+            $excel->setCategory("report file");
+            $excel->sheet('info', function ($sheet) use ($export_data) {
+                $sheet->rows($export_data);
+            });
+        })->export('xls');
+
+        return $this->successJson('导出成功');
+    }
+
+    /**
      * 计算分销商品价格 fixby-zlt-calcgoodsprice 2020-09-21 18:15
      */
     public function calculationGoodsPrice()
