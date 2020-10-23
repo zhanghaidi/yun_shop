@@ -27,7 +27,6 @@ use Illuminate\Support\Facades\Cache;
 use Yunshop\Appletslive\common\services\CacheService;
 use Yunshop\Appletslive\common\services\BaseService;
 use app\common\models\AccountWechats;
-use app\backend\modules\tracking\models\DiagnosticServiceUser;
 use app\Jobs\SendTemplateMsgJob;
 
 /**
@@ -673,7 +672,6 @@ class LiveController extends BaseController
 
     }
 
-
     /**
      * 我订阅的课程
      * @return \Illuminate\Http\JsonResponse
@@ -749,23 +747,6 @@ class LiveController extends BaseController
             return $this->errorJson('评论内容不能为空');
         }
 
-        //用户禁言
-        $user = DiagnosticServiceUser::where('ajy_uid', $this->user_id)->first();
-
-        if ($user->is_black == 1) {
-            if ($user->black_end_time > time()) {
-                response()->json([
-                    'result' => 301,
-                    'msg' => '您已被系统禁言！截止时间至：' . date('Y-m-d H:i:s', $user->black_end_time) . '申诉请联系管理员',
-                    'data' => false,
-                ], 200, ['charset' => 'utf-8'])->send();
-                exit;
-            } else {
-                $user->is_black = 0;
-                $user->black_content = '时间到期,自然解禁';
-                $user->save();
-            }
-        }
         // 评论内容敏感词过滤
         $content = trim($input['content']);
         $wxapp_base_service = new BaseService();
@@ -1195,22 +1176,6 @@ class LiveController extends BaseController
             return $this->errorJson('评论内容不能为空');
         }
 
-        //用户禁言
-        $user = DiagnosticServiceUser::where('ajy_uid', $this->user_id)->first();
-        if ($user->is_black == 1) {
-            if ($user->black_end_time > time()) {
-                response()->json([
-                    'result' => 301,
-                    'msg' => '您已被系统禁言！截止时间至：' . date('Y-m-d H:i:s', $user->black_end_time) . '申诉请联系管理员',
-                    'data' => false,
-                ], 200, ['charset' => 'utf-8'])->send();
-                exit;
-            } else {
-                $user->is_black = 0;
-                $user->black_content = '时间到期,自然解禁';
-                $user->save();
-            }
-        }
         // 评论内容敏感词过滤
         $content = trim($input['content']);
         $wxapp_base_service = new BaseService();

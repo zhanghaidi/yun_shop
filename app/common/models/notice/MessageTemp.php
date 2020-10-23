@@ -87,6 +87,16 @@ class MessageTemp extends BaseModel
                 'color' => $data['tp_color'][$key]
             ];
         }
+
+        //fixby-zlt-sel_h5_mini 2020-10-11 增加网页链接和小程序选择设置
+        if($data['sel_h5_mini'] == 1){
+            $data['news_link'] = '';
+        }else{
+            $data['appid'] = '';
+            $data['pagepath'] = '';
+        }
+        unset($data['sel_h5_mini']);
+
         return array_except($data, ['tp_kw', 'tp_value', 'tp_color']);
     }
 
@@ -94,6 +104,8 @@ class MessageTemp extends BaseModel
 
     public static function getSendMsg($temp_id, $params)
     {
+            //\Log::debug("getSendMsg:{$temp_id},params:" . json_encode($params));
+
             if (!intval($temp_id)) {
                 return false;
             }
@@ -112,12 +124,24 @@ class MessageTemp extends BaseModel
                     'color' => $temp->remark_color
                 ]
             ];
+
+            //fixby-zlt-miniprogram 2020-10-11 优化小程序路径
+            if(!empty($temp->pagepath)){
+                $msg['miniprogram'] = [
+                    'appid' => $temp->appid,
+                    'pagepath' => self::replaceTemplate($temp->pagepath, $params),
+                ];
+            }elseif (!empty($temp->news_link)){
+                $msg['news_link'] = $temp->news_link;
+            }
+            
             foreach ($temp->data as $row) {
                 $msg[$row['keywords']] = [
                     'value' => self::replaceTemplate($row['value'], $params),
                     'color' => $row['color']
                 ];
             }
+            //\Log::debug("getSendMsg:{$temp_id},msg:" . json_encode($msg));
 
         return $msg;
     }

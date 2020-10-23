@@ -8,6 +8,9 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use EasyWeChat\Foundation\Application;
+use app\common\models\TemplateMsgLog;
+use app\common\models\McMappingFans;
+use Illuminate\Support\Facades\Log;
 
 class MessageNoticeJob implements  ShouldQueue
 {
@@ -51,8 +54,19 @@ class MessageNoticeJob implements  ShouldQueue
         $this->openId = $openId;
         $this->url = $url;
         $this->uniacid = \YunShop::app()->uniacid;
-        $this->pagepath = $pagepath ?:'pages/template/user/user'; //默认小程序用户中心路径
-        $this->miniApp = ['miniprogram' => ['appid' => 'wxcaa8acf49f845662', 'pagepath' => $this->pagepath]]; //封装成小程序参数
+
+        //fixby-zlt-miniprogram 2020-10-11 优化小程序路径
+        if(!empty($noticeData['miniprogram'])){  //接收自定义的小程序路径
+            $this->miniApp = ['miniprogram' => $noticeData['miniprogram']];
+            unset($this->noticeData['miniprogram']);
+        }elseif(!empty($noticeData['news_link'])){
+            $this->url = $noticeData['news_link'];
+            $this->miniApp = [];
+            unset($this->noticeData['news_link']);
+        }else{
+            $this->pagepath = $pagepath ?:'pages/template/user/user'; //默认小程序用户中心路径
+            $this->miniApp = ['miniprogram' => ['appid' => 'wxcaa8acf49f845662', 'pagepath' => $this->pagepath]]; //封装成小程序参数
+        }
     }
 
     /**
@@ -63,7 +77,7 @@ class MessageNoticeJob implements  ShouldQueue
     public function handle()
     {
         if ($this->attempts() > 1) {
-            \Log::info('消息通知测试，执行大于两次终止');
+            Log::info('消息通知测试，执行大于两次终止');
             return true;
         }
         $res = AccountWechats::getAccountByUniacid($this->uniacid);
@@ -73,7 +87,26 @@ class MessageNoticeJob implements  ShouldQueue
         ];
         $app = new Application($options);
         $app = $app->notice;
-        $app->uses($this->templateId)->andData($this->noticeData)->andReceiver($this->openId)->andUrl($this->url)->send($this->miniApp);
+        $res = $app->uses($this->templateId)->andData($this->noticeData)->andReceiver($this->openId)->andUrl($this->url)->send($this->miniApp);
+        try{
+            $log_data = [
+                'uniacid' => $this->uniacid,
+                'member_id' => McMappingFans::getUId($this->uniacid,$this->openId)->uid,
+                'template_id' => $this->templateId,
+                'openid' => $this->openId,
+                'message' => json_encode($this->noticeData,320),
+                'weapp_appid' => $this->miniApp['miniprogram']['appid'] ?? '',
+                'weapp_pagepath' => $this->miniApp['miniprogram']['pagepath'] ?? '',
+                'news_link' => $this->url,
+                'respon_code' => $res->errcode,
+                'respon_data' => json_encode($res),
+                'remark' => '公众号消息模板推送',
+                'created_at' => time()
+            ];
+            TemplateMsgLog::insert($log_data);
+        }catch (\ErrorException $e){
+            Log::info('记录消息发送日志报错，error：' . $e->getMessage());
+        }
         return true;
     }
 }
