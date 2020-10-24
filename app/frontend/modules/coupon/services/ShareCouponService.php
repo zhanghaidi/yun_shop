@@ -50,6 +50,8 @@ class ShareCouponService
             return self::toData('RT3', '已经被抢光了');
         } elseif ((!$share_model->obtain_restriction) && $share_model->member_id == \YunShop::app()->getMemberId()) {
             return self::toData('RT4', '分享者不可领取', $couponModel->toArray());
+        } elseif ($couponModel->share_get_max > 0 && $getTotal >= $couponModel->share_get_max){
+            return self::toData('RT5', '已超过该优惠券最大分享领取次数', $couponModel->toArray());
         }
 
 
@@ -97,6 +99,8 @@ class ShareCouponService
             \Log::debug($logData['log']);
             return false;
         }
+
+        $logData['receive_member_coupon_id'] = $member_coupon->id;
 
         ShoppingShareCouponLog::create($logData);
 
