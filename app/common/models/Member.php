@@ -826,12 +826,11 @@ class Member extends BackendModel
         return $curr_arr;
     }
 
-    public static function getOpenIdForType($member_id, $type = null, $app_type='')
+    public static function getOpenIdForType($member_id, $type = null, $app_type = '')
     {
         switch ($type) {
             case 2:
                 $mini_app = MemberMiniAppModel::getFansById($member_id);
-
                 //fixby-zhd-支付小程序拆分shop_openid
                 if($app_type == 'shop'){
                     return $mini_app->shop_openid;

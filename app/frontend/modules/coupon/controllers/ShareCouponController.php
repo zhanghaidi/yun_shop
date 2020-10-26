@@ -225,6 +225,7 @@ class ShareCouponController extends ApiController
 
         $share_model = ShoppingShareCoupon::whereIn('order_id', $order_ids)->with('hasOneOrder')->get();
 
+
         if ($share_model->isEmpty()) {
             throw new AppException('无分享优惠卷');
         }

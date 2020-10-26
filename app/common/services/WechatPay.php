@@ -375,6 +375,7 @@ class WechatPay extends Pay
                 $pay['weixin_appid'] = $min_set['key'];
                 $pay['weixin_secret'] = $min_set['secret'];
             }
+
         } elseif ($payType == 9){
             $pay = \Setting::get('shop_app.pay');
         } else {

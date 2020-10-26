@@ -36,7 +36,7 @@ class ShareCouponService
             return self::toData('RT0', '未登陆无法领取优惠券', $couponModel->toArray());
         }
 
-        $getTotal = MemberCoupon::uniacid()->where("coupon_id", $couponModel->id)->count();
+        $getTotal = MemberCoupon::uniacid()->where("coupon_id", $coupon_ids[$key])->count();
 
         $lastTotal = $couponModel->total - $getTotal;
 
