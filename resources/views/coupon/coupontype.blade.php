@@ -442,10 +442,10 @@
     <label class="col-xs-12 col-sm-3 col-md-2 control-label">是否可领取</label>
     <div class="col-sm-9 col-xs-12" >
         <label class="radio-inline">
-            <input type="radio" name="coupon[get_type]" value="1" checked onclick="$('.gettype').show()" /> 可以
+            <input type="radio" name="coupon[get_type]" value="1" /> 可以
         </label>
         <label class="radio-inline">
-            <input type="radio" name="coupon[get_type]" value="0" @if($coupon['get_type'] === 0)checked="true" @endif onclick="$('.gettype').hide()"/> 不可以
+            <input type="radio" name="coupon[get_type]" value="0" @if($coupon['get_type'] === 0)checked="true" @endif /> 不可以
         </label>
         <span class='help-block'>是否可以在领券中心领取 (或者只能手动发放)</span>
 
