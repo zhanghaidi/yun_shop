@@ -51,12 +51,10 @@ class ShareCouponService
         } elseif ((!$share_model->obtain_restriction) && $share_model->member_id == \YunShop::app()->getMemberId()) {
             return self::toData('RT4', '分享者不可领取', $couponModel->toArray());
         } elseif ($couponModel->get_max > 0 && $getTotal >= $couponModel->get_max){
-            return self::toData('RT5', '此优惠券已达领取上限', $couponModel->toArray());
+            return self::toData('RT1', '您已领取过此类优惠券', $couponModel->toArray());
         }
 
-
         $bool =  self::sendCoupon($share_model,$couponModel,\YunShop::app()->getMemberId(),$key);
-
 
         if ($bool) {
             return self::toData('YES', '成功' ,  $couponModel->toArray());
