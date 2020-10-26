@@ -54,7 +54,6 @@ class ShareCouponService
 
         $bool =  self::sendCoupon($share_model,$couponModel,\YunShop::app()->getMemberId(),$key);
 
-
         if ($bool) {
             return self::toData('YES', '成功' ,  $couponModel->toArray());
         }
