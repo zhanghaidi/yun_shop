@@ -166,11 +166,12 @@ class CouponSendService
             CouponLog::insert($log_data);
             MemberCoupon::insert($data);
         });
+        Log::info('优惠券发送日志，会员领取成功！');
         foreach ($data as $coupon_data) {
             //发送获取优惠券通知
             MessageNotice::couponNotice($coupon_data['coupon_id'],$coupon_data['uid']);
         }
-
+        Log::info('发送获取优惠券通知执行成功！');
         return true;
     }
 
