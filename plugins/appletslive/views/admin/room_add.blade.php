@@ -27,6 +27,12 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">课程标签</label>
+                        <div class="col-sm-9 col-xs-12 col-md-11">
+                            <input name="tag" type="text" class="form-control" value="" required/>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-1 control-label">课程封面</label>
                         <div class="col-sm-9 col-xs-12 col-md-10">
                             {!! app\common\helpers\ImageHelper::tplFormFieldImage('cover_img', '') !!}
@@ -48,6 +54,20 @@
                                 <option value='1'>更新中</option>
                                 <option value='2'>已完结</option>
                             </select>
+                        </div>
+                    </div>
+                    {{--fixby-wk-课程设置精选 20201019--}}
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">是否精选</label>
+                        <div class="col-sm-9 col-xs-12 col-md-11">
+                            <label class="radio-inline">
+                                <input type="radio" name="is_selected" value="1"/>
+                                是
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="is_selected" value="0" checked="checked" />
+                                否
+                            </label>
                         </div>
                     </div>
                 @endif
