@@ -45,6 +45,7 @@ class ShareCouponService
         Log::debug("ShareCouponService share_coupon_id:{$share_model->id},coupon_id:{$couponModel->id},getTotal:" . $getTotal . ',share_get_max:' . $couponModel->share_get_max);
 
         if ($share_log) {
+            $couponModel = Coupon::find($share_log['coupon_id']);
             return self::toData('RT1', '已领取不可重复领取', $couponModel->toArray());
         } elseif(!$couponModel->status) {
             return self::toData('RT2', '该优惠券已下架', $couponModel->toArray());
