@@ -20,7 +20,7 @@ class Coupon extends OrderOperation
 
     public function getName()
     {
-        return '分享';
+        return '分享赚';
     }
 
     public function getValue()
