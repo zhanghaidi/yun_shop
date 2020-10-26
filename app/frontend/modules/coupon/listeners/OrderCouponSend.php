@@ -15,6 +15,7 @@ use app\common\models\Order;
 use app\common\facades\Setting;
 use app\common\models\UniAccount;
 use app\common\models\coupon\OrderGoodsCoupon;
+use Illuminate\Support\Facades\Log;
 
 //商品购买订单完成赠送优惠券
 class OrderCouponSend
@@ -34,6 +35,7 @@ class OrderCouponSend
 
     public function orderCouponSend()
     {
+        Log::info('商品购买订单完成赠送优惠券订单完成改执行-----开始');
         $records = OrderGoodsCoupon::uniacid()
             ->where(['send_type'=>OrderGoodsCoupon::ORDER_TYPE,'status'=>OrderGoodsCoupon::WAIT_STATUS])
             ->whereHas('hasOneOrderGoods',function ($query){
@@ -51,6 +53,7 @@ class OrderCouponSend
             $numReason = $record->num_reason?$record->num_reason.'||':'';
             (new CronSendService($record,$numReason,1))->sendCoupon();
         }
+        Log::info('商品购买订单完成赠送优惠券执行-----结束');
     }
 
     public function subscribe()
