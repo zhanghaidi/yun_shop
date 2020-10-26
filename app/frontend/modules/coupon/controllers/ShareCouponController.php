@@ -238,7 +238,7 @@ class ShareCouponController extends ApiController
 
         $set = \Setting::get('coupon.shopping_share');
         array_set($set, 'banner', yz_tomedia($set['banner']));
-
+        array_set($set, 'share_img', yz_tomedia($set['share_img']));
 
         $this->member = Member::with(['yzMember'])->find(\YunShop::app()->getMemberId());
 
