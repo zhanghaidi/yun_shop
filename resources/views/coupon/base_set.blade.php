@@ -216,7 +216,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">分享描述</label>
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">分享规则描述</label>
                         <div class="col-sm-9 col-xs-12">
                             <textarea name="coupon[shopping_share][share_desc]" class="form-control">{{$coupon['shopping_share']['share_desc']}}</textarea>
                             <span class="help-block">如果不填写，默认为空</span>
