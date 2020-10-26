@@ -223,6 +223,19 @@
                         </div>
                     </div>
 
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">5:4分享图</label>
+                        <div class="col-sm-9 col-xs-12 col-md-6 detail-logo">
+                            {!! app\common\helpers\ImageHelper::tplFormFieldImage('coupon[shopping_share][share_img]', $coupon['shopping_share']['share_img']) !!}
+                            <span class="help-block">请上传5：4尺寸分享图片 </span>
+                            {{--@if (!empty($coupon['shopping_share']['banner']))
+                                <a href='{{tomedia($coupon['shopping_share']['banner'])}}' target='_blank'>
+                                    <img src="{{tomedia($coupon['shopping_share']['banner'])}}" style='width:100px;border:1px solid #ccc;padding:1px' />
+                                </a>
+                            @endif--}}
+                        </div>
+                    </div>
+
                 </div>
 
 
