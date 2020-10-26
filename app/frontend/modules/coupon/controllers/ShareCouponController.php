@@ -74,6 +74,7 @@ class ShareCouponController extends ApiController
             'coupon_num' => $this->share_model->sum('coupon_num'),
             'coupon_total_money' => number_format($this->share_model->sum('coupon_money'),2),
         ];
+        return $this->successJson('share', $data);
     }
 
     //领取页面
