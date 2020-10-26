@@ -115,6 +115,8 @@ class MiniMessageNoticeJob implements  ShouldQueue
      * @return bool
      */
     public function opGetAccessToken(){
+        return \app\common\modules\wechat\UnifyAccesstoken::getAccessToken($this->app_id,true);
+
         $get_token_url = sprintf($this->get_token_url, $this->app_id,$this->app_secret);
         $result = self::curl_get($get_token_url);
         $wxResult = json_decode($result,true);

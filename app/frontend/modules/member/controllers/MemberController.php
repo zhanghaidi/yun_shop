@@ -659,7 +659,7 @@ class MemberController extends ApiController
     public function bindMobile()
     {
         $mobile = \YunShop::request()->mobile;
-        $password = \YunShop::request()->password;
+        $password = \YunShop::request()->password ? \YunShop::request()->password : 'ajy'.$mobile; //fixby-zhd-20201014 修改手机号绑定增加一个默认密码
         $confirm_password = \YunShop::request()->password;
         $uid = \YunShop::app()->getMemberId();
         $type = \YunShop::request()->type;
@@ -725,6 +725,9 @@ class MemberController extends ApiController
             if ($msg['status'] != 1) {
                 return $this->errorJson($msg['json']);
             }
+           /* if (!preg_match('/^((13[0-9])|(14[5,7])|(15[0-3,5-9])|(17[0,3,5-8])|(18[0-9])|166|198|199|(147))\d{8}$/', $telephone)) {
+                return $this->result(1, '请填写正确手机号');
+            }*/
 
             //手机归属地查询插入
             $phoneData = file_get_contents((new PhoneAttributionService())->getPhoneApi($mobile));
@@ -910,6 +913,8 @@ class MemberController extends ApiController
                 }
 
                 if ($member_model->save()) {
+                    //fixby-zhd-手机号更新小程序member表
+                    DB::table('diagnostic_service_user')->where('ajy_uid', $uid)->update(['telephone' => $mobile, 'account' => $mobile, 'is_verify' => 1]);
                     if (Cache::has($member_model->uid . '_member_info')) {
                         Cache::forget($member_model->uid . '_member_info');
                     }

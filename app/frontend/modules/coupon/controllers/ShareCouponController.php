@@ -84,7 +84,7 @@ class ShareCouponController extends ApiController
 
         foreach ($this->share_model as $model) {
 
-            $result = ShareCouponService::fen($model);
+            $result = ShareCouponService::fireFen($model);
 
             if ($result['state'] == 'YES' || $result['state'] == 'ER') {
                 break;
