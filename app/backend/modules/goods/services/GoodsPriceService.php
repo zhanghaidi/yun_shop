@@ -388,8 +388,8 @@ class GoodsPriceService
             if(!empty($this->request->goods['has_many_goods_category'])){  //组装分类数据
                 foreach ($this->request->goods['has_many_goods_category'] as $v){
                     $t_arr = explode(',',$v['category_ids']);
-                    $this->request->category['parentid'][] = $t_arr[0] ?? 0;
-                    $this->request->category['childid'][] = $t_arr[1] ?? 0;
+                    $this->request->category['parentid'][] = !empty($t_arr[0]) ? $t_arr[0] : 0;
+                    $this->request->category['childid'][] = !empty($t_arr[1]) ? $t_arr[1] : 0;
                 }
             }
 
