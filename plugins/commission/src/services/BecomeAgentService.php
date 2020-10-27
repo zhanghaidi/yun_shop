@@ -125,7 +125,8 @@ class BecomeAgentService
             ];
             \Log::info('分销商数据：', $agentData);
             Agents::create($agentData);
-            event(new \app\common\events\plugin\CommissionEvent($agentData));
+            //fixby-zhd-分销关系绑定报错不存在，暂时注释 20201027
+            //event(new \app\common\events\plugin\CommissionEvent($agentData));
             MessageService::becomeAgent($memberFans);
             $this->upgrade($yzMemberModel, $set);
         } else {
