@@ -26,24 +26,24 @@ class ShareCouponService
 
         $couponModel = Coupon::find($coupon_ids[$key]);
 
-        //fixby-wk- 优惠券领取完了， $couponModel = null 修复问题  Call to a member function toArray() on null
-        if(is_null($couponModel)){
-            return self::toData('RT3', '已经被抢光了');
-        }
+
         //fixby-zhd-增加优惠券未登陆下提醒和修改区分状态值，RT 1-4 并返回优惠券详情
 
         if(!\YunShop::app()->getMemberId()){
+            //fixby-wk- 优惠券领取完了， $couponModel = null 修复问题  Call to a member function toArray() on null
+            if(is_null($couponModel)){
+                return self::toData('RT3', '已经被抢光了');
+            }
             return self::toData('RT0', '未登陆无法领取优惠券', $couponModel->toArray());
         }
 
+        $share_log = ShoppingShareCouponLog::uniacid()->shareCouponId($share_model->id)->shareUid($share_model->member_id)->receiveUid(\YunShop::app()->getMemberId())->first();
         $getTotal = MemberCoupon::uniacid()->where("coupon_id", $coupon_ids[$key])->count();
         $person = MemberCoupon::uniacid()
             ->where(["coupon_id"=>$coupon_ids[$key],"uid"=>\YunShop::app()->getMemberId()])
             ->count();//会员已有数量
 
         $lastTotal = $couponModel->total - $getTotal;
-
-        $share_log = ShoppingShareCouponLog::uniacid()->shareCouponId($share_model->id)->shareUid($share_model->member_id)->receiveUid(\YunShop::app()->getMemberId())->first();
         if ($share_log) {
             $couponModel = Coupon::find($share_log['coupon_id']);
             return self::toData('RT1', '已领取不可重复领取', $couponModel->toArray());
