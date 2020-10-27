@@ -11,6 +11,7 @@ namespace app\frontend\modules\coupon\services;
 
 use app\common\models\Coupon;
 use app\common\models\MemberCoupon;
+use Illuminate\Support\Facades\Log;
 
 
 class CronSendService
@@ -76,25 +77,26 @@ class CronSendService
                 }
             }
         }
+//        fixBy-wk-20201026  发放优惠券会员领取限制
 //        if($this->coupon->get_type == 1){
-//            if($this->coupon->get_max != -1)
-//            {
-//                $person = MemberCoupon::uniacid()
-//                    ->where(["coupon_id"=>$this->record->coupon_id,"uid"=>$this->record->hasOneOrderGoods->uid])
-//                    ->count();//会员已有数量
-//                $afterPerson = bcadd($person,$num);
-//                if($afterPerson > $this->coupon->get_max)
-//                {
-//                    if($person >= $this->coupon->get_max)
-//                    {
-//                        $this->numReason = $this->numReason.'优惠券已达个人领取总数';
-//                        return false;
-//                    } else{
-//                        $num = bcsub($afterPerson,$this->coupon->get_max);
-//                        $this->numReason = $this->numReason.'优惠券发放后达个人领取总数，发'.$num.'张';
-//                    }
-//                }
-//            }
+            if($this->coupon->get_max != -1)
+            {
+                $person = MemberCoupon::uniacid()
+                    ->where(["coupon_id"=>$this->record->coupon_id,"uid"=>$this->record->hasOneOrderGoods->uid])
+                    ->count();//会员已有数量
+                $afterPerson = bcadd($person,$num);
+                if($afterPerson > $this->coupon->get_max)
+                {
+                    if($person >= $this->coupon->get_max)
+                    {
+                        $this->numReason = $this->numReason.'优惠券已达个人领取总数';
+                        return false;
+                    } else{
+                        $num = bcsub($afterPerson,$this->coupon->get_max);
+                        $this->numReason = $this->numReason.'优惠券发放后达个人领取总数，发'.$num.'张';
+                    }
+                }
+            }
 //        }
         $this->sendNum = $num;
         return true;
@@ -106,6 +108,7 @@ class CronSendService
         $model->status = 1;
         $model->num_reason = $this->numReason;
         $model->save();
+        Log::info('状态修改执行成功');
     }
 
     private function endMonthSend()

@@ -12,6 +12,7 @@ use app\backend\modules\member\models\MemberParent;
 use app\backend\modules\order\services\OrderService;
 use app\common\models\order\FirstOrder;
 use app\common\models\order\OrderDeliver;
+use app\common\models\order\OrderCoupon;
 use Illuminate\Database\Eloquent\Builder;
 use \Illuminate\Support\Facades\DB;
 use app\common\models\PayTypeGroup;
@@ -44,6 +45,11 @@ class Order extends \app\common\models\Order
     public function orderDeliver()
     {
         return $this->hasOne(OrderDeliver::class, 'order_id', 'id');
+    }
+
+    public function hasManyOrderCoupon()
+    {
+        return $this->hasMany(OrderCoupon::class, 'order_id', 'id');
     }
 
     public function scopeExportOrders(Order $query, $search)
@@ -89,6 +95,7 @@ class Order extends \app\common\models\Order
                 $query->orderPay();
             },
             'hasManyFirstOrder',
+            'hasManyOrderCoupon',
             'orderDeliver'
         ]);
         return $orders;

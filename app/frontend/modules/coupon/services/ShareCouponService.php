@@ -31,17 +31,21 @@ class ShareCouponService
             return self::toData('RT3', '已经被抢光了');
         }
         //fixby-zhd-增加优惠券未登陆下提醒和修改区分状态值，RT 1-4 并返回优惠券详情
+
         if(!\YunShop::app()->getMemberId()){
             return self::toData('RT0', '未登陆无法领取优惠券', $couponModel->toArray());
         }
 
         $getTotal = MemberCoupon::uniacid()->where("coupon_id", $coupon_ids[$key])->count();
+        $person = MemberCoupon::uniacid()
+            ->where(["coupon_id"=>$coupon_ids[$key],"uid"=>\YunShop::app()->getMemberId()])
+            ->count();//会员已有数量
 
         $lastTotal = $couponModel->total - $getTotal;
 
         $share_log = ShoppingShareCouponLog::uniacid()->shareCouponId($share_model->id)->shareUid($share_model->member_id)->receiveUid(\YunShop::app()->getMemberId())->first();
-
         if ($share_log) {
+            $couponModel = Coupon::find($share_log['coupon_id']);
             return self::toData('RT1', '已领取不可重复领取', $couponModel->toArray());
         } elseif(!$couponModel->status) {
             return self::toData('RT2', '该优惠券已下架', $couponModel->toArray());
@@ -50,11 +54,11 @@ class ShareCouponService
             return self::toData('RT3', '已经被抢光了');
         } elseif ((!$share_model->obtain_restriction) && $share_model->member_id == \YunShop::app()->getMemberId()) {
             return self::toData('RT4', '分享者不可领取', $couponModel->toArray());
+        } elseif ($couponModel->get_max > 0 && $person >= $couponModel->get_max){
+            return self::toData('RT5', '该类优惠券您已领取过了~', $couponModel->toArray());
         }
 
-
         $bool =  self::sendCoupon($share_model,$couponModel,\YunShop::app()->getMemberId(),$key);
-
 
         if ($bool) {
             return self::toData('YES', '成功' ,  $couponModel->toArray());
@@ -97,6 +101,8 @@ class ShareCouponService
             \Log::debug($logData['log']);
             return false;
         }
+
+		$logData['receive_member_coupon_id'] = $member_coupon->id;
 
         ShoppingShareCouponLog::create($logData);
 

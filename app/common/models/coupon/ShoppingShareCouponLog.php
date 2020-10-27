@@ -108,4 +108,17 @@ class ShoppingShareCouponLog extends BaseModel
     {
         return $this->belongsTo(Coupon::class, 'coupon_id', 'id');
     }
+
+    public static function hasSharedCoupon($coupon = [])
+    {
+        if(!empty($coupon)){
+            $share_coupon_ids = array_column($coupon,'member_coupon_id');
+            if(!empty($share_coupon_ids)){
+                if(self::uniacid()->whereIn('receive_member_coupon_id', $share_coupon_ids)->get()->toArray())
+                    return true;
+            }
+        }
+        return false;
+    }
+
 }
