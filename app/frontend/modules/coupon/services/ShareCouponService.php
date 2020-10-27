@@ -35,6 +35,10 @@ class ShareCouponService
                 return self::toData('RT3', '已经被抢光了');
             }
             return self::toData('RT0', '未登陆无法领取优惠券', $couponModel->toArray());
+        }else{
+            if(is_null($couponModel)){
+                return self::toData('RT3', '已经被抢光了');
+            }
         }
 
         $share_log = ShoppingShareCouponLog::uniacid()->shareCouponId($share_model->id)->shareUid($share_model->member_id)->receiveUid(\YunShop::app()->getMemberId())->first();
