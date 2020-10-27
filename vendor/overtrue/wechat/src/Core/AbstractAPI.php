@@ -154,7 +154,7 @@ abstract class AbstractAPI
 
         try {
             $this->checkAndThrow($contents);
-        }catch (\HttpException $e){
+        }catch (HttpException $e){
             \Illuminate\Support\Facades\Log::info('parseJSON error:' . json_encode($contents,320));
         }
 
