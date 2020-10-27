@@ -152,7 +152,11 @@ abstract class AbstractAPI
             return null;
         }
 
-        $this->checkAndThrow($contents);
+        try {
+            $this->checkAndThrow($contents);
+        }catch (\HttpException $e){
+            \Illuminate\Support\Facades\Log::info('parseJSON error:' . json_encode($contents,320));
+        }
 
         return new Collection($contents);
     }
