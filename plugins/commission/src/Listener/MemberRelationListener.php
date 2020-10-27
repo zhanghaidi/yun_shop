@@ -55,8 +55,7 @@ class MemberRelationListener
             ];
             \Log::info('分销商数据：', $agentData);
             if (Agents::create($agentData)) {
-                //fixby-zhd-分销关系绑定报错不存在，暂时注释 20201027
-                //event(new \app\common\events\plugin\CommissionEvent($agentData));
+                event(new \app\common\events\plugin\CommissionEvent($agentData));
                 MessageService::becomeAgent($memberFans);
                 $this->upgrade($yzMemberModel, $set);
                 \Log::info('添加分销商完成');
