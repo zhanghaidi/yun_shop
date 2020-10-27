@@ -33,6 +33,7 @@ class orderListener
 {
     public function onCreated(AfterOrderCreatedEvent $event)
     {
+        Log::info('orderListener onOrderCreated invoke');
         $order = Order::find($event->getOrderModel()->id);
         (new MessageService($order))->created();
 
