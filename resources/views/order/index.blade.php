@@ -316,6 +316,9 @@
                                         @if($order['has_many_first_order'])
                                             <label class='label label-primary'>首单</label>
                                         @endif
+                                        @if(!empty($order['has_many_order_coupon']) && \app\common\models\coupon\ShoppingShareCouponLog::hasSharedCoupon($order['has_many_order_coupon']))
+                                            <label class='label label-rose'>使用分享优惠券下单</label>
+                                        @endif
 
                                     <td class="right">
                                         @if(empty($order['status']))

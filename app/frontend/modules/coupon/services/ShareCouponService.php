@@ -102,6 +102,8 @@ class ShareCouponService
             return false;
         }
 
+		$logData['receive_member_coupon_id'] = $member_coupon->id;
+
         ShoppingShareCouponLog::create($logData);
 
         $share_model->receive_coupon =  array_merge( isset($share_model->receive_coupon)?$share_model->receive_coupon: [], [$share_model->share_coupon[$coupon_key]]);
