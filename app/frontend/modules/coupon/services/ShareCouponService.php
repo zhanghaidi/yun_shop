@@ -15,52 +15,51 @@ use app\common\models\coupon\ShoppingShareCouponLog;
 use app\common\models\MemberCoupon;
 use app\frontend\modules\coupon\models\ShoppingShareCoupon;
 use app\frontend\models\Member;
-use Illuminate\Support\Facades\Log;
 
 class ShareCouponService
 {
-    public static function fen($share_model,$key)
+    public static function fen($share_model)
     {
         $coupon_ids = $share_model->share_coupon;
-//
-//        $key = array_rand($coupon_ids,1);
-//
+
+        $key = array_rand($coupon_ids,1);
+
         $couponModel = Coupon::find($coupon_ids[$key]);
 
-        //fixby-wk- 优惠券领取完了， $couponModel = null 修复问题  Call to a member function toArray() on null
-        if(is_null($couponModel)){
-            return self::toData('RT3', '已经被抢光了');
-        }
         //fixby-zhd-增加优惠券未登陆下提醒和修改区分状态值，RT 1-4 并返回优惠券详情
+
         if(!\YunShop::app()->getMemberId()){
-            return self::toData('RT0', '未登陆无法领取优惠券', $couponModel->toArray());
+
+            return self::toData('RT0', '未登陆无法领取优惠券');
         }
-
-        $getTotal = MemberCoupon::uniacid()->where("coupon_id", $coupon_ids[$key])->count();
-
-        $lastTotal = $couponModel->total - $getTotal;
 
         $share_log = ShoppingShareCouponLog::uniacid()->shareCouponId($share_model->id)->shareUid($share_model->member_id)->receiveUid(\YunShop::app()->getMemberId())->first();
-
-        Log::debug("ShareCouponService share_coupon_id:{$share_model->id},coupon_id:{$couponModel->id},getTotal:" . $getTotal . ',share_get_max:' . $couponModel->share_get_max);
-
         if ($share_log) {
             $couponModel = Coupon::find($share_log['coupon_id']);
             return self::toData('RT1', '已领取不可重复领取', $couponModel->toArray());
-        } elseif(!$couponModel->status) {
+        }
+        if(is_null($couponModel)){
+            return self::toData('RT3', '已经被抢光了');
+        }
+        $getTotal = MemberCoupon::uniacid()->where("coupon_id", $coupon_ids[$key])->count();
+        $person = MemberCoupon::uniacid()
+            ->where(["coupon_id"=>$coupon_ids[$key],"uid"=>\YunShop::app()->getMemberId()])
+            ->count();//会员已有数量
+
+        $lastTotal = $couponModel->total - $getTotal;
+
+        if(!$couponModel->status) {
             return self::toData('RT2', '该优惠券已下架', $couponModel->toArray());
         } elseif (($couponModel->total != -1) && (1 > $lastTotal)) {
             //fixBy-wk-20201011 去除 $couponModel->toArray()
             return self::toData('RT3', '已经被抢光了');
         } elseif ((!$share_model->obtain_restriction) && $share_model->member_id == \YunShop::app()->getMemberId()) {
             return self::toData('RT4', '分享者不可领取', $couponModel->toArray());
-        } elseif ($couponModel->share_get_max > 0 && $getTotal >= $couponModel->share_get_max){
-            return self::toData('RT5', '您已领取完优惠券', $couponModel->toArray());
+        } elseif ($couponModel->get_max > 0 && $person >= $couponModel->get_max){
+            return self::toData('RT5', '该类优惠券您已领取过了~', $couponModel->toArray());
         }
 
-
         $bool =  self::sendCoupon($share_model,$couponModel,\YunShop::app()->getMemberId(),$key);
-
 
         if ($bool) {
             return self::toData('YES', '成功' ,  $couponModel->toArray());
@@ -104,7 +103,7 @@ class ShareCouponService
             return false;
         }
 
-        $logData['receive_member_coupon_id'] = $member_coupon->id;
+		$logData['receive_member_coupon_id'] = $member_coupon->id;
 
         ShoppingShareCouponLog::create($logData);
 
@@ -183,33 +182,4 @@ class ShareCouponService
 
         return true;
     }
-
-    //fixby-zlt-sharecouponreceive 2020-10-24 优化分享优惠券领取
-    public static function fireFen($share_model){
-        $coupon_ids = $share_model->share_coupon;
-
-        if(empty($coupon_ids)){
-            return self::toData('RT3', '已经被抢光了');
-        }
-
-        $key = array_rand($coupon_ids,1);
-        $result = self::fen($share_model, $key);
-
-        if (in_array($result['state'],['YES','ER','RT0','RT1','RT4']))
-            return $result;
-
-        $coupon_id_arr = [$coupon_ids[$key]];
-
-        foreach ($coupon_ids as $k=>$v){
-            if(!in_array($v,$coupon_id_arr)){
-                $result = self::fen($share_model, $k);
-                $coupon_id_arr[] = $v;
-                if (in_array($result['state'],['YES','ER','RT0','RT1','RT4'])) {
-                    break;
-                }
-            }
-        }
-        return  $result;
-    }
-
 }
