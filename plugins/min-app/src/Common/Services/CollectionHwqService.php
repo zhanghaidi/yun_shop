@@ -78,11 +78,16 @@ class CollectionHwqService
             return;
         }
 
-        $url =  'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$set['key'].'&secret='.$set['secret'];
+        //fixby-zhd-小程序access_token统一使用微擎生产线上api 2020-10-29
 
+        //$url =  'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$set['key'].'&secret='.$set['secret'];
+        //$result = Curl::to($url)->asJsonResponse(true)->get();
+        //return $result['access_token'];
+
+        $url =  'https://www.aijuyi.net/api/accesstoken.php?type=4&appid='.$set['shop_key'].'&secret='.$set['shop_secret'];
         $result = Curl::to($url)->asJsonResponse(true)->get();
 
-        return $result['access_token'];
+        return $result['accesstoken'];
     }
 
     /**
