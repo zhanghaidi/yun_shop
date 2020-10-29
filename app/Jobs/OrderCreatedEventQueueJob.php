@@ -18,6 +18,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class OrderCreatedEventQueueJob implements ShouldQueue
 {
@@ -43,17 +44,20 @@ class OrderCreatedEventQueueJob implements ShouldQueue
      */
     public function handle()
     {
+        Log::info('OrderCreatedEventQueueJob orderid:' . $this->order->id);
         DB::transaction(function () {
             \YunShop::app()->uniacid = $this->order->uniacid;
             Setting::$uniqueAccountId = $this->order->uniacid;
             if ($this->order->orderCreatedJob->status == 'finished') {
                 return;
             }
+            Log::info('OrderCreatedEventQueueJob orderid1:' . $this->order->id);
             $this->order->orderCreatedJob->status = 'finished';
             $this->order->orderCreatedJob->save();
+            Log::info('OrderCreatedEventQueueJob orderid2:' . $this->order->id);
             $event = new AfterOrderCreatedEvent($this->order);
             event($event);
-
+            Log::info('OrderCreatedEventQueueJob orderid3:' . $this->order->id);
 
         });
     }

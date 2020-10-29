@@ -10,6 +10,7 @@ use app\frontend\modules\order\models\PreOrder;
 use app\Jobs\addGoodsCouponQueueJob;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 
 class CouponService
 {
@@ -262,9 +263,11 @@ class CouponService
                 ];
                 $insertArr = array_merge($insertArr,$monthArr);
             }
+            Log::info('CouponDiscount doCouponLog insertArr:' . json_encode($insertArr));
             $model = new OrderGoodsCoupon();
             $model->fill($insertArr);
             $model->save();
+            Log::info('CouponDiscount doCouponLog id:' . $model->id);
         }
     }
 

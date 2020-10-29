@@ -16,6 +16,7 @@ use app\common\facades\Setting;
 use app\common\models\coupon\OrderGoodsCoupon;
 use app\common\services\finance\PointService;
 use app\frontend\modules\coupon\services\CouponService;
+use Illuminate\Support\Facades\Log;
 
 class CouponDiscount
 {
@@ -69,11 +70,13 @@ class CouponDiscount
 
     public function onOrderCreated(AfterOrderCreatedEvent $event)
     {
+        Log::info('CouponDiscount onOrderCreated invoke');
         $this->event = $event;
         $orderModel = $this->event->getOrderModel();
         $orderGoods = $orderModel->hasManyOrderGoods;//订单商品
         $couponService = new CouponService($orderModel, null, $orderGoods);
         $couponService->sendCouponLog();
+        Log::info('CouponDiscount orderGoods:' . json_encode($orderGoods));
     }
 
     public function onOrderCanceled(AfterOrderCanceledEvent $event)
