@@ -90,7 +90,7 @@ class CacheService
             ->where('type', 1)
             ->where('delete_time', 0)
             ->orderBy('sort', 'desc')
-            ->orderBy('id', 'asc')
+            ->orderBy('id', 'desc')
             ->offset($offset)
             ->limit($limit)
             ->get();
@@ -1456,7 +1456,7 @@ class CacheService
             ->where('is_selected', 1)
             ->where('delete_time', 0)
             ->orderBy('sort', 'desc')
-            ->orderBy('id', 'asc')
+            ->orderBy('id', 'desc')
             ->offset($offset)
             ->limit($limit)
             ->get();

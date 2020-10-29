@@ -31,6 +31,8 @@ class CouponSendService
 
     protected $transferId; //转让者ID
 
+    protected $get_time; //优惠券获取时间
+
 
 
     //todo 确定 get_type 类型，增加类型数据验证，
@@ -199,7 +201,7 @@ class CouponSendService
             'coupon_id' => $this->couponId,
             'get_type'  => $this->get_type,
             'used'      => 0,
-            'get_time'  => time(),
+            'get_time'  => $this->get_time ?: time(),
         ];
     }
 
@@ -245,7 +247,35 @@ class CouponSendService
         return $remark;
     }
 
+    //fixby-zlt-coupontransfer 2020-10-15 14:00 接收转让优惠券
+    public function receiveTransferCoupon($memberId, array $couponIds, $get_type = '0', $relation = '', $transferId = '', $get_time = 0)
+    {
+        if (empty($memberId) || !is_numeric($memberId)) {
+            return null;
+        }
+        if (empty($couponIds) || !is_array($couponIds)) {
+            return null;
+        }
 
+        $this->memberId = $memberId;
+        $this->get_type = $get_type;
+        $this->send_total = count($couponIds);
+        $this->relation = $relation;
+        $this->transferId = $transferId;
+        $this->get_time = $get_time ?: time();
+
+
+        $data = array();
+        $log_data = array();
+        foreach ($couponIds as $couponId) {
+            $this->couponId = $couponId;
+
+            $data[] = array_merge($this->getMemberCouponData(), ['transfer_times'=>1]);
+            $log_data[] = $this->getCouponLogData();
+        }
+
+        return $this->updateMemberCoupons($data, $log_data);
+    }
 
 
 }
