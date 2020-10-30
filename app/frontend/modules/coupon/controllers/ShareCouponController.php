@@ -54,25 +54,26 @@ class ShareCouponController extends ApiController
             $share_limit = 0;
         }
 
-
         $this->share_model->map(function ($model) {
             $model->coupon_num = count($model->share_coupon);
             //fixby zhd 分享优惠券总金额-2020-10-10
+            //var_dump($model->share_coupon);
+            $money = 0;
             if($model->coupon_num > 0){
-                $model->coupon_money = DB::table('yz_coupon')->where('id', $model->share_coupon)->value('deduct');
+                foreach($model->share_coupon as $v){
+                    $money += DB::table('yz_coupon')->where('id', $v)->value('deduct');
+                }
             }
+            $model->coupon_money = $money;
 
         });
-
 
         $data = [
             'set' => $this->set,
             'share_limit' => $share_limit,
             'coupon_num' => $this->share_model->sum('coupon_num'),
-            'coupon_total_money' =>number_format($this->share_model->sum('coupon_num')*$this->share_model->sum('coupon_money'),2),
+            'coupon_total_money' => number_format($this->share_model->sum('coupon_money'),2),
         ];
-
-
         return $this->successJson('share', $data);
 
     }
@@ -223,16 +224,22 @@ class ShareCouponController extends ApiController
 
         $order_ids = explode('_', rtrim(\YunShop::request()->order_ids, '_'));
 
-        $share_model = ShoppingShareCoupon::whereIn('order_id', $order_ids)->get();
+        $share_model = ShoppingShareCoupon::whereIn('order_id', $order_ids)->with('hasOneOrder')->get();
 
 
         if ($share_model->isEmpty()) {
             throw new AppException('无分享优惠卷');
         }
 
+        foreach ($share_model as $share){
+            if($share->hasOneOrder->hasOneRefundApply){
+                throw new AppException('该订单已申请退款');
+            }
+        }
+
         $set = \Setting::get('coupon.shopping_share');
         array_set($set, 'banner', yz_tomedia($set['banner']));
-
+        array_set($set, 'share_img', yz_tomedia($set['share_img']));
 
         $this->member = Member::with(['yzMember'])->find(\YunShop::app()->getMemberId());
 

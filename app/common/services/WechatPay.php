@@ -50,8 +50,9 @@ class WechatPay extends Pay
         } else {
             $client_type = $payType;
         }
-        $openid = Member::getOpenIdForType(\YunShop::app()->getMemberId(), $client_type);
-        \Log::debug('-----pay_member_id-----'. \YunShop::app()->getMemberId());
+        $app_type = \YunShop::request()->app_type;
+        $openid = Member::getOpenIdForType(\YunShop::app()->getMemberId(), $client_type,$app_type);
+        \Log::debug('-----pay_member_id-----'. \YunShop::app()->getMemberId().'---apptype=：'.$app_type.'---openid: '.$openid);
         //不同支付类型选择参数
         $pay = $this->payParams($payType);
         if (empty($pay['weixin_mchid']) || empty($pay['weixin_apisecret'])
@@ -358,15 +359,22 @@ class WechatPay extends Pay
             if (empty($min_set['mchid']) || empty($min_set['api_secret']) ) {
                 throw new AppException('未设置支付参数');
             }
-
+            //fixbyzhd-支付改造兼容 20201021 增加商城支付小程序判断
             $pay = [
-                'weixin_appid' => $min_set['key'],
-                'weixin_secret' => $min_set['secret'],
                 'weixin_mchid' => $min_set['mchid'],
                 'weixin_apisecret' => $min_set['api_secret'],
                 'weixin_cert' => '',
                 'weixin_key' => ''
             ];
+            $app_type = \YunShop::request()->app_type;
+            if($app_type == 'shop'){
+                $pay['weixin_appid'] = $min_set['shop_key'];
+                $pay['weixin_secret'] = $min_set['shop_secret'];
+            }else{
+                $pay['weixin_appid'] = $min_set['key'];
+                $pay['weixin_secret'] = $min_set['secret'];
+            }
+
         } elseif ($payType == 9){
             $pay = \Setting::get('shop_app.pay');
         } else {

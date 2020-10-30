@@ -9,12 +9,12 @@
 namespace app\backend\modules\tracking\models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class GoodsTrackingModel extends Model
 {
     protected $table = 'diagnostic_service_goods_tracking';
-    protected $appends = ['type_id','action_id','action_name','user_num','add_num','pay_num'];
-
+    protected $appends = ['type_id','action_id','action_name','view_num','favorites_num','add_purchase_num','order_payment_num','create_order_num','order_payment_amount'];
     public $timestamps = false;
 
     const CREATED_AT = 'create_time';
@@ -75,11 +75,23 @@ class GoodsTrackingModel extends Model
     //添加商品id对应字段
     public function getGoodsIdAttribute($value)
     {
-       $this->user_num = self::where('goods_id', $value)->groupBy('user_id')->count();
-       $this->add_num = self::where(['goods_id' => $value, 'action' => 3])->sum('val');
-       $this->pay_num = self::where(['goods_id' => $value,'action' => 5])->count();
+        $this->view_num = count(self::where(['goods_id' => $value, 'action' => 1])->groupBy('user_id')->get());
+        $this->favorites_num = self::where(['goods_id' => $value, 'action' => 2])->count();
+        $this->add_purchase_num = self::where(['goods_id' => $value, 'action' => 3])->sum('val');
+        $this->create_order_num = self::where(['goods_id' => $value, 'action' => 4])->count();
+        $this->order_payment_num = self::where(['goods_id' => $value,'action' => 5])->count();
+        $this->order_payment_amount = DB::table('yz_order_goods as og')
+            ->join('yz_order as o', 'og.order_id', '=', 'o.id')
+            ->select('u.avatarurl', 'p.address')
+            ->where('o.status', 4)
+            ->where('og.goods_id', $value)
+            ->sum('o.price');
+        // $favorites_num = DB::table('diagnostic_service_goods_tracking')->where(['goods_id' => $value['id'],'action' => 2])->whereBetween('create_time', $whereBetween)->count();
+        // $add_purchase_num = DB::table('diagnostic_service_goods_tracking')->where(['goods_id' => $value['id'],'action' => 3])->whereBetween('create_time', $whereBetween)->sum('val');
+        // $create_order_num = DB::table('diagnostic_service_goods_tracking')->where(['goods_id' => $value['id'],'action' => 4])->whereBetween('create_time', $whereBetween)->count();
+        // $order_payment_num = DB::table('diagnostic_service_goods_tracking')->where(['goods_id' => $value['id'],'action' => 5])->whereBetween('create_time', $whereBetween)->count();
+        return $value;
 
-       return $value;
 
     }
 

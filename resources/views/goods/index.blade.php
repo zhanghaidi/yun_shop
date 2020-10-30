@@ -80,6 +80,12 @@
                                         <el-button type="primary" icon="el-icon-search" @click="search(1)">搜索
                                         </el-button>
                                     </a>
+
+                                    <a href="{!! yzWebFullUrl('goods.goods.exportGoodsSku') !!}">
+                                        <el-button type="default">导出商品编码
+                                        </el-button>
+                                    </a>
+
                                     </el-col>
                                 </el-row>
                             </el-form>

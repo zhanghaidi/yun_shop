@@ -42,7 +42,7 @@ class GoodsTrackingController extends BaseController
 
     public function report()
     {
-        $records = GoodsTrackingStatistics::records();
+        $records = GoodsTrackingModel::records()->groupBy('goods_id');
 
         $search = \YunShop::request()->search;
         if ($search) {
@@ -51,7 +51,7 @@ class GoodsTrackingController extends BaseController
 
         }
 
-        $recordList =  $records->orderBy('created_at', 'desc')->paginate();
+        $recordList =  $records->orderBy('create_time', 'desc')->paginate();
 
         $pager = PaginationHelper::show($recordList->total(), $recordList->currentPage(), $recordList->perPage());
 
