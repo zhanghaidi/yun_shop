@@ -128,7 +128,7 @@ class UpdateHwqService
         if(!$express_info){
             unset($data['order_list']['0']['ext_info']['express_info']);
         }
-       return $data;
+        return $data;
     }
 
 
@@ -220,8 +220,8 @@ class UpdateHwqService
     {
         $user = MemberMiniAppModel::getFansById($this->order->uid);
 //        \Log::info('用戶信息', $user);
-        if ($user->openid) {
-            $this->open_id = $user->openid;
+        if ($user->shop_openid) {
+            $this->open_id = $user->shop_openid;
         } else {
             return false;
         }

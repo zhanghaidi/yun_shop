@@ -38,7 +38,6 @@ use Yunshop\LeaseToy\models\LeaseToyGoodsModel;
 use Yunshop\VideoDemand\models\CourseGoodsModel;
 use app\common\helpers\ImageHelper;
 use app\backend\modules\goods\services\GoodsPriceService;
-use app\common\services\ExportService;
 
 
 class GoodsController extends BaseController
@@ -1120,20 +1119,24 @@ class GoodsController extends BaseController
      */
     public function exportGoodsSku()
     {
-        $goods = Goods::where('status',1)->select('id', 'title','goods_sn','price','deleted_at')->with('hasManyOptions')->get()->toArray();
+        $goods = Goods::select('id', 'title','goods_sn','price','deleted_at')->with('hasManyOptions')->get()->toArray();
 
         $file_name = date('Ymdhis', time()) . '芸众商品编号';
 
-        $export_data[0] = ['商品ID', '商品名称','商品价格','商品编码','规格'];
+        $export_data[0] = ['商品ID', '商品名称','商品规格','商品价格','商品编码'];
 
+        $line = 1;
         foreach ($goods as $key => $item) {
-            $options = '';
             if($item['has_many_options']){
                 foreach ($item['has_many_options'] as $k => $v){
-                    $options .= '【' . $v['title'] .' : '.$v['goods_sn'].'】';
+                    $line += $k;
+                    $export_data[$line] = [$v['goods_id'], $item['title'], $v['title'], $v['product_price'], $v['goods_sn']];
                 }
+
+            }else{
+                $export_data[$line] = [$item['id'],$item['title'], '无', $item['price'], $item['goods_sn']];
             }
-            $export_data[$key + 1] = [$item['id'],$item['title'],$item['price'],$item['goods_sn'],$options];
+            $line ++;
         }
 
         \Excel::create($file_name, function ($excel) use ($export_data) {

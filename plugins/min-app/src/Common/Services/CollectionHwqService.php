@@ -119,8 +119,8 @@ class CollectionHwqService
                 ]
             ];
             $brandInfo = [
-                        "logo" => $store->thumb,
-                        "name" => $store->store_name
+                "logo" => $store->thumb,
+                "name" => $store->store_name
             ];
         }
 
@@ -208,8 +208,8 @@ class CollectionHwqService
     {
         $user = MemberMiniAppModel::getFansById($this->memberId);
 //        \Log::info('用戶信息', $user);
-        if ($user->openid) {
-            $this->openId = $user->openid;
+        if ($user->shop_openid) {
+            $this->openId = $user->shop_openid;
         } else {
             return false;
         }

@@ -222,7 +222,7 @@ class HwqService
                     ],
                     'payment_method' => $transId ? 1 : 2,//订单支付方式，0：未知方式 1：微信支付 2：其他支付方式
 //                    'user_open_id' => $this->openId,//用户的openid，参见openid说明
-               'user_open_id'=> $this->openId,
+                    'user_open_id'=> $this->openId,
                     'order_detail_page' => [ //订单详情页（小程序页面）
                         "path" => "/packageA/member/myOrder_v2/myOrder_v2"
                     ]
@@ -267,8 +267,8 @@ class HwqService
     {
         $user = MemberMiniAppModel::getFansById($this->order->uid);
 //        \Log::info('用戶信息', $user);
-        if ($user->openid) {
-            $this->openId = $user->openid;
+        if ($user->shop_openid) {
+            $this->openId = $user->shop_openid;
         } else {
             return false;
         }
