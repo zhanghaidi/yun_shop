@@ -200,7 +200,7 @@ class ListController extends BaseController
         return $data;
     }
 
-    public function export($orders)
+    /* public function export($orders)
     {
         if (\YunShop::request()->export == 1) {
             $export_page = request()->export_page ? request()->export_page : 1;
@@ -263,7 +263,47 @@ class ListController extends BaseController
                 $export_model->export($file_name, $export_data, 'order.list.index');
             }
         }
-    }
+    }*/
+
+    /* private function getGoods($order, $key)
+        {
+            $goods_title = '';
+            $goods_sn = '';
+            $total = '';
+            $cost_price = 0;
+            foreach ($order['has_many_order_goods'] as $goods) {
+                $res_title = $goods['title'];
+                $res_title = str_replace('-', '，', $res_title);
+                $res_title = str_replace('+', '，', $res_title);
+                $res_title = str_replace('/', '，', $res_title);
+                $res_title = str_replace('*', '，', $res_title);
+                $res_title = str_replace('=', '，', $res_title);
+
+                if ($goods['goods_option_title']) {
+                    $res_title .= '[' . $goods['goods_option_title'] . ']';
+                }
+                $order_goods = OrderGoods::find($goods['id']);
+                if ($order_goods->goods_option_id) {
+                    $goods_option = GoodsOption::find($order_goods->goods_option_id);
+                    if ($goods_option) {
+                        $goods_sn .= '【' . $goods_option->goods_sn . '】';
+                    }
+                } else {
+                    $goods_sn .= '【' . $goods['goods_sn'] . '】';
+                }
+
+                $goods_title .= '【' . $res_title . '*' . $goods['total'] . '】';
+                $total .= '【' . $goods['total'] . '】';
+                $cost_price += $goods['goods_cost_price'];
+            }
+            $res = [
+                'goods_title' => $goods_title,
+                'goods_sn' => $goods_sn,
+                'total' => $total,
+                'cost_price' => $cost_price
+            ];
+            return $res[$key];
+        }*/
 
     public function directExport($orders)
     {
@@ -393,44 +433,109 @@ class ListController extends BaseController
         return $export_discount[$key];
     }
 
-    private function getGoods($order, $key)
+
+
+    public function export($orders)
     {
-        $goods_title = '';
-        $goods_sn = '';
-        $total = '';
-        $cost_price = 0;
-        foreach ($order['has_many_order_goods'] as $goods) {
-            $res_title = $goods['title'];
-            $res_title = str_replace('-', '，', $res_title);
-            $res_title = str_replace('+', '，', $res_title);
-            $res_title = str_replace('/', '，', $res_title);
-            $res_title = str_replace('*', '，', $res_title);
-            $res_title = str_replace('=', '，', $res_title);
-
-            if ($goods['goods_option_title']) {
-                $res_title .= '[' . $goods['goods_option_title'] . ']';
-            }
-            $order_goods = OrderGoods::find($goods['id']);
-            if ($order_goods->goods_option_id) {
-                $goods_option = GoodsOption::find($order_goods->goods_option_id);
-                if ($goods_option) {
-                    $goods_sn .= '【' . $goods_option->goods_sn . '】';
+        if (\YunShop::request()->export == 1) {
+            $export_page = request()->export_page ? request()->export_page : 1;
+            //清除之前没有导出的文件
+            if ($export_page == 1){
+                $fileNameArr = file_tree(storage_path('exports'));
+                foreach ($fileNameArr as $val ) {
+                    if(file_exists(storage_path('exports/' . basename($val)))){
+                        unlink(storage_path('exports/') . basename($val)); // 路径+文件名称
+                    }
                 }
-            } else {
-                $goods_sn .= '【' . $goods['goods_sn'] . '】';
             }
-
-            $goods_title .= '【' . $res_title . '*' . $goods['total'] . '】';
-            $total .= '【' . $goods['total'] . '】';
-            $cost_price += $goods['goods_cost_price'];
+            $orders = $orders->with(['discounts', 'deductions'])->orderBy($this->orderModel->getModel()->getTable() . '.id', 'desc');
+            $export_model = new ExportService($orders, $export_page);
+            if (!$export_model->builder_model->isEmpty()) {
+                $file_name = date('Ymdhis', time()) . '订单导出';//返现记录导出
+                $export_data[0] = $this->getColumns();
+                $line = 1;
+                foreach ($export_model->builder_model->toArray() as $key => $item) {
+                    foreach ($item['has_many_order_goods'] as $k => $goods){
+                        $line += $k;
+                        $address = explode(' ', $item['address']['address']);
+                        $fistOrder = $item['has_many_first_order'] ? '首单' : '';
+                        $export_data[$line] = [
+                            $item['id'],
+                            $item['order_sn'],
+                            $item['has_one_order_pay']['pay_sn'],
+                            $item['belongs_to_member']['uid'],
+                            $this->getNickname($item['belongs_to_member']['nickname']),
+                            $item['address']['realname'],
+                            $item['address']['mobile'],
+                            !empty($address[0]) ? $address[0] : '',
+                            !empty($address[1]) ? $address[1] : '',
+                            !empty($address[2]) ? $address[2] : '',
+                            $item['address']['address'],
+                            $this->getGoods($goods, 'goods_title'),
+                            $this->getGoods($item, 'goods_sn'),
+                            $this->getGoods($item, 'total'),
+                            $item['pay_type_name'],
+                            $this->getExportDiscount($item, 'deduction'),
+                            $this->getExportDiscount($item, 'coupon'),
+                            $this->getExportDiscount($item, 'enoughReduce'),
+                            $this->getExportDiscount($item, 'singleEnoughReduce'),
+                            $item['goods_price'],
+                            $item['dispatch_price'],
+                            $item['price'],
+                            $this->getGoods($item, 'cost_price'),
+                            $item['status_name'],
+                            $item['create_time'],
+                            !empty(strtotime($item['pay_time'])) ? $item['pay_time'] : '',
+                            !empty(strtotime($item['send_time'])) ? $item['send_time'] : '',
+                            !empty(strtotime($item['finish_time'])) ? $item['finish_time'] : '',
+                            $item['express']['express_company_name'],
+                            '[' . $item['express']['express_sn'] . ']',
+                            $item['has_one_order_remark']['remark'],
+                            $item['note'],
+                            $fistOrder,
+                            $item['belongs_to_member']['realname'],
+                            ' '.$item['belongs_to_member']['idcard'],
+                        ];
+                    }
+                    $line ++;
+                }
+                $export_model->export($file_name, $export_data, 'order.list.index');
+            }
         }
+    }
+
+    private function getGoods($goods)
+    {
+        $res_title = $goods['title'];
+        $res_title = str_replace('-', '，', $res_title);
+        $res_title = str_replace('+', '，', $res_title);
+        $res_title = str_replace('/', '，', $res_title);
+        $res_title = str_replace('*', '，', $res_title);
+        $res_title = str_replace('=', '，', $res_title);
+
+        if ($goods['goods_option_title']) {
+            $res_title .= '[' . $goods['goods_option_title'] . ']';
+        }
+        $order_goods = OrderGoods::find($goods['id']);
+        if ($order_goods->goods_option_id) {
+            $goods_option = GoodsOption::find($order_goods->goods_option_id);
+            if ($goods_option) {
+                $goods_sn = '【' . $goods_option->goods_sn . '】';
+            }
+        } else {
+            $goods_sn = '【' . $goods['goods_sn'] . '】';
+        }
+
+        $goods_title = '【' . $res_title . '*' . $goods['total'] . '】';
+        $total = '【' . $goods['total'] . '】';
+        $cost_price = $goods['goods_cost_price'];
         $res = [
             'goods_title' => $goods_title,
             'goods_sn' => $goods_sn,
             'total' => $total,
-            'cost_price' => $cost_price
+            'cost_price' => $cost_price,
         ];
-        return $res[$key];
+        return $res;
     }
 
     private function getNickname($nickname)
