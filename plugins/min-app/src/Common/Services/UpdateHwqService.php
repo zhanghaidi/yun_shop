@@ -66,11 +66,16 @@ class UpdateHwqService
             return;
         }
 
-        $url =  'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$set['key'].'&secret='.$set['secret'];
+        //fixby-zhd-小程序access_token统一使用微擎生产线上api 2020-10-29
 
+        //$url =  'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.$set['key'].'&secret='.$set['secret'];
+        //$result = Curl::to($url)->asJsonResponse(true)->get();
+        //return $result['access_token'];
+
+        $url =  'https://www.aijuyi.net/api/accesstoken.php?type=4&appid='.$set['shop_key'].'&secret='.$set['shop_secret'];
         $result = Curl::to($url)->asJsonResponse(true)->get();
 
-        return $result['access_token'];
+        return $result['accesstoken'];
     }
 
     /**
@@ -123,7 +128,7 @@ class UpdateHwqService
         if(!$express_info){
             unset($data['order_list']['0']['ext_info']['express_info']);
         }
-       return $data;
+        return $data;
     }
 
 
@@ -215,8 +220,8 @@ class UpdateHwqService
     {
         $user = MemberMiniAppModel::getFansById($this->order->uid);
 //        \Log::info('用戶信息', $user);
-        if ($user->openid) {
-            $this->open_id = $user->openid;
+        if ($user->shop_openid) {
+            $this->open_id = $user->shop_openid;
         } else {
             return false;
         }
