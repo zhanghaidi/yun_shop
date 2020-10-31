@@ -1123,16 +1123,21 @@ class GoodsController extends BaseController
 
         $file_name = date('Ymdhis', time()) . '芸众商品编号';
 
-        $export_data[0] = ['商品ID', '商品名称','商品价格','商品编码','规格'];
+        $export_data[0] = ['商品ID', '商品名称','商品规格','商品编码','商品价格'];
 
+        dd($goods);
         foreach ($goods as $key => $item) {
             $options = '';
-            if($item['has_many_options']){
+            if(empty($item['has_many_options'])){
+                $export_data[$key + 1] = [$item['id'],$item['title'], '无', $item['price'], $item['goods_sn']];
+            }else{
                 foreach ($item['has_many_options'] as $k => $v){
+
                     $options .= '【' . $v['title'] .' : '.$v['goods_sn'].'】';
+                    $options[] = [$v['title'],$v['goods_sn']];
                 }
             }
-            $export_data[$key + 1] = [$item['id'],$item['title'],$item['price'],$item['goods_sn'],$options];
+
         }
 
         \Excel::create($file_name, function ($excel) use ($export_data) {
