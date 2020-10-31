@@ -1119,7 +1119,7 @@ class GoodsController extends BaseController
      */
     public function exportGoodsSku()
     {
-        $goods = Goods::where('status',1)->select('id', 'title','goods_sn','price','deleted_at')->with('hasManyOptions')->get()->toArray();
+        $goods = Goods::select('id', 'title','goods_sn','price','deleted_at')->with('hasManyOptions')->get()->toArray();
 
         $file_name = date('Ymdhis', time()) . '芸众商品编号';
 
