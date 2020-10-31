@@ -32,4 +32,5 @@ class ShoppingShareCoupon extends BaseModel
     {
         return $query->where('member_id', $member_id);
     }
+
 }
