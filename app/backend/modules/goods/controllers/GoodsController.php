@@ -38,7 +38,6 @@ use Yunshop\LeaseToy\models\LeaseToyGoodsModel;
 use Yunshop\VideoDemand\models\CourseGoodsModel;
 use app\common\helpers\ImageHelper;
 use app\backend\modules\goods\services\GoodsPriceService;
-use app\common\services\ExportService;
 
 
 class GoodsController extends BaseController
