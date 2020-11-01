@@ -36,6 +36,9 @@ class MemberHistoryController extends ApiController
     {
 
         $memberId = \YunShop::app()->getMemberId();
+        if(!$memberId){
+            return false;
+        }
         if( \YunShop::request()->id){
             $goodsId = \YunShop::request()->id ;
         }else{
