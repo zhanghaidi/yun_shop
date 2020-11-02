@@ -307,10 +307,10 @@ class BaseService
         }
         $result = self::curlRequest($this->requestUrl($this->appId, $this->secret), '', []);
         $decode = json_decode($result, true);
-        if ($decode['errcode'] != 0) {
+        /*if ($decode['errcode'] != 0) {
             throw new AppException('appId或者secret错误' . $decode['errmsg']);
-        }
-        return $decode['access_token'];
+        }*/
+        return $decode['accesstoken'];
     }
 
     private static function curlRequest($url, $post_data = [], $headers = [])
@@ -340,6 +340,7 @@ class BaseService
 
     protected function requestUrl($appId, $secret)
     {
-        return 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=' . $appId . '&secret=' . $secret;
+        //fixbyzhd-access_token统一调用 20201102
+        return 'https://www.aijuyi.net/api/accesstoken.php?type=4&appid=' . $appId . '&secret=' . $secret;
     }
 }

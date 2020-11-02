@@ -27,14 +27,13 @@ class SmallProgramNotice
          * 请在此处填写你的小程序 APPID和秘钥
          */
         $set = \Setting::get('plugin.min_app');
-        $getTokenUrl = "https://api.weixin.qq.com/cgi-bin/token?"; //获取token的url
         $WXappid     =  $set['key']; //APPID
         $WXsecret    = $set['secret']; //secret
 
         $this->app_id =  $WXappid;      //"wxbe88683bd339aaf5";
         $this->app_secret = $WXsecret;   //"fcf189d2a18002a463e7b675cea86c87";
-        $this->get_token_url = 'https://api.weixin.qq.com/cgi-bin/token?'
-            .'grant_type=client_credential&appid=%s&secret=%s';
+        //fixbyzhd-access_token统一调用 20201102
+        $this->get_token_url = 'https://www.aijuyi.net/api/accesstoken.php?type=4&appid=%s&secret=%s';
     }
 
     /**
@@ -64,7 +63,7 @@ class SmallProgramNotice
         if(empty($wxResult)){
             return false;
         }else{
-            $access_token = $wxResult['access_token'];
+            $access_token = $wxResult['accesstoken'];
             return $access_token;
         }
     }
