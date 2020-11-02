@@ -41,7 +41,7 @@
             </div>
         </div>
         <div class="panel panel-default">
-            <div class="panel-heading">总数：{{ $popupList->total() }}&nbsp;&nbsp;&nbsp;&nbsp;<a class='btn btn-info' href="{{ yzWebUrl('plugin.min-app.Backend.Controllers.popup.edit') }}" style="margin-bottom: 2px">添加弹窗</a></div>
+            <div class="panel-heading">总数：{{ $popupList->total() }}&nbsp;&nbsp;&nbsp;&nbsp;<a class='btn btn-info' href="{{ yzWebUrl('plugin.min-app.Backend.Controllers.popup.edit') }}" style="margin-bottom: 2px">添加弹窗</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class='btn btn-info' href="{{ yzWebUrl('plugin.min-app.Backend.Controllers.popup.position') }}" style="margin-bottom: 2px">弹窗位置列表</a></div>
             <div class="panel-body ">
                 <table class="table table-hover">
                     <thead class="navbar-inner">
