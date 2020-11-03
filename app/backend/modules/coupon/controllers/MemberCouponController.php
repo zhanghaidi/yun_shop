@@ -47,6 +47,7 @@ class MemberCouponController extends BaseController
         foreach ($coupons['data'] as $k => $v) {
             if ($v['used'] == MemberCoupon::USED) { //已使用
                 $coupons['data'][$k]['api_status'] = self::IS_USED;
+                $coupons['data'][$k]['use_time'] = date('Y-m-d H:i:s',$v['use_time']);
             } elseif ($v['used'] == MemberCoupon::NOT_USED) { //未使用
                 if ($v['belongs_to_coupon']['time_limit'] == Coupon::COUPON_SINCE_RECEIVE) { //时间限制类型是"领取后几天有效"
                     $end = strtotime($v['get_time']) + $v['belongs_to_coupon']['time_days'] * 86400;
