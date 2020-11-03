@@ -49,9 +49,8 @@ class MiniMessageNoticeJob implements  ShouldQueue
         $this->openId = $openId;
         $this->url = $url?:'pages/index/index';
         $this->formId = $formId;
-        $this->get_token_url = 'https://api.weixin.qq.com/cgi-bin/token?'
-            .'grant_type=client_credential&appid=%s&secret=%s';
-//        "https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=$code&grant_type=authorization_code"
+        //fixbyzhd-access_token统一调用 20201102
+        $this->get_token_url = 'https://www.aijuyi.net/api/accesstoken.php?type=4&appid=%s&secret=%s';
     }
 
     /**
@@ -116,12 +115,13 @@ class MiniMessageNoticeJob implements  ShouldQueue
      */
     public function opGetAccessToken(){
         $get_token_url = sprintf($this->get_token_url, $this->app_id,$this->app_secret);
+        \Log::debug('app/jobs/MiniMessageNoticeJob:'.$get_token_url);
         $result = self::curl_get($get_token_url);
         $wxResult = json_decode($result,true);
         if(empty($wxResult)){
             return false;
         }else{
-            $access_token = $wxResult['access_token'];
+            $access_token = $wxResult['accesstoken'];
             return $access_token;
         }
     }
