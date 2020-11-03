@@ -96,7 +96,7 @@
                                 @else
                                     <a class='btn btn-default btn-sm'
                                        href="{{yzWebUrl('coupon.member-coupon.delete', ['id' => $row["id"]])}}" title="删除"
-                                       onclick="return confirm('确定要删除该优惠券吗？');"><i class='fa fa-remove'></i></a>
+                                       onclick="return confirm('确定要删除该优惠券吗？谨慎操作！');"><i class='fa fa-remove'></i></a>
                                 @endif
 
 
