@@ -70,7 +70,7 @@ class MemberCouponController extends BaseController
                 $coupons['data'][$k]['api_availability'] = self::IS_AVAILABLE;
             }
         }
-
+        
         return view('coupon.coupons-member', [
             'list' => $coupons['data'],
             'pager' => $pager,
