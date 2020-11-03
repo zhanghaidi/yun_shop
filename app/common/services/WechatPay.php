@@ -78,10 +78,10 @@ class WechatPay extends Pay
 
                 $this->changeOrderStatus($pay_order_model, Pay::ORDER_STATUS_WAITPAY,'');
             } elseif ($result->return_code == 'SUCCESS') {
-                \Log::info('微信支付result_code！= success：'.$result->err_code_des);
+                \Log::debug('微信支付result_code！= success：'.$result->err_code_des);
                 throw new AppException($result->err_code_des);
             } else {
-                \Log::info('微信支付失败：'.$result->err_code_des);
+                \Log::debug('微信支付失败：'.$result->err_code_des);
                 throw new AppException($result->return_msg);
             }
             $config = $payment->configForJSSDKPayment($prepayId);
