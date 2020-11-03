@@ -95,7 +95,7 @@ class MemberCouponController extends BaseController
             $this->error('找不到记录', '');
         }
 
-        $res = $model->update(['is_member_deleted' => 1]);
+        $res = $model->update(['is_member_deleted' => 1,'deleted_at' => strtotime('now')]);
         if ($res) {
             return $this->message('删除优惠券成功');
         } else {
