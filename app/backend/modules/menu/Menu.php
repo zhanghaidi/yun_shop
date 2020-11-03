@@ -1832,6 +1832,17 @@ class Menu
                                 'item'       => 'member_member_coupons',
                                 'parents'    => ['Member', 'member_all',],
                             ],
+                            'member_member_coupons_delete' => [
+                                'name'       => '会员优惠删除',
+                                'url'        => 'coupon.member-coupon.delete',
+                                'url_params' => '',
+                                'permit'     => 1,
+                                'menu'       => 0,
+                                'icon'       => '',
+                                'sort'       => 0,
+                                'item'       => 'member_member_coupons_delete',
+                                'parents'    => ['Member', 'member_all',],
+                            ],
                         ],
                     ],
 
