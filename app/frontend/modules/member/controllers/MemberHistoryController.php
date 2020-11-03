@@ -34,8 +34,10 @@ class MemberHistoryController extends ApiController
 
     public function store($request, $integrated = null)
     {
-
         $memberId = \YunShop::app()->getMemberId();
+        if(!$memberId){
+            return show_json(0,'未获取到会员ID！');
+        }
         if( \YunShop::request()->id){
             $goodsId = \YunShop::request()->id ;
         }else{
