@@ -35,14 +35,14 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">位置类型</label>
-                            <div class="col-sm-9 col-xs-12">
-                                @foreach($pos_type as $key => $item)
-                                <label class='radio-inline'><input type='radio' name='position[type]' value='{{$key}}' @if ($position['type'] == $key) checked @endif/>{{$item}}</label>
-                                @endforeach
-                            </div>
-                        </div>
+{{--                        <div class="form-group">--}}
+{{--                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">位置类型</label>--}}
+{{--                            <div class="col-sm-9 col-xs-12">--}}
+{{--                                @foreach($pos_type as $key => $item)--}}
+{{--                                <label class='radio-inline'><input type='radio' name='position[type]' value='{{$key}}' @if ($position['type'] == $key) checked @endif/>{{$item}}</label>--}}
+{{--                                @endforeach--}}
+{{--                            </div>--}}
+{{--                        </div>--}}
 
                         <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">是否显示</label>

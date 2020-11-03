@@ -68,6 +68,11 @@
 {{--                        </div>--}}
 
                         <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">展示时间</label>
+                            <div class="col-sm-9 col-xs-12"><input type="number" name="popup[show_time]" class="form-control" value="{{empty($popup['show_time']) ? 5 : $popup['show_time']}}" placeholder="请输入展示时间"/></div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">有效期</label>
                             <div class="col-sm-9 col-xs-12">
                                 {!! app\common\helpers\DateRange::tplFormFieldDateRange('popup[time]', [
@@ -75,7 +80,7 @@
                                'endtime'=>$popup['end_time'],
                                'start'=>0,
                                'end'=>0
-                               ], true) !!}
+                               ], false) !!}
                             </div>
                         </div>
 
