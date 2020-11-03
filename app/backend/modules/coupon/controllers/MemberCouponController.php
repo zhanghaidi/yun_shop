@@ -37,7 +37,7 @@ class MemberCouponController extends BaseController
     public function couponsOfMember()
     {
         $uid = \YunShop::request()->member_id;
-        $pageSize = 10;
+        $pageSize = 30;
 
         $coupons = MemberCoupon::getCouponsOfMember($uid)->paginate($pageSize)->toArray();
         $pager = PaginationHelper::show($coupons['total'], $coupons['current_page'], $coupons['per_page']);
