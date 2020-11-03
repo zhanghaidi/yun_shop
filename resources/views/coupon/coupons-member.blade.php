@@ -35,7 +35,7 @@
                         <th width="4%">ID</th>
                         <th width="16%">优惠券名称</th>
                         <th width="10%">优惠券类型</th>
-                        <th width="10%">优惠券金额/折</th>
+                        <th width="10%">使用条件/优惠</th>
                         <th width="10%">使用时间</th>
                         <th width="10%">有效时间</th>
                         <th width="6%">状态</th>
