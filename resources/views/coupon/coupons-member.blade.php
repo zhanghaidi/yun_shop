@@ -91,9 +91,15 @@
 
                             <td>{{$row['get_time']}}</td>
                             <td style="position:relative">
-                                <a class='btn btn-default btn-sm'
-                                   href="{{yzWebUrl('coupon.member-coupon.delete', ['id' => $row["id"]])}}" title="删除"
-                                   onclick="return confirm('确定要删除该优惠券吗？');"><i class='fa fa-remove'></i></a>
+                                @if($row['is_member_deleted']>0)
+                                    <label class="label label-danger">已删除</label>
+                                @else
+                                    <a class='btn btn-default btn-sm'
+                                       href="{{yzWebUrl('coupon.member-coupon.delete', ['id' => $row["id"]])}}" title="删除"
+                                       onclick="return confirm('确定要删除该优惠券吗？');"><i class='fa fa-remove'></i></a>
+                                @endif
+
+
                             </td>
                         </tr>
                     @endforeach
