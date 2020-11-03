@@ -70,7 +70,7 @@ class MemberCouponController extends BaseController
                 $coupons['data'][$k]['api_availability'] = self::IS_AVAILABLE;
             }
         }
-        
+
         return view('coupon.coupons-member', [
             'list' => $coupons['data'],
             'pager' => $pager,
@@ -93,7 +93,7 @@ class MemberCouponController extends BaseController
 
         $res = $model->update(['is_member_deleted' => 1]);
         if ($res) {
-            return $this->message('删除优惠券成功', Url::absoluteWeb('member-coupon.coupons-of-member'));
+            return $this->message('删除优惠券成功');
         } else {
             return $this->message('删除优惠券失败', '', 'error');
         }

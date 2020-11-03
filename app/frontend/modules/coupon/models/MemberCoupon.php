@@ -18,7 +18,7 @@ class MemberCoupon extends \app\common\models\MemberCoupon
                 'goods_ids', 'goods_names', 'storeids', 'storenames', 'time_limit', 'time_days', 'time_start', 'time_end', 'total',
                 'money', 'credit', 'plugin_id']);
         }])->where('uid', $memberId)
-            ->select(['id', 'coupon_id', 'used', 'use_time', 'get_time'])
+            ->select(['id', 'coupon_id', 'used', 'use_time', 'get_time','is_member_deleted'])
             ->orderBy('get_time', 'desc');
         return $coupons;
     }
