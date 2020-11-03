@@ -100,6 +100,7 @@ class SendTemplateMsgJob implements ShouldQueue
     {
         //fixbyzhd-2020-10-29 改写小程序统一调用生产access_token
         $url = "https://www.aijuyi.net/api/accesstoken.php?type=4&appid=%s&secret=%s";
+        Log::info('app/jobs/SendTemplateMsgJob:'.$url);
         $url = sprintf($url, $this->config['options']['app_id'], $this->config['options']['secret']);
         $response = self::curl_get($url);
         $result = @json_decode($response, true);
