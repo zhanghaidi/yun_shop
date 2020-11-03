@@ -18,9 +18,9 @@ class SmsBalanceListener
     {
 
         $events->listen('cron.collectJobs', function () {
-            \Log::debug('-------------IN_IA-----------',defined('IN_IA'));
+            //\Log::debug('-------------IN_IA-----------',defined('IN_IA'));
             if (defined('IN_IA')) {
-                \Log::debug('----定时任务执行----');
+                //\Log::debug('----定时任务执行----');
                 $uniAccounts = UniAccount::getEnable();
                 foreach ($uniAccounts as $uniAccount) {
                     \YunShop::app()->uniacid = $uniAccount->uniacid;
@@ -28,7 +28,7 @@ class SmsBalanceListener
                     $unicid = \YunShop::app()->uniacid;
                     $balanceSet = \Setting::get('finance.balance');
                     if ($balanceSet['sms_send'] == 0) {
-                        \Log::debug($uniAccount->uniacid . '未开启');
+                        //\Log::debug($uniAccount->uniacid . 'finance.balance未开启');
                         continue;
                     }
 
