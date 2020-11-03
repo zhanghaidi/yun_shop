@@ -1821,6 +1821,17 @@ class Menu
                                 'item'       => 'member_member_address',
                                 'parents'    => ['Member', 'member_all',],
                             ],
+                            'member_member_coupons' => [
+                                'name'       => '会员优惠券管理',
+                                'url'        => 'coupon.member-coupon.coupons-of-member',
+                                'url_params' => '',
+                                'permit'     => 1,
+                                'menu'       => 0,
+                                'icon'       => '',
+                                'sort'       => 0,
+                                'item'       => 'member_member_coupons',
+                                'parents'    => ['Member', 'member_all',],
+                            ],
                         ],
                     ],
 
