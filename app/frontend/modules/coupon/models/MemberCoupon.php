@@ -9,6 +9,8 @@ class MemberCoupon extends \app\common\models\MemberCoupon
 
     const USED = 1;
     const NOT_USED = 0;
+    const IS_DELETED = 0;//0 未删除 1已删除 fixBy-wk-20201103 优惠券删除功能
+
 
     //获取指定用户名下的优惠券
     public static function getCouponsOfMember($memberId)
@@ -18,6 +20,7 @@ class MemberCoupon extends \app\common\models\MemberCoupon
                 'goods_ids', 'goods_names', 'storeids', 'storenames', 'time_limit', 'time_days', 'time_start', 'time_end', 'total',
                 'money', 'credit', 'plugin_id']);
         }])->where('uid', $memberId)
+            ->where('is_member_deleted', self::IS_DELETED)// fixBy-wk-20201103 优惠券删除功能
             ->select(['id', 'coupon_id', 'used', 'use_time', 'get_time','is_member_deleted'])
             ->orderBy('get_time', 'desc');
         return $coupons;
