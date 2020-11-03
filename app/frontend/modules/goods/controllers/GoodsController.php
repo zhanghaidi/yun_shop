@@ -583,9 +583,19 @@ class GoodsController extends GoodsApiController
                 $requestSearch['category'] = $categorySearch;
             }
         }
+        //fixBy-wk-20201030 增加根据商品id获取商品的筛选条件
+        $goodIdsSearch = \YunShop::request()->goodIds;
+        $where = [];
+        if (!empty($goodIdsSearch)) {
+            $field = 'id';
+            $where = function ($query) use ($field, $goodIdsSearch) {
+                $query->whereIn($field, json_decode($goodIdsSearch, true));
+            };
+        }
 
         $build = $goods_model->Search($requestSearch)->selectRaw("thumb,market_price,price,cost_price,title, " . DB::getTablePrefix() . "yz_goods.id as goods_id")
             ->where("status", 1)
+            ->where($where)
             ->whereInPluginIds();
 
         //todo 为什么要取出id, 这样mysql where in的好长
