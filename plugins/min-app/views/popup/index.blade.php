@@ -51,6 +51,7 @@
                         <th style='width:10%; text-align: center;'>弹窗位置名称</th>
                         <th style='width:10%; text-align: center;'>弹窗图片</th>
                         <th style='width:20%; text-align: center;'>小程序路径</th>
+                        <th style='width:5%; text-align: center;'>展示时间</th>
                         <th style='width:10%; text-align: center;'>弹窗开始时间</th>
                         <th style='width:10%; text-align: center;'>弹窗结束时间</th>
                         <th style='width:10%; text-align: center;'>是否显示</th>
@@ -67,6 +68,7 @@
                                 <a href='{{yz_tomedia($list->picture)}}' target='_blank'><img src="{{yz_tomedia($list->picture)}}" style='width:100px;border:1px solid #ccc;padding:1px' /></a>
                             </td>
                             <td>{{ $list->pagepath }}</td>
+                            <td>{{ $list->show_time }}</td>
                             <td>{{ $list->start_time }}</td>
                             <td>{{ $list->end_time }}</td>
                             <td>@if($list->is_show)<label class="label label-info">是</label> @else <label class="label label-warning">否</label>@endif</td>

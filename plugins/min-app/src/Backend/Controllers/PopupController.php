@@ -9,6 +9,7 @@ use app\common\helpers\Url;
 use Yunshop\MinApp\Common\Models\Popup;
 use Yunshop\MinApp\Common\Models\PopupPositon;
 use Illuminate\Support\Facades\DB;
+use Yunshop\MinApp\Common\Services\PopupService;
 
 class PopupController extends BaseController
 {
@@ -32,9 +33,9 @@ class PopupController extends BaseController
 
         return view('Yunshop\MinApp::popup.index',[
             'popupList'      => $popupList,
-            'page'              => $page,
-            'search'            => $search,
-            'position'          => PopupPositon::uniacid()->get(),
+            'page'           => $page,
+            'search'         => $search,
+            'position'       => PopupPositon::uniacid()->get(),
         ])->render();
     }
 
@@ -59,6 +60,7 @@ class PopupController extends BaseController
                 if (!$ret) {
                     return $this->message('保存弹窗失败', Url::absoluteWeb('plugin.min-app.Backend.Controllers.popup.edit',['id'=>$pop_id]), 'error');
                 }
+                (new PopupService())->logPopup($this->popup_model, $pop_id ? 'update' : 'create');
                 return $this->message('保存弹窗成功', Url::absoluteWeb('plugin.min-app.Backend.Controllers.popup.index'));
             }
         }
@@ -112,6 +114,7 @@ class PopupController extends BaseController
                 if (!$ret) {
                     return $this->message('保存弹窗位置失败', Url::absoluteWeb('plugin.min-app.Backend.Controllers.popup.position-edit',['id'=>$pos_id]), 'error');
                 }
+                (new PopupService())->logPopupPosition($this->pos_model, $pos_id ? 'update' : 'create');
                 return $this->message('保存弹窗位置成功', Url::absoluteWeb('plugin.min-app.Backend.Controllers.popup.position'));
             }
         }
