@@ -89,6 +89,47 @@ class MenuHook
                     'parents'    => ['min-app'],
                     'child'      => []
                 ],
+                'plugin.min-app.admin.popup' => [
+                    'name'       => '小程序弹窗设置',
+                    'permit'     => 1,
+                    'menu'       => 1,
+                    'icon'       => '',
+                    'url'        => 'plugin.min-app.Backend.Controllers.popup.index',
+                    'url_params' => '',
+                    'parents'    => ['min-app'],
+                    'child'      => [
+                        'plugin.min-app.admin.popup.edit'  => [
+                            'name'       => '编辑弹窗',
+                            'permit'     => 1,
+                            'menu'       => 0,
+                            'icon'       => '',
+                            'url'        => 'plugin.min-app.Backend.Controllers.popup.position',
+                            'url_params' => '',
+                            'parents'    => ['min-app', 'plugin.min-app.admin.popup'],
+                            'item'       => 'plugin.min-app.admin.popup.edit',
+                        ],
+                        'plugin.min-app.admin.popup.position-index'  => [
+                            'name'       => '弹窗位置',
+                            'permit'     => 1,
+                            'menu'       => 0,
+                            'icon'       => '',
+                            'url'        => 'plugin.min-app.Backend.Controllers.popup.position',
+                            'url_params' => '',
+                            'parents'    => ['min-app', 'plugin.min-app.admin.popup'],
+                            'item'       => 'plugin.min-app.admin.popup.position-index',
+                        ],
+                        'plugin.min-app.admin.popup.position-edit'  => [
+                            'name'       => '编辑弹窗位置',
+                            'permit'     => 1,
+                            'menu'       => 0,
+                            'icon'       => '',
+                            'url'        => 'plugin.min-app.Backend.Controllers.popup.position-edit',
+                            'url_params' => '',
+                            'parents'    => ['min-app', 'plugin.min-app.admin.popup'],
+                            'item'       => 'plugin.min-app.admin.popup.position-edit',
+                        ],
+                    ]
+                ],
             ]
         ];
         return $menu;
