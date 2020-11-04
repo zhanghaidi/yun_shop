@@ -56,14 +56,19 @@ class GoodsController extends GoodsApiController
     {
         $goods_model = \app\common\modules\shop\ShopConfig::current()->get('goods.models.commodity_classification');
         $goods_model = new $goods_model;
-        try {
-            $member = Member::current()->yzMember;
-        } catch (MemberNotLoginException  $e) {
-            if (\YunShop::request()->type == 1 || \YunShop::request()->type == 2) {
-                return;
-            }
+        //fixby-zhd-商品详情免登陆20201101
+        $member_id = \YunShop::app()->getMemberId();
 
-            throw new MemberNotLoginException($e->getMessage());
+        if($member_id){
+            try {
+                $member = Member::current()->yzMember;
+            } catch (MemberNotLoginException  $e) {
+                if (\YunShop::request()->type == 1 || \YunShop::request()->type == 2) {
+                    return;
+                }
+
+                throw new MemberNotLoginException($e->getMessage());
+            }
         }
 
         $goodsModel = $goods_model->uniacid()
@@ -101,6 +106,7 @@ class GoodsController extends GoodsApiController
                 return show_json(0,'商品不存在.');
             }
         }
+
 
         //限时购 todo 后期优化 应该是前端优化
         $current_time = time();
@@ -188,15 +194,25 @@ class GoodsController extends GoodsApiController
         $goodsModel->goods_sale = $this->getGoodsSaleV2($goodsModel, $member);
         $goodsModel->love_shoppin_gift = $this->loveShoppingGift($goodsModel);
 
+
         //商品会员优惠
         $goodsModel->member_discount = $this->getDiscount($goodsModel, $member);
 
         //商品是否开启领优惠卷
-        $goodsModel->availability = $this->couponsMemberLj($member);
+        //fixby-zhd-商品详情免登陆20201101
+        if(!$member_id){
+            $goodsModel->availability = 0;
+        }else{
+            $goodsModel->availability = $this->couponsMemberLj($member);
+        }
 
         //判断用户已购买总数 2020/8/03  zhd add line 1
-
-        $goodsModel->member_history_num = Member::current()->orderGoods()->where('goods_id', $id)->sum('total');
+        //fixby-zhd-商品详情免登陆20201101
+        if($member_id){
+            $goodsModel->member_history_num = Member::current()->orderGoods()->where('goods_id', $id)->sum('total');
+        }else{
+            $goodsModel->member_history_num = 0;
+        }
 
         // 商品详情挂件
         if (\app\common\modules\shop\ShopConfig::current()->get('goods_detail')) {
@@ -568,9 +584,19 @@ class GoodsController extends GoodsApiController
                 $requestSearch['category'] = $categorySearch;
             }
         }
+        //fixBy-wk-20201030 增加根据商品id获取商品的筛选条件
+        $goodIdsSearch = \YunShop::request()->goodIds;
+        $where = [];
+        if (!empty($goodIdsSearch)) {
+            $field = 'id';
+            $where = function ($query) use ($field, $goodIdsSearch) {
+                $query->whereIn($field, json_decode($goodIdsSearch, true));
+            };
+        }
 
         $build = $goods_model->Search($requestSearch)->selectRaw("thumb,market_price,price,cost_price,title, " . DB::getTablePrefix() . "yz_goods.id as goods_id")
             ->where("status", 1)
+            ->where($where)
             ->whereInPluginIds();
 
         //todo 为什么要取出id, 这样mysql where in的好长
