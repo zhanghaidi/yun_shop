@@ -51,9 +51,9 @@
                                 {{$row['belongs_to_coupon']['name']}}
                             </td>
                             <td>
-                                @if($row['belongs_to_coupon']['coupon_method']==0)
+                                @if($row['belongs_to_coupon']['coupon_method']==1)
                                     <label class="label label-danger">满减</label>
-                                @else
+                                @elseif( $row['belongs_to_coupon']['coupon_method']==2)
                                     <label class="label label-warning">打折</label>
                                 @endif
                             </td>
@@ -65,7 +65,7 @@
                                 @endif
                                 <br/>@if($row['belongs_to_coupon']['coupon_method']==1)
                                     立减 {{$row['belongs_to_coupon']['deduct'] ? $row['belongs_to_coupon']['deduct'] : 0}} 元
-                                @elseif( $row['coupon_method']==2)
+                                @elseif( $row['belongs_to_coupon']['coupon_method']==2)
                                     打 {{$row['belongs_to_coupon']['discount'] ? $row['belongs_to_coupon']['discount'] : 1}} 折
                                 @endif
                             </td>
@@ -96,7 +96,7 @@
                                 @else
                                     <a class='btn btn-default btn-sm'
                                        href="{{yzWebUrl('coupon.member-coupon.delete', ['id' => $row["id"]])}}" title="删除"
-                                       onclick="return confirm('确定要删除该优惠券吗？');"><i class='fa fa-remove'></i></a>
+                                       onclick="return confirm('确定要删除该优惠券吗？谨慎操作！');"><i class='fa fa-remove'></i></a>
                                 @endif
 
 
