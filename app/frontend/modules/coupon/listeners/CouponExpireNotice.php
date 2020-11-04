@@ -54,7 +54,7 @@ class CouponExpireNotice
 
         $expiredCoupon = [];
         $present = time();
-        foreach(\app\common\models\MemberCoupon::where([['used','=',0]])->cursor() as $coupon) {
+        foreach(\app\common\models\MemberCoupon::uniacid()->where([['used','=',0]])->cursor() as $coupon) {
             if ($coupon->time_end == '不限时间') {
                 continue;
             }

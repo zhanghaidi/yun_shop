@@ -29,7 +29,7 @@ class CouponSendService
 
     protected $relation;  //关联，订单号 或 ID值
 
-    protected $transferId; //转让者ID
+    protected $trans_from; //转让的会员优惠券记录id
 
     protected $get_time; //优惠券获取时间
 
@@ -71,7 +71,7 @@ class CouponSendService
     }
 
     //多种多张优惠券
-    public function sendCouponsNumsToMember($memberId, array $couponIds, array $couponNums ,$get_type = '0', $relation = '', $transferId = '')
+    public function sendCouponsNumsToMember($memberId, array $couponIds, array $couponNums ,$get_type = '0', $relation = '', $trans_from = 0)
     {
         if (empty($memberId) || !is_numeric($memberId)) {
             return null;
@@ -83,7 +83,7 @@ class CouponSendService
         $this->memberId = $memberId;
         $this->get_type = $get_type;
         $this->relation = $relation;
-        $this->transferId = $transferId;
+        $this->trans_from = $trans_from;
 
 
         $data = array();
@@ -100,7 +100,7 @@ class CouponSendService
     }
 
 
-    public function sendCouponToMembers(array $memberIds, $couponId, $get_type = '0', $relation = '',$transferId)
+    public function sendCouponToMembers(array $memberIds, $couponId, $get_type = '0', $relation = '',$trans_from = 0)
     {
         if (empty($couponId) || !is_numeric($couponId)) {
             return null;
@@ -113,7 +113,7 @@ class CouponSendService
         $this->get_type = $get_type;
         $this->send_total = 1;
         $this->relation = $relation;
-        $this->transferId = $transferId;
+        $this->trans_from = $trans_from;
 
 
 
@@ -129,7 +129,7 @@ class CouponSendService
         return $this->updateMemberCoupons($data, $log_data);
     }
 
-    public function sendCouponToMember($memberId, $couponId, $get_type = '0', $relation = '', $transferId = '')
+    public function sendCouponToMember($memberId, $couponId, $get_type = '0', $relation = '', $trans_from = 0)
     {//新发放优惠券接口
         if (empty($memberId) || !is_numeric($memberId)) {
             Log::info('优惠券发送接口调用失败，会员ID错误！', print_r($memberId,true));
@@ -139,7 +139,7 @@ class CouponSendService
         $this->memberId = $memberId;
         $this->get_type = $get_type;
         $this->relation = $relation;
-        $this->transferId = $transferId;
+        $this->trans_from = $trans_from;
 
         $data = array();
         $log_data = array();
@@ -201,7 +201,9 @@ class CouponSendService
             'coupon_id' => $this->couponId,
             'get_type'  => $this->get_type,
             'used'      => 0,
-            'get_time'  => $this->get_time ?: time(),
+            'get_time'  => $this->get_time ? $this->get_time : time(),
+            'trans_from'  => $this->trans_from ? $this->trans_from : 0,
+            'created_at'=> time(),
         ];
     }
 
@@ -214,14 +216,14 @@ class CouponSendService
 
         switch ($this->get_type) {
             //case '0':
-                //$remark = '手动发放优惠券: 管理员【ID:' . $adminId . '】成功发放 ' . $this->send_total . ' 张优惠券【优惠券ID:' . $this->couponId . '】给用户【会员ID:' . $this->memberId . '】';
-                //break;
+            //$remark = '手动发放优惠券: 管理员【ID:' . $adminId . '】成功发放 ' . $this->send_total . ' 张优惠券【优惠券ID:' . $this->couponId . '】给用户【会员ID:' . $this->memberId . '】';
+            //break;
             //case '1':
-                //$remark = '会员领取优惠券: 会员【ID:' . $this->memberId . '】成功领取' . $this->send_total . ' 张优惠券【优惠券ID:' . $this->couponId . '】';
-                //break;
+            //$remark = '会员领取优惠券: 会员【ID:' . $this->memberId . '】成功领取' . $this->send_total . ' 张优惠券【优惠券ID:' . $this->couponId . '】';
+            //break;
             //case '3':
-                //$remark = '';
-                //break;
+            //$remark = '';
+            //break;
             case '4':
                 $remark = '购物赠送优惠券: 订单:'.$this->relation.'完成，成功赠送会员【ID:' . $this->memberId . '】1张优惠券【优惠券ID:' . $this->couponId . '】';
                 break;
@@ -248,7 +250,7 @@ class CouponSendService
     }
 
     //fixby-zlt-coupontransfer 2020-10-15 14:00 接收转让优惠券
-    public function receiveTransferCoupon($memberId, array $couponIds, $get_type = '0', $relation = '', $transferId = '', $get_time = 0)
+    public function receiveTransferCoupon($memberId, array $couponIds, $get_type = '0', $relation = '', $trans_from = 0, $get_time = 0)
     {
         if (empty($memberId) || !is_numeric($memberId)) {
             return null;
@@ -261,8 +263,8 @@ class CouponSendService
         $this->get_type = $get_type;
         $this->send_total = count($couponIds);
         $this->relation = $relation;
-        $this->transferId = $transferId;
-        $this->get_time = $get_time ?: time();
+        $this->trans_from = $trans_from;
+        $this->get_time = $get_time ? $get_time : time();
 
 
         $data = array();
