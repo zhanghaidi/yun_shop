@@ -226,6 +226,11 @@ class CouponTransferController extends ApiController
         ], 200, ['charset' => 'utf-8'])->send();
     }
 
+    private function getMemberInfo()
+    {
+        return $this->memberModel = Member::select('uid')->where('uid',\YunShop::app()->getMemberId())->first();
+    }
+
     //fixBy-wk- 20201105 获取转让优惠券基本配置
     public function getTransferSetting()
     {
