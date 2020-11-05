@@ -39,7 +39,7 @@ class CouponLock
         foreach ($lockedCoupons as $coupon) {
             Log::info('解除优惠券转让锁定,优惠券ID:' . $coupon['id']);
             try{
-                MemberCoupon::uniacid()->where(id,$coupon['id'])->update(['lock_expire_time' => 0]);
+                MemberCoupon::uniacid()->where(id,$coupon['id'])->update(['lock_time' => null,'lock_expire_time' => null]);
             }catch (\ErrorException $exception){
                 Log::error('processLockedCoupon error:' . $exception->getMessage());
             }
