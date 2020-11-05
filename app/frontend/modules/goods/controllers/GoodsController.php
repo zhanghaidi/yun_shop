@@ -1504,7 +1504,7 @@ class GoodsController extends GoodsApiController
             return DB::table('yz_order as o')
                 ->join('yz_order_address as p', 'o.id', '=', 'p.order_id')
                 ->join('diagnostic_service_user as u', 'o.uid', '=', 'u.ajy_uid')
-                ->select('o.uid','u.avatarurl', 'p.address')
+                ->select('u.avatarurl', 'p.address')
                 ->where('o.status', 3)
                 ->groupBY('o.uid')
                 ->orderBy('o.create_time', 'DESC')
