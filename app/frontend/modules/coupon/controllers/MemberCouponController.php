@@ -105,6 +105,12 @@ class MemberCouponController extends ApiController
             } else {
                 $coupons['data'][$k]['api_availability'] = self::IS_AVAILABLE;
             }
+
+            $coupons['data'][$k]['transfer_info'] = self::getTransInfo($v['trans_from'],$v['created_at']); //转让信息
+            $coupons['data'][$k]['lock_time'] = $v['lock_time'];
+            $coupons['data'][$k]['lock_expire_time'] = $v['lock_expire_time'];
+            $coupons['data'][$k]['belongs_to_coupon']['transfer'] = intval($coupons[$k]['belongs_to_coupon']['transfer']);
+
         }
         return $this->successJson('ok', $coupons);
     }
@@ -369,6 +375,11 @@ class MemberCouponController extends ApiController
                 }
             }
 
+            $coupons[$k]['transfer_info'] = self::getTransInfo($v['trans_from'],$v['created_at']); //转让信息
+            $coupons[$k]['lock_time'] = $v['lock_time'];
+            $coupons[$k]['lock_expire_time'] = $v['lock_expire_time'];
+            $coupons[$k]['belongs_to_coupon']['transfer'] = intval($coupons[$k]['belongs_to_coupon']['transfer']);
+
             if ($v['belongs_to_coupon']['time_limit'] == Coupon::COUPON_SINCE_RECEIVE && ($v['belongs_to_coupon']['time_days'] == 0)) { //不限时
                 $coupons[$k]['belongs_to_coupon']['start'] = substr($v['get_time'], 0, 10);
                 $coupons[$k]['belongs_to_coupon']['end'] = '不限时间';
@@ -386,18 +397,6 @@ class MemberCouponController extends ApiController
                 $coupons[$k]['belongs_to_coupon']['end'] = substr($v['belongs_to_coupon']['time_end'], 0, 10); //前端需要统一的起止时间
                 $usageLimit = array('api_limit' => self::usageLimitDescription($v['belongs_to_coupon'])); //增加属性 - 优惠券的适用范围
                 $availableCoupons[] = array_merge($coupons[$k], $usageLimit);
-            }
-
-            $v['transfer_info'] = [];
-            if($v['trans_from']){
-                $transfer = MemberCoupon::uniacid()->withTrashed()->where('id',$v['trans_from'])->first();
-                if($transfer->uid){
-                    $member_info = DB::table('diagnostic_service_user')->select('ajy_uid','nickname')->where('ajy_uid',$transfer->uid)->first();
-                    $v['transfer_info'] = [
-                        'nickname' =>  $member_info['nickname'],
-                        'created_at' =>  $v['created_at'],
-                    ];
-                }
             }
 
         }
@@ -429,6 +428,11 @@ class MemberCouponController extends ApiController
                 }
             }
 
+            $coupons[$k]['transfer_info'] = self::getTransInfo($v['trans_from'],$v['created_at']); //转让信息
+            $coupons[$k]['lock_time'] = $v['lock_time'];
+            $coupons[$k]['lock_expire_time'] = $v['lock_expire_time'];
+            $coupons[$k]['belongs_to_coupon']['transfer'] = intval($coupons[$k]['belongs_to_coupon']['transfer']);
+
             if ($v['belongs_to_coupon']['time_limit'] == Coupon::COUPON_SINCE_RECEIVE
                 && ($v['belongs_to_coupon']['time_days'] !== 0)
                 && ($time > Carbon::createFromTimestamp(strtotime($v['get_time']) + $v['belongs_to_coupon']['time_days'] * 3600 * 24)->endOfDay()->timestamp)) {
@@ -443,6 +447,7 @@ class MemberCouponController extends ApiController
                 $usageLimit = array('api_limit' => self::usageLimitDescription($v['belongs_to_coupon'])); //增加属性 - 优惠券的适用范围
                 $overdueCoupons[] = array_merge($coupons[$k], $usageLimit);
             }
+
         }
         return $overdueCoupons;
     }
@@ -469,6 +474,12 @@ class MemberCouponController extends ApiController
                     $coupons[$k]['belongs_to_coupon']['hotel_ids'] = $findsArr;
                 }
             }
+
+            $coupons[$k]['transfer_info'] = self::getTransInfo($v['trans_from'],$v['created_at']); //转让信息
+            $coupons[$k]['lock_time'] = $v['lock_time'];
+            $coupons[$k]['lock_expire_time'] = $v['lock_expire_time'];
+            $coupons[$k]['belongs_to_coupon']['transfer'] = intval($coupons[$k]['belongs_to_coupon']['transfer']);
+
             $usageLimit = array('api_limit' => self::usageLimitDescription($v['belongs_to_coupon']));
             $usedCoupons[] = array_merge($coupons[$k], $usageLimit);
         }
@@ -593,5 +604,18 @@ class MemberCouponController extends ApiController
         return $this->successJson('ok', $res['data'][0]);
     }
 
+    public static function getTransInfo($trans_from,$created_at){
+        if($trans_from){
+            $transfer = MemberCoupon::uniacid()->withTrashed()->where('id',$trans_from)->first();
+            if($transfer->uid){
+                $member_info = DB::table('diagnostic_service_user')->select('ajy_uid','nickname')->where('ajy_uid',$transfer->uid)->first();
+                return [
+                    'nickname' =>  $member_info['nickname'],
+                    'created_at' =>  $created_at,
+                ];
+            }
+        }
+        return [];
+    }
 
 }

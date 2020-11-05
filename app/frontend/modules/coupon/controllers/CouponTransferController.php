@@ -152,7 +152,7 @@ class CouponTransferController extends ApiController
             return $this->errorJson('领取优惠券失败：(写入出错)');
         }
 
-        $result = MemberCoupon::where('id',$_model->id)->update(['used' => 1,'use_time' => time(),'deleted_at' => time(), 'lock_expire_time' => 0, 'transfer_times' => 1]);
+        $result = MemberCoupon::where('id',$_model->id)->update(['used' => 1,'use_time' => time(),'deleted_at' => time(), 'lock_time' => null, 'lock_expire_time' => null, 'transfer_times' => 1]);
         if (!$result) {
             Cache::forget($cache_key);
             return $this->errorJson('领取优惠券失败：(记录修改出错)');
