@@ -1506,6 +1506,7 @@ class GoodsController extends GoodsApiController
                 ->join('diagnostic_service_user as u', 'o.uid', '=', 'u.ajy_uid')
                 ->select('u.avatarurl', 'p.address')
                 ->where('o.status', 3)
+                ->groupBY('o.uid')
                 ->orderBy('o.create_time', 'DESC')
                 ->take(20)
                 ->get()->toArray();
