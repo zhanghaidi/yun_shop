@@ -18,9 +18,9 @@ class MemberCoupon extends \app\common\models\MemberCoupon
         $coupons = static::uniacid()->with(['belongsToCoupon' => function ($query) {
             return $query->select(['id', 'name', 'coupon_method', 'deduct', 'discount', 'enough', 'use_type', 'category_ids', 'categorynames',
                 'goods_ids', 'goods_names', 'storeids', 'storenames', 'time_limit', 'time_days', 'time_start', 'time_end', 'total',
-                'money', 'credit', 'plugin_id']);
+                'money', 'credit', 'plugin_id','transfer']);
         }])->where('uid', $memberId)
-            ->select(['id', 'coupon_id', 'used', 'use_time', 'get_time','is_member_deleted'])
+            ->select(['id', 'coupon_id', 'used', 'use_time', 'get_time','is_member_deleted','lock_expire_time','trans_from','created_at'])
             ->orderBy('get_time', 'desc');
         return $coupons;
     }
