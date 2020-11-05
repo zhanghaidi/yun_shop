@@ -28,7 +28,7 @@ class MemberCoupon extends BaseModel
     public $dates = ['deleted_at'];
 
 
-    protected $casts = ['get_time' => 'date'];
+    protected $casts = ['get_time' => 'date', 'created_at' => 'date'];
 
     protected $guarded = [];
 

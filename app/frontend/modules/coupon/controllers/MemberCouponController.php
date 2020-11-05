@@ -12,6 +12,7 @@ use app\frontend\modules\coupon\models\MemberCoupon;
 use app\common\models\MemberShopInfo;
 use Carbon\Carbon;
 use EasyWeChat\Foundation\Application;
+use Illuminate\Support\Facades\DB;
 use Yunshop\Hotel\common\models\CouponHotel;
 
 
@@ -386,6 +387,19 @@ class MemberCouponController extends ApiController
                 $usageLimit = array('api_limit' => self::usageLimitDescription($v['belongs_to_coupon'])); //增加属性 - 优惠券的适用范围
                 $availableCoupons[] = array_merge($coupons[$k], $usageLimit);
             }
+
+            $v['transfer_info'] = [];
+            if($v['trans_from']){
+                $transfer = MemberCoupon::uniacid()->withTrashed()->where('id',$v['trans_from'])->first();
+                if($transfer->uid){
+                    $member_info = DB::table('diagnostic_service_user')->select('ajy_uid','nickname')->where('ajy_uid',$transfer->uid)->first();
+                    $v['transfer_info'] = [
+                        'nickname' =>  $member_info['nickname'],
+                        'created_at' =>  $v['created_at'],
+                    ];
+                }
+            }
+
         }
         return $availableCoupons;
     }
