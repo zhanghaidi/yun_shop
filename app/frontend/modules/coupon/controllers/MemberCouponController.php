@@ -107,9 +107,6 @@ class MemberCouponController extends ApiController
             }
 
             $coupons['data'][$k]['transfer_info'] = self::getTransInfo($v['trans_from'],$v['created_at']); //转让信息
-            $coupons['data'][$k]['lock_time'] = $v['lock_time'];
-            $coupons['data'][$k]['lock_expire_time'] = $v['lock_expire_time'];
-            $coupons['data'][$k]['belongs_to_coupon']['transfer'] = intval($coupons[$k]['belongs_to_coupon']['transfer']);
 
         }
         return $this->successJson('ok', $coupons);
