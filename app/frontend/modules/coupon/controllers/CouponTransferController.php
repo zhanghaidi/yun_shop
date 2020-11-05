@@ -11,6 +11,7 @@ namespace app\frontend\modules\coupon\controllers;
 
 
 use app\common\components\ApiController;
+use app\common\facades\Setting;
 use app\frontend\models\Member;
 use app\frontend\modules\coupon\models\MemberCoupon;
 use app\frontend\modules\coupon\services\CouponSendService;
@@ -89,7 +90,7 @@ class CouponTransferController extends ApiController
         }
 
         if($_model->lock_expire_time){
-            return $this->errorJson('该优惠券暂时已锁定，请等待');
+            return $this->errorJson('该优惠券暂时已锁定，请等待',$_model->toArray());
         }
 
         if($_model->transfer_times){
