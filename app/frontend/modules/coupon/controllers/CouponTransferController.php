@@ -177,6 +177,11 @@ class CouponTransferController extends ApiController
             return $this->transJson('未获取到该优惠券记录ID');
         }
 
+        //接收到的优惠券不允许再次转让
+        if($_model->trans_from && $_model->transfer_times){
+            return $this->transJson('接收到的优惠券不能转让');
+        }
+
         if($this->memberModel->uid != $_model->uid){
             $is_self = false;
         }else{
