@@ -1500,7 +1500,7 @@ class GoodsController extends GoodsApiController
     //增加商品详情热度展示 fixby-wk-goodsHotOrders 2020-09-29  2020-10-10  优化显示全部完成订单的20条 20201104 优化为缓存 30分钟后过期
     public function getGoodsHotOrders(){
         //Cache 的第二個參數是分鐘 多少分钟会过期
-        $list = Cache::remember('good_hot_orders', 1, function () {
+        $list = Cache::remember('good_hot_orders', 30, function () {
             return DB::table('yz_order as o')
                 ->join('yz_order_address as p', 'o.id', '=', 'p.order_id')
                 ->join('diagnostic_service_user as u', 'o.uid', '=', 'u.ajy_uid')
