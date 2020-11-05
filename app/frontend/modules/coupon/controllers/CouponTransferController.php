@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\DB;
 class CouponTransferController extends ApiController
 {
     public $memberModel;
+    protected $transferInfo = [];
 
     public function index()
     {
@@ -182,14 +183,16 @@ class CouponTransferController extends ApiController
             $is_self = true;
         }
 
+        $this->transferInfo = DB::table('diagnostic_service_user')->select('ajy_uid as uid','nickname','avatar','avatarUrl')->where('ajy_uid',$_model->uid)->first();
+
         if($is_self){
             if($_model->lock_expire_time){
                 return $this->transJson('优惠券转让中', 1, $is_self,2, $_model->toArray());
             }else if($_model->transfer_times){
                 $receive_coupon = MemberCoupon::uniacid()->where('trans_from', $record_id)->first()->toArray();
-                $member_info = DB::table('diagnostic_service_user')->select('ajy_uid','nickname','avatarUrl')->where('ajy_uid',$receive_coupon['uid'])->first();
-                $member_info['receive_time'] = $receive_coupon['created_at'];
-                return $this->transJson('优惠券已经转让', 1, $is_self, 1, $_model->toArray(), $member_info);
+                $receiver_info = DB::table('diagnostic_service_user')->select('ajy_uid as uid','nickname','avatar','avatarUrl')->where('ajy_uid',$receive_coupon['uid'])->first();
+                $receiver_info['receive_time'] = $receive_coupon['created_at'];
+                return $this->transJson('优惠券已经转让', 1, $is_self, 1, $_model->toArray(), $receiver_info);
             }else {
                 return $this->transJson('优惠券转让已失效', 1, $is_self, 3, $_model->toArray());
             }
@@ -198,9 +201,9 @@ class CouponTransferController extends ApiController
                 return $this->transJson('优惠券转让中', 1, $is_self, 2, $_model->toArray());
             }else if($_model->transfer_times){
                 $receive_coupon = MemberCoupon::uniacid()->where('trans_from', $record_id)->first()->toArray();
-                $member_info = DB::table('diagnostic_service_user')->select('ajy_uid','nickname','avatarUrl')->where('ajy_uid',$receive_coupon['uid'])->first();
-                $member_info['receive_time'] = $receive_coupon['created_at'];
-                return $this->transJson('该优惠券已经转让', 1, $is_self, 1, $_model->toArray(), $member_info, $receive_coupon['uid']== $this->memberModel->uid ? true : false);
+                $receiver_info = DB::table('diagnostic_service_user')->select('ajy_uid as uid','nickname','avatar','avatarUrl')->where('ajy_uid',$receive_coupon['uid'])->first();
+                $receiver_info['receive_time'] = $receive_coupon['created_at'];
+                return $this->transJson('该优惠券已经转让', 1, $is_self, 1, $_model->toArray(), $receiver_info, $receive_coupon['uid']== $this->memberModel->uid ? true : false);
             }else {
                 return $this->transJson('优惠券转让已失效', 1, $is_self, 3, $_model->toArray());
             }
@@ -208,10 +211,13 @@ class CouponTransferController extends ApiController
 
     }
 
-    public function transJson($message = '失败', $err_code = 0, $is_self = false, $status = 0, $coupon_info = [], $member_info = [], $is_receiver = false)
+    public function transJson($message = '失败', $err_code = 0, $is_self = false, $status = 0, $coupon_info = [], $receiver_info = [], $is_receiver = false)
     {
-        if(!empty($member_info)){
-            $member_info['avatar'] = tomedia($member_info['avatar']);
+        if(!empty($receiver_info)){
+            $receiver_info['avatar'] = tomedia($receiver_info['avatar']);
+        }
+        if(!empty($this->transferInfo)){
+            $this->transferInfo['avatar'] = tomedia($this->transferInfo['avatar']);
         }
         response()->json([
             'result' => $err_code,
@@ -221,7 +227,8 @@ class CouponTransferController extends ApiController
                 'status'     => $status,
                 'is_receiver' => $is_receiver,
                 'coupon_info' => $coupon_info,
-                'member_info' => $member_info,
+                'receiver_info' => $receiver_info,
+                'transfer_info' => $this->transferInfo,
             ]
         ], 200, ['charset' => 'utf-8'])->send();
     }

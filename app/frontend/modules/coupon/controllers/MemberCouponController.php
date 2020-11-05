@@ -81,6 +81,8 @@ class MemberCouponController extends ApiController
         //添加 "是否可用" & "是否已经使用" & "是否过期" 的标识
         $now = strtotime('now');
         foreach ($coupons['data'] as $k => $v) {
+            $coupons['data'][$k]['closer_overdue'] = 0; //是否3天之内过期
+
             if ($v['used'] == MemberCoupon::USED) { //已使用
                 $coupons['data'][$k]['api_status'] = self::IS_USED;
             } elseif ($v['used'] == MemberCoupon::NOT_USED) { //未使用
@@ -88,6 +90,7 @@ class MemberCouponController extends ApiController
                     $end = strtotime($v['get_time']) + $v['belongs_to_coupon']['time_days'] * 3600*24;
                     if ($now < $end) { //优惠券在有效期内
                         $coupons['data'][$k]['api_status'] = self::NOT_USED;
+                        $coupons['data'][$k]['closer_overdue'] = ($end - $now) / (3600*24) <= 3 ? 1 : 0;
                         $coupons['data'][$k]['start'] = substr($v['get_time'], 0, 10); //前端需要起止时间
                         $coupons['data'][$k]['end'] = date('Y-m-d', $end); //前端需要起止时间
                     } else { //优惠券在有效期外
@@ -100,6 +103,7 @@ class MemberCouponController extends ApiController
                         $coupons['data'][$k]['end'] = $coupons['data'][$k]['time_end']; //为了和前面保持一致
                     } else { //优惠券在有效期内
                         $coupons['data'][$k]['api_status'] = self::NOT_USED;
+                        $coupons['data'][$k]['closer_overdue'] = (strtotime($v['belongs_to_coupon']['time_end']) - $now) / (3600*24) <= 3 ? 1 : 0;
                     }
                 }
             } else {
