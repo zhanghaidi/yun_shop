@@ -613,7 +613,7 @@ class MemberCouponController extends ApiController
         if($trans_from){
             $transfer = MemberCoupon::uniacid()->withTrashed()->where('id',$trans_from)->first();
             if($transfer->uid){
-                $member_info = DiagnosticServiceUser::remember(3 * 60)->select('ajy_uid','nickname')->where('ajy_uid',$transfer->uid)->first();
+                $member_info = DiagnosticServiceUser::where('ajy_uid',$transfer->uid)->select('ajy_uid','nickname')->first();
                 return [
                     'nickname' =>  $member_info['nickname'],
                     'created_at' =>  $created_at,
