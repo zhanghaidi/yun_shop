@@ -239,20 +239,20 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">转让次数限制：</label>
-                        <div class="col-sm-4 col-xs-6">
-                            <input type="text" name="coupon[transfer_coupons][transfer_times]" value="{{$coupon[transfer_coupons][transfer_times]}}" />
-                            <span class="help-block">优惠券可以转让的次数</span>
-                        </div>
-                    </div>
+{{--                    <div class="form-group">--}}
+{{--                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">转让次数限制：</label>--}}
+{{--                        <div class="col-sm-4 col-xs-6">--}}
+{{--                            <input type="text" name="coupon[transfer_coupons][transfer_times]" value="{{$coupon[transfer_coupons][transfer_times]}}" />--}}
+{{--                            <span class="help-block">优惠券可以转让的次数</span>--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
 
-                    <div class="form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">转让Banner图</label>
-                        <div class="col-sm-9 col-xs-12 col-md-6 detail-logo">
-                            {!! app\common\helpers\ImageHelper::tplFormFieldImage('coupon[transfer_coupons][banner]', $coupon['transfer_coupons']['banner']) !!}
-                        </div>
-                    </div>
+{{--                    <div class="form-group">--}}
+{{--                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">转让Banner图</label>--}}
+{{--                        <div class="col-sm-9 col-xs-12 col-md-6 detail-logo">--}}
+{{--                            {!! app\common\helpers\ImageHelper::tplFormFieldImage('coupon[transfer_coupons][banner]', $coupon['transfer_coupons']['banner']) !!}--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
 
                     <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label">转让标题</label>
@@ -265,7 +265,7 @@
                     <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label">转让规则描述</label>
                         <div class="col-sm-9 col-xs-12">
-                            <textarea name="coupon[transfer_coupons][transfer_desc]" class="form-control">{{$coupon['transfer_coupons']['transfer_desc']}}</textarea>
+                            <textarea name="coupon[transfer_coupons][transfer_desc]" style="min-height:90px;" class="form-control">{{$coupon['transfer_coupons']['transfer_desc']}}</textarea>
                             <span class="help-block">如果不填写，默认为空</span>
                         </div>
                     </div>

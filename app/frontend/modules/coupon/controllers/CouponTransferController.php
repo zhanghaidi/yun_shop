@@ -254,7 +254,6 @@ class CouponTransferController extends ApiController
         $set = \Setting::get('coupon.transfer_coupons');
         $data = [];
         if(!empty($set)){
-            $data['banner'] = $set['banner'];
             $data['transfer_title'] = $set['transfer_title'];
             $data['transfer_desc'] = $set['transfer_desc'];
             $data['transfer_img'] = $set['transfer_img'];
