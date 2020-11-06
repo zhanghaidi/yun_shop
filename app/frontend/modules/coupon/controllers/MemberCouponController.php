@@ -10,6 +10,7 @@ use app\frontend\models\Member;
 use app\frontend\modules\coupon\models\Coupon;
 use app\frontend\modules\coupon\models\MemberCoupon;
 use app\common\models\MemberShopInfo;
+use app\frontend\modules\coupon\models\OrderCoupon;
 use Carbon\Carbon;
 use EasyWeChat\Foundation\Application;
 use Illuminate\Support\Facades\DB;
@@ -82,9 +83,11 @@ class MemberCouponController extends ApiController
         $now = strtotime('now');
         foreach ($coupons['data'] as $k => $v) {
             $coupons['data'][$k]['closer_overdue'] = 0; //是否3天之内过期
+            $coupons['data'][$k]['order_id'] = 0; //订单id
 
             if ($v['used'] == MemberCoupon::USED) { //已使用
                 $coupons['data'][$k]['api_status'] = self::IS_USED;
+                $coupons['data'][$k]['order_id'] = \app\common\models\order\OrderCoupon::where('member_coupon_id',$v['id'])->first()->order_id;
             } elseif ($v['used'] == MemberCoupon::NOT_USED) { //未使用
                 if ($v['belongs_to_coupon']['time_limit'] == Coupon::COUPON_SINCE_RECEIVE) { //时间限制类型是"领取后几天有效"
                     $end = strtotime($v['get_time']) + $v['belongs_to_coupon']['time_days'] * 3600*24;

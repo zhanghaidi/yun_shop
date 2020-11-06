@@ -199,7 +199,11 @@ class CouponTransferController extends ApiController
                 $receiver_info['receive_time'] = $receive_coupon['created_at'];
                 return $this->transJson('优惠券已经转让', 1, $is_self, 1, $_model->toArray(), $receiver_info);
             }else {
-                return $this->transJson('优惠券转让已失效', 1, $is_self, 3, $_model->toArray());
+                if($_model->has_transfered){
+                    return $this->transJson('优惠券转让过但未被领取', 1, $is_self, 4, $_model->toArray());
+                }else{
+                    return $this->transJson('优惠券转让已失效', 1, $is_self, 3, $_model->toArray());
+                }
             }
         }else{
             if($_model->lock_expire_time){
