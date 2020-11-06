@@ -616,7 +616,7 @@ class MemberCouponController extends ApiController
                 $member_info = DiagnosticServiceUser::where('ajy_uid',$transfer->uid)->select('ajy_uid','nickname')->first();
                 return [
                     'nickname' =>  $member_info['nickname'],
-                    'created_at' =>  $created_at,
+                    'created_at' =>  substr($created_at, 0, 10),
                 ];
             }
         }
