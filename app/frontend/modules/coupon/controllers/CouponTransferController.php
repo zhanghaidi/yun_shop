@@ -13,9 +13,11 @@ namespace app\frontend\modules\coupon\controllers;
 use app\common\components\ApiController;
 use app\common\facades\Setting;
 use app\frontend\models\Member;
+use app\frontend\modules\coupon\models\Coupon;
 use app\frontend\modules\coupon\models\MemberCoupon;
 use app\frontend\modules\coupon\services\CouponSendService;
 use app\backend\modules\coupon\services\MessageNotice;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -254,6 +256,10 @@ class CouponTransferController extends ApiController
         $set = \Setting::get('coupon.transfer_coupons');
         $data = [];
         if(!empty($set)){
+            $hour = intval($set['lock_time'] / 60);
+            $minute = $set['lock_time'] - $hour * 60;
+            $data['lock_time'] = $set['lock_time'];
+            $data['lock_time_str'] = $hour > 0 ? "{$hour}小时" . ($minute > 0 ? "{$minute}分钟" : '') : "{$minute}分钟";
             $data['transfer_title'] = $set['transfer_title'];
             $data['transfer_desc'] = $set['transfer_desc'];
             $data['transfer_img'] = $set['transfer_img'];
