@@ -51,6 +51,7 @@ class MemberCoupon extends \app\common\models\MemberCoupon
         $update = [
             'lock_time' => time(),
             'lock_expire_time' => time() + 60 * $lock_time,
+            'has_transfered' => 1,
         ];
         return self::where('id',$_model->id)->update($update);
     }
