@@ -157,7 +157,7 @@ class SignAwardService
         $coupons = array();
         foreach ($cumulative_set as $key => $item) {
 //            fixBy-wk-20201106 签到累计发放奖励问题解决 余数为零 并且 倍数小于1
-            if (fmod($cumulative_number, $item['days']) == 0 && intval($cumulative_number/$item['days']) <= 1 ) {
+            if (fmod($cumulative_number, $item['days']) == 0 && intval($cumulative_number/$item['days']) == 1 ) {
                 if ($type == 1 && $item['award_type'] == $type) {
                     $point += $item['award_value'];
                 }
