@@ -114,7 +114,12 @@
                                 <option value='12'
                                         @if($search['type_id']=='12')
                                         selected
-                                        @endif>未知
+                                        @endif>搜索
+                                </option>
+                                <option value='13'
+                                        @if($search['type_id']=='13')
+                                        selected
+                                        @endif>购物车
                                 </option>
                             </select>
                         </div>
@@ -233,6 +238,7 @@
                                     @elseif ($list->type_id == 10) 活动
                                     @elseif ($list->type_id == 11) 用户分享
                                     @elseif ($list->type_id == 12) 搜索
+                                    @elseif ($list->type_id == 13) 购物车
                                     @endif
                                 </td>
 
@@ -249,6 +255,7 @@
                                     @elseif ($list->type_id == 10) {{ $list->resource->title }}
                                     @elseif ($list->type_id == 11) {{ $list->user->nickname }}
                                     @elseif ($list->type_id == 12) @if ($list->resource_id ==1) 全局搜索 @elseif ($list->resource_id ==2)商城搜索  @endif
+                                    @elseif ($list->type_id == 13) @if ($list->resource_id ==1) 悬浮购物车 @elseif ($list->resource_id ==2)商品详情购物车  @endif
                                     @endif
                                 </td>
                                 <td style="text-align: center;">
