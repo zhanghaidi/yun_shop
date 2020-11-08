@@ -268,7 +268,7 @@
                                     </a>
                                 </td>
                                 <td style="text-align: center;">
-                                    <a href="{{yzWebUrl('member.member.index',array('search[mid]' => $list->user_id ))}}">
+                                    <a href="{{yzWebUrl('tracking.goods-tracking.index',array('search[realname]' => $list->user_id ))}}">
                                         <img src='{{$list->user->avatarurl}}'
                                              style='width:30px;height:30px;padding:1px;border:1px solid #ccc'/><br/>
                                         {{ $list->user->nickname }}
