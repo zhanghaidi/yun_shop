@@ -259,7 +259,7 @@
                                     @endif
                                 </td>
                                 <td style="text-align: center;">
-                                    <a href="{{yzWebUrl('goods.goods.index')}}" title="{{ $list->goods->title }}">
+                                    <a href="{{yzWebUrl('tracking.goods-tracking.index', array('search[keywords]' => $list->goods_id ))}}" title="{{ $list->goods->title }}">
                                         <img src="{{yz_tomedia($list->goods->thumb)}}" style='width:45px;height:45px;padding:1px;border:1px solid #ccc' />
                                         <br/>
                                         {{ $list->goods_id }}
