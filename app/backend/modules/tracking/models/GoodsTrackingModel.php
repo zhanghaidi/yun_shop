@@ -85,7 +85,7 @@ class GoodsTrackingModel extends Model
             //->select('u.avatarurl', 'p.address')
             ->where('o.status','>', 1)
             ->where('og.goods_id', $value)
-            ->sum('o.price');
+            ->sum('o.payment_amount');
         // $favorites_num = DB::table('diagnostic_service_goods_tracking')->where(['goods_id' => $value['id'],'action' => 2])->whereBetween('create_time', $whereBetween)->count();
         // $add_purchase_num = DB::table('diagnostic_service_goods_tracking')->where(['goods_id' => $value['id'],'action' => 3])->whereBetween('create_time', $whereBetween)->sum('val');
         // $create_order_num = DB::table('diagnostic_service_goods_tracking')->where(['goods_id' => $value['id'],'action' => 4])->whereBetween('create_time', $whereBetween)->count();
