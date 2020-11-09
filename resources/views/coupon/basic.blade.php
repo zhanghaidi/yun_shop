@@ -17,7 +17,7 @@
     <label class="col-xs-12 col-sm-3 col-md-2 control-label">是否开启</label>
     <div class="col-sm-9 col-xs-12">
         <label class='radio-inline'>
-            <input type="radio" name="coupon[status]" value="1" checked/>开启
+            <input type="radio" name="coupon[status]" value="1" @if($coupon['status']) checked @endif />开启
         </label>
         <label class='radio-inline'>
             <input type="radio" name="coupon[status]" value="0" @if($coupon['status']!=='' && $coupon['status']==0) checked @endif/>不开启

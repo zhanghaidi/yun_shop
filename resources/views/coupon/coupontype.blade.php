@@ -442,7 +442,7 @@
     <label class="col-xs-12 col-sm-3 col-md-2 control-label">是否可领取</label>
     <div class="col-sm-9 col-xs-12" >
         <label class="radio-inline">
-            <input type="radio" name="coupon[get_type]" value="1" /> 可以
+            <input type="radio" name="coupon[get_type]" value="1" @if($coupon['get_type']) checked @endif /> 可以
         </label>
         <label class="radio-inline">
             <input type="radio" name="coupon[get_type]" value="0" @if($coupon['get_type'] === 0)checked="true" @endif /> 不可以
