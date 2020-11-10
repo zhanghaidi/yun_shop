@@ -1282,7 +1282,7 @@ class LiveController extends BaseController
         return $this->successJson('获取成功', $page_val);
     }
     /**
-     * 页获取正在直播的直播间列表 fixby--wk -20201110
+     * 分页获取正在直播的直播间列表 fixby--wk -20201110
      * @return \Illuminate\Http\JsonResponse
      */
     public function liverooms()
@@ -1294,7 +1294,7 @@ class LiveController extends BaseController
         $total = DB::table('yz_appletslive_liveroom')->where('live_status', $live_room_status)->count();
 
         $live_rooms = DB::table('yz_appletslive_liveroom')
-            ->select('name', 'cover_img', 'anchor_name', 'share_img', 'goods', 'goods_ids')
+            ->select('id','roomid','name', 'cover_img', 'anchor_name', 'share_img', 'goods', 'goods_ids')
             ->where('live_status', $live_room_status)
             ->orderBy('start_time', 'desc')
             ->offset($offset)
