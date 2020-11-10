@@ -297,7 +297,7 @@ class ListController extends BaseController
 
     private function getColumns()
     {
-        return ["订单id","订单编号", "支付单号", "会员ID", "粉丝昵称", "会员姓名", "联系电话", '省', '市', '区', "收货地址", "商品名称", "商品编码", "商品数量", "支付方式", '抵扣金额', '优惠券优惠', '全场满减优惠', '单品满减优惠', "商品小计", "运费", "应收款", "成本价", "状态", "下单时间", "付款时间", "发货时间", "完成时间", "快递公司", "快递单号", "订单备注", "用户备注", "首单" , "真实姓名" , "身份证"];
+        return ["订单id","订单编号", "支付单号", "会员ID", "粉丝昵称", "会员姓名", "联系电话", '省', '市', '区', "收货地址", "商品名称", "商品编码", "商品数量", "支付方式", '抵扣金额', '优惠券优惠', '全场满减优惠', '单品满减优惠', "商品小计", "运费", "订单支付金额", "成本价", "商品支付金额", "状态", "下单时间", "付款时间", "发货时间", "完成时间", "快递公司", "快递单号", "订单备注", "用户备注", "首单" , "真实姓名" , "身份证"];
     }
 
     protected function getExportDiscount($order, $key)
@@ -377,6 +377,7 @@ class ListController extends BaseController
                             $item['dispatch_price'],
                             $item['price'],
                             $this->getGoods($goods, 'cost_price'),
+                            $this->getGoods($goods, 'payment_amount'),
                             $item['status_name'],
                             $item['create_time'],
                             !empty(strtotime($item['pay_time'])) ? $item['pay_time'] : '',
@@ -426,11 +427,13 @@ class ListController extends BaseController
         $goods_title = '【' . $res_title . '*' . $goods['total'] . '】';
         $total =  $goods['total'] ;
         $cost_price = $goods['goods_cost_price'];
+        $payment_amount = $goods['payment_amount'];
         $res = [
             'goods_title' => $goods_title,
             'goods_sn' => $goods_sn,
             'total' => $total,
             'cost_price' => $cost_price,
+            'payment_amount' => $payment_amount
         ];
         return $res[$key];
 
