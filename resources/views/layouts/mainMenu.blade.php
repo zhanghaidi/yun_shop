@@ -159,7 +159,7 @@
                         border: 0;
                     }
                 </style>
-                <iframe id="mp-links-iframe" class="mp-iframe" src="//www.aijuyi.net/static/protocol/links.html"></iframe>
+                <iframe id="mp-links-iframe" class="mp-iframe" src="//www.aijuyi.net/static/pages/links.html"></iframe>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
@@ -170,7 +170,7 @@
 
 <script>
     $(function () {
-        var linkUrl = '//www.aijuyi.net/static/protocol/links.html';
+        var linkUrl = '//www.aijuyi.net/static/pages/links.html';
 
         $("#sys_logout").click(function () {
             $.get("/admin/logout",function(data,status){
