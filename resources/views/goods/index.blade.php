@@ -630,7 +630,14 @@
                         that.table_loading = false;
                     };
                 },
-
+                // 取消上架
+                cancelPutAway(id,index){
+                    var that = this
+                    if(that.goods_list[index].status == 1){
+                        that.goods_list[index].status = 0;
+                    }
+                    that.goods_list[index].is_choose == 0;
+                },
                 // 批量上架、下架
                 batchPutAway(data) {
                     var that = this;
