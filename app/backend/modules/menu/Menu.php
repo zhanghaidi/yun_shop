@@ -506,7 +506,7 @@ class Menu
                             ],
                             'goods_goods_calprice'           => [
                                 'name'       => '商品价格校验',
-                                'url'        => 'goods.goods.calculationGoodsPrice',
+                                'url'        => 'goods.goods.calculation-goods-price',
                                 'url_params' => '',
                                 'permit'     => 1,
                                 'menu'       => 0,
