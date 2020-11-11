@@ -349,12 +349,15 @@ class ListController extends BaseController
                 $export_data[0] = $this->getColumns();
                 $line = 1;
                 foreach ($export_model->builder_model->toArray() as $key => $item) {
+
                     foreach ($item['has_many_order_goods'] as $k => $goods){
                         $line += $k;
+                        $start = $line;
+                        $end = $start + count($item['has_many_order_goods']) - 1;
                         $address = explode(' ', $item['address']['address']);
                         $fistOrder = $item['has_many_first_order'] ? '首单' : '';
                         $export_data[$line] = [
-                            $item['id'],
+                            /*$item['id'],
                             $item['order_sn'],
                             $item['has_one_order_pay']['pay_sn'],
                             $item['belongs_to_member']['uid'],
@@ -389,11 +392,48 @@ class ListController extends BaseController
                             $item['note'],
                             $fistOrder,
                             $item['belongs_to_member']['realname'],
+                            ' '.$item['belongs_to_member']['idcard'],*/
+                            $item['id'],
+                            $item['order_sn'],
+                            $item['has_one_order_pay']['pay_sn'],
+                            $item['belongs_to_member']['uid'],
+                            $this->getNickname($item['belongs_to_member']['nickname']),
+                            $item['address']['realname'],
+                            $item['address']['mobile'],
+                            !empty($address[0]) ? $address[0] : '',
+                            !empty($address[1]) ? $address[1] : '',
+                            !empty($address[2]) ? $address[2] : '',
+                            $item['address']['address'],
+                            $this->getGoods($goods, 'goods_title'),
+                            $this->getGoods($goods, 'goods_sn'),
+                            $this->getGoods($goods, 'total'),
+                            $item['pay_type_name'],
+                            $k<1 ? $this->getExportDiscount($item, 'deduction') : 0,
+                            $k<1 ? $this->getExportDiscount($item, 'coupon') : 0,
+                            $k<1 ? $this->getExportDiscount($item, 'enoughReduce') : 0,
+                            $k<1 ? $this->getExportDiscount($item, 'singleEnoughReduce') : 0,
+                            $k<1 ? $item['goods_price'] : 0,
+                            $k<1 ? $item['dispatch_price'] : 0,
+                            $k<1 ? $item['price'] : 0,
+                            $this->getGoods($goods, 'cost_price'),
+                            $this->getGoods($goods, 'payment_amount'),
+                            $item['status_name'],
+                            $item['create_time'],
+                            !empty(strtotime($item['pay_time'])) ? $item['pay_time'] : '',
+                            !empty(strtotime($item['send_time'])) ? $item['send_time'] : '',
+                            !empty(strtotime($item['finish_time'])) ? $item['finish_time'] : '',
+                            $item['express']['express_company_name'],
+                            '[' . $item['express']['express_sn'] . ']',
+                            $item['has_one_order_remark']['remark'],
+                            $item['note'],
+                            $fistOrder,
+                            $item['belongs_to_member']['realname'],
                             ' '.$item['belongs_to_member']['idcard'],
                         ];
 
                     }
                     $line ++;
+
                 }
 
                 $export_model->export($file_name, $export_data, 'order.list.index');
