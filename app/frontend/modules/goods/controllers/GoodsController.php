@@ -19,6 +19,7 @@ use app\common\models\MemberShopInfo;
 use app\frontend\modules\member\controllers\ServiceController;
 use app\frontend\modules\member\listeners\Order;
 use app\frontend\modules\member\services\MemberService;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Monolog\Handler\IFTTTHandler;
 use Yunshop\Commission\Common\Services\GoodsDetailService;
@@ -1496,20 +1497,20 @@ class GoodsController extends GoodsApiController
         return $this->successJson('获取促销商品成功', $data);
     }
 
-    //增加商品详情热度展示 fixby-wk-goodsHotOrders 2020-09-29  2020-10-10  优化显示全部完成订单的20条
+    //增加商品详情热度展示 fixby-wk-goodsHotOrders 2020-09-29  2020-10-10  优化显示全部完成订单的20条 20201104 优化为缓存 30分钟后过期
     public function getGoodsHotOrders(){
-
-//        $goods_id = intval(request()->goods_id);
-        $list = DB::table('yz_order as o')
-//            ->join('yz_order as o', 'og.order_id', '=', 'o.id')
-            ->join('yz_order_address as p', 'o.id', '=', 'p.order_id')
-            ->join('diagnostic_service_user as u', 'o.uid', '=', 'u.ajy_uid')
-            ->select('u.avatarurl', 'p.address')
-            ->where('o.status', 3)
-//            ->where('og.goods_id', $goods_id)
-            ->orderBy('o.create_time', 'DESC')
-            ->take(20)
-            ->get()->toArray();
+        //Cache 的第二個參數是分鐘 多少分钟会过期
+        $list = Cache::remember('good_hot_orders', 30, function () {
+            return DB::table('yz_order as o')
+                ->join('yz_order_address as p', 'o.id', '=', 'p.order_id')
+                ->join('diagnostic_service_user as u', 'o.uid', '=', 'u.ajy_uid')
+                ->select('u.avatarurl', 'p.address')
+                ->where('o.status', 3)
+                ->groupBY('o.uid')
+                ->orderBy('o.create_time', 'DESC')
+                ->take(20)
+                ->get()->toArray();
+        });
 
         return $this->successJson('获取成功', $list);
     }

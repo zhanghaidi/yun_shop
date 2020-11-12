@@ -28,13 +28,13 @@ class MemberCoupon extends BaseModel
     public $dates = ['deleted_at'];
 
 
-    protected $casts = ['get_time' => 'date'];
+    protected $casts = ['get_time' => 'date', 'created_at' => 'date', 'lock_time' => 'date', 'lock_expire_time'=>'date'];
 
     protected $guarded = [];
 
     protected $appends = ['time_start', 'time_end'];
     public $selected;
-    protected $hidden = ['uniacid', 'get_type', 'send_uid', 'order_sn', 'back', 'back_time', 'deleted_at'];
+    protected $hidden = ['uniacid', 'send_uid', 'order_sn', 'back', 'back_time', 'deleted_at'];
 
 
     /**

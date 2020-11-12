@@ -49,16 +49,6 @@
 
                 <div class='panel-body'>
                     <div class="form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">优惠券转让锁定时间：</label>
-                        <div class="col-sm-4 col-xs-6">
-                            <input type="text" name="coupon[lock_time]" value="{{$coupon['lock_time']}}" />&nbsp;分钟
-                            <span class="help-block">单个优惠券可以开启优惠券转让,锁定时间对其生效,单位为分钟</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class='panel-body'>
-                    <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label">抵扣奖励积分：</label>
                         <div class="col-sm-4 col-xs-6">
                             <label class="radio-inline">
@@ -237,7 +227,58 @@
                     </div>
 
                 </div>
+                {{--fixBy-wk 20201105 优惠券转让设置--}}
+                <div class='panel-heading'>优惠券转让设置</div>
+                <div class='panel-body'>
 
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">优惠券转让锁定时间：</label>
+                        <div class="col-sm-4 col-xs-6">
+                            <input type="text" name="coupon[transfer_coupons][lock_time]" value="{{$coupon['transfer_coupons']['lock_time']}}" />&nbsp;分钟
+                            <span class="help-block">单个优惠券可以开启优惠券转让,锁定时间对其生效,单位为分钟</span>
+                        </div>
+                    </div>
+
+{{--                    <div class="form-group">--}}
+{{--                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">转让次数限制：</label>--}}
+{{--                        <div class="col-sm-4 col-xs-6">--}}
+{{--                            <input type="text" name="coupon[transfer_coupons][transfer_times]" value="{{$coupon[transfer_coupons][transfer_times]}}" />--}}
+{{--                            <span class="help-block">优惠券可以转让的次数</span>--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
+
+{{--                    <div class="form-group">--}}
+{{--                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">转让Banner图</label>--}}
+{{--                        <div class="col-sm-9 col-xs-12 col-md-6 detail-logo">--}}
+{{--                            {!! app\common\helpers\ImageHelper::tplFormFieldImage('coupon[transfer_coupons][banner]', $coupon['transfer_coupons']['banner']) !!}--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
+
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">转让标题</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <input type="text" name="coupon[transfer_coupons][transfer_title]" class="form-control" value="{{$coupon['transfer_coupons']['transfer_title']}}">
+                            <span class="help-block">如果不填写，默认为商城名称</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">转让规则描述</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <textarea name="coupon[transfer_coupons][transfer_desc]" style="min-height:90px;" class="form-control">{{$coupon['transfer_coupons']['transfer_desc']}}</textarea>
+                            <span class="help-block">如果不填写，默认为空</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">5:4转让图</label>
+                        <div class="col-sm-9 col-xs-12 col-md-6 detail-logo">
+                            {!! app\common\helpers\ImageHelper::tplFormFieldImage('coupon[transfer_coupons][transfer_img]', $coupon['transfer_coupons']['transfer_img']) !!}
+                            <span class="help-block">请上传5：4尺寸转让图片 </span>
+                        </div>
+                    </div>
+
+                </div>
 
                 <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>

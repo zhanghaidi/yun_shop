@@ -75,7 +75,7 @@ class ShareCouponService
             'uniacid' => \YunShop::app()->uniacid,
             'uid' => $receiveUid,
             'coupon_id' => $couponModel->id,
-            'get_type' => 0,
+            'get_type' => 10,
             'used' => 0,
             'get_time' => strtotime('now'),
         ];
