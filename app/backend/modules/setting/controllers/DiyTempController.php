@@ -20,7 +20,9 @@ class DiyTempController extends BaseController
     public function index()
     {
         $kwd = request()->keyword;
-        $list = MessageTemp::fetchTempList($kwd)->orderBy('id', 'desc')->paginate(10);
+        $type = request()->type ? request()->type : 1;
+
+        $list = MessageTemp::fetchTempList($kwd,$type)->orderBy('id', 'desc')->paginate(10);
         $pager  = PaginationHelper::show($list->total(), $list->currentPage(), $list->perPage());
 
         return view('setting.diytemp.list', [
@@ -102,4 +104,45 @@ class DiyTempController extends BaseController
             ])->render();
         }
     }
+
+//fixBy-wk-20201113 小程序消息自定义模板
+    public function mini_add()
+    {
+        if (request()->temp) {
+            $res_data = request()->temp;
+            $res_data['template_type'] = 2;
+            $temp_model = new MessageTemp();
+
+            $ret = $temp_model::create($temp_model::handleArray($res_data));
+            if (!$ret) {
+                return $this->message('添加模板失败', Url::absoluteWeb('setting.diy-temp.index'), 'error');
+            }
+            return $this->message('添加模板成功', Url::absoluteWeb('setting.diy-temp.index'));
+        }
+
+        return view('setting.diytemp.mini-detail', [
+
+        ])->render();
+    }
+//fixBy-wk-20201113 小程序消息自定义模板
+    public function mini_edit()
+    {
+        $this->verifyParam();
+
+        if (request()->temp) {
+            $res_data = request()->temp;
+            $res_data['template_type'] = 2;
+            $this->temp_model->fill(MessageTemp::handleArray($res_data));
+            $ret = $this->temp_model->save();
+            if (!$ret) {
+                return $this->message('修改模板失败', Url::absoluteWeb('setting.diy-temp.index'), 'error');
+            }
+            return $this->message('修改模板成功', Url::absoluteWeb('setting.diy-temp.index'));
+        }
+
+        return view('setting.diytemp.mini-detail', [
+            'temp' => $this->temp_model
+        ])->render();
+    }
+
 }
