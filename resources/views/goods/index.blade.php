@@ -558,7 +558,7 @@
                     that.table_loading = true;
                     let data = that.goods_list[index].status;
                     let json = {id: id, type: 'status', data: data};
-                    if(data == 0){
+                    if(data == 0 || that.goods_list[index].type == 2){
                         that.setPutAway(id,index)
                     }else{
                         that.$http.post("{!! yzWebFullUrl('goods.goods.checkPutAway') !!}", json).then(response => {
