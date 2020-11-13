@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use EasyWeChat\Foundation\Application;
 use EasyWeChat\Core\Exceptions\HttpException;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
 
 class TemplateMsgSendWechtJob implements ShouldQueue
 {
@@ -57,11 +58,7 @@ class TemplateMsgSendWechtJob implements ShouldQueue
             global $template_id;
             global $jump_page;
             global $notice_data;
-
-            $jump_page = $this->config['page'] ? $this->config['page'] : '/pages/template/rumours/index?share=1&shareUrl=';
-            $template_id = $this->config['template_id'] ? $this->config['template_id'] :'c-tYzcbVnoqT33trwq6ckW_lquLDPmqySXvntFJEMhE';
-            $notice_data = $this->config['notice_data'];
-               /* [
+            $data = [
                 'first' => ['value' => '尊敬的用户,您订阅的课程有新视频要发布啦~', 'color' => '#173177'],
                 'keyword1' => ['value' => '【和大师一起学艾灸】', 'color' => '#173177'],
                 'keyword2' => ['value' => '长期有效', 'color' => '#173177'],
@@ -70,7 +67,11 @@ class TemplateMsgSendWechtJob implements ShouldQueue
                     'value' => '最新视频【每次艾灸几个穴位合适】将于' . date('Y-m-d H:i', strtotime('+15 minutes')) . '震撼发布!',
                     'color' => '#173177',
                 ],
-            ];*/
+            ];
+            $jump_page = $this->config['page'] ? $this->config['page'] : '/pages/template/rumours/index?share=1&shareUrl=';
+            $template_id = $this->config['template_id'] ? $this->config['template_id'] :'c-tYzcbVnoqT33trwq6ckW_lquLDPmqySXvntFJEMhE';
+            $notice_data = $this->config['notice_data'] ? $this->config['notice_data'] : $data ;
+
 
             //查询公众号粉丝 发送模板消息
             DB::table('mc_mapping_fans')->whereIn('uid',[125519,114685,129411,129419,125310, 129415, 114545])->where('follow', 1)->orderBy('fanid')

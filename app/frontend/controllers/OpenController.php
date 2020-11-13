@@ -5,7 +5,7 @@ namespace app\frontend\controllers;
 use Illuminate\Support\Facades\DB;
 use app\common\components\BaseController;
 use app\common\models\AccountWechats;
-use app\Jobs\SendTemplateMsgJob;
+use app\Jobs\TemplateMsgSendWechtJob;
 use Illuminate\Support\Facades\Log;
 
 /**
