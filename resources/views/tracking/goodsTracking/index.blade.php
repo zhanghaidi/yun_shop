@@ -121,6 +121,21 @@
                                         selected
                                         @endif>购物车
                                 </option>
+                                <option value='14'
+                                        @if($search['type_id']=='14')
+                                        selected
+                                        @endif>我的订单
+                                </option>
+                                <option value='15'
+                                        @if($search['type_id']=='15')
+                                        selected
+                                        @endif>优惠券
+                                </option>
+                                <option value='13'
+                                        @if($search['type_id']=='404')
+                                        selected
+                                        @endif>未知
+                                </option>
                             </select>
                         </div>
                     </div>
@@ -211,6 +226,7 @@
                         <thead class="navbar-inner">
                         <tr>
                             <th style='width:6%; text-align: center;'>主键ID</th>
+                            <th style='width:6%; text-align: center;'>上级页面</th>
                             <th style='width:12%; text-align: center;'>来源类型</th>
                             <th style='width:12%; text-align: center;'>所属资源</th>
                             <th style='width:12%; text-align: center;'>商品信息</th>
@@ -225,6 +241,7 @@
                         @foreach($pageList as $list)
                             <tr>
                                 <td style="text-align: center;">{{ $list->id }}</td>
+                                <td style="text-align: center;">{{ $list->parent_page }}</td>
                                 <td style="text-align: center;">
                                     @if($list->type_id == 1) 穴位
                                     @elseif ($list->type_id == 2) 病例
@@ -239,6 +256,9 @@
                                     @elseif ($list->type_id == 11) 用户分享
                                     @elseif ($list->type_id == 12) 搜索
                                     @elseif ($list->type_id == 13) 购物车
+                                    @elseif ($list->type_id == 14) 我的订单
+                                    @elseif ($list->type_id == 15) 优惠券
+                                    @elseif ($list->type_id == 404) 未知
                                     @endif
                                 </td>
 
@@ -256,6 +276,9 @@
                                     @elseif ($list->type_id == 11) {{ $list->user->nickname }}
                                     @elseif ($list->type_id == 12) @if ($list->resource_id ==1) 全局搜索 @elseif ($list->resource_id ==2)商城搜索  @endif
                                     @elseif ($list->type_id == 13) @if ($list->resource_id ==1) 悬浮购物车 @elseif ($list->resource_id ==2)商品详情购物车  @endif
+                                    @elseif ($list->type_id == 14) 我的订单
+                                    @elseif ($list->type_id == 15) {{ $list->resource->name }}
+                                    @elseif ($list->type_id == 404) 未知
                                     @endif
                                 </td>
                                 <td style="text-align: center;">
