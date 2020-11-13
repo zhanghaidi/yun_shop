@@ -182,7 +182,7 @@ class GoodsController extends BaseController
             'ids' => Category::getAllCategoryGroupArray()//CategoryFactory::create('shop'),
         ];
 
-        $list = Goods::select(['id','display_order','thumb','title','has_option','price','stock','real_sales','status','is_hot','is_new','is_recommand','is_discount'])->Search($requestSearch)->pluginIdShow()->orderBy('display_order', 'desc')->orderBy('yz_goods.id', 'desc')->paginate(20);
+        $list = Goods::select(['id','display_order','thumb','title','has_option','price','stock','real_sales','status','is_hot','is_new','is_recommand','is_discount','type'])->Search($requestSearch)->pluginIdShow()->orderBy('display_order', 'desc')->orderBy('yz_goods.id', 'desc')->paginate(20);
         foreach ($list as $key => $item) {
             $list[$key]['thumb'] = yz_tomedia($item->thumb);
 
