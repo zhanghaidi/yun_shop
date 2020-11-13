@@ -5,7 +5,7 @@ namespace app\frontend\controllers;
 use Illuminate\Support\Facades\DB;
 use app\common\components\BaseController;
 use app\common\models\AccountWechats;
-use app\Jobs\SendTemplateMsgJob;
+use app\Jobs\TemplateMsgSendWechtJob;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -40,16 +40,18 @@ class OpenController extends BaseController
      * @param $type
      * @return array
      */
-    private function getWeOptions($type)
+    private function getWeOptions($type, $uniacid = '')
     {
         if ($type == 'wechat') {
-            $account = AccountWechats::getAccountByUniacid(39);
+            $uniacid = $uniacid ? $uniacid : 39;
+            $account = AccountWechats::getAccountByUniacid($uniacid);
             $options = [
                 'app_id' => $account['key'],
                 'secret' => $account['secret'],
             ];
         } elseif ($type == 'wxapp') {
-            $account = DB::table('account_wxapp')->where('uniacid', 45)->first();
+            $uniacid = $uniacid ? $uniacid : 45;
+            $account = DB::table('account_wxapp')->where('uniacid',$uniacid)->first();
             $options = $account ? [
                 'app_id' => $account['key'],
                 'secret' => $account['secret'],
@@ -95,5 +97,16 @@ class OpenController extends BaseController
         }
 
         return $this->successJson('ok', ['input' => $input, 'job' => $job, 'dispatcht' => $dispatch]);
+    }
+
+    public function TemplateMsgSendWechat()
+    {
+        $input = request()->all();
+        $is_open = 1;
+        $options = $this->getWeOptions($input['type']); //公众号参数
+
+        $job = new TemplateMsgSendWechtJob($is_open, $options, $input['template_id'], $input['notice_data'], $input['openid'], $url='', $input['page_path'], $rmat =false);
+        $dispatch = dispatch($job);
+        Log::info("队列已添加:发送小程序订阅模板消息");
     }
 }
