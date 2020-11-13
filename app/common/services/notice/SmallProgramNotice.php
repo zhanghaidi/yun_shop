@@ -4,6 +4,7 @@ namespace app\common\services\notice;
 use app\backend\modules\goods\models\Brand;
 use app\backend\modules\goods\services\BrandService;
 use app\common\components\BaseController;
+use app\common\exceptions\ShopException;
 use app\common\helpers\PaginationHelper;
 use app\common\helpers\Url;
 use Illuminate\Support\Facades\DB;
@@ -132,6 +133,7 @@ class SmallProgramNotice
             $templateUrl = sprintf($opUrl,$access_token);
             $listRes = self::curl_post($templateUrl,$rawPost);
             $wxResult = json_decode($listRes,true);
+
             if($wxResult['errcode']){
                 return ($method.' - Failed!:'.$wxResult);
             }else{
@@ -243,5 +245,53 @@ class SmallProgramNotice
         $httpCode = curl_getinfo($ch,CURLINFO_HTTP_CODE);
         curl_close($ch);
         return $file_contents;
+    }
+
+    /**
+     * 获取小程序订阅消息模板库标题列表
+     * TODO 没必要使用，小程序账号后台可以视图查看
+     * https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/subscribe-message/subscribeMessage.getTemplateList.html
+     */
+    public function getSubscribeTemplateList(){
+        $opUrl = 'https://api.weixin.qq.com/wxaapi/newtmpl/gettemplate?'
+            .'access_token=%s';
+        $rawPost = ['count'=>20,'offset'=>0];
+        $date = self::opSubscribeTemplateData($opUrl,$rawPost,'getSubscribeTemplateList');
+
+        return $date;
+    }
+    /**
+     * 提取公共方法 获取模板数据
+     * @param string $opUrl
+     * @param array $rawPost
+     * @param string $method
+     */
+    public function opSubscribeTemplateData($opUrl = '',$rawPost = [],$method = ''){
+        $access_token = self::opGetAccessToken();
+        if(!$access_token){
+            return '获取 access_token 时异常，微信内部错误';
+        }else{
+            $templateUrl = sprintf($opUrl,$access_token);
+            $listRes = self::curl_get($templateUrl,$rawPost);
+            $wxResult = json_decode($listRes,true);
+            if($wxResult['errcode']){
+                throw new ShopException($wxResult['errmsg']);
+            }else{
+                foreach ($wxResult['data'] as $key => &$value )
+                {
+                    preg_match_all('{{(.)*?}}', $value['content'], $matches);
+                    foreach ($matches[0] as &$v )
+                    {
+                        $v = str_replace(array('{', '}', '.DATA'), '', $v);
+                    }
+                    unset($v);
+                    $wxResult['data'][$key]['template_id'] = $value['priTmplId'];
+                    $value['contents'] = $matches[0];
+                    $wxResult['data'][$key]['content'] = str_replace(array("\n\n", "\n"), '<br />', $value['content']);
+                }
+                unset($value);
+                return $wxResult;
+            }
+        }
     }
 }

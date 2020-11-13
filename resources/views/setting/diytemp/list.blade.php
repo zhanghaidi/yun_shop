@@ -16,8 +16,10 @@
         <input type="hidden" name="route" value="setting.diy-temp.index" id="route" />
         <div class="page-toolbar">
              <span class=''>
-                 <a class='btn btn-info btn-sm' href="{!! yzWebUrl('setting.wechat-notice.index') !!}"><i class="fa fa-plus-square"></i> 微信模板管理</a>
-                 <a class='btn btn-info btn-sm' href="{!! yzWebUrl('setting.diy-temp.add') !!}"><i class="fa fa-plus-square"></i> 添加新模板</a>
+                 <a class='btn btn-info btn-sm' href="{!! yzWebUrl('setting.wechat-notice.index') !!}"><i class="fa fa-plus-square"></i> 微信公众号模板管理</a>
+                 <a class='btn btn-info btn-sm' href="{!! yzWebUrl('setting.diy-temp.add') !!}"><i class="fa fa-plus-square"></i> 添加新公众号模板</a>
+                 <a class='btn btn-info btn-sm' href="{!! yzWebUrl('setting.diy-temp.index',['type'=>2]) !!}"><i class="fa fa-bars"></i> 小程序模板列表</a>
+                 <a class='btn btn-info btn-sm' href="{!! yzWebUrl('setting.diy-temp.mini_add') !!}"><i class="fa fa-plus-square"></i> 添加新小程序模板</a>
              </span>
              <div class="col-sm-6 pull-right">
                  <div class="input-group">
@@ -42,7 +44,11 @@
             <tr>
                 <td>{{$row['title']}}</td>
                 <td>
-                    <a href="{!! yzWebUrl('setting.diy-temp.edit', array('id' => $row['id'])) !!}">修改</a>
+                    @if ($row['template_type'] == 2)
+                        <a href="{!! yzWebUrl('setting.diy-temp.mini_edit', array('id' => $row['id'])) !!}">修改</a>
+                    @else
+                        <a href="{!! yzWebUrl('setting.diy-temp.edit', array('id' => $row['id'])) !!}">修改</a>
+                    @endif
 
                     <a href="{!! yzWebUrl('setting.diy-temp.del', array('id' => $row['id'])) !!}"
                        onclick="return confirm('此操作不可逆,确认要删除?');return false;">删除</a>

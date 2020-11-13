@@ -21,9 +21,11 @@ use app\common\models\MemberMiniAppModel;
 class SmallProgramController extends BaseController
 {
     private $temp_model;
+    private $list;
     protected $SmallProgramNotice;
     public function __construct(){
         $this->SmallProgramNotice = new SmallProgramNotice();
+        $this->list = $this->SmallProgramNotice->getSubscribeTemplateList();
     }
 //    public function index()
 //    {
@@ -250,5 +252,11 @@ class SmallProgramController extends BaseController
 //                }
 //            }
 //     }
+
+    public function returnJson()
+    {
+
+        return $this->successJson('获取小程序订阅消息模板列表成功', ['tmp_list' => $this->list['data']]);
+    }
 
     }
