@@ -99,7 +99,7 @@ class OpenController extends BaseController
         return $this->successJson('ok', ['input' => $input, 'job' => $job, 'dispatcht' => $dispatch]);
     }
 
-    public function TemplateMsgSendWechat()
+    public function templateMsgSendWechat()
     {
         $input = request()->all();
         $is_open = 1;
