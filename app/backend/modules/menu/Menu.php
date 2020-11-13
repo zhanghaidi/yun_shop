@@ -4521,6 +4521,15 @@ class Menu
                                 'parents'    => ['system', 'setting_small_program'],
                             ],
 
+                            'setting_small_program_choose1' => [
+                                'name'       => '选择小程序订阅模版（白名单）',
+                                'url'        => 'setting.small-program.returnJson',
+                                'url_params' => '',
+                                'permit'     => 0,
+                                'menu'       => 0,
+                                'item'       => 'setting_small_program_choose1',
+                                'parents'    => ['system', 'setting_small_program'],
+                            ],
 
                             'setting_small_program_choose2' => [
                                 'name'       => '选择模版（白名单）',
