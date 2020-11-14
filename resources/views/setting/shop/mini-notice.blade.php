@@ -80,7 +80,7 @@
                         <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">未签到通知</label>
                             <div class="col-sm-8 col-xs-12">
-                                <select name='yz_notice[sign_reminder]' class='form-control diy-notice'">
+                                <select name='yz_notice[sign_reminder]' class='form-control diy-notice'>
 
                                     @foreach ($temp_list as $item)
                                         <option value="{{$item['id']}}"
@@ -93,7 +93,7 @@
                                 </select>
                             </div>
                             <div class="col-sm-2 col-xs-6">
-                                <input class="mui-switch mui-switch-animbg" id="point_change" type="checkbox"
+                                <input class="mui-switch mui-switch-animbg" id="sign_reminder" type="checkbox"
                                        @if($set['sign_reminder'])
                                        checked
                                        @endif
@@ -112,7 +112,7 @@
                 <script>
                     function message_default(name) {
                         var id = "#" + name;
-                        var setting_name = "shop.notice";
+                        var setting_name = "shop.miniNotice";
                         var select_name = "select[name='yz_notice[" + name + "]']"
                         var url_open = "{!! yzWebUrl('setting.default-notice.index') !!}"
                         var url_close = "{!! yzWebUrl('setting.default-notice.cancel') !!}"
