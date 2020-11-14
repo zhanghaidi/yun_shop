@@ -370,6 +370,7 @@ class PreOrderDeduction extends OrderDeduction
                 // 必须选中
                 $this->isChecked = true;
             } else {
+                return $this->isChecked = true;
                 // 用户选中
                 $deduction_codes = $this->order->getParams('deduction_ids');
 
