@@ -276,6 +276,7 @@
                             <table class='table order-title'>
                                 <tr>
                                     <td class="left" colspan='8'>
+                                        <b>订单ID:</b> {{$order['id']}}
                                         <b>订单编号:</b> {{$order['order_sn']}}
                                         @if($order['status']>\app\common\models\Order::WAIT_PAY && isset($order['has_one_order_pay']))
                                             <b>支付单号:</b> {{$order['has_one_order_pay']['pay_sn']}}
