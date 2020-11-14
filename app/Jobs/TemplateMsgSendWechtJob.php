@@ -67,12 +67,13 @@ class TemplateMsgSendWechtJob implements ShouldQueue
             DB::table('mc_mapping_fans')->where(['uniacid' => $weid, 'follow' => 1])
                 ->chunk(1000, function ($mapping_fans_list)use ($i) {
                     $i++;
+                    Log::info($i.'千条------');
                     foreach ($mapping_fans_list as $k => $mapping_fans) {
                         /*$job = new SendTemplateMsgJob($this->config['type'], $this->config['options'], $this->config['template_id'], $this->config['notice_data'],
                             $mapping_fans['openid'], '', $this->config['page']);
                         dispatch($job);*/
 
-                        Log::info($i.$k.'--'.$mapping_fans['uniacid'].' :fanid:'.$mapping_fans['fanid'].'-- uid:'.$mapping_fans['uid']);
+                        Log::info($k.'--'.$mapping_fans['uniacid'].' :fanid:'.$mapping_fans['fanid'].'-- uid:'.$mapping_fans['uid']);
 
 
                     }
