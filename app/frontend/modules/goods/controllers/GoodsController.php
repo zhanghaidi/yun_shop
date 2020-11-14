@@ -1515,4 +1515,12 @@ class GoodsController extends GoodsApiController
         return $this->successJson('获取成功', $list);
     }
 
+    //增加获取满额优惠 设置接口 fixby-wk-goodsHotOrders 2020-11-14
+    public function getEnoughReduce(){
+
+        $enoug_reduce_list = Setting::get('enoughReduce');
+
+        return $this->successJson('获取成功', $enoug_reduce_list);
+
+    }
 }
