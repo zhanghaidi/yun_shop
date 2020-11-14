@@ -57,21 +57,26 @@ class TemplateMsgSendWechtJob implements ShouldQueue
      */
     public function handle()
     {
-        Log::info('TemplateMsgSendWechtJob队列开始执行');
-
+        $begin = time();
+        Log::info('TemplateMsgSendWechtJob队列开始执行'.data('Y-m-d H:i:s', $begin));
 
         if ($this->config['is_open'] == 1) {
 
             //查询公众号粉丝 发送模板消息
-            DB::table('mc_mapping_fans')->whereIn('uid',[125519,114685,129411,129419,125310, 129415, 114545])->where('follow', 1)->orderBy('fanid')
+            DB::table('mc_mapping_fans')->where('follow', 1)->orderBy('fanid')
                 ->chunk(1000, function ($mapping_fans_list) {
                     foreach ($mapping_fans_list as $mapping_fans) {
-                        $job = new SendTemplateMsgJob($this->config['type'], $this->config['options'], $this->config['template_id'], $this->config['notice_data'],
+                        /*$job = new SendTemplateMsgJob($this->config['type'], $this->config['options'], $this->config['template_id'], $this->config['notice_data'],
                             $mapping_fans['openid'], '', $this->config['page']);
-                        dispatch($job);
+                        dispatch($job);*/
+                        Log::debug('fanid:'.$mapping_fans['fanid']);
                     }
 
                 });
         }
+
+        $end = time();
+        Log::info('TemplateMsgSendWechtJob队列执行完毕'.data('Y-m-d H:i:s',$end));
+        Log::info('TemplateMsgSendWechtJob队列执行时间：'.$end-$begin);
     }
 }
