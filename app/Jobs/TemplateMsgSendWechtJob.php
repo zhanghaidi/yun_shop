@@ -58,7 +58,7 @@ class TemplateMsgSendWechtJob implements ShouldQueue
     public function handle()
     {
         $begin = time();
-        Log::info('TemplateMsgSendWechtJob队列开始执行'.data('Y-m-d H:i:s', $begin));
+        Log::info('TemplateMsgSendWechtJob队列开始执行' . date('Y-m-d H:i:s', $begin));
 
         if ($this->config['is_open'] == 1) {
 
@@ -76,7 +76,7 @@ class TemplateMsgSendWechtJob implements ShouldQueue
         }
 
         $end = time();
-        Log::info('TemplateMsgSendWechtJob队列执行完毕'.data('Y-m-d H:i:s',$end));
+        Log::info('TemplateMsgSendWechtJob队列执行完毕'.date('Y-m-d H:i:s',$end));
         Log::info('TemplateMsgSendWechtJob队列执行时间：'.$end-$begin);
     }
 }
