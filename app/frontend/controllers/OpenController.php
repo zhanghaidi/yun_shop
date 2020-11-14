@@ -8,6 +8,7 @@ use app\common\components\BaseController;
 use app\common\models\AccountWechats;
 use app\Jobs\TemplateMsgSendWechtJob;
 use Illuminate\Support\Facades\Log;
+use app\Jobs\DispatchesJobs;
 
 /**
  * 公共服务接口类
@@ -104,6 +105,7 @@ class OpenController extends BaseController
     {
         $input = request()->all();
         $options = $this->getWeOptions($input['type'], $input['weid']); //公众号参数
+
         $this->checkAccess($input['apikey']);
         if (!array_key_exists('type', $input) || !in_array($input['type'], ['wechat', 'wxapp'])) {
             return $this->errorJson('type参数有误');
@@ -111,22 +113,11 @@ class OpenController extends BaseController
         if (!array_key_exists('template_id', $input) || !array_key_exists('notice_data', $input) || !array_key_exists('openid', $input)) {
             return $this->errorJson('缺少参数');
         }
-        //查询公众号粉丝 发送模板消息
-        DB::table('mc_mapping_fans')->whereIn('uid',[125519,114685,129411,129419,125310, 129415, 114545])->where('follow', 1)->orderBy('fanid')
-            ->chunk(100, function ($mapping_fans_list) use ($options,$input) {
-                foreach ($mapping_fans_list as $mapping_fans) {
-                    $job = new SendTemplateMsgJob('wechat', $options, $input['template_id'], $input['notice_data'], $mapping_fans['openid'], '', $input['page'],'');
-                    $dispatch = dispatch($job);
-                    Log::info("队列已添加:发送订阅模板消息". $dispatch);
-                }
+        //触发 发送公众号模板消息队列
+        $job = new TemplateMsgSendWechtJob(1, $options, $input['template_id'], $input['notice_data'], $input['openid'], $url='', $input['page'], $rmat =false);
+        $dispatch = dispatch($job);
 
-            });
-        //$job = new TemplateMsgSendWechtJob($is_open, $options, $input['template_id'], $input['notice_data'], $input['openid'], $url='', $input['page_path'], $rmat =false);
-        //$dispatch = dispatch($job);
-        //Log::info("队列已添加:发送订阅模板消息". $openid);
-        return $this->successJson('ok', ['input' => $input, 'job' => '', 'dispatcht' => '']);
-        //$job = new SendTemplateMsgJob('wechat', $options, $input['template_id'], $input['notice_data'], $input['openid'], $url, $page, $rmat);
-        //$dispatch = dispatch($job);
-        //Log::info("队列已添加:发送公众号模板消息");
+        return $this->successJson('ok', ['input' => $input, 'job' => $job, 'dispatcht' => $dispatch]);
+
     }
 }
