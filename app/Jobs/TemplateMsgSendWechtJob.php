@@ -47,7 +47,6 @@ class TemplateMsgSendWechtJob implements ShouldQueue
             'url' => $url,
             'page' => $page,
             'refresh_miniprogram_access_token' => $refresh_miniprogram_access_token,
-            'sum' =>0
         ];
     }
 
@@ -64,14 +63,17 @@ class TemplateMsgSendWechtJob implements ShouldQueue
         //$ids = [125519,114685,129411,129419,125310, 129415, 114545]; ->whereIn('uid',$ids)
             //查询公众号粉丝 发送模板消息
         $weid = intval($this->config['weid']);
+        $i = 0;
             DB::table('mc_mapping_fans')->where(['uniacid' => $weid, 'follow' => 1])
-                ->chunk(1000, function ($mapping_fans_list) {
-                    foreach ($mapping_fans_list as $mapping_fans) {
+                ->chunk(1000, function ($mapping_fans_list)use ($i) {
+                    $i++;
+                    foreach ($mapping_fans_list as $k => $mapping_fans) {
                         /*$job = new SendTemplateMsgJob($this->config['type'], $this->config['options'], $this->config['template_id'], $this->config['notice_data'],
                             $mapping_fans['openid'], '', $this->config['page']);
                         dispatch($job);*/
-                        Log::info($mapping_fans['uniacid'].' :fanid:'.$mapping_fans['fanid'].'-- uid:'.$mapping_fans['uid']);
-                        $this->config['sum'] += $this->config['sum'];
+
+                        Log::info($i.$k.'--'.$mapping_fans['uniacid'].' :fanid:'.$mapping_fans['fanid'].'-- uid:'.$mapping_fans['uid']);
+
 
                     }
 
@@ -81,6 +83,6 @@ class TemplateMsgSendWechtJob implements ShouldQueue
         $end = time();
         $totalSecond = $end-$begin;
         Log::info('TemplateMsgSendWechtJob队列执行完毕'.date('Y-m-d H:i:s',$end));
-        Log::info('TemplateMsgSendWechtJob队列执行共'.$this->config['sum'].'条,时间花费了：'.$totalSecond.'秒');
+        Log::info('TemplateMsgSendWechtJob队列执行共花费了：'.$totalSecond.'秒');
     }
 }
