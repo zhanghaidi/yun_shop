@@ -72,7 +72,7 @@ class ShareCouponController extends ApiController
             'set' => $this->set,
             'share_limit' => $share_limit,
             'coupon_num' => $this->share_model->sum('coupon_num'),
-            'coupon_total_money' => number_format($this->share_model->sum('coupon_money'),2),
+            'coupon_total_money' => number_format($this->share_model->sum('coupon_money'),2,'.',''),
         ];
         return $this->successJson('share', $data);
     }
