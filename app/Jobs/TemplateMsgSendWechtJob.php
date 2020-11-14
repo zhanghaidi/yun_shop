@@ -12,6 +12,8 @@ use EasyWeChat\Foundation\Application;
 use EasyWeChat\Core\Exceptions\HttpException;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use app\Jobs\DispatchesJobs;
+use \app\Jobs\SendTemplateMsgJob;
 
 class TemplateMsgSendWechtJob implements ShouldQueue
 {
@@ -36,6 +38,7 @@ class TemplateMsgSendWechtJob implements ShouldQueue
     public function __construct($is_open = 0, $options, $template_id, $notice_data, $openid, $url = '', $page = '', $refresh_miniprogram_access_token = false)
     {
         $this->config = [
+            'type' => 'wechat',
             'is_open' => $is_open,
             'options' => $options,
             'template_id' => $template_id,
@@ -54,32 +57,18 @@ class TemplateMsgSendWechtJob implements ShouldQueue
      */
     public function handle()
     {
-        if ($this->config['is_open'] == 1) {
-            global $template_id;
-            global $jump_page;
-            global $notice_data;
-            $data = [
-                'first' => ['value' => '尊敬的用户,您订阅的课程有新视频要发布啦~', 'color' => '#173177'],
-                'keyword1' => ['value' => '【和大师一起学艾灸】', 'color' => '#173177'],
-                'keyword2' => ['value' => '长期有效', 'color' => '#173177'],
-                'keyword3' => ['value' => '更新中', 'color' => '#173177'],
-                'remark' => [
-                    'value' => '最新视频【每次艾灸几个穴位合适】将于' . date('Y-m-d H:i', strtotime('+15 minutes')) . '震撼发布!',
-                    'color' => '#173177',
-                ],
-            ];
-            $jump_page = $this->config['page'] ? $this->config['page'] : '/pages/template/rumours/index?share=1&shareUrl=';
-            $template_id = $this->config['template_id'] ? $this->config['template_id'] :'c-tYzcbVnoqT33trwq6ckW_lquLDPmqySXvntFJEMhE';
-            $notice_data = $this->config['notice_data'] ? $this->config['notice_data'] : $data ;
+        Log::info('TemplateMsgSendWechtJob队列开始执行');
 
+
+        if ($this->config['is_open'] == 1) {
 
             //查询公众号粉丝 发送模板消息
             DB::table('mc_mapping_fans')->whereIn('uid',[125519,114685,129411,129419,125310, 129415, 114545])->where('follow', 1)->orderBy('fanid')
                 ->chunk(1000, function ($mapping_fans_list) {
                     foreach ($mapping_fans_list as $mapping_fans) {
-                        $job = new SendTemplateMsgJob('wechat', $this->options['wechat'], $GLOBALS['template_id'], $GLOBALS['notice_data'],
-                            $mapping_fans['openid'], '', $GLOBALS['jump_page']);
-                        $dispatch = dispatch($job);
+                        $job = new SendTemplateMsgJob($this->config['type'], $this->config['options'], $this->config['template_id'], $this->config['notice_data'],
+                            $mapping_fans['openid'], '', $this->config['page']);
+                        dispatch($job);
                     }
 
                 });
