@@ -185,7 +185,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">分享Banner图</label>
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">分享人Banner图</label>
                         <div class="col-sm-9 col-xs-12 col-md-6 detail-logo">
                             {!! app\common\helpers\ImageHelper::tplFormFieldImage('coupon[shopping_share][banner]', $coupon['shopping_share']['banner']) !!}
                             {{--<span class="help-block">建议尺寸: 640 * 640 ，或正方型图片 </span>--}}
@@ -194,6 +194,13 @@
                                     <img src="{{tomedia($coupon['shopping_share']['banner'])}}" style='width:100px;border:1px solid #ccc;padding:1px' />
                                 </a>
                             @endif--}}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">领取人Banner图</label>
+                        <div class="col-sm-9 col-xs-12 col-md-6 detail-logo">
+                            {!! app\common\helpers\ImageHelper::tplFormFieldImage('coupon[shopping_share][receive_banner]', $coupon['shopping_share']['receive_banner']) !!}
                         </div>
                     </div>
 
@@ -247,13 +254,19 @@
 {{--                        </div>--}}
 {{--                    </div>--}}
 
-{{--                    <div class="form-group">--}}
-{{--                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">转让Banner图</label>--}}
-{{--                        <div class="col-sm-9 col-xs-12 col-md-6 detail-logo">--}}
-{{--                            {!! app\common\helpers\ImageHelper::tplFormFieldImage('coupon[transfer_coupons][banner]', $coupon['transfer_coupons']['banner']) !!}--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">转让人Banner图</label>
+                        <div class="col-sm-9 col-xs-12 col-md-6 detail-logo">
+                            {!! app\common\helpers\ImageHelper::tplFormFieldImage('coupon[transfer_coupons][banner]', $coupon['transfer_coupons']['banner']) !!}
+                        </div>
+                    </div>
 
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">领取人Banner图</label>
+                        <div class="col-sm-9 col-xs-12 col-md-6 detail-logo">
+                            {!! app\common\helpers\ImageHelper::tplFormFieldImage('coupon[transfer_coupons][receive_banner]', $coupon['transfer_coupons']['receive_banner']) !!}
+                        </div>
+                    </div>
                     <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label">转让标题</label>
                         <div class="col-sm-9 col-xs-12">
