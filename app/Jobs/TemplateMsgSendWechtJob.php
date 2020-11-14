@@ -63,7 +63,7 @@ class TemplateMsgSendWechtJob implements ShouldQueue
         //$ids = [125519,114685,129411,129419,125310, 129415, 114545]; ->whereIn('uid',$ids)
             //查询公众号粉丝 发送模板消息
         $weid = intval($this->config['weid']);
-        $i = 0;
+        $i = 1;
             DB::table('mc_mapping_fans')->where(['uniacid' => $weid, 'follow' => 1])
                 ->chunk(1000, function ($mapping_fans_list)use ($i) {
                     $i++;
