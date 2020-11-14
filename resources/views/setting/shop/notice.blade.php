@@ -14,7 +14,12 @@
                     提示：点击模版消息后方开关按钮<input class="mui-switch" type="checkbox" disabled/>即可开启默认模版消息，无需进行额外设置。<br>
                     如需进行消息推送个性化消息，点击进入自定义模版管理。
                 </div>
-
+                <div class="page-toolbar">
+                <span class=''>
+                     <a class='btn btn-success btn-sm' href="{!! yzWebUrl('setting.shop.miniNotice') !!}"><i
+                             class="fa fa-plus-square"></i> 小程序订阅消息提醒</a>
+                 </span>
+                </div>
                 <div class="panel panel-default">
                     <style type='text/css'>
                         .multi-item {
@@ -43,6 +48,7 @@
                             padding: 5px;
                         }
                     </style>
+
                     <div class='panel-heading'>
                         商城消息提醒
                     </div>

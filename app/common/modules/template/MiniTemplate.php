@@ -41,6 +41,150 @@ class MiniTemplate
                     '活动名称','签到奖励', '温情提示'
                 ]
             ],
+
+            'consulting_reply' => [
+                'title' => '咨询回复通知',
+                'subtitle' => '咨询回复通知',
+                'value' => 'consulting_reply',
+                'param' => [
+                    '患者姓名','回复内容', '提问内容','回复人','回复时间'
+                ]
+            ],
+
+            'medical_appointment' => [
+                'title' => '体检提醒',
+                'subtitle' => '体检提醒通知',
+                'value' => 'medical_appointment',
+                'param' => [
+                    '体检人','体检套餐', '体检机构','体检时间','体检说明'
+                ]
+            ],
+
+            'content_change' => [
+                'title' => '内容更新提醒',
+                'subtitle' => '内容更新提醒通知',
+                'value' => 'content_change',
+                'param' => [
+                    '分类','方案名称', '更新内容','作者','温馨提示'
+                ]
+            ],
+
+            'wait_paid_reminder' => [
+                'title' => '待支付提醒',
+                'subtitle' => '待支付提醒通知',
+                'value' => 'wait_paid_reminder',
+                'param' => [
+                    '订单号','商品名称', '待支付金额','备注'
+                ]
+            ],
+
+            'see_doctor_reminder' => [
+                'title' => '就诊提醒',
+                'subtitle' => '就诊提醒通知',
+                'value' => 'see_doctor_reminder',
+                'param' => [
+                    '就诊人','就诊科室', '就诊时间','预约医生','提示说明'
+                ]
+            ],
+
+            'medical_appointment_change' => [
+                'title' => '体检预约变更提醒',
+                'subtitle' => '体检预约变更提醒通知',
+                'value' => 'medical_appointment_change',
+                'param' => [
+                    '体检人','体检时间', '体检机构','体检套餐','变更说明'
+                ]
+            ],
+
+            'medication_reminder' => [
+                'title' => '用药提醒',
+                'subtitle' => '用药提醒通知',
+                'value' => 'medication_reminder',
+                'param' => [
+                    '就诊人','服药时间', '药品信息','提示说明'
+                ]
+            ],
+
+            'wenzhen_abnormal_reminder' => [
+                'title' => '问诊异常通知',
+                'subtitle' => '问诊异常通知',
+                'value' => 'wenzhen_abnormal_reminder',
+                'param' => [
+                    '订单ID','问诊医生', '问诊时间','取消原因','提示说明'
+                ]
+            ],
+
+            'wenzhen_reminder' => [
+                'title' => '问诊提醒',
+                'subtitle' => '问诊提醒通知',
+                'value' => 'wenzhen_reminder',
+                'param' => [
+                    '问诊内容','提醒内容', '问诊医生','提示说明'
+                ]
+            ],
+
+            'schedule_reminder' => [
+                'title' => '日程提醒',
+                'subtitle' => '日程提醒通知',
+                'value' => 'schedule_reminder',
+                'param' => [
+                    '日程主题','日程时间', '日程描述','温馨提示'
+                ]
+            ],
+
+            'popular_science_courses' => [
+                'title' => '科普课堂更新提醒',
+                'subtitle' => '科普课堂更新提醒通知',
+                'value' => 'popular_science_courses',
+                'param' => [
+                    '文章标题','备注'
+                ]
+            ],
+
+            'content_updates' => [
+                'title' => '内容更新提醒',
+                'subtitle' => '内容更新提醒通知',
+                'value' => 'content_updates',
+                'param' => [
+                    '作者','作品名称'
+                ]
+            ],
+
+            'chat_messages' => [
+                'title' => '聊天消息提醒',
+                'subtitle' => '聊天消息提醒通知',
+                'value' => 'chat_messages',
+                'param' => [
+                    '聊天用户','聊天内容','聊天时间'
+                ]
+            ],
+
+            'refund_notice' => [
+                'title' => '退款成功通知',
+                'subtitle' => '退款成功通知',
+                'value' => 'refund_notice',
+                'param' => [
+                    '退款金额','商品详情','备注'
+                ]
+            ],
+
+            'point_change' => [
+                'title' => '账户积分变动提醒',
+                'subtitle' => '账户积分变动提醒通知',
+                'value' => 'point_change',
+                'param' => [
+                    '用户名','当前积分','变动原因','有效时间'
+                ]
+            ],
+
+            'new_comments' => [
+                'title' => '新的评论提醒',
+                'subtitle' => '新的评论提醒通知',
+                'value' => 'new_comments',
+                'param' => [
+                    '评论时间','评论用户','评论内容','>取消提醒'
+                ]
+            ],
         ];
 
         return $result;

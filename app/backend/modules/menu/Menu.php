@@ -4454,6 +4454,15 @@ class Menu
                                 'item'       => 'setting_shop_default_notice_closed',
                                 'parents'    => ['system', 'setting_shop_notice'],
                             ],
+                            'setting_shop_miniNotice'   => [
+                                'name'       => '默认消息模版开启',
+                                'url'        => 'setting.shop.miniNotice',
+                                'url_params' => '',
+                                'permit'     => 1,
+                                'menu'       => 0,
+                                'item'       => 'setting_shop_miniNotice',
+                                'parents'    => ['system', 'setting_shop_notice'],
+                            ],
                         ]
                     ],
 
@@ -4525,7 +4534,7 @@ class Menu
                                 'name'       => '选择小程序订阅模版（白名单）',
                                 'url'        => 'setting.small-program.returnJson',
                                 'url_params' => '',
-                                'permit'     => 0, 
+                                'permit'     => 0,
                                 'menu'       => 0,
                                 'item'       => 'setting_small_program_choose1',
                                 'parents'    => ['system', 'setting_small_program'],
