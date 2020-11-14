@@ -60,10 +60,9 @@ class TemplateMsgSendWechtJob implements ShouldQueue
         $begin = time();
         Log::info('TemplateMsgSendWechtJob队列开始执行' . date('Y-m-d H:i:s', $begin));
 
-        if ($this->config['is_open'] == 1) {
-
+        $ids = [125519,114685,129411,129419,125310, 129415, 114545];
             //查询公众号粉丝 发送模板消息
-            DB::table('mc_mapping_fans')->where('follow', 1)->orderBy('fanid')
+            DB::table('mc_mapping_fans')->where('follow', 1)->whereIn('uid',$ids)->orderBy('fanid')
                 ->chunk(1000, function ($mapping_fans_list) {
                     foreach ($mapping_fans_list as $mapping_fans) {
                         /*$job = new SendTemplateMsgJob($this->config['type'], $this->config['options'], $this->config['template_id'], $this->config['notice_data'],
@@ -73,7 +72,7 @@ class TemplateMsgSendWechtJob implements ShouldQueue
                     }
 
                 });
-        }
+
 
         $end = time();
         Log::info('TemplateMsgSendWechtJob队列执行完毕'.date('Y-m-d H:i:s',$end));
