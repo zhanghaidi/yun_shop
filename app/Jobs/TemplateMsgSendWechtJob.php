@@ -68,7 +68,7 @@ class TemplateMsgSendWechtJob implements ShouldQueue
                         /*$job = new SendTemplateMsgJob($this->config['type'], $this->config['options'], $this->config['template_id'], $this->config['notice_data'],
                             $mapping_fans['openid'], '', $this->config['page']);
                         dispatch($job);*/
-                        Log::debug('fanid:'.$mapping_fans['fanid']);
+                        Log::info($mapping_fans['uniacid'].' :fanid:'.$mapping_fans['fanid'].'--- uid:'.$mapping_fans['uid']);
                     }
 
                 });
