@@ -309,7 +309,7 @@ class ShopController extends BaseController
         //$new_type = []; //通知方式的数组,数据如何来的待定?
         $requestModel = \YunShop::request()->yz_notice;
 
-        $temp_list = MessageTemp::getList();
+        $temp_list = MessageTemp::getList(2);
 
         if (!empty($requestModel)) {
             if (Setting::set('shop.miniNotice', $requestModel)) {
