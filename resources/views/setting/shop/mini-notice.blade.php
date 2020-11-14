@@ -101,6 +101,34 @@
                             </div>
                         </div>
                     </div>
+                    <div class='panel-heading'>
+                        课程更新提醒通知
+                    </div>
+                    <div class='panel-body'>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label"> 课程更新提醒通知</label>
+                            <div class="col-sm-8 col-xs-12">
+                                <select name='yz_notice[course_reminder]' class='form-control diy-notice'>
+
+                                    @foreach ($temp_list as $item)
+                                        <option value="{{$item['id']}}"
+                                                @if($set['course_reminder'] == $item['id'])
+                                                selected
+                                                @endif>
+                                            {{$item['title']}}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-sm-2 col-xs-6">
+                                <input class="mui-switch mui-switch-animbg" id="course_reminder" type="checkbox"
+                                       @if($set['course_reminder'])
+                                       checked
+                                       @endif
+                                       onclick="message_default(this.id)"/>
+                            </div>
+                        </div>
+                    </div>
                     <div class="form-group"></div>
                     <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
