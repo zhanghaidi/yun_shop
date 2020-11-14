@@ -35,11 +35,11 @@ class TemplateMsgSendWechtJob implements ShouldQueue
      * @param string $page
      * @param bool $refresh_miniprogram_access_token
      */
-    public function __construct($is_open = 0, $options, $template_id, $notice_data, $openid, $url = '', $page = '', $refresh_miniprogram_access_token = false)
+    public function __construct($weid, $options, $template_id, $notice_data, $openid, $url = '', $page = '', $refresh_miniprogram_access_token = false)
     {
         $this->config = [
+            'weid' => $weid,
             'type' => 'wechat',
-            'is_open' => $is_open,
             'options' => $options,
             'template_id' => $template_id,
             'notice_data' => $notice_data,
@@ -60,9 +60,10 @@ class TemplateMsgSendWechtJob implements ShouldQueue
         $begin = time();
         Log::info('TemplateMsgSendWechtJob队列开始执行' . date('Y-m-d H:i:s', $begin));
 
-        $ids = [125519,114685,129411,129419,125310, 129415, 114545];
+        //$ids = [125519,114685,129411,129419,125310, 129415, 114545]; ->whereIn('uid',$ids)
             //查询公众号粉丝 发送模板消息
-            DB::table('mc_mapping_fans')->where('follow', 1)->whereIn('uid',$ids)->orderBy('fanid')
+        $weid = intval($this->config['weid']);
+            DB::table('mc_mapping_fans')->where(['uniacid' => $weid, 'follow' => 1])
                 ->chunk(1000, function ($mapping_fans_list) {
                     foreach ($mapping_fans_list as $mapping_fans) {
                         /*$job = new SendTemplateMsgJob($this->config['type'], $this->config['options'], $this->config['template_id'], $this->config['notice_data'],

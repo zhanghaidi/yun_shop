@@ -114,7 +114,7 @@ class OpenController extends BaseController
             return $this->errorJson('缺少参数');
         }
         //触发 发送公众号模板消息队列
-        $job = new TemplateMsgSendWechtJob(1, $options, $input['template_id'], $input['notice_data'], $input['openid'], $url='', $input['page'], $rmat =false);
+        $job = new TemplateMsgSendWechtJob($input['weid'], $options, $input['template_id'], $input['notice_data'], $input['openid'], $url='', $input['page'], $rmat =false);
         $dispatch = dispatch($job);
         Log::info("open方法添加队列");
         return $this->successJson('ok', ['input' => $input, 'job' => $job, 'dispatcht' => $dispatch]);
