@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 class DiagnosticServiceUser extends Model
 {
     protected $table = 'diagnostic_service_user';
-    protected $primaryKey = 'ajy_uid';
+
     public $timestamps = false;
 
     const CREATED_AT = 'add_time';
