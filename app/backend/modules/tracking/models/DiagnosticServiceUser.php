@@ -15,7 +15,7 @@ class DiagnosticServiceUser extends Model
     protected $table = 'diagnostic_service_user';
 
     public $timestamps = false;
-
+    protected $primaryKey = 'ajy_uid';
     const CREATED_AT = 'add_time';
     const UPDATED_AT = 'update_time';
 
