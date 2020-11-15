@@ -67,7 +67,7 @@ class ApiController extends BaseController
             $member_id = Session::get('member_id');
             if ($type == 2) {
                 if (!$member_id && !empty($openid_token)) {
-                    $member=Db::table('diagnostic_service_user')->where(['openid_token'=>$openid_token])->first();
+                    $member=Db::table('diagnostic_service_user')->where('openid_token', $openid_token)->orWhere('shop_openid_token', $openid_token)->first();
                     if(!empty($member)){
                         session::set('member_id', $member['ajy_uid']);
                     }
