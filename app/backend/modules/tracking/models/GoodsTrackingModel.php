@@ -240,6 +240,8 @@ class GoodsTrackingModel extends Model
             $value = 14;
         }elseif($value == '优惠券'){
             $value = 15;
+        }elseif($value == '我的收藏'){
+            $value = 16;
         }elseif($value == '未知'){
             $value = 404;
         }

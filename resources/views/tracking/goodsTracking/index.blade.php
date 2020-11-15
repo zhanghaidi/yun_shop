@@ -258,6 +258,7 @@
                                     @elseif ($list->type_id == 13) 购物车
                                     @elseif ($list->type_id == 14) 我的订单
                                     @elseif ($list->type_id == 15) 优惠券
+                                    @elseif ($list->type_id == 16) 我的收藏
                                     @elseif ($list->type_id == 404) 未知
                                     @endif
                                 </td>
@@ -275,9 +276,10 @@
                                     @elseif ($list->type_id == 10) {{ $list->resource->title }}
                                     @elseif ($list->type_id == 11) {{ $list->user->nickname }}
                                     @elseif ($list->type_id == 12) @if ($list->resource_id ==1) 全局搜索 @elseif ($list->resource_id ==2)商城搜索  @endif
-                                    @elseif ($list->type_id == 13) @if ($list->resource_id ==1) 悬浮购物车 @elseif ($list->resource_id ==2)商品详情购物车  @endif
-                                    @elseif ($list->type_id == 14) 我的订单
+                                    @elseif ($list->type_id == 13) @if ($list->resource_id ==1) 悬浮购物车 @elseif ($list->resource_id ==2)商品详情购物车 @elseif ($list->resource_id ==3)全局搜索页悬浮购物车 @elseif ($list->resource_id ==4)商品搜索页悬浮购物车 @endif
+                                    @elseif ($list->type_id == 14) 我的订单ID
                                     @elseif ($list->type_id == 15) {{ $list->resource->name }}
+                                    @elseif ($list->type_id == 16) 我的收藏商品ID
                                     @elseif ($list->type_id == 404) 未知
                                     @endif
                                 </td>

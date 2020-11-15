@@ -13,13 +13,13 @@ use Illuminate\Database\Eloquent\Model;
 class DiagnosticServiceUser extends Model
 {
     protected $table = 'diagnostic_service_user';
-
+    protected $primaryKey = 'ajy_uid';
     public $timestamps = false;
 
     const CREATED_AT = 'add_time';
     const UPDATED_AT = 'update_time';
 
     public function resource(){
-        return $this->morphOne('App\backend\modules\tracking\models\GoodsTrackingModel','resource','to_type_id','resource_id','ajy_uid');
+        return $this->morphOne('App\backend\modules\tracking\models\GoodsTrackingModel','resource');
     }
 }
