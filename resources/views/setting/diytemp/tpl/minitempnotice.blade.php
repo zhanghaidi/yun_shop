@@ -78,7 +78,7 @@
             <div class="col-sm-9 col-xs-12">
                 <select name="temp[sel_h5_mini]" class="form-control">
                     <option @if(!empty($temp['appid'])) selected @endif value="1" >小程序</option>
-                    <option @if(empty($temp['appid'])) selected @endif value="2" >H5网页</option>
+{{--                    <option @if(empty($temp['appid'])) selected @endif value="2" >H5网页</option>--}}
                 </select>
             </div>
         </div>

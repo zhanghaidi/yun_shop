@@ -146,6 +146,38 @@ class MessageTemp extends BaseModel
         return $msg;
     }
 
+    //fixby-zlt-submsg 2020-11-14 小程序订阅消息
+    public static function getSubMsg($temp_id, $params)
+    {
+        //\Log::debug("getSubMsg:{$temp_id},params:" . json_encode($params));
+
+        if (!intval($temp_id)) {
+            return false;
+        }
+        $temp = self::withoutGlobalScopes(['uniacid'])->whereId($temp_id)->first();
+        if (!$temp) {
+            return false;
+        }
+        self::$template_id = $temp->template_id;
+
+        foreach ($temp->data as $row) {
+            $msg[$row['keywords']] = [
+                'value' => self::replaceTemplate($row['value'], $params),
+            ];
+        }
+
+        if(!empty($temp->pagepath)){
+            $msg['miniprogram'] = [
+                'appid' => $temp->appid,
+                'page' => self::replaceTemplate($temp->pagepath, $params),
+            ];
+        }
+
+        //\Log::debug("getSubMsg:{$temp_id},msg:" . json_encode($msg));
+
+        return $msg;
+    }
+
     private static function replaceTemplate($str, $datas = array())
     {
         foreach ($datas as $row ) {
