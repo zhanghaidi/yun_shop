@@ -13,6 +13,7 @@ namespace Yunshop\Sign\Frontend\Modules\Sign\Controllers;
 use app\common\components\ApiController;
 use app\common\helpers\Cache;
 use app\common\models\notice\MessageTemp;
+use app\common\models\Setting;
 use app\common\services\finance\PointService;
 use app\common\services\MessageService;
 use app\frontend\modules\coupon\services\CouponSendService;
@@ -298,7 +299,9 @@ class SignController extends ApiController
         if (!$msg) {
             return;
         }
-        MessageService::notice(MessageTemp::$template_id, $msg, $this->awardService->signModel->member_id);
+        MessageService::notice(MessageTemp::$template_id, $msg, $this->awardService->signModel->member_id, '','','',true);
+
+        MessageService::subMsgPush($this->awardService->signModel->member_id, \Setting::get('shop.miniNotice.sign_notice'), $params,true);
     }
 
 

@@ -74,9 +74,31 @@
                     </div>
 
                     <div class='panel-heading'>
-                        签到通知
+                        签到成功通知
                     </div>
                     <div class='panel-body'>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">签到成功通知</label>
+                            <div class="col-sm-8 col-xs-12">
+                                <select name='yz_notice[sign_notice]' class='form-control diy-notice'>
+                                    @foreach ($temp_list as $item)
+                                        <option value="{{$item['id']}}"
+                                                @if($set['sign_notice'] == $item['id'])
+                                                selected
+                                                @endif>
+                                            {{$item['title']}}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-sm-2 col-xs-6">
+                                <input class="mui-switch mui-switch-animbg" id="sign_notice" type="checkbox"
+                                       @if($set['sign_notice'])
+                                       checked
+                                       @endif
+                                       onclick="message_default(this.id)"/>
+                            </div>
+                        </div>
                         <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">未签到通知</label>
                             <div class="col-sm-8 col-xs-12">
