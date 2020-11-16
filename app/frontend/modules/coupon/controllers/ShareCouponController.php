@@ -81,10 +81,11 @@ class ShareCouponController extends ApiController
     //领取页面
     public function receive()
     {
-
+        $is_sharer = false;
         foreach ($this->share_model as $model) {
 
             $result = ShareCouponService::fen($model);
+            $is_sharer = $model->member_id == \YunShop::app()->getMemberId();
 
             if ($result['state'] == 'YES' || $result['state'] == 'ER') {
                 break;
@@ -99,6 +100,7 @@ class ShareCouponController extends ApiController
         $data = [
             'set' =>  $this->set,
             'member_name' => $this->member->nickname?:$this->member->realname,
+            'is_sharer' => $is_sharer,
             'code' => $result['state'],
             'msg'  => $result['msg'],
             'coupon' =>  $this->handleCoupon($result['data']),
