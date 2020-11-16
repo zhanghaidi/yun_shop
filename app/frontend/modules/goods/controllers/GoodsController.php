@@ -1515,11 +1515,97 @@ class GoodsController extends GoodsApiController
         return $this->successJson('获取成功', $list);
     }
 
-    //增加获取满额优惠 设置接口 fixby-wk-goodsHotOrders 2020-11-14
+    //增加获取满额优惠 设置接口 fixby-wk-getEnoughReduce 2020-11-14
     public function getEnoughReduce(){
 
         $enoug_reduce_list = Setting::get('enoughReduce');
         return $this->successJson('获取成功', $enoug_reduce_list);
 
+    }
+
+    //未登录获取商品佣金接口 fixby-wk-getGoodsCommission 2020-11-16
+    public function getGoodsCommission()
+    {
+        $id = intval(\YunShop::request()->id);
+
+        $goods_model = \app\common\modules\shop\ShopConfig::current()->get('goods.models.commodity_classification');
+        $goods_model = new $goods_model;
+        //fixby-zhd-商品详情免登陆20201101
+        $member_id = \YunShop::app()->getMemberId();
+
+        if ($member_id) {
+            try {
+                $member = Member::current()->yzMember;
+            } catch (MemberNotLoginException  $e) {
+                if (\YunShop::request()->type == 1 || \YunShop::request()->type == 2) {
+                    return;
+                }
+
+                throw new MemberNotLoginException($e->getMessage());
+            }
+        }
+
+        $goodsModel = $goods_model->uniacid()
+            ->with([
+                'hasManyParams' => function ($query) {
+                    return $query->select('goods_id', 'title', 'value')->orderby('displayorder', 'asc');
+                },
+                'hasManySpecs' => function ($query) {
+                    return $query->select('id', 'goods_id', 'title', 'description');
+                },
+                'hasManyOptions' => function ($query) {
+                    return $query->select('id', 'goods_id', 'title', 'thumb', 'product_price', 'market_price', 'stock', 'specs', 'weight');
+                },
+                'hasManyDiscount' => function ($query) use ($member) {
+                    return $query->where('level_id', $member->level_id);
+                },
+                'hasOneBrand' => function ($query) {
+                    return $query->select('id', 'logo', 'name', 'desc');
+                },
+                'hasOneShare',
+                'hasOneGoodsDispatch',
+                'hasOnePrivilege',
+                'hasOneSale',
+                'hasOneGoodsCoupon',
+                'hasOneInvitePage',
+                'hasOneGoodsLimitBuy',
+                'hasOneGoodsVideo',
+            ])
+            ->find($id);
+        $goodsModel->vip_level_status;
+        $exist_commission = app('plugins')->isEnabled('commission');
+
+        if ($exist_commission) {
+
+            if($member){
+                $is_agent = $this->isValidateCommission($member);
+            }else{
+                $is_agent = true;
+            }
+
+            if ($is_agent) {
+
+                $commission_data = (new GoodsDetailService($goodsModel))->getGoodsDetailData();
+
+                if ($commission_data['commission_show'] == 1) {
+                    $data['name'] = '佣金';
+                    $data['key'] = 'commission';
+                    $data['type'] = 'array';
+
+                    if (!empty($commission_data['first_commission']) && ($commission_data['commission_show_level'] > 0)) {
+                        $data['value'][] = '一级佣金' . $commission_data['first_commission'] . '元';
+                    }
+                    if (!empty($commission_data['second_commission']) && ($commission_data['commission_show_level'] > 1)) {
+                        $data['value'][] = '二级佣金' . $commission_data['second_commission'] . '元';
+                    }
+                    if (!empty($commission_data['third_commission']) && ($commission_data['commission_show_level'] > 2)) {
+                        $data['value'][] = '三级佣金' . $commission_data['third_commission'] . '元';
+                    }
+
+                }
+
+            }
+        }
+        return $this->successJson('获取成功', $data);
     }
 }
