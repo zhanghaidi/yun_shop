@@ -370,7 +370,7 @@ class PreOrderDeduction extends OrderDeduction
                 // 必须选中
                 $this->isChecked = true;
             } else {
-                return $this->isChecked = true;
+                //  return $this->isChecked = true;
                 // 用户选中
                 $deduction_codes = $this->order->getParams('deduction_ids');
 
@@ -430,7 +430,7 @@ class PreOrderDeduction extends OrderDeduction
     {
         // 验证最低抵扣大于可用抵扣
         if ($this->getMemberCoin()->getMaxUsableCoin()->getMoney() < $this->getMinDeduction()->getMoney()) {
-            throw new MinOrderDeductionNotEnough("会员[{$this->getName()}]抵扣余额可抵扣金额{$this->getMemberCoin()->getMaxUsableCoin()->getMoney()}元,不满足最低抵扣金额{$this->getMinDeduction()->getMoney()}元");
+            //throw new MinOrderDeductionNotEnough("会员[{$this->getName()}]抵扣余额可抵扣金额{$this->getMemberCoin()->getMaxUsableCoin()->getMoney()}元,不满足最低抵扣金额{$this->getMinDeduction()->getMoney()}元");
         }
     }
 }
