@@ -1519,7 +1519,6 @@ class GoodsController extends GoodsApiController
     public function getEnoughReduce(){
 
         $enoug_reduce_list = Setting::get('enoughReduce');
-
         return $this->successJson('获取成功', $enoug_reduce_list);
 
     }

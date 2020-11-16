@@ -42,6 +42,15 @@ class MiniTemplate
                 ]
             ],
 
+            'sign_notice' => [
+                'title' => '签到成功通知',
+                'subtitle' => '签到成功通知',
+                'value' => 'sign_notice',
+                'param' => [
+                    '昵称','签到时间', '连签天数', '签到奖励'
+                ]
+            ],
+
             'consulting_reply' => [
                 'title' => '咨询回复通知',
                 'subtitle' => '咨询回复通知',
