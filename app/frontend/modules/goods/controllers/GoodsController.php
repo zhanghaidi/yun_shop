@@ -18,7 +18,9 @@ use app\common\services\goods\VideoDemandCourseGoods;
 use app\common\models\MemberShopInfo;
 use app\frontend\modules\member\controllers\ServiceController;
 use app\frontend\modules\member\listeners\Order;
+use app\frontend\modules\member\services\MemberCartService;
 use app\frontend\modules\member\services\MemberService;
+use app\frontend\modules\memberCart\MemberCartCollection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Monolog\Handler\IFTTTHandler;
@@ -1607,5 +1609,31 @@ class GoodsController extends GoodsApiController
             }
         }
         return $this->successJson('获取成功', $data);
+    }
+
+//购买时验证商品参数接口 fixby-wk-validateGoodsPrivilege 2020-11-16
+    public function validateGoodsPrivilege()
+    {
+
+        $this->validate([
+            'goods_id' => 'required|integer',
+            'option_id' => 'integer',
+            'total' => 'integer|min:1',
+        ]);
+
+        $goods_params = [
+            'goods_id' => request()->input('goods_id'),
+            'total' => request()->input('total'),
+            'option_id' => request()->input('option_id'),
+        ];
+
+        $result = new MemberCartCollection();
+
+        $result->push(MemberCartService::newMemberCart($goods_params));
+        $res = $result->validate();
+        if(!$res){
+            return $this->successJson('验证成功',$res);
+        }
+
     }
 }
