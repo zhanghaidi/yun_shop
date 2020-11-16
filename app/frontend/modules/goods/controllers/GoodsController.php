@@ -1593,14 +1593,14 @@ class GoodsController extends GoodsApiController
                     $data['type'] = 'array';
 
                     if (!empty($commission_data['first_commission']) && ($commission_data['commission_show_level'] > 0)) {
-                        $data['value'][] = '一级佣金' . $commission_data['first_commission'] . '元';
+                        $data['value'] =  $commission_data['first_commission']. '元';
                     }
-                    if (!empty($commission_data['second_commission']) && ($commission_data['commission_show_level'] > 1)) {
-                        $data['value'][] = '二级佣金' . $commission_data['second_commission'] . '元';
-                    }
-                    if (!empty($commission_data['third_commission']) && ($commission_data['commission_show_level'] > 2)) {
-                        $data['value'][] = '三级佣金' . $commission_data['third_commission'] . '元';
-                    }
+//                    if (!empty($commission_data['second_commission']) && ($commission_data['commission_show_level'] > 1)) {
+//                        $data['value'][] = $commission_data['second_commission'] . '元';
+//                    }
+//                    if (!empty($commission_data['third_commission']) && ($commission_data['commission_show_level'] > 2)) {
+//                        $data['value'][] = $commission_data['third_commission'] . '元';
+//                    }
 
                 }
 
