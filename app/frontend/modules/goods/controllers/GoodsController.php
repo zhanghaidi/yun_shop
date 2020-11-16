@@ -1595,12 +1595,12 @@ class GoodsController extends GoodsApiController
                     if (!empty($commission_data['first_commission']) && ($commission_data['commission_show_level'] > 0)) {
                         $data['value'] =  $commission_data['first_commission']. '元';
                     }
-//                    if (!empty($commission_data['second_commission']) && ($commission_data['commission_show_level'] > 1)) {
-//                        $data['value'][] = $commission_data['second_commission'] . '元';
-//                    }
-//                    if (!empty($commission_data['third_commission']) && ($commission_data['commission_show_level'] > 2)) {
-//                        $data['value'][] = $commission_data['third_commission'] . '元';
-//                    }
+                    if (!empty($commission_data['second_commission']) && ($commission_data['commission_show_level'] > 1)) {
+                        $data['value'][] = $commission_data['second_commission'] . '元';
+                    }
+                    if (!empty($commission_data['third_commission']) && ($commission_data['commission_show_level'] > 2)) {
+                        $data['value'][] = $commission_data['third_commission'] . '元';
+                    }
 
                 }
 
