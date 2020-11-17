@@ -29,7 +29,7 @@ use app\frontend\modules\order\models\PreOrder;
  */
 class PreOrderDeduction extends OrderDeduction
 {
-    protected $appends = ['checked'];
+    protected $appends = ['checked','show'];
     /**
      * @var PreOrder
      */
@@ -50,6 +50,8 @@ class PreOrderDeduction extends OrderDeduction
      * @var VirtualCoin
      */
     private $usablePoint;
+
+    protected $show;
 
     /**
      * @param Deduction $deduction
@@ -347,6 +349,14 @@ class PreOrderDeduction extends OrderDeduction
     public function setChecked()
     {
         $this->isChecked = true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getShowAttribute()
+    {
+        return false;
     }
 
     /**
