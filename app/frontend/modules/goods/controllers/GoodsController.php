@@ -18,7 +18,9 @@ use app\common\services\goods\VideoDemandCourseGoods;
 use app\common\models\MemberShopInfo;
 use app\frontend\modules\member\controllers\ServiceController;
 use app\frontend\modules\member\listeners\Order;
+use app\frontend\modules\member\services\MemberCartService;
 use app\frontend\modules\member\services\MemberService;
+use app\frontend\modules\memberCart\MemberCartCollection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Monolog\Handler\IFTTTHandler;
@@ -938,30 +940,30 @@ class GoodsController extends GoodsApiController
         }
 
         //佣金 fixBy-wk-20201005-注释掉   佣金暂时不显示
-//        $exist_commission = app('plugins')->isEnabled('commission');
-//        if ($exist_commission) {
-//            $is_agent = $this->isValidateCommission($member);
-//            if ($is_agent) {
-//                $commission_data = (new GoodsDetailService($goodsModel))->getGoodsDetailData();
-//                if ($commission_data['commission_show'] == 1) {
-//                    $data['name'] = '佣金';
-//                    $data['key'] = 'commission';
-//                    $data['type'] = 'array';
-//
-//                    if (!empty($commission_data['first_commission']) && ($commission_data['commission_show_level'] > 0)) {
-//                        $data['value'][] = '一级佣金' . $commission_data['first_commission'] . '元';
-//                    }
-//                    if (!empty($commission_data['second_commission']) && ($commission_data['commission_show_level'] > 1)) {
-//                        $data['value'][] = '二级佣金' . $commission_data['second_commission'] . '元';
-//                    }
-//                    if (!empty($commission_data['third_commission']) && ($commission_data['commission_show_level'] > 2)) {
-//                        $data['value'][] = '三级佣金' . $commission_data['third_commission'] . '元';
-//                    }
-//                    array_push($sale, $data);
-//                    $data = [];
-//                }
-//            }
-//        }
+        $exist_commission = app('plugins')->isEnabled('commission');
+        if ($exist_commission) {
+            $is_agent = $this->isValidateCommission($member);
+            if ($is_agent) {
+                $commission_data = (new GoodsDetailService($goodsModel))->getGoodsDetailData();
+                if ($commission_data['commission_show'] == 1) {
+                    $data['name'] = '佣金';
+                    $data['key'] = 'commission';
+                    $data['type'] = 'array';
+
+                    if (!empty($commission_data['first_commission']) && ($commission_data['commission_show_level'] > 0)) {
+                        $data['value'][] = '一级佣金' . $commission_data['first_commission'] . '元';
+                    }
+                    if (!empty($commission_data['second_commission']) && ($commission_data['commission_show_level'] > 1)) {
+                        $data['value'][] = '二级佣金' . $commission_data['second_commission'] . '元';
+                    }
+                    if (!empty($commission_data['third_commission']) && ($commission_data['commission_show_level'] > 2)) {
+                        $data['value'][] = '三级佣金' . $commission_data['third_commission'] . '元';
+                    }
+                    array_push($sale, $data);
+                    $data = [];
+                }
+            }
+        }
 
         //经销商提成
         $exist_team_dividend = app('plugins')->isEnabled('team-dividend');
@@ -1514,5 +1516,123 @@ class GoodsController extends GoodsApiController
 
         return $this->successJson('获取成功', $list);
     }
+    //增加获取满额优惠 设置接口 fixby-wk-getEnoughReduce 2020-11-14
+    public function getEnoughReduce(){
 
+        $enoug_reduce_list = Setting::get('enoughReduce');
+        return $this->successJson('获取成功', $enoug_reduce_list);
+
+    }
+
+    //未登录获取商品佣金接口 fixby-wk-getGoodsCommission 2020-11-16
+    public function getGoodsCommission()
+    {
+        $id = intval(\YunShop::request()->id);
+
+        $goods_model = \app\common\modules\shop\ShopConfig::current()->get('goods.models.commodity_classification');
+        $goods_model = new $goods_model;
+        //fixby-zhd-商品详情免登陆20201101
+        $member_id = \YunShop::app()->getMemberId();
+
+        if ($member_id) {
+            try {
+                $member = Member::current()->yzMember;
+            } catch (MemberNotLoginException  $e) {
+                if (\YunShop::request()->type == 1 || \YunShop::request()->type == 2) {
+                    return;
+                }
+
+                throw new MemberNotLoginException($e->getMessage());
+            }
+        }
+
+        $goodsModel = $goods_model->uniacid()
+            ->with([
+                'hasManyParams' => function ($query) {
+                    return $query->select('goods_id', 'title', 'value')->orderby('displayorder', 'asc');
+                },
+                'hasManySpecs' => function ($query) {
+                    return $query->select('id', 'goods_id', 'title', 'description');
+                },
+                'hasManyOptions' => function ($query) {
+                    return $query->select('id', 'goods_id', 'title', 'thumb', 'product_price', 'market_price', 'stock', 'specs', 'weight');
+                },
+                'hasManyDiscount' => function ($query) use ($member) {
+                    return $query->where('level_id', $member->level_id);
+                },
+                'hasOneBrand' => function ($query) {
+                    return $query->select('id', 'logo', 'name', 'desc');
+                },
+                'hasOneShare',
+                'hasOneGoodsDispatch',
+                'hasOnePrivilege',
+                'hasOneSale',
+                'hasOneGoodsCoupon',
+                'hasOneInvitePage',
+                'hasOneGoodsLimitBuy',
+                'hasOneGoodsVideo',
+            ])
+            ->find($id);
+        $goodsModel->vip_level_status;
+        $exist_commission = app('plugins')->isEnabled('commission');
+
+        if ($exist_commission) {
+
+            if($member){
+                $is_agent = $this->isValidateCommission($member);
+            }else{
+                $is_agent = true;
+            }
+
+            if ($is_agent) {
+
+                $commission_data = (new GoodsDetailService($goodsModel))->getGoodsDetailData();
+
+                if ($commission_data['commission_show'] == 1) {
+                    $data['name'] = '佣金';
+                    $data['key'] = 'commission';
+                    $data['type'] = 'array';
+
+                    if (!empty($commission_data['first_commission']) && ($commission_data['commission_show_level'] > 0)) {
+                        $data['value'][] = '一级佣金' . $commission_data['first_commission'] . '元';
+                    }
+                    if (!empty($commission_data['second_commission']) && ($commission_data['commission_show_level'] > 1)) {
+                        $data['value'][] = '二级佣金' . $commission_data['second_commission'] . '元';
+                    }
+                    if (!empty($commission_data['third_commission']) && ($commission_data['commission_show_level'] > 2)) {
+                        $data['value'][] = '三级佣金' . $commission_data['third_commission'] . '元';
+                    }
+
+                }
+
+            }
+        }
+        return $this->successJson('获取成功', $data);
+    }
+
+//购买时验证商品参数接口 fixby-wk-validateGoodsPrivilege 2020-11-16
+    public function validateGoodsPrivilege()
+    {
+
+        $this->validate([
+            'goods_id' => 'required|integer',
+            'option_id' => 'integer',
+            'total' => 'integer|min:1',
+        ]);
+
+        $goods_params = [
+            'goods_id' => request()->input('goods_id'),
+            'total' => request()->input('total'),
+            'option_id' => request()->input('option_id'),
+        ];
+
+        $result = new MemberCartCollection();
+
+        $result->push(MemberCartService::newMemberCart($goods_params));
+        $res = $result->validate();
+        if(!$res){
+            return $this->successJson('验证成功',$res);
+        }
+
+    }
 }
