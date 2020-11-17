@@ -84,12 +84,18 @@ class OrderGoodsCollection extends Collection
     public function hasNeedAddress()
     {
         $bool = $this->contains(function ($aOrderGoods) {
+            //fixby-zlt-need_address 2020-11-13 17:45
+            if($aOrderGoods->goods->type == 1){
+                return true;
+            }else{
+                return $aOrderGoods->goods->need_address != 1;
+            }
             // 包含不需要地址的商品
             //return $aOrderGoods->goods->need_address == 1;
             //todo 20190107 blank 修改 ：包含需要地址的商品按标准下单流程走
             return $aOrderGoods->goods->need_address != 1;
         });
 
-        return !$bool;
+        return $bool;
     }
 }

@@ -176,6 +176,12 @@ class Notice extends AbstractAPI
     {
         $params = array_merge($this->message, $data);
 
+        if(!empty($params['miniprogram'])){
+            array_walk($params['miniprogram'],function ($item, $key) use ($params) {
+                $params['miniprogram'][$key] = trim($item);
+            });
+        }
+
         foreach ($params as $key => $value) {
             if (in_array($key, $this->required, true) && empty($value) && empty($this->message[$key])) {
                 throw new InvalidArgumentException("Attribute '$key' can not be empty!");
