@@ -113,7 +113,7 @@ class ShareCouponController extends ApiController
     {
         $order_ids = explode('_', rtrim(\YunShop::request()->order_ids, '_'));
 
-        $log_model = ShoppingShareCouponLog::yiLog($order_ids)->paginate(15)->toArray();
+        $log_model = ShoppingShareCouponLog::yiLog($order_ids)->orderby('created_at','desc')->paginate(15)->toArray();
 
 
         $this->share_model->map(function ($model) {
