@@ -59,12 +59,11 @@ class TemplateMsgSendWechtJob implements ShouldQueue
     {
         $begin = time();
         Log::info('TemplateMsgSendWechtJob队列开始执行' . date('Y-m-d H:i:s', $begin));
-
-        //$ids = [125519,114685,129411,129419,125310, 129415, 114545]; ->whereIn('uid',$ids)
-            //查询公众号粉丝 发送模板消息
+        //查询公众号粉丝 发送模板消息
         $weid = intval($this->config['weid']);
+        Log::info('openid:' .json_encode($this->config['openid']));
 
-        DB::table('mc_mapping_fans')->where(['uniacid' => $weid, 'follow' => 1])
+        DB::table('mc_mapping_fans')->whereIn('openid', $this->config['openid'])->where(['uniacid' => $weid, 'follow' => 1])
             ->chunk(1000, function ($mapping_fans_list) {
 
                 foreach ($mapping_fans_list as $mapping_fans) {
