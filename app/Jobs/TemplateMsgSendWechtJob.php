@@ -61,9 +61,10 @@ class TemplateMsgSendWechtJob implements ShouldQueue
         Log::info('TemplateMsgSendWechtJob队列开始执行' . date('Y-m-d H:i:s', $begin));
         //查询公众号粉丝 发送模板消息
         $weid = intval($this->config['weid']);
+        $notify_notify = DB::table('qwx_notify_notify')->where('id', $this->config['openid'])->first();
+        $openid_arr = json_decode($notify_notify['openid_arr'],true);
 
-        $openid_arr = $this->config['openid'];
-        Log::info('openid:' .json_encode($openid_arr));
+        Log::info('openid:' . $notify_notify['openid_arr']);
         foreach ($openid_arr as $k => $openid){
             //$job = new SendTemplateMsgJob($this->config['type'], $this->config['options'], $this->config['template_id'], $this->config['notice_data'], $openid, '', $this->config['page']);
             //dispatch($job);
