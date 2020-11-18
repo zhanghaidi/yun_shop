@@ -39,7 +39,8 @@ class GoodsTrackingModel extends Model
             8 => 'App\backend\modules\tracking\models\AppletsliveRoom', //直播
             //9 =>'', //商城首页
             10 => 'App\backend\modules\tracking\models\DiagnosticServiceBanner', //活动海报/二维码banner
-            11 => 'App\backend\modules\tracking\models\DiagnosticServiceUser' //用户分享
+            11 => 'App\backend\modules\tracking\models\DiagnosticServiceUser', //用户分享
+            15 => 'App\backend\modules\coupon\models\Coupon'  //优惠券
         ];
         return $map[$value];
     }
@@ -235,6 +236,14 @@ class GoodsTrackingModel extends Model
             $value = 12;
         }elseif($value == '购物车'){
             $value = 13;
+        }elseif($value == '我的订单'){
+            $value = 14;
+        }elseif($value == '优惠券'){
+            $value = 15;
+        }elseif($value == '我的收藏'){
+            $value = 16;
+        }elseif($value == '未知'){
+            $value = 404;
         }
         return $value;
     }

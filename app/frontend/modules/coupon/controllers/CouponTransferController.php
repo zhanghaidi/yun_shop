@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\DB;
 class CouponTransferController extends ApiController
 {
     public $memberModel;
+    protected $ignoreAction = ['getCouponInfo'];
     protected $transferInfo = [];
 
     public function index()
@@ -170,13 +171,26 @@ class CouponTransferController extends ApiController
 
         $record_id = trim(\YunShop::request()->record_id);
 
-        if (!$this->getMemberInfo()) {
-            return  $this->transJson('未获取到会员信息');
-        }
-
         $_model = MemberCoupon::uniacid()->withTrashed()->where('id',$record_id)->with(['belongsToCoupon'])->first();
         if (!$_model) {
             return $this->transJson('未获取到该优惠券记录ID');
+        }
+
+        $this->transferInfo = DB::table('diagnostic_service_user')->select('ajy_uid as uid','nickname','avatar','avatarUrl')->where('ajy_uid',$_model->uid)->first();
+
+        $is_self = false;
+        if (!$this->getMemberInfo()) {
+            //return  $this->transJson('未获取到会员信息');
+            if($_model->lock_expire_time){
+                return $this->transJson('优惠券转让中', 1, $is_self,2, $_model->toArray());
+            }else if($_model->transfer_times){
+                $receive_coupon = MemberCoupon::uniacid()->where('trans_from', $record_id)->first()->toArray();
+                $receiver_info = DB::table('diagnostic_service_user')->select('ajy_uid as uid','nickname','avatar','avatarUrl')->where('ajy_uid',$receive_coupon['uid'])->first();
+                $receiver_info['receive_time'] = $receive_coupon['created_at'];
+                return $this->transJson('优惠券已经转让', 1, $is_self, 1, $_model->toArray(), $receiver_info);
+            }else {
+                return $this->transJson('优惠券转让已失效', 1, $is_self, 3, $_model->toArray());
+            }
         }
 
         //接收到的优惠券不允许再次转让
@@ -184,13 +198,9 @@ class CouponTransferController extends ApiController
             return $this->transJson('接收到的优惠券不能转让');
         }
 
-        if($this->memberModel->uid != $_model->uid){
-            $is_self = false;
-        }else{
+        if($this->memberModel->uid == $_model->uid){
             $is_self = true;
         }
-
-        $this->transferInfo = DB::table('diagnostic_service_user')->select('ajy_uid as uid','nickname','avatar','avatarUrl')->where('ajy_uid',$_model->uid)->first();
 
         if($is_self){
             if($_model->lock_expire_time){
@@ -263,6 +273,9 @@ class CouponTransferController extends ApiController
             $data['transfer_title'] = $set['transfer_title'];
             $data['transfer_desc'] = $set['transfer_desc'];
             $data['transfer_img'] = $set['transfer_img'];
+
+            $data['transfer_banner'] = $set['banner'];
+            $data['transfer_receive_banner'] = $set['receive_banner'];
         }
         return $this->successJson('获取成功', $data);
 

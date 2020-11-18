@@ -72,7 +72,7 @@ class ShareCouponController extends ApiController
             'set' => $this->set,
             'share_limit' => $share_limit,
             'coupon_num' => $this->share_model->sum('coupon_num'),
-            'coupon_total_money' => number_format($this->share_model->sum('coupon_money'),2),
+            'coupon_total_money' => number_format($this->share_model->sum('coupon_money'),2,'.',''),
         ];
         return $this->successJson('share', $data);
 
@@ -81,10 +81,11 @@ class ShareCouponController extends ApiController
     //领取页面
     public function receive()
     {
-
+        $is_sharer = false;
         foreach ($this->share_model as $model) {
 
             $result = ShareCouponService::fen($model);
+            $is_sharer = $model->member_id == \YunShop::app()->getMemberId();
 
             if ($result['state'] == 'YES' || $result['state'] == 'ER') {
                 break;
@@ -99,6 +100,7 @@ class ShareCouponController extends ApiController
         $data = [
             'set' =>  $this->set,
             'member_name' => $this->member->nickname?:$this->member->realname,
+            'is_sharer' => $is_sharer,
             'code' => $result['state'],
             'msg'  => $result['msg'],
             'coupon' =>  $this->handleCoupon($result['data']),
@@ -112,7 +114,7 @@ class ShareCouponController extends ApiController
     {
         $order_ids = explode('_', rtrim(\YunShop::request()->order_ids, '_'));
 
-        $log_model = ShoppingShareCouponLog::yiLog($order_ids)->paginate(15)->toArray();
+        $log_model = ShoppingShareCouponLog::yiLog($order_ids)->orderby('created_at','desc')->paginate(15)->toArray();
 
 
         $this->share_model->map(function ($model) {
@@ -239,6 +241,7 @@ class ShareCouponController extends ApiController
 
         $set = \Setting::get('coupon.shopping_share');
         array_set($set, 'banner', yz_tomedia($set['banner']));
+        array_set($set, 'receive_banner', yz_tomedia($set['receive_banner']));
         array_set($set, 'share_img', yz_tomedia($set['share_img']));
 
         $this->member = Member::with(['yzMember'])->find(\YunShop::app()->getMemberId());

@@ -42,6 +42,7 @@ class Trade extends BaseModel
         $this->discount_amount_items = $this->getDiscountAmountItems();
         $this->fee_items = $this->getFeeItems();
         $this->total_price = $this->orders->sum('price');
+        $this->total_preferential = sprintf('%.2f', round($this->amount_items[0]['amount'] + $this->amount_items[1]['amount'] - $this->total_price,2));
 
     }
 
