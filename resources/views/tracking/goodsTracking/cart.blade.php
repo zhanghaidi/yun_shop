@@ -238,7 +238,7 @@
                                 <td style="text-align: center;">{{ $list->id }}</td>
 
                                 <td style="text-align: center;">
-                                    <a href="{{yzWebUrl('tracking.goods-tracking.cart',array('search[realname]' => $list->user_id ))}}">
+                                    <a href="{{yzWebUrl('tracking.goods-tracking.cart',array('search[realname]' => $list->member_id ))}}">
                                         <img src='{{$list->user->avatarurl}}'
                                              style='width:30px;height:30px;padding:1px;border:1px solid #ccc'/><br/>
                                         {{ $list->user->nickname }}
@@ -256,7 +256,7 @@
                                 </td>
 
                                 <td style="text-align: center;">
-                                    @if($list->$option)
+                                    @if(!empty($list->option))
 
                                             <img src="{{yz_tomedia($list->option->thumb)}}" style='width:45px;height:45px;padding:1px;border:1px solid #ccc' />
                                             <br/>
@@ -265,12 +265,13 @@
                                             {{ $list->option->title }}
                                             <br/>
                                             {{ $list->option->product_price }}
-
+                                    @else
+                                        暂无规格
                                     @endif
 
                                 </td>
 
-                                <td style="text-align: center;">{{date('Y-m-d H:i:s', $list->created_at)}}</td>
+                                <td style="text-align: center;">{{$list->created_at}}</td>
 
                             </tr>
                         @endforeach
