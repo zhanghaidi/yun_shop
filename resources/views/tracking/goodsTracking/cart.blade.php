@@ -264,13 +264,13 @@
                                             <br/>
                                             {{ $list->option->title }}
                                             <br/>
-                                            {{ $list->goods->product_price }}
+                                            {{ $list->option->product_price }}
 
                                     @endif
 
                                 </td>
 
-                                <td style="text-align: center;">{{date('Y-m-d H:i:s', $list->create_time)}}</td>
+                                <td style="text-align: center;">{{date('Y-m-d H:i:s', $list->created_at)}}</td>
 
                             </tr>
                         @endforeach
