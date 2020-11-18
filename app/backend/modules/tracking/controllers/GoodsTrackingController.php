@@ -91,5 +91,4 @@ class GoodsTrackingController extends BaseController
         ])->render();
     }
 
-
 }
