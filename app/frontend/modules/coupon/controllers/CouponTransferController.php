@@ -276,7 +276,6 @@ class CouponTransferController extends ApiController
 
             $data['transfer_banner'] = $set['banner'];
             $data['transfer_receive_banner'] = $set['receive_banner'];
-
         }
         return $this->successJson('获取成功', $data);
 

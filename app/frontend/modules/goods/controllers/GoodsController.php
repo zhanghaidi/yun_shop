@@ -939,7 +939,7 @@ class GoodsController extends GoodsApiController
             $data = [];
         }
 
-        //佣金 fixBy-wk-20201005-注释掉  佣金暂时不显示 20201116 小支让打开注释 显示佣金
+        //佣金 fixBy-wk-20201005-注释掉   佣金暂时不显示
         $exist_commission = app('plugins')->isEnabled('commission');
         if ($exist_commission) {
             $is_agent = $this->isValidateCommission($member);
@@ -1516,7 +1516,6 @@ class GoodsController extends GoodsApiController
 
         return $this->successJson('获取成功', $list);
     }
-
     //增加获取满额优惠 设置接口 fixby-wk-getEnoughReduce 2020-11-14
     public function getEnoughReduce(){
 
