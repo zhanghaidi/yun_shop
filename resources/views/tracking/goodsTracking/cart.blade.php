@@ -8,7 +8,7 @@
         </div>
         <!-- 新增加右侧顶部三级菜单结束 -->
         <div class="panel panel-info">
-            <div class="panel-heading">记录筛选</div>
+            <div class="panel-heading">用户购物车记录筛选</div>
 
             <div class="panel-body">
                 <form action="" method="get" class="form-horizontal" role="form" id="form1">
