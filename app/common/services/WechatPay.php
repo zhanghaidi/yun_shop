@@ -55,6 +55,7 @@ class WechatPay extends Pay
         \Log::debug('-----pay_member_id-----'. \YunShop::app()->getMemberId().'---apptype=：'.$app_type.'---openid: '.$openid);
         //不同支付类型选择参数
         $pay = $this->payParams($payType);
+
         if (empty($pay['weixin_mchid']) || empty($pay['weixin_apisecret'])
             || empty($pay['weixin_appid']) || empty($pay['weixin_secret'])) {
 
