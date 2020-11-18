@@ -132,9 +132,10 @@ class DetailController extends BaseController
         $trade = \Setting::get('shop.trade');
 
         foreach ($order['hasManyOrderGoods'] as $key => $order_goods){
-            $order['hasManyOrderGoods'][$key]['goods_price'] = bcdiv($order_goods['goods_price'],$order_goods['total']);
-            $order['hasManyOrderGoods'][$key]['goods_market_price'] = bcdiv($order_goods['goods_market_price'],$order_goods['total']);
-            $order['hasManyOrderGoods'][$key]['goods_cost_price'] = bcdiv($order_goods['goods_cost_price'],$order_goods['total']);
+//            fixBy-wk-20201119 修复价格只显示整数问题
+            $order['hasManyOrderGoods'][$key]['goods_price'] = bcdiv($order_goods['goods_price'],$order_goods['total'],2);
+            $order['hasManyOrderGoods'][$key]['goods_market_price'] = bcdiv($order_goods['goods_market_price'],$order_goods['total'],2);
+            $order['hasManyOrderGoods'][$key]['goods_cost_price'] = bcdiv($order_goods['goods_cost_price'],$order_goods['total'],2);
         }
 
         $order = $order ? $order->toArray() : [];
