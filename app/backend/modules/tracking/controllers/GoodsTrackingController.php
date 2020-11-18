@@ -83,7 +83,7 @@ class GoodsTrackingController extends BaseController
         //dd($recordList);
         $pager = PaginationHelper::show($recordList->total(), $recordList->currentPage(), $recordList->perPage());
 
-        return view('tracking.goodsTracking.index', [
+        return view('tracking.goodsTracking.cart', [
             'pageList'    => $recordList,
             'page'          => $pager,
             'search'        => $search
