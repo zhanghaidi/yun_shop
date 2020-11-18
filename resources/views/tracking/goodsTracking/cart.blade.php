@@ -1,5 +1,5 @@
 @extends('layouts.base')
-@section('title','商品埋点列表')
+@section('title','用户购物车列表')
 
 @section('content')
     <div id="member-blade" class="rightlist">
@@ -16,7 +16,7 @@
                     <input type="hidden" name="a" value="entry"/>
                     <input type="hidden" name="m" value="yun_shop"/>
                     <input type="hidden" name="do" value="tracking" id="form_do"/>
-                    <input type="hidden" name="route" value="tracking.goods-tracking.index" id="route"/>
+                    <input type="hidden" name="route" value="tracking.goods-tracking.cart" id="route"/>
 
                     <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
                         <!-- <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">会员信息</label>-->
