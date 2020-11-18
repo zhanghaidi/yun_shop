@@ -1585,6 +1585,18 @@ class Menu
                                 'parents'    => ['Goods', 'goods_tracking',],
                                 'child'      => [],
                             ],
+                            'tracking_cart' => [
+                                'name'       => '购物车记录',
+                                'url'        => 'tracking.goods-tracking.cart',
+                                'url_params' => '',
+                                'permit'     => 1,
+                                'menu'       => 1,
+                                'icon'       => '',
+                                'sort'       => '2',
+                                'item'       => 'tracking_history',
+                                'parents'    => ['Goods', 'goods_tracking',],
+                                'child'      => [],
+                            ],
                         ],
                     ],
 
