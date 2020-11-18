@@ -51,7 +51,7 @@ class PreOrderDeduction extends OrderDeduction
      */
     private $usablePoint;
 
-    private $show;
+    protected $show;
 
     /**
      * @param Deduction $deduction
@@ -352,6 +352,14 @@ class PreOrderDeduction extends OrderDeduction
     }
 
     /**
+     * @return bool
+     */
+    public function getShowAttribute()
+    {
+        return false;
+    }
+
+    /**
      * 必须选中
      * @return bool
      */
@@ -368,9 +376,10 @@ class PreOrderDeduction extends OrderDeduction
     public function isChecked()
     {
         if (!isset($this->isChecked)) {
-            if($this->getMemberCoin()->getMaxUsableCoin()->getMoney() < $this->getMinDeduction()->getMoney()){
-                $this->isChecked = false;
-            }else{
+            if ($this->mustBeChecked()) {
+                // 必须选中
+                $this->isChecked = true;
+            } else {
                 // 用户选中
                 $deduction_codes = $this->order->getParams('deduction_ids');
 
@@ -384,30 +393,6 @@ class PreOrderDeduction extends OrderDeduction
             }
         }
         return $this->isChecked;
-    }
-
-    /**
-     * @return bool
-     */
-    public function getShowAttribute()
-    {
-        return $this->isShow();
-    }
-
-    /**
-     * 显示此抵扣
-     * @return bool
-     */
-    public function isShow()
-    {
-        if (!isset($this->show)) {
-            if($this->getMemberCoin()->getMaxUsableCoin()->getMoney() < $this->getMinDeduction()->getMoney()){
-                $this->show = false;
-            }else{
-                $this->show = true;
-            }
-        }
-        return $this->show;
     }
 
     /**
@@ -454,7 +439,7 @@ class PreOrderDeduction extends OrderDeduction
     {
         // 验证最低抵扣大于可用抵扣
         if ($this->getMemberCoin()->getMaxUsableCoin()->getMoney() < $this->getMinDeduction()->getMoney()) {
-            //throw new MinOrderDeductionNotEnough("会员[{$this->getName()}]抵扣余额可抵扣金额{$this->getMemberCoin()->getMaxUsableCoin()->getMoney()}元,不满足最低抵扣金额{$this->getMinDeduction()->getMoney()}元");
+            throw new MinOrderDeductionNotEnough("会员[{$this->getName()}]抵扣余额可抵扣金额{$this->getMemberCoin()->getMaxUsableCoin()->getMoney()}元,不满足最低抵扣金额{$this->getMinDeduction()->getMoney()}元");
         }
     }
 }
