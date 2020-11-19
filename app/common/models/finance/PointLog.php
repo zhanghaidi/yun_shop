@@ -10,6 +10,7 @@ namespace app\common\models\finance;
 
 
 use app\backend\modules\member\models\Member;
+use app\common\models\Order;
 use app\common\models\BaseModel;
 use app\common\observers\point\PointChangeObserver;
 use app\common\services\finance\PointService;
@@ -247,5 +248,20 @@ class PointLog extends BaseModel
                 break;
         }
         return $mode_attribute;
+    }
+
+    /**
+     * 获取订单编号
+     * @param PointLog $log
+     * @return string
+     */
+    public function getOrderSn(PointLog $log){
+        if($log->order_id){
+            return Order::where('id',$log->order_id)->first()->order_sn;
+        }
+        if(preg_match('/订单.*(SN\d+\w*)/',$log->remark,$match)){
+            return $match[1];
+        }
+        return '';
     }
 }
