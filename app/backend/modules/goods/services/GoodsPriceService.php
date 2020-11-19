@@ -67,33 +67,8 @@ class GoodsPriceService
             }else if($min_point_deduct > $val['price']){
                 return ['status' => -1, 'msg' => '积分最小抵扣金额大于商品现价'];
             }
-            if($this->point_deduct['point_deduct']){
-                if($max_point_deduct === ''){
-                    if($this->point_deduct['money_max'] > 0){
-                        $max_point_deduct = round(intval($this->point_deduct['money_max']) * $val['price'] /100 ,2);
-                    }
-                }else{
-                    if(preg_match('/(\d+)%/',$max_point_deduct,$match)){
-                        $max_point_deduct = round($val['price'] * $match[1] /100,2);
-                    }
-                }
+            $val['point_deduct'] = $this->calPointDeduct($val['price'],$max_point_deduct,$min_point_deduct);
 
-                if($min_point_deduct === ''){
-                    if($this->point_deduct['money_min'] > 0){
-                        $min_point_deduct = round(intval($this->point_deduct['money_min']) * $val['price'] /100 ,2);
-                    }
-                }else{
-                    if(preg_match('/(\d+)%/',$min_point_deduct,$match)){
-                        $min_point_deduct = round($val['price'] * $match[1] /100,2);
-                    }
-                }
-                $val['point_deduct'] = max(intval($max_point_deduct),intval($min_point_deduct));
-            }
-
-            if($this->request->widgets['sale']['ed_reduction'] > 0 && $val['price'] >= $this->request->widgets['sale']['ed_full'] ){ //计算单品满减
-                $val['reduction'] = $this->request->widgets['sale']['ed_reduction'];
-                $val['calc_price'] = round($val['calc_price'] - $this->request->widgets['sale']['ed_reduction'],2);
-            }
             $val['coupon_discount'] = $this->calCouponDiscount($this->request,$val['calc_price'],$val['coupon_info']);
             if($val['coupon_discount'] > 0)
                 $val['calc_price'] = round($val['calc_price'] - $val['coupon_discount'], 2);
@@ -125,32 +100,13 @@ class GoodsPriceService
             $val['discount'] = $discount;
             $val['final_price'] = $val['calc_price'];
 
-            /*if(!empty($this->request->widgets['sale']['max_point_deduct'])){  //计算积分抵扣
-                if(is_numeric($max_point_deduct)){
-                    $val['point_deduct'] = $max_point_deduct;
-                }else if(preg_match('/(\d+)%/',$max_point_deduct,$match)){
-                    if($match[1] > 100){
-                        return ['status' => -1, 'msg' => '积分最大抵扣比例超过100%'];;
-                    }
-                    $val['point_deduct'] = round($val['calc_price'] * $match[1] /100,2);
-                }
-            }elseif(!empty($this->request->widgets['sale']['min_point_deduct'])){
-                if(is_numeric($min_point_deduct)){
-                    $val['point_deduct'] = $min_point_deduct;
-                }else if(preg_match('/(\d+)%/',$min_point_deduct,$match)){
-                    if($match[1] > 100){
-                        return ['status' => -1, 'msg' => '积分最小抵扣比例超过100%'];;
-                    }
-                    $val['point_deduct'] = round($val['calc_price'] * $match[1] /100,2);
-                }
+            if($this->request->widgets['sale']['ed_reduction'] > 0 && $val['price'] >= $this->request->widgets['sale']['ed_full'] ){ //计算单品满减
+                $val['reduction'] = $this->request->widgets['sale']['ed_reduction'];
+                $val['calc_price'] = round($val['calc_price'] - $this->request->widgets['sale']['ed_reduction'],2);
             }
 
-            if($val['point_deduct'] > 0){
-                $val['calc_price'] = round($val['calc_price'] - $val['point_deduct'],2);
-                if($val['calc_price'] <= 0){
-                    return ['status' => -1, 'msg' => '积分抵扣金额过多'];
-                }
-            }*/
+            $val['enough_reduce'] = $this->calEnoughReduce($val['calc_price']);
+            $val['calc_price'] = round($val['calc_price'] - $val['enough_reduce'],2);
 
             //计算赠送余额
             $val['award_balance'] = 0;
@@ -173,19 +129,10 @@ class GoodsPriceService
             }
 
             //计算赠送积分
-            $val['point_amount'] = 0;
-            if(!empty($this->request->widgets['sale']['point'])){
-                $point = $this->request->widgets['sale']['point'];
-                if(is_numeric($point)){
-                    $val['point_amount'] = round($point * $this->point_deduct['money'],2);
-                }else if(preg_match('/(\d+)%/',$point,$match)){
-                    $point_give = round($val['calc_price'] * $match[1] /100);
-                    if($point_give > 0)
-                        $val['point_amount'] = round($point_give * $this->point_deduct['money'],2);
-                }
-                if($val['point_amount'])
-                    $val['final_price'] = round($val['final_price'] - $val['point_amount'], 2);
-            }
+            $val['point_amount'] = $this->calPointGive($val['calc_price']);
+
+            if($val['point_amount'])
+                $val['final_price'] = round($val['final_price'] - $val['point_amount'], 2);
 
             if($val['final_price'] <= 0){
                 return ['status' => -1, 'msg' => '赠送积分金额过多'];
@@ -273,7 +220,7 @@ class GoodsPriceService
             $val['total_discount_rate'] = $val['final_price'] > 0 ? round($val['final_price'] / $val['price'] * 10,2) : round($val['total_discount'] / $val['price'] * 10,2);
 
             $val['html'] = "<div style='padding-top: 10px;border-top: 1px solid #999;'>{$val['goods_title']}：</div><div style='padding-top: 8px;'>商品初始价格为：{$val['price']}元</div>
-<div style='padding-top: 8px;'>单品满额立减金额：{$val['reduction']}元</div><div style='padding-top: 8px;'>折扣金额：{$val['discount']}元</div><div style='padding-top: 8px;'>优惠券优惠金额：{$val['coupon_discount']}元</div>";
+<div style='padding-top: 8px;'>单品满额立减金额：{$val['reduction']}元</div><div style='padding-top: 8px;'>全场满额立减金额：{$val['enough_reduce']}元</div><div style='padding-top: 8px;'>折扣金额：{$val['discount']}元</div><div style='padding-top: 8px;'>优惠券优惠金额：{$val['coupon_discount']}元</div>";
             if($val['coupon_discount'] > 0)
                 $val['html'] .= "<div style='padding-top: 8px;'>{$val['coupon_info']}</div>";
             $val['html'] .= "<div style='padding-top: 8px;'>赠送余额金额：{$val['award_balance']}元</div><div style='padding-top: 8px;'>赠送积分金额：{$val['point_amount']}元</div><div style='padding-top: 8px;'>积分可抵扣金额：{$val['point_deduct']}元</div>";
@@ -401,6 +348,101 @@ class GoodsPriceService
 
         }
         return $max_coupon_discount;
+    }
+
+    /*
+     * 计算积分抵扣
+     */
+    protected function calPointDeduct($price,$max_point_deduct,$min_point_deduct){
+        $point_deduct = 0;
+        if($this->point_deduct['point_deduct']){
+            if($max_point_deduct === ''){
+                if($this->point_deduct['money_max'] > 0){
+                    $max_point_deduct = round(intval($this->point_deduct['money_max']) * $price /100 ,2);
+                }
+            }else{
+                if(preg_match('/(\d+)%/',$max_point_deduct,$match)){
+                    $max_point_deduct = round($price * $match[1] /100,2);
+                }
+            }
+
+            if($min_point_deduct === ''){
+                if($this->point_deduct['money_min'] > 0){
+                    $min_point_deduct = round(intval($this->point_deduct['money_min']) * $price /100 ,2);
+                }
+            }else{
+                if(preg_match('/(\d+)%/',$min_point_deduct,$match)){
+                    $min_point_deduct = round($price * $match[1] /100,2);
+                }
+            }
+            $point_deduct = max(intval($max_point_deduct),intval($min_point_deduct));
+        }
+        return $point_deduct;
+    }
+
+    /*
+     * 计算满额优惠
+     */
+    protected function calEnoughReduce($price){
+        $max_reduce = 0;
+        $setting = Setting::getByGroup('enoughReduce');
+        if($setting['open'] && !empty($setting['enoughReduce'])){
+            foreach ($setting['enoughReduce'] as $val){
+                if($price >= $val['enough'] && $val['reduce'] > $max_reduce){
+                    $max_reduce = $val['reduce'];
+                }
+            }
+        }
+        return $max_reduce;
+    }
+
+
+    /*
+     * 计算积分赠送
+     */
+    protected function calPointGive($price){
+        $point_give = $point_amount = 0;
+        if(!empty($this->request->widgets['sale']['point'])){
+            $point = $this->request->widgets['sale']['point'];
+            if(is_numeric($point)){
+                $point_give = $this->point_deduct['money'];
+            }else if(preg_match('/(\d+)%/',$point,$match)){
+                $point_give = round($price * $match[1] /100);
+            }
+        }elseif($this->request->widgets['sale']['point'] === ''){
+            if($this->point_deduct['give_point']){
+                if(is_numeric($this->point_deduct['give_point'])){
+                    $point_give = $this->point_deduct['give_point'];
+                }else if(preg_match('/(\d+)%/',$this->point_deduct['give_point'],$match)) {
+                    $point_give = round($price * $match[1] / 100);
+                }
+            }
+
+            $max_give = 0;
+            if(!empty($this->point_deduct['enough_money']) && $this->point_deduct['enough_money'] > 0 && $price >= $this->point_deduct['enough_money'] ){
+                $max_give = $this->point_deduct['enough_money'];
+            }
+
+            if(!empty($this->point_deduct['enoughs'])){
+                foreach ($this->point_deduct['enoughs'] as $v){
+                    if($price >= $v['enough'] && $v['give'] > $max_give){
+                        $max_give = $v['give'];
+                    }
+                }
+            }
+            if($max_give > 0){
+                if($this->point_deduct['point_award_type'] == 1){
+                    $point_give += round($price * $v['give'] / 100);
+                }else{
+                    $point_give += $max_give;
+                }
+            }
+        }
+
+        if($point_give > 0)
+            $point_amount = round($point_give * $this->point_deduct['money'],2);
+
+        return $point_amount;
     }
 
     /*
