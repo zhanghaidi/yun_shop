@@ -68,13 +68,13 @@ class SendTemplateMsgJob implements ShouldQueue
             try {
                 $app = new Application($this->config['options']);
                 $app = $app->notice;
-                $result = $app
-                    ->uses($this->config['template_id'])
-                    ->andData($this->config['notice_data'])
-                    ->andReceiver($this->config['openid'])
-                    ->andUrl($this->config['url'])
-                    ->send($miniprogram);
-                Log::info('发送模板消息成功:', ['config' => $this->config, 'result' => $result]);
+//                $result = $app
+//                    ->uses($this->config['template_id'])
+//                    ->andData($this->config['notice_data'])
+//                    ->andReceiver($this->config['openid'])
+//                    ->andUrl($this->config['url'])
+//                    ->send($miniprogram);
+                Log::info('发送模板消息成功:', ['config' => $this->config, 'result' => 'dev_test_ok']);
             } catch (HttpException $e) {
                 Log::info('发送模板消息失败:' . $e->getMessage());
             }

@@ -67,8 +67,8 @@ class TemplateMsgSendWechtJob implements ShouldQueue
         //Log::info('openid:' . $notify_notify['openid_arr']);
         foreach ($openid_arr as $k => $openid){
             $job = new SendTemplateMsgJob($this->config['type'], $this->config['options'], $this->config['template_id'], $this->config['notice_data'], $openid, '', $this->config['page']);
-            dispatch($job);
-            Log::info($k.' : '.$weid.' '.$openid);
+            $job_res = dispatch($job);
+            Log::info($k.' : '.$weid.' '.$openid.' '.$job_res);
         }
         /*DB::table('mc_mapping_fans')->whereIn('openid', $this->config['openid'])->where(['uniacid' => $weid, 'follow' => 1])
             ->chunk(1000, function ($mapping_fans_list) {
