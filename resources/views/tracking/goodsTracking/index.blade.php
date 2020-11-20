@@ -139,7 +139,7 @@
                                 <option value='15'
                                         @if($search['type_id']=='17')
                                         selected
-                                        @endif>我的足记
+                                        @endif>我的足迹
                                 </option>
                                 <option value='15'
                                         @if($search['type_id']=='18')
@@ -276,7 +276,7 @@
                                     @elseif ($list->type_id == 14) 我的订单
                                     @elseif ($list->type_id == 15) 优惠券
                                     @elseif ($list->type_id == 16) 我的收藏
-                                    @elseif ($list->type_id == 17) 我的足记
+                                    @elseif ($list->type_id == 17) 我的足迹
                                     @elseif ($list->type_id == 18) 店铺装修
                                     @elseif ($list->type_id == 404) 未知
                                     @endif
@@ -299,7 +299,7 @@
                                     @elseif ($list->type_id == 14) 我的订单ID
                                     @elseif ($list->type_id == 15) {{ $list->resource->name }}
                                     @elseif ($list->type_id == 16) 我的收藏
-                                    @elseif ($list->type_id == 17) 我的足记
+                                    @elseif ($list->type_id == 17) 我的足迹
                                     @elseif ($list->type_id == 18) 装修页面
                                     @elseif ($list->type_id == 404) 未知
                                     @endif
