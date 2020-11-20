@@ -65,7 +65,7 @@ class SendWeChatTplNoticeJob implements ShouldQueue
     private function getAccessToken()
     {
         //fixbyzhd-2020-10-29 改写小程序统一调用生产access_token
-        $url = "https://www.aijuyi.net/api/accesstoken.php?type=4&appid=%s&secret=%s";
+        $url = "https://www.aijuyi.net/api/accesstoken.php?type=1&appid=%s&secret=%s";
         $url = sprintf($url, $this->config['options']['app_id'], $this->config['options']['secret']);
         Log::info($url);
         $response = ihttp_request($url);
