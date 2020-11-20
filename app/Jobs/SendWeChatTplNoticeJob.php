@@ -6,13 +6,10 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use EasyWeChat\Foundation\Application;
-use EasyWeChat\Core\Exceptions\HttpException;
 use Illuminate\Support\Facades\App;
 
-class SendTemplateMsgJob implements ShouldQueue
+class SendWeChatTplNoticeJob implements ShouldQueue
 {
     use InteractsWithQueue, Queueable, SerializesModels;
 
@@ -22,27 +19,25 @@ class SendTemplateMsgJob implements ShouldQueue
     protected $config;
 
     /**
-     * SendTemplateMsgJob constructor.
-     * @param $type
+     * SendWeChatTplNoticeJob constructor.
+     * @param $openid
      * @param $options
      * @param $template_id
      * @param $notice_data
-     * @param $openid
      * @param string $url
-     * @param string $page
-     * @param bool $refresh_miniprogram_access_token
+     * @param $topcolor
+     * @param array $miniprogram
      */
-    public function __construct($type, $options, $template_id, $notice_data, $openid, $url = '', $page = '', $refresh_miniprogram_access_token = false)
+    public function __construct($openid, $options, $template_id, $notice_data, $url = '', $topcolor, $miniprogram = array())
     {
         $this->config = [
-            'type' => $type,
+            'openid' => $openid,
             'options' => $options,
             'template_id' => $template_id,
             'notice_data' => $notice_data,
-            'openid' => $openid,
             'url' => $url,
-            'page' => $page,
-            'refresh_miniprogram_access_token' => $refresh_miniprogram_access_token,
+            'topcolor' => $topcolor,
+            'miniprogram' => $miniprogram
         ];
     }
 
@@ -54,42 +49,13 @@ class SendTemplateMsgJob implements ShouldQueue
     public function handle()
     {
         $environment = App::environment();
-        Log::info('SendTemplateMsgJob environment:' . $environment);
 
-        if ($this->config['type'] == 'wechat') {
-            Log::info("------------------------ 发送公众号模板消息 BEGIN -------------------------------");
-            $miniprogram = [];
-            if ($this->config['page'] != '') {
-                $miniprogram = ['miniprogram' => [
-                    'appid' => 'wxcaa8acf49f845662', //小程序appid
-                    'pagepath' => $this->config['page'],
-                ]];
-            }
-            try {
-                $app = new Application($this->config['options']);
-                $app = $app->notice;
-                $result = $app
-                    ->uses($this->config['template_id'])
-                    ->andData($this->config['notice_data'])
-                    ->andReceiver($this->config['openid'])
-                    ->andUrl($this->config['url'])
-                    ->send($miniprogram);
-                Log::info('发送模板消息成功:', ['config' => $this->config, 'result' => $result]);
-            } catch (HttpException $e) {
-                Log::info('发送模板消息失败:' . $e->getMessage());
-            }
-            Log::info("------------------------ 发送公众号模板消息 END -------------------------------\n");
-        } elseif ($this->config['type'] == 'wxapp') {
-            Log::info("------------------------ 发送小程序订阅模板消息 BEGIN -------------------------------");
-            $template_id = $this->config['template_id'];
-            $notice_data = $this->config['notice_data'];
-            $openid = $this->config['openid'];
-            $page = $this->config['page'];
-            $this->sendMiniprogramSubscribeMsg($template_id, $notice_data, $openid, $page);
-            Log::info("------------------------ 发送小程序订阅模板消息 END -------------------------------\n");
-        } else {
-            Log::info('未知的任务:');
-        }
+        Log::info("-----SendWeChatTplNoticeJob". $environment ."-----发送公众号模板消息 ". $this->config['openid'] ." BEGIN-----" );
+
+        $this->sendTplNotice($this->config['openid'], $this->config['template_id'], $this->config['notice_data'], $this->config['url'], $this->config['topcolor'], $this->config['miniprogram']);
+
+        Log::info("------------------------ 发送公众号模板消息模板消息 END -------------------------------\n");
+
     }
 
     /**
@@ -104,35 +70,52 @@ class SendTemplateMsgJob implements ShouldQueue
         $url = sprintf($url, $this->config['options']['app_id'], $this->config['options']['secret']);
         $response = self::curl_get($url);
         $result = @json_decode($response, true);
-        //$res = ihttp_get($url);
-        //$content = @json_decode($res['content'],true);
         return $result['accesstoken'];
 
-        /*$cache_key = 'miniprogram_' . $this->config['options']['app_id'] . '_token';
-        $cache_val = Cache::get($cache_key);
-        if ($this->config['refresh_miniprogram_access_token']) {
-            $cache_val = null;
-        }
-        if (!$cache_val || $cache_val['expire_at'] <= time()) {
-            $url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s';
-            $url = sprintf($url, $this->config['options']['app_id'], $this->config['options']['secret']);
-            $response = self::curl_get($url);
-            $result = json_decode($response,true);
-            if (!is_array($result) || !array_key_exists('access_token', $result)) {
-                Log::error('小程序获取access_token失败:', [
-                    'url' => $url,
-                    'config' => $this->config,
-                    'result' => $result,
-                ]);
-                return false;
-            }
-            $cache_val = ['token' => $result['access_token'], 'expire_at' => strtotime('+80 minutes')];
-            Cache::put($cache_key, $cache_val);
-        }
-        return $cache_val['token'];*/
     }
 
+    //公众号模板消息发送接口
+    private function sendTplNotice($touser, $template_id, $postdata, $url = '', $topcolor = '#FF683F', $miniprogram = array('appid' => '', 'pagepath' => '')) {
 
+        if (empty($touser)) {
+            Log::info($touser."error：参数错误,粉丝openid不能为空");
+        }
+        if (empty($template_id)) {
+
+            Log::info("error：参数错误,模板标示不能为空");
+        }
+        if (empty($postdata) || !is_array($postdata)) {
+            Log::info($touser.'参数错误,请根据模板规则完善消息内容');
+        }
+        $token = $this->getMiniprogramAccessToken();
+        if (!$token) {
+            Log::info($touser.'token有误');
+        }
+
+        $data = array();
+        if (!empty($miniprogram['appid']) && !empty($miniprogram['pagepath'])) {
+            $data['miniprogram'] = $miniprogram;
+        }
+        $data['touser'] = $touser;
+        $data['template_id'] = trim($template_id);
+        $data['url'] = trim($url);
+        $data['topcolor'] = trim($topcolor);
+        $data['data'] = $postdata;
+        $data = json_encode($data);
+        $post_url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={$token}";
+        $response = ihttp_request($post_url, $data);
+        if (is_error($response)) {
+            Log::info($touser."error:访问公众平台接口失败, 错误: {$response['message']}");
+        }
+        $result = @json_decode($response['content'], true);
+        if (empty($result)) {
+            Log::info($touser."error:接口调用失败, 元数据: {$response['meta']}");
+        } elseif (!empty($result['errcode'])) {
+            Log::info($touser."error: 访问微信接口错误, 错误代码: {$result['errcode']}, 错误信息: {$result['errmsg']},信息详情：{$this->errorCode($result['errcode'])}");
+        }
+
+        return true;
+    }
 
     /**
      * 发送小程序订阅消息
@@ -187,6 +170,7 @@ class SendTemplateMsgJob implements ShouldQueue
      * @param array $params 参数数组
      * @return mixed
      */
+
     private function curl_post($url,array $params = array()){
         $data_string = json_encode($params);
         $ch = curl_init();
