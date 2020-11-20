@@ -66,7 +66,6 @@ class SendWeChatTplCreateJob implements ShouldQueue
 
         $end = time();
         $totalSecond = $end-$begin;
-        Log::info('SendWeChatTplCreateJob队列执行结束'.date('Y-m-d H:i:s',$end));
-        Log::info('SendWeChatTplCreateJob队列执行共花费了：'.$totalSecond.'秒');
+        Log::info('SendWeChatTplCreateJob队列执行结束'.date('Y-m-d H:i:s',$end).' /耗时 '.$totalSecond.'秒');
     }
 }

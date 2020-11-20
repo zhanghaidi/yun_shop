@@ -50,7 +50,7 @@ class SendWeChatTplNoticeJob implements ShouldQueue
     {
         $environment = App::environment();
 
-        Log::info("-----SendWeChatTplNoticeJob". $environment ."-----发送公众号模板消息 ". $this->config['openid'] ." BEGIN-----" );
+        Log::info("-----SendWeChatTplNoticeJob---". $environment ."---". $this->config['openid'] ."---发送公众号模板消息 "." BEGIN-----" );
 
         $this->sendTplNotice($this->config['openid'], $this->config['template_id'], $this->config['notice_data'], $this->config['url'], $this->config['topcolor'], $this->config['miniprogram']);
 
@@ -67,10 +67,10 @@ class SendWeChatTplNoticeJob implements ShouldQueue
         //fixbyzhd-2020-10-29 改写小程序统一调用生产access_token
         $url = "https://www.aijuyi.net/api/accesstoken.php?type=1&appid=%s&secret=%s";
         $url = sprintf($url, $this->config['options']['app_id'], $this->config['options']['secret']);
-        Log::info($url);
+        //Log::info($url);
         $response = ihttp_request($url);
         $result = @json_decode($response['content'], true);
-        Log::info($result);
+        //Log::info($result);
         return $result['accesstoken'];
 
     }
@@ -90,7 +90,7 @@ class SendWeChatTplNoticeJob implements ShouldQueue
         }
         $token = $this->getAccessToken();
         if (!$token) {
-            Log::info($touser.'token有误'.$token);
+            Log::info($touser.'access_token有误'.$token);
         }
 
         $data = array();
