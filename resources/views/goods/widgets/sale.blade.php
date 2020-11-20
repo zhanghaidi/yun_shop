@@ -128,17 +128,13 @@
     <div class="col-xs-12 col-sm-9 col-md-10">
         <div class='input-group col-md-3'>
             <span class="input-group-addon">最多抵扣</span>
-            <input type="text" name="widgets[sale][max_point_deduct]" value="{{ $item->max_point_deduct }}"
-                   class="form-control"/>
-            <span class="input-group-addon">元</span>
+            <input type="text" name="widgets[sale][max_point_deduct]" value="{{ $item->max_point_deduct }}" class="form-control"/>
         </div>
         <div class='input-group col-md-3'>
             <span class="input-group-addon">最少抵扣</span>
-            <input type="text" name="widgets[sale][min_point_deduct]" value="{{ $item->min_point_deduct }}"
-                   class="form-control"/>
-            <span class="input-group-addon">元</span>
+            <input type="text" name="widgets[sale][min_point_deduct]" value="{{ $item->min_point_deduct }}" class="form-control"/>
         </div>
-        <span class="help-block">抵扣金额不能大于商品现价<br>如果设置空，则采用积分统一设置<br>如果设置0，则不支持积分抵扣</span>
+        <span class="help-block">抵扣金额不能大于商品现价<br>如果设置空，则采用积分统一设置<br>如果设置0，则不支持积分抵扣<br><span style="color: red">如果设置为整数,则抵扣相应金额，如果设置为百分比，则按照百分比抵扣</span><br></span>
 
     </div>
 </div>

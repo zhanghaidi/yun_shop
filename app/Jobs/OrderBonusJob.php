@@ -64,7 +64,7 @@ class OrderBonusJob implements  ShouldQueue
         // 分红总和
         $sum = $build->sum($this->amountColumn);
         if ($sum == 0) {
-            return;
+            //return;
         }
 
         $undividend = 0;

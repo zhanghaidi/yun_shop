@@ -242,6 +242,10 @@ class GoodsTrackingModel extends Model
             $value = 15;
         }elseif($value == '我的收藏'){
             $value = 16;
+        }elseif($value == '我的足迹'){
+            $value = 17;
+        }elseif($value == '店铺装修'){
+            $value = 18;
         }elseif($value == '未知'){
             $value = 404;
         }
