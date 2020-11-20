@@ -222,7 +222,7 @@ class MemberAddressController extends ApiController
                 'province'  => request()->input('province', ''),
                 'city'      => request()->input('city', ''),
                 'district'  =>  request()->input('district', ''),
-                'address'   => \YunShop::request()->address
+                'address'   => trim(\YunShop::request()->address)
             );
             if(\Setting::get('shop.trade.is_street')){
                 $data['street'] = request()->input('street', '');
