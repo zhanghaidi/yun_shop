@@ -62,13 +62,14 @@ class SendWeChatTplNoticeJob implements ShouldQueue
      * 获取小程序access_token
      * @return bool|mixed|null
      */
-    private function getMiniprogramAccessToken()
+    private function getAccessToken()
     {
         //fixbyzhd-2020-10-29 改写小程序统一调用生产access_token
         $url = "https://www.aijuyi.net/api/accesstoken.php?type=4&appid=%s&secret=%s";
         $url = sprintf($url, $this->config['options']['app_id'], $this->config['options']['secret']);
-        $response = self::curl_get($url);
-        $result = @json_decode($response, true);
+        $response = ihttp_request($url);
+        $result = @json_decode($response['content'], true);
+
         return $result['accesstoken'];
 
     }
@@ -86,9 +87,9 @@ class SendWeChatTplNoticeJob implements ShouldQueue
         if (empty($postdata) || !is_array($postdata)) {
             Log::info($touser.'参数错误,请根据模板规则完善消息内容');
         }
-        $token = $this->getMiniprogramAccessToken();
+        $token = $this->getAccessToken();
         if (!$token) {
-            Log::info($touser.'token有误');
+            Log::info($touser.'token有误'.$token);
         }
 
         $data = array();
@@ -163,49 +164,4 @@ class SendWeChatTplNoticeJob implements ShouldQueue
         return $result;
     }
 
-    /**
-     * PHP 处理 post数据请求
-     * @param $url 请求地址
-     * @param array $params 参数数组
-     * @return mixed
-     */
-
-    private function curl_post($url,array $params = array()){
-        $data_string = json_encode($params);
-        $ch = curl_init();
-        curl_setopt($ch,CURLOPT_URL,$url);
-        curl_setopt($ch,CURLOPT_HEADER,0);
-        curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
-        curl_setopt($ch,CURLOPT_CONNECTTIMEOUT,10);
-        curl_setopt($ch,CURLOPT_POST,1);
-        curl_setopt($ch,CURLOPT_SSL_VERIFYPEER,false);
-        curl_setopt($ch,CURLOPT_POSTFIELDS,$data_string);
-        curl_setopt($ch,CURLOPT_HTTPHEADER,
-            array(
-                'Content-Type: application/json'
-            )
-        );
-        $data = curl_exec($ch);
-        curl_close($ch);
-        return ($data);
-    }
-
-    /**
-     * @param string $url get请求地址
-     * @param int $httpCode 返回状态码
-     * @return mixed
-     */
-    private function curl_get($url,&$httpCode = 0){
-        $ch = curl_init();
-        curl_setopt($ch,CURLOPT_URL,$url);
-        curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
-
-        //不做证书校验，部署在linux环境下请改位true
-        curl_setopt($ch,CURLOPT_SSL_VERIFYPEER,false);
-        curl_setopt($ch,CURLOPT_CONNECTTIMEOUT,10);
-        $file_contents = curl_exec($ch);
-        $httpCode = curl_getinfo($ch,CURLINFO_HTTP_CODE);
-        curl_close($ch);
-        return $file_contents;
-    }
 }
