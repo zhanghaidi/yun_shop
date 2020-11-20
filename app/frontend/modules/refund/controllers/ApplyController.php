@@ -129,6 +129,20 @@ class ApplyController extends ApiController
         //通知买家
         RefundMessageService::applyRefundNotice($refundApply);
         RefundMessageService::applyRefundNoticeBuyer($refundApply);
+        // fixby-wk- 小程序用户退款申请 订单推送 未推送到聚水潭 自动退款审核完成
+        if($order->jushuitan_status == 0 && $order->status == 1){
+
+            //订单未推送到聚水潭 并且 是代发货状态 审核自动通话
+            $refundPay = new PayController();
+            $refundResult = $refundPay->index($order->refund_id);
+
+            if($refundResult){
+                return $this->successJson('自动审核成功', $refundApply->toArray());
+            }else{
+                return $this->errorJson('自动审核失败', $refundApply->toArray());
+            }
+
+        }
         return $this->successJson('成功', $refundApply->toArray());
     }
 
