@@ -61,7 +61,7 @@ class SendWeChatTplCreateJob implements ShouldQueue
         foreach ($openid_arr as $k => $openid){
             $job = new SendWeChatTplNoticeJob($this->config['openid'], $this->config['options'], $this->config['template_id'], $this->config['notice_data'], $this->config['url'], $this->config['topcolor'], $this->config['miniprogram']);
             $job_dispatch = dispatch($job);
-            Log::info($k.' : '.$weid.' '.$openid.' '. $job_dispatch);
+            Log::info('JobID:'.$job_dispatch.' : '.$k.' : '.$weid.' '.$openid);
         }
 
         $end = time();

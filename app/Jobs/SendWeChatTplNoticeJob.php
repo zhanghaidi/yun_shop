@@ -66,7 +66,6 @@ class SendWeChatTplNoticeJob implements ShouldQueue
     {
         //fixbyzhd-2020-10-29 改写小程序统一调用生产access_token
         $url = "https://www.aijuyi.net/api/accesstoken.php?type=4&appid=%s&secret=%s";
-        Log::debug('app/jobs/SendTemplateMsgJob:'.$url);
         $url = sprintf($url, $this->config['options']['app_id'], $this->config['options']['secret']);
         $response = self::curl_get($url);
         $result = @json_decode($response, true);
@@ -111,7 +110,7 @@ class SendWeChatTplNoticeJob implements ShouldQueue
         if (empty($result)) {
             Log::info($touser."error:接口调用失败, 元数据: {$response['meta']}");
         } elseif (!empty($result['errcode'])) {
-            Log::info($touser."error: 访问微信接口错误, 错误代码: {$result['errcode']}, 错误信息: {$result['errmsg']},信息详情：{$this->errorCode($result['errcode'])}");
+            Log::info($touser."error: 访问微信接口错误, 错误代码: {$result['errcode']}, 错误信息: {$result['errmsg']},信息详情：{$result['errcode']}");
         }
 
         return true;
