@@ -149,7 +149,7 @@ class OrderCreatedListener
             //获取佣金 计算金额 计算公式 佣金比例 分销订单商品等数据
             $commission = CommissionOrderService::getCommission($this->order, $agent['agent'], $this->set);
 
-            if ($commission['commission'] > 0) {
+            if (1 || $commission['commission'] > 0) {
                 $this->addCommissionOrder($commission, $agent, $hierarchy, $level);
             } else {
                 \Log::debug('订单分销没有佣金'.$order_id,print_r($agent,true));

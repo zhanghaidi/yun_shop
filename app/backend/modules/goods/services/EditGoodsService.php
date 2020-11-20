@@ -111,6 +111,29 @@ class EditGoodsService
                 return ['status' => -1, 'msg' => '积分抵扣金额大于商品现价'];
             }
 */
+
+            if (!empty($this->request->widgets['sale']['max_point_deduct']) && !empty($goods_data['price'])) {
+                $max_point_deduct = $this->request->widgets['sale']['max_point_deduct'];
+                if (preg_match('/(\d+)%/',$max_point_deduct,$match)) {
+                    if($match[1] > 100){
+                        return ['status' => -1, 'msg' => '积分最大抵扣比例超过100%'];
+                    }
+                }elseif($max_point_deduct > $goods_data['price']){
+                    return ['status' => -1, 'msg' => '积分最大抵扣金额大于商品现价'];
+                }
+            }
+
+            if (!empty($this->request->widgets['sale']['min_point_deduct']) && !empty($goods_data['price'])) {
+                $min_point_deduct = $this->request->widgets['sale']['min_point_deduct'];
+                if (preg_match('/(\d+)%/',$min_point_deduct,$match)) {
+                    if($match[1] > 100){
+                        return ['status' => -1, 'msg' => '积分最小抵扣比例超过100%'];
+                    }
+                }elseif($min_point_deduct > $goods_data['price']){
+                    return ['status' => -1, 'msg' => '积分最小抵扣金额大于商品现价'];
+                }
+            }
+
             $goods_data['price'] = $goods_data['price'] ?: 0;
             $goods_data['market_price'] = $goods_data['market_price'] ?: 0;
             $goods_data['cost_price'] = $goods_data['cost_price'] ?: 0;
