@@ -131,6 +131,21 @@
                                         selected
                                         @endif>优惠券
                                 </option>
+                                <option value='16'
+                                        @if($search['type_id']=='16')
+                                        selected
+                                        @endif>我的收藏
+                                </option>
+                                <option value='15'
+                                        @if($search['type_id']=='17')
+                                        selected
+                                        @endif>我的足记
+                                </option>
+                                <option value='15'
+                                        @if($search['type_id']=='18')
+                                        selected
+                                        @endif>店铺装修
+                                </option>
                                 <option value='13'
                                         @if($search['type_id']=='404')
                                         selected
@@ -226,6 +241,7 @@
                         <thead class="navbar-inner">
                         <tr>
                             <th style='width:6%; text-align: center;'>主键ID</th>
+                            <th style='width:6%; text-align: center;'>小程序版本</th>
                             <th style='width:6%; text-align: center;'>上级页面</th>
                             <th style='width:12%; text-align: center;'>来源类型</th>
                             <th style='width:12%; text-align: center;'>所属资源</th>
@@ -241,6 +257,7 @@
                         @foreach($pageList as $list)
                             <tr>
                                 <td style="text-align: center;">{{ $list->id }}</td>
+                                <td style="text-align: center;">{{ $list->app_verison }}</td>
                                 <td style="text-align: center;" title="{{ $list->parent_page }}">{{ $list->parent_page }}</td>
                                 <td style="text-align: center;">
                                     @if($list->type_id == 1) 穴位
@@ -259,6 +276,8 @@
                                     @elseif ($list->type_id == 14) 我的订单
                                     @elseif ($list->type_id == 15) 优惠券
                                     @elseif ($list->type_id == 16) 我的收藏
+                                    @elseif ($list->type_id == 17) 我的足记
+                                    @elseif ($list->type_id == 18) 店铺装修
                                     @elseif ($list->type_id == 404) 未知
                                     @endif
                                 </td>
@@ -279,7 +298,9 @@
                                     @elseif ($list->type_id == 13) @if ($list->resource_id ==1) 悬浮购物车 @elseif ($list->resource_id ==2)商品详情购物车 @elseif ($list->resource_id ==3)全局搜索页悬浮购物车 @elseif ($list->resource_id ==4)商品搜索页悬浮购物车 @endif
                                     @elseif ($list->type_id == 14) 我的订单ID
                                     @elseif ($list->type_id == 15) {{ $list->resource->name }}
-                                    @elseif ($list->type_id == 16) 我的收藏商品ID
+                                    @elseif ($list->type_id == 16) 我的收藏
+                                    @elseif ($list->type_id == 17) 我的足记
+                                    @elseif ($list->type_id == 18) 装修页面
                                     @elseif ($list->type_id == 404) 未知
                                     @endif
                                 </td>
