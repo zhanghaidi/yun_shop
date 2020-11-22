@@ -181,6 +181,9 @@ class PointService
     const POINT_INCOME_WITHDRAW_AWARD = 47;
     const POINT_INCOME_WITHDRAW_AWARD_ATTACHED = '收入提现奖励';
 
+    const POINT_GIVE_BACK = 48;
+    const POINT_GIVE_BACK_ATTACHED = '赠送积分回收';
+
     const POINT = 0;
 
     public $point_data = array();
@@ -236,6 +239,7 @@ class PointService
         if ($this->point_data['point_income_type'] == self::POINT_INCOME_LOSE) {
             $point = floor(abs($this->point_data['point']) * 100) / 100;
         }
+        \Log::debug("changePoint point:{$point}");
         if ($point < 0.01) {
             return false;
         }
@@ -362,8 +366,15 @@ class PointService
         $this->point_data['before_point'] = $this->member_point;
         $this->member_point += $this->point_data['point'];
         if ($this->member_point < PointService::POINT) {
-            throw new ShopException('积分不足!!!');
-            //$this->member_point = PointService::POINT;
+            if($this->point_data['point_mode'] == self::POINT_GIVE_BACK){
+                \Log::debug("getAfterPoint 积分置为0，order_id:" . $this->point_data['order_id']);
+                $this->member_point = 0;
+            }else{
+                \Log::debug("getAfterPoint 积分不足，order_id:" . $this->point_data['order_id']);
+                throw new ShopException('积分不足!!!');
+                //$this->member_point = PointService::POINT;
+            }
+
         }
         $this->point_data['after_point'] = round($this->member_point, 2);
     }
@@ -528,6 +539,9 @@ class PointService
                 break;
             case (47):
                 $mode_attribute = self::POINT_INCOME_WITHDRAW_AWARD_ATTACHED;
+                break;
+            case (48):
+                $mode_attribute = self::POINT_GIVE_BACK_ATTACHED;
                 break;
         }
         return $mode_attribute;
