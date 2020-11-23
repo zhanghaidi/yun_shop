@@ -184,6 +184,9 @@ class PointService
     const POINT_GIVE_BACK = 48;
     const POINT_GIVE_BACK_ATTACHED = '赠送积分回收';
 
+    const POINT_GIVE_BACK_UNENOUGH = 49;
+    const POINT_GIVE_BACK_UNENOUGH_ATTACHED = '赠送积分回收不足';
+
     const POINT = 0;
 
     public $point_data = array();
@@ -368,6 +371,8 @@ class PointService
         if ($this->member_point < PointService::POINT) {
             if($this->point_data['point_mode'] == self::POINT_GIVE_BACK){
                 \Log::debug("getAfterPoint 积分置为0，order_id:" . $this->point_data['order_id']);
+                $this->point_data['point_mode'] = self::POINT_GIVE_BACK_UNENOUGH;
+                $this->point_data['remark'] .= "，用户积分扣除后为{$this->member_point}，清空用户积分";
                 $this->member_point = 0;
             }else{
                 \Log::debug("getAfterPoint 积分不足，order_id:" . $this->point_data['order_id']);
@@ -542,6 +547,9 @@ class PointService
                 break;
             case (48):
                 $mode_attribute = self::POINT_GIVE_BACK_ATTACHED;
+                break;
+            case (49):
+                $mode_attribute = self::POINT_GIVE_BACK_UNENOUGH_ATTACHED;
                 break;
         }
         return $mode_attribute;

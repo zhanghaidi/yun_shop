@@ -249,6 +249,9 @@ class PointLog extends BaseModel
             case (48):
                 $mode_attribute = PointService::POINT_GIVE_BACK_ATTACHED;
                 break;
+            case (49):
+                $mode_attribute = PointService::POINT_GIVE_BACK_UNENOUGH_ATTACHED;
+                break;
         }
         return $mode_attribute;
     }
