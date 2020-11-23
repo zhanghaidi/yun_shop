@@ -115,6 +115,9 @@ class SendWeChatTplNoticeJob implements ShouldQueue
             Log::info($touser."error: 访问微信接口错误, 错误代码: {$result['errcode']}, 错误信息: {$result['errmsg']},信息详情：{$result['errcode']}");
         }
 
+        DB::table('qwx_notify_send_list')->insert(['openid' => $touser,'status_content' => json_encode($result),'createtime' => date('Y-m-d H:i:s')]);
+
+        Log::info(json_encode($result));
         return true;
     }
 
