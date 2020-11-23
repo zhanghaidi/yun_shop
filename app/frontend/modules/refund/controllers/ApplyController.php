@@ -136,10 +136,10 @@ class ApplyController extends ApiController
             $refundPay = new PayController();
             $refundResult = $refundPay->index($order->refund_id);
 
-            if($refundResult){
+            if($refundResult["result"]){
                 return $this->successJson('自动审核成功', $refundApply->toArray());
             }else{
-                return $this->errorJson('自动审核失败', $refundApply->toArray());
+                return $this->errorJson($refundResult['msg'], $refundApply->toArray());
             }
 
         }

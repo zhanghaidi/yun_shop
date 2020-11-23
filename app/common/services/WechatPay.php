@@ -366,8 +366,8 @@ class WechatPay extends Pay
             $pay = [
                 'weixin_mchid' => $min_set['mchid'],
                 'weixin_apisecret' => $min_set['api_secret'],
-                'weixin_cert' => '',
-                'weixin_key' => ''
+                'weixin_cert' => $min_set['apiclient_cert'],
+                'weixin_key' => $min_set['apiclient_key']
             ];
             $app_type = \YunShop::request()->app_type;
             if($app_type == 'shop'){
