@@ -119,7 +119,7 @@ class OpenController extends BaseController
         foreach ($notify_son as $queue){
             $job = new SendWeChatTplCreateJob($input['weid'], $queue, $options, $input['template_id'], $input['notice_data'],  $input['url'], $input['topcolor'], $input['miniprogram']);
             $dispatch = dispatch($job);
-            Log::info("open方法创建队列完成:". $dispatch . ' '. $queue);
+            Log::info("open方法创建队列完成:". $dispatch . ' '. json_encode($queue));
         }
 
         if($dispatch){
