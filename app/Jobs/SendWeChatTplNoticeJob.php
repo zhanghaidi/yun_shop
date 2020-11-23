@@ -114,7 +114,7 @@ class SendWeChatTplNoticeJob implements ShouldQueue
         } elseif (!empty($result['errcode'])) {
             Log::info($touser."error: 访问微信接口错误, 错误代码: {$result['errcode']}, 错误信息: {$result['errmsg']},信息详情：{$result['errcode']}");
         }
-
+        Log::info($result);
         return true;
     }
 
