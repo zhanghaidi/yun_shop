@@ -6,7 +6,7 @@ use app\Jobs\SendTemplateMsgJob;
 use Illuminate\Support\Facades\DB;
 use app\common\components\BaseController;
 use app\common\models\AccountWechats;
-use app\Jobs\TemplateMsgSendWechtJob;
+use app\Jobs\SendWeChatTplCreateJob;
 use Illuminate\Support\Facades\Log;
 use app\Jobs\DispatchesJobs;
 
@@ -24,7 +24,7 @@ class OpenController extends BaseController
     private function checkAccess($api_key)
     {
         $access = [
-            'jiqshi' => '7PMDEkyGvdoD5o3vHmvxVMWV0UEiYprm',
+            'jiushi' => '7PMDEkyGvdoD5o3vHmvxVMWV0UEiYprm',
             'ajy_service' => '6rj2ah0KsoZxS1Ks9blzt996rOe8fiys',
         ];
         if (!in_array($api_key, array_values($access))) {
@@ -114,10 +114,16 @@ class OpenController extends BaseController
             return $this->errorJson('缺少参数');
         }
         //触发 发送公众号模板消息队列
-        $job = new TemplateMsgSendWechtJob(1, $options, $input['template_id'], $input['notice_data'], $input['openid'], $url='', $input['page'], $rmat =false);
-        $dispatch = dispatch($job);
 
-        return $this->successJson('ok', ['input' => $input, 'job' => $job, 'dispatcht' => $dispatch]);
+        $job = new SendWeChatTplCreateJob($input['weid'], $input['openid'], $options, $input['template_id'], $input['notice_data'],  $input['url'], $input['topcolor'], $input['miniprogram']);
+        $dispatch = dispatch($job);
+        Log::info("open方法添加队列:". $dispatch . ' '. $input['openid']);
+        if($dispatch){
+            return $this->successJson('ok', ['input' => $input, 'job' => $job, 'dispatcht' => $dispatch]);
+        }else{
+            return $this->errorJson('添加队列失败');
+        }
+
 
     }
 }

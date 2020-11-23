@@ -93,7 +93,7 @@ class MessageService
 
             $log_data = [
                 'uniacid' => $uniacid,
-                'member_id' => $memberModel->hasOneFans->uid,
+                'member_id' => intval($memberModel->hasOneFans->uid),
                 'template_id' => $template_id,
                 'openid' => $memberModel->hasOneFans->openid,
                 'message' => json_encode($send_msg,320),

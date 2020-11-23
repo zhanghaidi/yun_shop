@@ -57,7 +57,7 @@
         var numerictype = /^(0|[1-9]\d*)$/; //整数验证
         var thumb = /\.(gif|jpg|jpeg|png|GIF|JPG|PNG)$/;
         var datetime = /(\d{2}|\d{4})(?:\-)?([0]{1}\d{1}|[1]{1}[0-2]{1})(?:\-)?([0-2]{1}\d{1}|[3]{1}[0-1]{1})(?:\s)?([0-1]{1}\d{1}|[2]{1}[0-3]{1})(?::)?([0-5]{1}\d{1})(?::)?([0-5]{1}\d{1})/;
-        
+        var isReal = $('input:radio[name="goods[type]"]:checked').val() == 1 ? true : false;
         /*
         *update date 2017/12/20 16:44
         *添加排序的验证
@@ -132,9 +132,9 @@
                 $('#myTab a[href="#tab_basic"]').tab('show');
                 Tip.focus(':input[name="goods[price]"]', '价格格式错误,最多两位小数.');
                 return false;
-            }else if(parseFloat($(':input[name="goods[price]"]').val()) <=0 ){
+            }else if((isReal && parseFloat($(':input[name="goods[price]"]').val()) <= 0) || (!isReal && parseFloat($(':input[name="goods[price]"]').val()) < 0) ){
                 $('#myTab a[href="#tab_basic"]').tab('show');
-                Tip.focus(':input[name="goods[price]"]', '价格必须大于0.');
+                Tip.focus(':input[name="goods[price]"]',isReal ? '价格必须大于0.' : '价格必须不小于0.');
                 return false;
             }
         }
@@ -500,27 +500,31 @@
             return false;
         }
 
-        //增加分销价格计算确认 fixby-zlt-calcgoodsprice 2020-09-21 18:15
-        $.post("{!! yzWebUrl('goods.goods.calculation-goods-price',['id'=>$goods->id]) !!}"
-            , $('form').serialize()
-            , function (resp) {
-                if (resp.result == 1) {
-                    $('#module-prices').html(resp.data.html)
-                    if(resp.data.can_sub){
-                        $('#module-prices-submit').attr('disabled',false);
+        if(isReal){
+            //增加分销价格计算确认 fixby-zlt-calcgoodsprice 2020-09-21 18:15
+            $.post("{!! yzWebUrl('goods.goods.calculation-goods-price',['id'=>$goods->id]) !!}"
+                , $('form').serialize()
+                , function (resp) {
+                    if (resp.result == 1) {
+                        $('#module-prices').html(resp.data.html)
+                        if(resp.data.can_sub){
+                            $('#module-prices-submit').attr('disabled',false);
+                        }else{
+                            $('#module-prices-submit').attr('disabled',true);
+                        }
+                        $('#modal-module-goods-price').on('shown.bs.modal', function() {
+                            $('#module-prices').scrollTop(0)
+                        })
+                        $('#modal-module-goods-price').modal()
                     }else{
-                        $('#module-prices-submit').attr('disabled',true);
+                        alert(resp.msg)
                     }
-                    $('#modal-module-goods-price').on('shown.bs.modal', function() {
-                        $('#module-prices').scrollTop(0)
-                    })
-                    $('#modal-module-goods-price').modal()
-                }else{
-                    alert(resp.msg)
                 }
-            }
-            , "json"
-        );
+                , "json"
+            );
+        }else{
+            $('#goods-edit').submit()
+        }
 
         return true;
 

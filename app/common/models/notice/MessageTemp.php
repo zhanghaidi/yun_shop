@@ -91,9 +91,11 @@ class MessageTemp extends BaseModel
         //fixby-zlt-sel_h5_mini 2020-10-11 增加网页链接和小程序选择设置
         if($data['sel_h5_mini'] == 1){
             $data['news_link'] = '';
+            $data['pagepath'] = trim($data['pagepath']);
         }else{
             $data['appid'] = '';
             $data['pagepath'] = '';
+            $data['news_link'] = trim($data['news_link']);
         }
         unset($data['sel_h5_mini']);
 

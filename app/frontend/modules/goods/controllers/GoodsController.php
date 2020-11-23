@@ -939,25 +939,25 @@ class GoodsController extends GoodsApiController
             $data = [];
         }
 
-        //佣金 fixBy-wk-20201005-注释掉  佣金暂时不显示 20201116 小支让打开注释 显示佣金
+        //佣金 fixBy-wk-20201005-注释掉   佣金暂时不显示
         $exist_commission = app('plugins')->isEnabled('commission');
         if ($exist_commission) {
             $is_agent = $this->isValidateCommission($member);
             if ($is_agent) {
                 $commission_data = (new GoodsDetailService($goodsModel))->getGoodsDetailData();
                 if ($commission_data['commission_show'] == 1) {
-                    $data['name'] = '佣金';
+                    $data['name'] = '分享可赚';
                     $data['key'] = 'commission';
                     $data['type'] = 'array';
 
                     if (!empty($commission_data['first_commission']) && ($commission_data['commission_show_level'] > 0)) {
-                        $data['value'][] = '一级佣金' . $commission_data['first_commission'] . '元';
+                        $data['value'][] = '一级分享可赚' . $commission_data['first_commission'] . '元';
                     }
                     if (!empty($commission_data['second_commission']) && ($commission_data['commission_show_level'] > 1)) {
-                        $data['value'][] = '二级佣金' . $commission_data['second_commission'] . '元';
+                        $data['value'][] = '二级分享可赚' . $commission_data['second_commission'] . '元';
                     }
                     if (!empty($commission_data['third_commission']) && ($commission_data['commission_show_level'] > 2)) {
-                        $data['value'][] = '三级佣金' . $commission_data['third_commission'] . '元';
+                        $data['value'][] = '三级分享可赚' . $commission_data['third_commission'] . '元';
                     }
                     array_push($sale, $data);
                     $data = [];
@@ -1516,7 +1516,6 @@ class GoodsController extends GoodsApiController
 
         return $this->successJson('获取成功', $list);
     }
-
     //增加获取满额优惠 设置接口 fixby-wk-getEnoughReduce 2020-11-14
     public function getEnoughReduce(){
 

@@ -140,4 +140,9 @@ class Coupon extends \app\common\models\Coupon
         return static::find($couponId)->delete();
     }
 
+    //多态关联埋点
+    public function resource(){
+        return $this->morphOne('App\backend\modules\tracking\models\GoodsTrackingModel','resource');
+    }
+
 }

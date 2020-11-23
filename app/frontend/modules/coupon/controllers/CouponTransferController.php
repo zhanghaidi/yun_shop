@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\DB;
 class CouponTransferController extends ApiController
 {
     public $memberModel;
+    protected $ignoreAction = ['getCouponInfo'];
     protected $transferInfo = [];
 
     public function index()
@@ -113,53 +114,53 @@ class CouponTransferController extends ApiController
     {
 
         if (!$this->getMemberInfo()) {
-            return  $this->errorJson('未获取到会员信息');
+            return  $this->errorJson('未获取到会员信息',null);
         }
 
         $record_id = trim(\YunShop::request()->record_id);
         $_model = MemberCoupon::select('id','coupon_id', 'uid', 'lock_expire_time', 'get_time')->where('id',$record_id)->with(['belongsToCoupon'])->first();
         if (!$_model) {
-            return $this->errorJson('未获取到该优惠券记录ID');
+            return $this->errorJson('未获取到该优惠券记录ID',null);
         }
 
         if($_model->used){
-            return $this->errorJson('优惠券已经被使用');
+            return $this->errorJson('优惠券已经被使用',null);
         }
 
         if(!$_model->lock_expire_time){
-            return $this->errorJson('该优惠券已经自动取消转让');
+            return $this->errorJson('该优惠券已经自动取消转让',null);
         }
 
         if ($this->memberModel->uid == $_model->uid) {
-            return  $this->errorJson('接收者不能是自己');
+            return  $this->errorJson('接收者不能是自己',null);
         }
 
-        if($_model->belongsToCoupon->get_type == 1 && $_model->belongsToCoupon->get_max != -1)
+        if($_model->belongsToCoupon->get_max > 0)
         {
             $person = MemberCoupon::uniacid()->where(["coupon_id"=>$_model->coupon_id,"uid"=>$this->memberModel->uid])->count();//会员已有数量
             if($person + 1 > $_model->belongsToCoupon->get_max)
             {
-                return  $this->errorJson('已达该优惠券领取上限');
+                return  $this->errorJson('已达该优惠券领取上限',['err_code'=> 1717]);
             }
         }
 
         $cache_key = 'coupon:trans:' . $record_id;
         $lock_uid = Cache::get($cache_key);
         if(!empty($lock_uid) && $lock_uid != $this->memberModel->uid){
-            return $this->errorJson('该优惠券暂不可领取，请等候');
+            return $this->errorJson('该优惠券暂不可领取，请等候',null);
         }
         Cache::put($cache_key, $this->memberModel->uid, 1);
         $couponService = new CouponSendService();
         $result = $couponService->receiveTransferCoupon($this->memberModel->uid,[$_model->coupon_id],'5','', $record_id, strtotime($_model->get_time));
         if (!$result) {
             Cache::forget($cache_key);
-            return $this->errorJson('领取优惠券失败：(写入出错)');
+            return $this->errorJson('领取优惠券失败：(写入出错)',null);
         }
 
         $result = MemberCoupon::where('id',$_model->id)->update(['used' => 1,'use_time' => time(),'deleted_at' => time(), 'lock_time' => null, 'lock_expire_time' => null, 'transfer_times' => 1]);
         if (!$result) {
             Cache::forget($cache_key);
-            return $this->errorJson('领取优惠券失败：(记录修改出错)');
+            return $this->errorJson('领取优惠券失败：(记录修改出错)',null);
         }
         Cache::forget($cache_key);
         return $this->successJson('领取优惠券成功');
@@ -170,13 +171,26 @@ class CouponTransferController extends ApiController
 
         $record_id = trim(\YunShop::request()->record_id);
 
-        if (!$this->getMemberInfo()) {
-            return  $this->transJson('未获取到会员信息');
-        }
-
         $_model = MemberCoupon::uniacid()->withTrashed()->where('id',$record_id)->with(['belongsToCoupon'])->first();
         if (!$_model) {
             return $this->transJson('未获取到该优惠券记录ID');
+        }
+
+        $this->transferInfo = DB::table('diagnostic_service_user')->select('ajy_uid as uid','nickname','avatar','avatarUrl')->where('ajy_uid',$_model->uid)->first();
+
+        $is_self = false;
+        if (!$this->getMemberInfo()) {
+            //return  $this->transJson('未获取到会员信息');
+            if($_model->lock_expire_time){
+                return $this->transJson('优惠券转让中', 1, $is_self,2, $_model->toArray());
+            }else if($_model->transfer_times){
+                $receive_coupon = MemberCoupon::uniacid()->where('trans_from', $record_id)->first()->toArray();
+                $receiver_info = DB::table('diagnostic_service_user')->select('ajy_uid as uid','nickname','avatar','avatarUrl')->where('ajy_uid',$receive_coupon['uid'])->first();
+                $receiver_info['receive_time'] = $receive_coupon['created_at'];
+                return $this->transJson('优惠券已经转让', 1, $is_self, 1, $_model->toArray(), $receiver_info);
+            }else {
+                return $this->transJson('优惠券转让已失效', 1, $is_self, 3, $_model->toArray());
+            }
         }
 
         //接收到的优惠券不允许再次转让
@@ -184,13 +198,9 @@ class CouponTransferController extends ApiController
             return $this->transJson('接收到的优惠券不能转让');
         }
 
-        if($this->memberModel->uid != $_model->uid){
-            $is_self = false;
-        }else{
+        if($this->memberModel->uid == $_model->uid){
             $is_self = true;
         }
-
-        $this->transferInfo = DB::table('diagnostic_service_user')->select('ajy_uid as uid','nickname','avatar','avatarUrl')->where('ajy_uid',$_model->uid)->first();
 
         if($is_self){
             if($_model->lock_expire_time){
@@ -266,7 +276,6 @@ class CouponTransferController extends ApiController
 
             $data['transfer_banner'] = $set['banner'];
             $data['transfer_receive_banner'] = $set['receive_banner'];
-
         }
         return $this->successJson('获取成功', $data);
 

@@ -87,11 +87,11 @@ class MessageNoticeJob implements  ShouldQueue
         ];
         $app = new Application($options);
         $app = $app->notice;
-        $res = $app->uses($this->templateId)->andData($this->noticeData)->andReceiver($this->openId)->andUrl($this->url)->send($this->miniApp);
         try{
+            $res = $app->uses($this->templateId)->andData($this->noticeData)->andReceiver($this->openId)->andUrl($this->url)->send($this->miniApp);
             $log_data = [
                 'uniacid' => $this->uniacid,
-                'member_id' => McMappingFans::getUId($this->uniacid,$this->openId)->uid,
+                'member_id' => intval(McMappingFans::select('uid')->where('openid', $this->openId)->first()->uid),
                 'template_id' => $this->templateId,
                 'openid' => $this->openId,
                 'message' => json_encode($this->noticeData,320),

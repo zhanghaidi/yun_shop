@@ -79,6 +79,7 @@
                             <th style='width:10%; text-align: center;'>时间</th>
                             <th style='width:6%; text-align: center;'>业务类型</th>
                             <th style='width:10%; text-align: center;'>积分</th>
+                            <th style='width:10%; text-align: center;'>订单编号</th>
                             <th style='width:10%; text-align: center;'>收入/支出</th>
                             <th style='width:12%; text-align: center;'>操作</th>
                         </tr>
@@ -106,6 +107,7 @@
                             <span class='label label-danger'>积分：{{ $log->after_point }}</span><br />
                             {{--<span class='label label-danger'>{{ $log->point }}</span>--}}
                         </td>
+                        <td>{{ $log->getOrderSn($log) }}</td>
                         <td><span class='label label-success'>{{ $log->point }}</span></td>
                         <td>
                             <a class='btn btn-default' href="{{ yzWebUrl('member.member.detail', array('id' => $log->hasOneMember->uid)) }}" style="margin-bottom: 2px">用户信息</a>
