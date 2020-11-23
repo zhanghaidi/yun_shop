@@ -114,10 +114,14 @@ class OpenController extends BaseController
             return $this->errorJson('缺少参数');
         }
         //触发 发送公众号模板消息队列
+        $notify_id = intval($input['openid']);
+        $notify_son = DB::table('qwx_notify_son_queue')->where('notify_id', $notify_id)->get();
+        foreach ($notify_son as $queue){
+            $job = new SendWeChatTplCreateJob($input['weid'], $queue, $options, $input['template_id'], $input['notice_data'],  $input['url'], $input['topcolor'], $input['miniprogram']);
+            $dispatch = dispatch($job);
+            Log::info("open方法创建队列完成:". $dispatch . ' '. $queue);
+        }
 
-        $job = new SendWeChatTplCreateJob($input['weid'], $input['openid'], $options, $input['template_id'], $input['notice_data'],  $input['url'], $input['topcolor'], $input['miniprogram']);
-        $dispatch = dispatch($job);
-        Log::info("open方法添加队列:". $dispatch . ' '. $input['openid']);
         if($dispatch){
             return $this->successJson('ok', ['input' => $input, 'job' => $job, 'dispatcht' => $dispatch]);
         }else{
