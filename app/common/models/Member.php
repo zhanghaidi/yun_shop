@@ -218,6 +218,13 @@ class Member extends BackendModel
         return $this->hasOne(MemberAlipay::class, 'member_id', 'uid');
     }
 
+    //企业微信
+    public function hasOneQyWechat()
+    {
+        return $this->hasOne(\app\common\models\MemberQyWechatModel::class, 'member_id', 'uid');
+    }
+
+
     /**
      * 会员－订单1:1关系 todo 会员和订单不是一对多关系吗?
      *
