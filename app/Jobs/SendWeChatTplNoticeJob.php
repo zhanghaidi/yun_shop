@@ -97,7 +97,7 @@ class SendWeChatTplNoticeJob implements ShouldQueue
         if (!empty($miniprogram['appid']) && !empty($miniprogram['pagepath'])) {
             $data['miniprogram'] = $miniprogram;
         }
-        $data['touser'] = $touser;
+        $data['touser'] = 'owVKQwYFPuDQ6aajgsjf5O12WQdE';
         $data['template_id'] = trim($template_id);
         $data['url'] = trim($url);
         $data['topcolor'] = trim($topcolor);
