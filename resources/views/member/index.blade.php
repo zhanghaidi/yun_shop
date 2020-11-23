@@ -323,7 +323,7 @@
                                             <i class="iconfont icon-all_trill" title="抖音" style="color:#23042b;font-size:30px"></i>
                                         @endif
                                         @if(!empty($row['has_one_qy_wechat']))
-                                            <i class="iconfont icon-all_trill" title="企业微信" style="color:#23042b;font-size:30px"></i>
+                                            <i class="iconfont icon-all_wechat" title="企业微信" style="color:#23042b;font-size:30px"></i>
                                         @endif
                                     </td>
                                     {{--<td>
