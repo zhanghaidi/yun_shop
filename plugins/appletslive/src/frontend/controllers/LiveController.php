@@ -560,13 +560,20 @@ class LiveController extends BaseController
             $page_val['list'] = $page_val['list']->toArray();
             $numdata = CacheService::getRoomNum(array_column($page_val['list'], 'id'));
             $my_subscription = ($this->user_id ? CacheService::getUserSubscription($this->user_id) : []);
+          
             foreach ($page_val['list'] as $k => $v) {
+
                 $key = 'key_' . $v['id'];
                 $page_val['list'][$k]['hot_num'] = $numdata[$key]['hot_num'];
                 $page_val['list'][$k]['subscription_num'] = $numdata[$key]['subscription_num'];
                 $page_val['list'][$k]['view_num'] = $numdata[$key]['view_num'];
                 $page_val['list'][$k]['comment_num'] = $numdata[$key]['comment_num'];
                 $page_val['list'][$k]['has_subscription'] = (array_search($page_val['list'][$k]['id'], $my_subscription) === false) ? false : true;
+                $page_val['list'][$k]['goods_info'] = [];
+                if($v['goods_id'] > 0 && $v['buy_type'] == 1){
+                    $page_val['list'][$k]['goods_info'] = DB::table('yz_goods')->where('id',$v['goods_id'])->first();
+                }
+
             }
         }
 
@@ -1276,6 +1283,10 @@ class LiveController extends BaseController
                 $page_val['list'][$k]['view_num'] = $numdata[$key]['view_num'];
                 $page_val['list'][$k]['comment_num'] = $numdata[$key]['comment_num'];
                 $page_val['list'][$k]['has_subscription'] = (array_search($page_val['list'][$k]['id'], $my_subscription) === false) ? false : true;
+                $page_val['list'][$k]['goods_info'] = [];
+                if($v['goods_id'] > 0 && $v['buy_type'] == 1){
+                    $page_val['list'][$k]['goods_info'] = DB::table('yz_goods')->where('id',$v['goods_id'])->first();
+                }
             }
         }
 
