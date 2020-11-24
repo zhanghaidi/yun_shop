@@ -67,7 +67,7 @@ class GoodsTrackingModel extends Model
         }
         $map = [
             4 => 'App\backend\modules\order\models\Order',
-            5 => 'App\backend\modules\order\models\OrderPay',
+            5 => 'App\backend\modules\order\models\Order',
         ];
         return $map[$value];
 
