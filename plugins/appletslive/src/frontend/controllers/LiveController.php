@@ -560,7 +560,7 @@ class LiveController extends BaseController
             $page_val['list'] = $page_val['list']->toArray();
             $numdata = CacheService::getRoomNum(array_column($page_val['list'], 'id'));
             $my_subscription = ($this->user_id ? CacheService::getUserSubscription($this->user_id) : []);
-          
+
             foreach ($page_val['list'] as $k => $v) {
 
                 $key = 'key_' . $v['id'];
@@ -1327,8 +1327,6 @@ class LiveController extends BaseController
     public function validateCourse()
     {
 
-        //验证登录
-        $this->needLogin();
         $room_id = request()->get('room_id');
         $room_info = DB::table('yz_appletslive_room')
             ->select('id', 'name', 'buy_type', 'expire_time', 'goods_id')
@@ -1342,7 +1340,8 @@ class LiveController extends BaseController
         $course_expire = 1; //课程过期时间戳
 
         if ($room_info['buy_type'] == 1) { //付费课程判断流程 免费课程不用判断
-
+            //验证登录
+            $this->needLogin();
             //验证是否购买过 是否有购买完成的订单
             $orders_info = DB::table('yz_order_goods')
                 ->join('yz_order', 'yz_order.id', '=', 'yz_order_goods.order_id')
