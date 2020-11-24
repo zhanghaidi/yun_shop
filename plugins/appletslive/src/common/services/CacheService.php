@@ -457,7 +457,7 @@ class CacheService
             ->where('rid', $room_id)
             ->where('delete_time', 0)
             ->orderBy('sort', 'desc')
-            ->orderBy('id', 'asc')
+            ->orderBy('id', 'desc')
             ->get()->toArray();
         array_walk($list, function (&$item) {
             $item['publish_status'] = 1;
@@ -807,7 +807,7 @@ class CacheService
             ->where('type', 2)
             ->where('delete_time', 0)
             ->orderBy('sort', 'desc')
-            ->orderBy('id', 'asc')
+            ->orderBy('id', 'desc')
             ->offset($offset)
             ->limit($limit)
             ->get()->toArray();
