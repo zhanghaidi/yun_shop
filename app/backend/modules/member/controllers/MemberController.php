@@ -170,6 +170,16 @@ class MemberController extends BaseController
             ->leftJoin('yz_member_wechat', 'mc_members.uid', '=', 'yz_member_wechat.member_id')
             ->where('yz_member_wechat.uniacid', $uniacid)
             ->count();
+        //fixbyzhd-qywechat会员统计-20201124
+        $qywechat_count = Member::uniacid()->select(['uid', 'mobile'])
+            ->whereHas('yzMember', function ($q) {
+                $q->whereNull('deleted_at');
+            })
+            ->leftJoin('yz_member_del_log', 'mc_members.uid', '=', 'yz_member_del_log.member_id')
+            ->whereNull('yz_member_del_log.member_id')
+            ->leftJoin('yz_member_qywechat', 'mc_members.uid', '=', 'yz_member_qywechat.member_id')
+            ->where('yz_member_qywechat.uniacid', $uniacid)
+            ->count();
 
         $list = $list->orderBy('uid', 'desc')
             ->paginate($this->pageSize)
@@ -180,6 +190,7 @@ class MemberController extends BaseController
         $list['mini_count'] = $mini_count;
         $list['app_count'] = $app_count;
         $list['phone_count'] = $phone_count;
+        $list['qywechat_count'] = $qywechat_count;
 
         $set = \Setting::get('shop.member');
 
