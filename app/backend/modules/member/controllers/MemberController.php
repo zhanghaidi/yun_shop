@@ -1069,7 +1069,7 @@ class MemberController extends BaseController
                 $item['nickname'] = '，' . $item['nickname'];
             }
 
-            $item['qy_wexin'] = $item['has_one_qy_wechat'] ? '是' : '否';  //是否绑定企业微信
+            $item['qy_wexin'] = $item['has_one_qy_wechat'] ? '是' : '否';//是否绑定企业微信
 
             $export_data[$key + 1] = [$item['uid'],$agent, $item['nickname'], $item['realname'], $item['mobile'],
                 $level, $group, date('YmdHis', $item['createtime']), $item['credit1'], $item['credit2'], $order,
