@@ -52,6 +52,7 @@ class ApiController extends BaseController
         $type = \YunShop::request()->type;
         $openid_token = \YunShop::request()->openid_token;
         $ju_sign = \YunShop::request()->ju_sign;
+        $app_type = \Yunshop::request()->app_type;
 
         if (Client::setWechatByMobileLogin(\YunShop::request()->type)) {
             $type = 5;
@@ -67,7 +68,11 @@ class ApiController extends BaseController
             $member_id = Session::get('member_id');
             if ($type == 2) {
                 if (!$member_id && !empty($openid_token)) {
-                    $member=Db::table('diagnostic_service_user')->where('openid_token', $openid_token)->orWhere('shop_openid_token', $openid_token)->first();
+                    if($app_type == 'shop'){
+                        $member=Db::table('diagnostic_service_user')->where('shop_openid_token', $openid_token)->first();
+                    }else{
+                        $member=Db::table('diagnostic_service_user')->where('openid_token', $openid_token)->first();
+                    }
                     if(!empty($member)){
                         session::set('member_id', $member['ajy_uid']);
                     }
