@@ -339,7 +339,7 @@ class Member extends \app\common\models\Member
                 ->uniacid()
                 ->where('status', Order::COMPLETE)
                 ->groupBy('uid');
-        }, 'hasOneMiniApp', 'hasOneUnique', 'hasOneWechat', 'hasOneDouyin']);
+        }, 'hasOneMiniApp', 'hasOneUnique', 'hasOneWechat', 'hasOneDouyin','hasOneQyWechat']);
 
         //判断支付宝插件
         if (file_exists(base_path('plugins/alipay-onekey-login'))) {

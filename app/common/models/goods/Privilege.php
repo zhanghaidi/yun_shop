@@ -186,11 +186,21 @@ class Privilege extends BaseModel
             $start_time = Carbon::today()->timestamp;
             $end_time = Carbon::now()->timestamp;
             $rang = [$start_time,$end_time];
+
+            // fixBy-wk- 购买限制不查询关闭的订单
+            $orderIds = Order::select(['id', 'uid', 'status', 'created_at'])
+                ->where('uid', $member->uid)
+                ->where('status', '!=' ,Order::CLOSE)
+                ->whereBetween('created_at',$rang)
+                ->pluck('id');
+
             $history_num = $member
                 ->orderGoods()
                 ->where('goods_id', $this->goods_id)
                 ->whereBetween('created_at',$rang)
+                ->whereIn('order_id', $orderIds)
                 ->sum('total');
+
             if ($history_num + $num > $this->day_buy_limit)
                 throw new AppException('您今天已购买' . $history_num . '件商品(' . $this->goods->title . '),该商品每天最多可购买' . $this->day_buy_limit . '件');
         }
@@ -208,10 +218,19 @@ class Privilege extends BaseModel
             $start_time = Carbon::now()->startOfWeek()->timestamp;
             $end_time = Carbon::now()->timestamp;
             $rang = [$start_time,$end_time];
+
+            // fixBy-wk- 购买限制不查询关闭的订单
+            $orderIds = Order::select(['id', 'uid', 'status', 'created_at'])
+                ->where('uid', $member->uid)
+                ->where('status', '!=' ,Order::CLOSE)
+                ->whereBetween('created_at',$rang)
+                ->pluck('id');
+
             $history_num = $member
                 ->orderGoods()
                 ->where('goods_id', $this->goods_id)
                 ->whereBetween('created_at',$rang)
+                ->whereIn('order_id', $orderIds)
                 ->sum('total');
             if ($history_num + $num > $this->week_buy_limit)
                 throw new AppException('您这周已购买' . $history_num . '件商品(' . $this->goods->title . '),该商品每周最多可购买' . $this->week_buy_limit . '件');
@@ -231,7 +250,7 @@ class Privilege extends BaseModel
             $end_time = Carbon::now()->timestamp;
             $range = [$start_time,$end_time];
 
-            // 购买限制不查询关闭的订单
+            // fixBy-wk- 购买限制不查询关闭的订单
             $orderIds = Order::select(['id', 'uid', 'status', 'created_at'])
                 ->where('uid', $member->uid)
                 ->where('status', '!=' ,Order::CLOSE)
@@ -258,7 +277,17 @@ class Privilege extends BaseModel
     public function validateTotalBuyLimit(Member $member,$num = 1)
     {
         if ($this->total_buy_limit > 0) {
-            $history_num = $member->orderGoods()->where('goods_id', $this->goods_id)->sum('total');
+            // fixBy-wk- 购买限制不查询关闭的订单
+            $orderIds = Order::select(['id', 'uid', 'status', 'created_at'])
+                ->where('uid', $member->uid)
+                ->where('status', '!=' ,Order::CLOSE)
+                ->pluck('id');
+
+            $history_num = $member
+                ->orderGoods()
+                ->where('goods_id', $this->goods_id)
+                ->whereIn('order_id', $orderIds)
+                ->sum('total');
             if ($history_num + $num > $this->total_buy_limit)
                 // throw new AppException('您已购买' . $history_num . '件商品(' . $this->goods->title . '),最多可购买' . $this->total_buy_limit . '件');
                 throw new AppException('您已购买' . $history_num . '件商品,最多可购买' . $this->total_buy_limit . '件');

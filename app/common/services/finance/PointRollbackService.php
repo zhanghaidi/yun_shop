@@ -12,6 +12,8 @@ namespace app\common\services\finance;
 
 use app\common\facades\Setting;
 use app\common\models\Order;
+use app\common\models\finance\PointLog;
+use app\common\models\finance\PointQueue;
 
 class PointRollbackService
 {
@@ -32,15 +34,14 @@ class PointRollbackService
 
         $this->orderModel = $event->getOrderModel();
         $this->rollbackCoinExchange();
-        $pointDeduction = $this->getOrderPointDeduction();
-        if (!$pointDeduction) {
-            return;
-        }
-        $this->pointRollback($pointDeduction);
 
-        /**
-         * 返还全额抵扣的积分
-         */
+        // 返还抵扣的积分
+        $pointDeduction = $this->getOrderPointDeduction();
+        if($pointDeduction){
+            $this->pointRollback($pointDeduction);
+        }
+        // 回滚赠送积分
+        $this->rollbackGivePoint();
 
         return;
     }
@@ -95,6 +96,27 @@ class PointRollbackService
             'point' => $point,
             'remark' => '订单：' . $this->orderModel->order_sn . '关闭，返还积分抵扣积分' . $point,
         ];
+    }
+
+    /**
+     * 回滚赠送积分
+     */
+    private function rollbackGivePoint()
+    {
+        PointQueue::where('order_id',$this->orderModel->id)->delete();
+        $point = PointLog::where('order_id',$this->orderModel->id)->whereIn('point_mode',[1,2])->where('point_income_type',PointService::POINT_INCOME_GET)->sum('point');
+        if (!$point) {
+            return;
+        }
+        $data = [
+            'point_income_type' => PointService::POINT_INCOME_LOSE,
+            'point_mode' => PointService::POINT_GIVE_BACK,
+            'member_id' => $this->orderModel->uid,
+            'point' => -$point,
+            'remark' => '订单：' . $this->orderModel->order_sn . '关闭，回滚赠送积分' . $point,
+            'order_id' => $this->orderModel->id,
+        ];
+        (new PointService($data))->changePoint();
     }
 
 }
