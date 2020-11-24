@@ -1309,4 +1309,132 @@ class LiveController extends BaseController
         ]);
     }
 
+    /**
+     * 校验 课程是否购买，是否在有效期，更新用户到期时间 fixby--wk -20201124
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function validateCourse(){
+
+        //验证登录
+        $this->needLogin();
+        $room_id = request()->get('room_id');
+        $room_info = DB::table('yz_appletslive_room')
+            ->select('id', 'name', 'buy_type', 'expire_time', 'goods_id')
+            ->where('type', 1)
+            ->where('id', $room_id)
+            ->where('delete_time', 0)
+            ->first();
+
+        //验证是否购买过 是否有购买完成的订单
+        $orders_info = DB::table('yz_order_goods')
+            ->join('yz_order', 'yz_order.id', '=', 'yz_order_goods.order_id')
+            ->select('yz_order_goods.id', 'yz_order_goods.course_expire_status','yz_order_goods.goods_id','yz_order_goods.order_id','yz_order.status', 'yz_order.pay_time')
+            ->where([
+                ['yz_order.status', '=', '3'], //订单状态 -1关闭,0待付款,1待发货,2待收货,3已完成
+                ['yz_order_goods.goods_id', '=', $room_info['goods_id']],
+                ['yz_order_goods.uid', '=', $this->user_id]
+            ])->get()->toArray();
+
+        $is_buy = 0; //课程是否购买
+        $is_expire = 0; //课程是否过期
+        $course_expire = 0; //课程过期时间戳
+
+        if(!empty($orders_info)){ //有购买完成的订单
+
+            $is_buy = 1;
+
+            //自动订阅课程
+            $this->autoSubscription($room_info['id']);
+
+            //累加课程过期时间 ---- 开始
+            $order_expire_status_info = DB::table('yz_order_goods')
+                ->join('yz_order', 'yz_order.id', '=', 'yz_order_goods.order_id')
+                ->select('yz_order_goods.id', 'yz_order_goods.course_expire_status','yz_order_goods.goods_id','yz_order_goods.order_id','yz_order.status', 'yz_order.pay_time')
+                ->where([
+                    ['yz_order.status', '=', '3'], //订单状态 -1关闭,0待付款,1待发货,2待收货,3已完成
+                    ['yz_order_goods.goods_id', '=', $room_info['goods_id']],
+                    ['yz_order_goods.uid', '=', $this->user_id],
+                    ['yz_order_goods.course_expire_status', '=', 0]
+                ])->orderBy('yz_order.pay_time', 'asc')
+                ->get()->toArray();
+
+            if(!empty($order_expire_status_info)){ //更新课程过期时间
+
+                $course_expire_time = 0;
+                foreach ($order_expire_status_info as $k => $val){
+                    if($val['course_expire_status'] == 1){
+                        continue;
+                    }
+                    //计算过期时间 更新时间 和 商品状态
+                    $course_expire_time += $room_info['expire_time'] * 86400;
+                    DB::table('yz_order_goods')->where([
+                        ['id', '=', $val['id']],
+                        ['goods_id', '=', $val['goods_id']],
+                        ['uid', '=', $this->user_id]
+                    ])->update(['course_expire_status' => 1]);
+                }
+                $course_expire = $order_expire_status_info[0]['pay_time'] + $course_expire_time;
+
+                DB::table('yz_appletslive_room_subscription')->where([['room_id', '=', $room_id], ['user_id', '=', $this->user_id]])->update(['course_expire' => $course_expire]);
+            }else{
+
+                $room_subscription_info = DB::table('yz_appletslive_room_subscription')->where([['room_id', '=', $room_id], ['user_id', '=', $this->user_id]])->first();
+                $course_expire = $room_subscription_info['course_expire'];
+            }
+
+            if(time() > $course_expire){
+                $is_expire = 1;
+            }
+        }
+
+        return $this->successJson('获取成功', [
+            'buy_type' => $room_info['buy_type'], //课程是否付款
+            'expire_time' => $room_info['expire_time'], //课程过期天数
+            'is_buy' => $is_buy, // 是否购买 0否 1是
+            'is_expire' => $is_expire, // 是否过期 0否 1是
+            'course_expire' => $course_expire  //课程到期时间
+        ]);
+    }
+
+    /**
+     * 购买课程自动订阅 fixby--wk -20201124
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function autoSubscription($room_id)
+    {
+
+        $table = 'yz_appletslive_room_subscription';
+        $map = [['room_id', '=', $room_id], ['user_id', '=', $this->user_id]];
+        $subscripInfo = DB::table($table)->where($map)->first();
+        if (!$subscripInfo) {
+
+            DB::table($table)->insert([
+                'uniacid' => $this->uniacid,
+                'room_id' => $room_id,
+                'user_id' => $this->user_id,
+                'create_time' => time(),
+                'type' => APPLETSLIVE_ROOM_TYPE_COURSE,
+            ]);
+
+            CacheService::setRoomNum($room_id, 'subscription_num');
+            CacheService::setUserSubscription($this->user_id, $room_id);
+            CacheService::setRoomSubscription($room_id, $this->user_id);
+
+        } else {
+
+            if ($subscripInfo['status'] == 0) {
+                DB::table($table)->where($map)->update(['status' => 1]);
+            }
+            //刷新缓存
+            $cache_key = "api_live_room_subscription|$room_id";
+            Cache::forget($cache_key);
+            $cache_key_user_subscription = "api_live_user_subscription|$this->user_id";
+            Cache::forget($cache_key_user_subscription);
+            Cache::forget(CacheService::$cache_keys['brandsale.albumsubscription']);
+            Cache::forget(CacheService::$cache_keys['brandsale.albumusersubscription']);
+            $cache_key_room_num = 'api_live_room_num';
+            Cache::forget($cache_key_room_num);
+
+        }
+    }
 }
