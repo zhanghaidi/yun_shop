@@ -358,6 +358,14 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">注册赠送积分</label>
+                            <div class="col-sm-9 col-xs-12">
+                                <input type="text" name="member[register_initial_integral]" class="form-control" value="{{ $set['register_initial_integral']}}" />
+                                <span class='help-block'>填写大于等于0的数值</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">手机验证码登录</label>
                             <div class="col-sm-9 col-xs-12" >
                                 <label class="radio-inline">
@@ -399,6 +407,7 @@
         function formcheck() {
             var numerictype = /^(0|[1-9]\d*)$/; //非负整数验证
             var thumb = /\.(gif|jpg|jpeg|png|GIF|JPG|PNG)$/;
+            var flaottype = /^\d+(?:\.\d{1,2})?$/; //0-2位小数浮点型/整数验证
 
 
             if ($(':input[name="member[headimg]"]').val() != '') {
@@ -423,6 +432,13 @@
              }
              }
              */
+
+            if ($(':input[name="member[register_initial_integral]"]').val() != '') {
+                if (!numerictype.test($(':input[name="member[register_initial_integral]"]').val())) {
+                    Tip.focus(':input[name="member[register_initial_integral]"]', '赠送的会员积分必须是大于等于0的数值.');
+                    return false;
+                }
+            }
             return true;
 
         }
