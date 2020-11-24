@@ -14,7 +14,10 @@ use app\backend\modules\point\models\RechargeModel;
 use app\common\components\BaseController;
 use app\common\exceptions\ShopException;
 use app\common\helpers\Url;
+use app\common\models\finance\PointLog;
 use app\common\models\notice\MessageTemp;
+use app\common\services\finance\PointService;
+
 class RechargeController extends BaseController
 {
     /**
@@ -114,9 +117,18 @@ class RechargeController extends BaseController
      */
     private function getResultData()
     {
+        if($this->memberModel->credit1 <= 0){
+            $log = PointLog::where('member_id',$this->memberModel->uid)->orderby('id','desc')->first();
+            if($log->point_mode == PointService::POINT_GIVE_BACK_UNENOUGH){
+                $note = $log->remark;
+            }
+        }else{
+            $note = '';
+        }
         return [
             'memberInfo'    => $this->memberModel,
-            'rechargeMenu'  => $this->getRechargeMenu()
+            'rechargeMenu'  => $this->getRechargeMenu(),
+            'note'          => $note,
         ];
     }
 
