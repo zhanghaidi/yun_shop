@@ -1451,7 +1451,7 @@ class CacheService
             ->where('delete_time', 0)
             ->count();
         $list = DB::table('yz_appletslive_room')
-            ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag')
+            ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag', 'buy_type', 'expire_time', 'goods_id')
             ->where('type', 1)
             ->where('is_selected', 1)
             ->where('delete_time', 0)
