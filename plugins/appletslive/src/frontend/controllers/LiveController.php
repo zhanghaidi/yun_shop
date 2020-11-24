@@ -1384,10 +1384,14 @@ class LiveController extends BaseController
                             ['uid', '=', $this->user_id]
                         ])->update(['course_expire_status' => 1]);
                     }
-                    $course_expire = $order_expire_status_info[0]['pay_time'] + $course_expire_time;
+                    //获取支付当天凌晨的时间
+                    $pay_time = strtotime(date('Y-m-d', $order_expire_status_info[0]['pay_time']));
+                    $course_expire = $pay_time + $course_expire_time;
                     //更新课程过期时间 如果后期允许一个商品关联多个课程，过期时间需要根据goods_id 关联的课程都更新下
-                    DB::table('yz_appletslive_room_subscription')->where([['room_id', '=', $room_id], ['user_id', '=', $this->user_id]])->update(['course_expire' => $course_expire]);
-
+                    $res = DB::table('yz_appletslive_room_subscription')->where([['room_id', '=', $room_id], ['user_id', '=', $this->user_id]])->update(['course_expire' => $course_expire]);
+                    if(!$res){
+                        $course_expire = 0;
+                    }
                 } else {
 
                     $room_subscription_info = DB::table('yz_appletslive_room_subscription')->where([['room_id', '=', $room_id], ['user_id', '=', $this->user_id]])->first();
@@ -1396,7 +1400,10 @@ class LiveController extends BaseController
 
                 if (time() <= $course_expire) {
                     $is_expire = 0;
+                    $course_expire_day = 0;
                 }
+                //计算剩余天数
+                $course_expire_day = floor(($course_expire - time())/86400);
             }
         }
         return $this->successJson('获取成功', [
@@ -1404,7 +1411,8 @@ class LiveController extends BaseController
             'expire_time' => $room_info['expire_time'], //课程过期天数
             'is_buy' => $is_buy, // 是否购买 0否 1是
             'is_expire' => $is_expire, // 是否过期 0否 1是
-            'course_expire' => date('Y-m-d H:i:s', $course_expire)  //课程到期时间
+            'course_expire' => date('Y-m-d H:i:s', $course_expire),  //课程到期时间
+            'course_expire_day' => $course_expire_day  //课程剩余天数
         ]);
     }
 
