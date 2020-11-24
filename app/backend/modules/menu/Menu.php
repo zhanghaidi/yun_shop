@@ -4466,6 +4466,15 @@ class Menu
                                 'item'       => 'setting_shop_default_notice_closed',
                                 'parents'    => ['system', 'setting_shop_notice'],
                             ],
+                            'setting_shop_miniNotice'   => [
+                                'name'       => '默认消息模版开启',
+                                'url'        => 'setting.shop.miniNotice',
+                                'url_params' => '',
+                                'permit'     => 1,
+                                'menu'       => 0,
+                                'item'       => 'setting_shop_miniNotice',
+                                'parents'    => ['system', 'setting_shop_notice'],
+                            ],
                         ]
                     ],
 
@@ -4533,6 +4542,15 @@ class Menu
                                 'parents'    => ['system', 'setting_small_program'],
                             ],
 
+                            'setting_small_program_choose1' => [
+                                'name'       => '选择小程序订阅模版（白名单）',
+                                'url'        => 'setting.small-program.returnJson',
+                                'url_params' => '',
+                                'permit'     => 0,
+                                'menu'       => 0,
+                                'item'       => 'setting_small_program_choose1',
+                                'parents'    => ['system', 'setting_small_program'],
+                            ],
 
                             'setting_small_program_choose2' => [
                                 'name'       => '选择模版（白名单）',
@@ -4670,6 +4688,35 @@ class Menu
                                 'item'       => 'setting_diy_temp_delete',
                                 'parents'    => ['system', 'setting_diy_temp'],
                             ],
+//                          fixBy-wk-20201113 小程序订阅消息管理
+                            'setting_diy_temp_mini_index'  => [
+                                'name'       => '浏览列表',
+                                'url'        => 'setting.diy-temp.mini_index',
+                                'url_params' => '',
+                                'permit'     => 1,
+                                'menu'       => 0,
+                                'item'       => 'setting_diy_temp_mini_index',
+                                'parents'    => ['system', 'setting_diy_temp'],
+                            ],
+                            'setting_diy_temp_mini_add'    => [
+                                'name'       => '添加模版',
+                                'url'        => 'setting.diy-temp.mini_add',
+                                'url_params' => '',
+                                'permit'     => 1,
+                                'menu'       => 0,
+                                'item'       => 'setting_diy_temp_mini_add',
+                                'parents'    => ['system', 'setting_diy_temp'],
+                            ],
+                            'setting_diy_temp_mini_edit'   => [
+                                'name'       => '修改模版',
+                                'url'        => 'setting.diy-temp.mini_edit',
+                                'url_params' => '',
+                                'permit'     => 1,
+                                'menu'       => 0,
+                                'item'       => 'setting_diy_temp_mini_edit',
+                                'parents'    => ['system', 'setting_diy_temp'],
+                            ],
+
                         ]
                     ],
                     'setting_shop_lang' => [

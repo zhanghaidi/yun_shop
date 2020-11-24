@@ -2,6 +2,7 @@
 
 namespace app\common\services;
 
+use app\backend\modules\tracking\models\DiagnosticServiceUser;
 use app\common\events\message\SendMessageEvent;
 use app\common\models\AccountWechats;
 use app\common\models\Member;
@@ -9,6 +10,7 @@ use app\common\models\notice\MessageTemp;
 use app\common\models\TemplateMessageRecord;
 use app\Jobs\DispatchesJobs;
 use app\Jobs\MessageNoticeJob;
+use app\Jobs\SendTemplateMsgJob;
 use Exception;
 use EasyWeChat\Message\News;
 use EasyWeChat\Message\Text;
@@ -17,6 +19,7 @@ use app\Jobs\MiniMessageNoticeJob;
 use app\common\models\MemberMiniAppModel;
 use app\common\models\FormId;
 use app\common\models\TemplateMsgLog;
+use Illuminate\Support\Facades\Log;
 
 class MessageService
 {
@@ -273,7 +276,7 @@ class MessageService
     }
 
     //微信消息推送方法，关联小程序路径
-    public static function notice($templateId, $data, $uid, $uniacid = '', $url = '', $pagepath = '')
+    public static function notice($templateId, $data, $uid, $uniacid = '', $url = '', $pagepath = '', $sync = false)
     {
         if (\Setting::get('shop.notice.toggle') == false) {
             return false;
@@ -291,9 +294,64 @@ class MessageService
 
         $job = new MessageNoticeJob($templateId, $data, $member->hasOneFans->openid, $url, $pagepath);
 
-        DispatchesJobs::dispatch($job,DispatchesJobs::LOW);
+        if($sync){
+            DispatchesJobs::dispatchNow($job);
+        }else{
+            DispatchesJobs::dispatch($job,DispatchesJobs::LOW);
+        }
     }
 
+    /**
+     * 小程序订阅消息发送
+     *
+     * @param int $member_id
+     * @param int $template_id
+     * @param array $params
+     * @return bool
+     */
+    public function subMsgPush($member_id, $temp_id, array $params = [], $sync = false)
+    {
+
+        if(\Setting::get('shop.miniNotice.toggle') == false){
+            return false;
+        }
+
+        if (!$member_id || !$temp_id) {
+            return false;
+        }
+
+        $temp = MessageTemp::withoutGlobalScopes(['uniacid'])->whereId($temp_id)->first();
+
+        if (!$temp) {
+            return false;
+        }
+        $template_id = $temp->template_id;
+
+        if (!$template_id) {
+            \Log::error("小程序订阅消息推送：MessageTemp::template_id参数不存在");
+            return false;
+        }
+
+        $send_msg = MessageTemp::getSubMsg($temp_id, $params);
+
+        $memberModel = DiagnosticServiceUser::where('ajy_uid', $member_id)->first();
+
+        if (!$memberModel) {
+            Log::debug("subMsgPush 获取member信息失败，member_id:" . $member_id);
+            return false;
+        }
+
+        $options = ['app_id'=>$send_msg['miniprogram']['appid'], 'secret'=>'secret'];
+        Log::debug("subMsgPush:{$temp_id},msg:" . json_encode($send_msg) . ',options:' . json_encode($options) . ",template_id:{$template_id},openid:{$memberModel->openid}");
+        $job = new SendTemplateMsgJob('wxapp', $options, $template_id, $send_msg, $memberModel->openid);
+
+        if($sync){
+            DispatchesJobs::dispatchNow($job);
+        }else{
+            DispatchesJobs::dispatch($job,DispatchesJobs::LOW);
+        }
+
+    }
 
     public static function getWechatTemplates()
     {

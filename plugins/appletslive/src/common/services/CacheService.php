@@ -133,7 +133,7 @@ class CacheService
         $cache_key = self::$cache_keys['recorded.roominfo'];
         $cache_val = Cache::get($cache_key);
         $info = DB::table('yz_appletslive_room')
-            ->select('id', 'type', 'roomid', 'name', 'anchor_name', 'cover_img', 'start_time', 'end_time','live_status', 'desc')
+            ->select('id', 'type', 'roomid', 'name', 'anchor_name', 'cover_img', 'start_time', 'end_time','live_status', 'desc', 'buy_type', 'goods_id' ,'expire_time')
             ->where('id', $room_id)
             ->first();
         if (!$cache_val) {
@@ -457,7 +457,7 @@ class CacheService
             ->where('rid', $room_id)
             ->where('delete_time', 0)
             ->orderBy('sort', 'desc')
-            ->orderBy('id', 'asc')
+            ->orderBy('id', 'desc')
             ->get()->toArray();
         array_walk($list, function (&$item) {
             $item['publish_status'] = 1;
@@ -807,7 +807,7 @@ class CacheService
             ->where('type', 2)
             ->where('delete_time', 0)
             ->orderBy('sort', 'desc')
-            ->orderBy('id', 'asc')
+            ->orderBy('id', 'desc')
             ->offset($offset)
             ->limit($limit)
             ->get()->toArray();
