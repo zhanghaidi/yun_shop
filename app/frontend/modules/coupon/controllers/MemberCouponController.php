@@ -365,6 +365,8 @@ class MemberCouponController extends ApiController
         foreach ($coupons as $k => $v) {
             $coupons[$k]['belongs_to_coupon']['deduct'] = intval($coupons[$k]['belongs_to_coupon']['deduct']);
             $coupons[$k]['belongs_to_coupon']['discount'] = intval($coupons[$k]['belongs_to_coupon']['discount']);
+            $coupons[$k]['closer_overdue'] = 0; //是否3天之内过期
+            $coupons[$k]['order_id'] = 0; //订单id
 
             if (app('plugins')->isEnabled('hotel')) {
                 if ($v['belongs_to_coupon']['use_type'] == Coupon::COUPON_ONE_HOTEL_USE) {
@@ -394,12 +396,14 @@ class MemberCouponController extends ApiController
                 && ($time < Carbon::createFromTimestamp(strtotime($v['get_time']) + $v['belongs_to_coupon']['time_days'] * 3600 * 24)->endOfDay()->timestamp)) {
                 $coupons[$k]['belongs_to_coupon']['start'] = substr($v['get_time'], 0, 10); //前端需要统一的起止时间
                 $coupons[$k]['belongs_to_coupon']['end'] = date('Y-m-d', (strtotime($v['get_time']) + $v['belongs_to_coupon']['time_days'] * 3600 * 24)); //前端需要统一的起止时间
+                $coupons[$k]['closer_overdue'] = (strtotime($coupons[$k]['belongs_to_coupon']['end']) - time()) / (3600*24) <= 3 ? 1 : 0;
                 $usageLimit = array('api_limit' => self::usageLimitDescription($v['belongs_to_coupon'])); //增加属性 - 优惠券的适用范围
                 $availableCoupons[] = array_merge($coupons[$k], $usageLimit);
             } elseif ($v['belongs_to_coupon']['time_limit'] == Coupon::COUPON_DATE_TIME_RANGE
                 && $time < strtotime($v['belongs_to_coupon']['time_end'])) {
                 $coupons[$k]['belongs_to_coupon']['start'] = substr($v['belongs_to_coupon']['time_start'], 0, 10); //前端需要统一的起止时间
                 $coupons[$k]['belongs_to_coupon']['end'] = substr($v['belongs_to_coupon']['time_end'], 0, 10); //前端需要统一的起止时间
+                $coupons[$k]['closer_overdue'] = (strtotime($coupons[$k]['belongs_to_coupon']['end']) - time()) / (3600*24) <= 3 ? 1 : 0;
                 $usageLimit = array('api_limit' => self::usageLimitDescription($v['belongs_to_coupon'])); //增加属性 - 优惠券的适用范围
                 $availableCoupons[] = array_merge($coupons[$k], $usageLimit);
             }
@@ -418,6 +422,8 @@ class MemberCouponController extends ApiController
         foreach ($coupons as $k => $v) {
             $coupons[$k]['belongs_to_coupon']['deduct'] = intval($coupons[$k]['belongs_to_coupon']['deduct']);
             $coupons[$k]['belongs_to_coupon']['discount'] = intval($coupons[$k]['belongs_to_coupon']['discount']);
+            $coupons[$k]['closer_overdue'] = 0; //是否3天之内过期
+            $coupons[$k]['order_id'] = 0; //订单id
 
             if (app('plugins')->isEnabled('hotel')) {
                 if ($v['belongs_to_coupon']['use_type'] == Coupon::COUPON_ONE_HOTEL_USE) {
@@ -466,6 +472,9 @@ class MemberCouponController extends ApiController
         foreach ($coupons as $k => $v) {
             $coupons[$k]['belongs_to_coupon']['deduct'] = intval($coupons[$k]['belongs_to_coupon']['deduct']);
             $coupons[$k]['belongs_to_coupon']['discount'] = intval($coupons[$k]['belongs_to_coupon']['discount']);
+            $coupons[$k]['closer_overdue'] = 0; //是否3天之内过期
+            $coupons[$k]['order_id'] = \app\common\models\order\OrderCoupon::where('member_coupon_id',$v['id'])->first()->order_id; //订单id
+
             if (app('plugins')->isEnabled('hotel')) {
                 if ($v['belongs_to_coupon']['use_type'] == Coupon::COUPON_ONE_HOTEL_USE) {
                     $find = CouponHotel::where('coupon_id', $v['belongs_to_coupon']['id'])->first();
