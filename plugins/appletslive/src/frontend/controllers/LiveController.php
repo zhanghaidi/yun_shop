@@ -1345,9 +1345,9 @@ class LiveController extends BaseController
             ->where('delete_time', 0)
             ->first();
 
-        $is_buy = 0; //课程是否购买
-        $is_expire = 0; //课程是否过期
-        $course_expire = 1; //课程过期时间戳
+        $is_buy = 0; //课程是否购买 0未购买 1购买过
+        $is_expire = 1; //课程是否过期 0未过期 1过期了
+        $course_expire = 0; //课程过期时间戳
 
         if ($room_info['buy_type'] == 1) { //付费课程判断流程 免费课程不用判断
             //验证登录
@@ -1389,7 +1389,7 @@ class LiveController extends BaseController
                         if ($val['course_expire_status'] == 1) {
                             continue;
                         }
-                        
+
                         //计算过期时间 更新时间 和 商品状态  更新商品管理order_goods表状态
                         $course_expire_time += $room_info['expire_time'] * 86400;
                         //累加之后更新订单状态
@@ -1440,10 +1440,11 @@ class LiveController extends BaseController
 
                 if (time() <= $course_expire) { //判断是否过期
                     $is_expire = 0;
-                    $course_expire_day = 0;
-                }else{
                     //计算剩余天数
                     $course_expire_day = floor(($course_expire - time())/86400);
+                }else{
+                    $is_expire = 1;
+                    $course_expire_day = 0;
                 }
 
             }
