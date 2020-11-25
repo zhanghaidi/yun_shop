@@ -610,6 +610,11 @@ class LiveController extends BaseController
         if ($room_info['type'] == 0) {
             $room_info['start_time'] = date('Y-m-d H:i', $room_info['start_time']);
             $room_info['end_time'] = date('Y-m-d H:i', $room_info['end_time']);
+        } else if($room_info['type'] == 1){
+            $room_info['goods_info'] = [];
+            if ($room_info['goods_id'] > 0 && $room_info['buy_type'] == 1) {
+                $room_info['goods_info'] = DB::table('yz_goods')->where('id', $room_info['goods_id'])->first();
+            }
         }
 
         return $this->successJson('获取成功', $room_info);
@@ -708,6 +713,11 @@ class LiveController extends BaseController
                 if ($list[$k]['type'] == 0) {
                     $list[$k]['start_time'] = date('Y-m-d H:i', $list[$k]['start_time']);
                     $list[$k]['end_time'] = date('Y-m-d H:i', $list[$k]['end_time']);
+                }else if($list[$k]['type'] == 1){
+                    $list[$k]['goods_info'] = [];
+                    if ($list[$k]['goods_id'] > 0 && $list[$k]['buy_type'] == 1) {
+                        $list[$k]['goods_info'] = DB::table('yz_goods')->where('id', $list[$k]['goods_id'])->first();
+                    }
                 }
             }
         }
@@ -1385,7 +1395,7 @@ class LiveController extends BaseController
                         $up_order_goods_res = DB::table('yz_order_goods')->where([['id', '=', $val['id']], ['goods_id', '=', $val['goods_id']], ['uid', '=', $this->user_id]])->update(['course_expire_status' => 1]);
                         if (!$up_order_goods_res) {
                             DB::rollBack();//事务回滚
-                            return $this->errorJson('验证失败，更新', [
+                            return $this->errorJson('验证失败', [
                                 'buy_type' => $room_info['buy_type'], //课程是否付款
                                 'expire_time' => $room_info['expire_time'], //课程过期天数
                                 'is_buy' => $is_buy, // 是否购买 0否 1是
