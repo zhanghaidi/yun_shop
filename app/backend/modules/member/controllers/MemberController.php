@@ -1030,7 +1030,7 @@ class MemberController extends BaseController
 
         $file_name = date('Ymdhis', time()) . '会员导出';
 
-        $export_data[0] = ['会员ID', '推荐人','粉丝', '姓名', '手机号', '等级', '分组', '注册时间', '积分', '余额', '订单', '金额', '关注', '提现手机号'];
+        $export_data[0] = ['会员ID', '推荐人','粉丝', '姓名', '手机号', '等级', '分组', '注册时间', '积分', '余额', '订单', '金额', '关注', '提现手机号', '企业微信'];
 
         foreach ($export_model->builder_model->toArray() as $key => $item) {
             if (!empty($item['yz_member']) && !empty($item['yz_member']['agent'])) {
@@ -1069,9 +1069,11 @@ class MemberController extends BaseController
                 $item['nickname'] = '，' . $item['nickname'];
             }
 
+            $item['qy_wexin'] = $item['has_one_qy_wechat'] ? '是' : '否';//是否绑定企业微信
+
             $export_data[$key + 1] = [$item['uid'],$agent, $item['nickname'], $item['realname'], $item['mobile'],
                 $level, $group, date('YmdHis', $item['createtime']), $item['credit1'], $item['credit2'], $order,
-                $price, $fans, $item['yz_member']['withdraw_mobile']];
+                $price, $fans, $item['yz_member']['withdraw_mobile'], $item['qy_wexin']];
         }
 
         $export_model->export($file_name, $export_data, \Request::query('route'));
