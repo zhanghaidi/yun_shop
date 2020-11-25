@@ -1406,45 +1406,55 @@ class LiveController extends BaseController
                             ]);
                         }
                     }
+                    if ($room_info['expire_time'] != -1) { //课程不是永久课程才更新时间 永久课程不用更新过期时间
 
-                    //判断课程是否过期 如果已过期就是支付时间 + 购买时长，如果没有过期，购买时长累计
-                    $room_subscription_info = DB::table('yz_appletslive_room_subscription')->where([['room_id', '=', $room_id], ['user_id', '=', $this->user_id]])->first();
-                    if (time() <= $room_subscription_info['course_expire']) {
-                        //未过期 现有过期时间戳 + 累计时长
-                        $course_expire = $room_subscription_info['course_expire'] + $course_expire_time;
-                    } else {
-                        //获取支付当天凌晨的时间
-                        $pay_time = strtotime(date('Y-m-d', $order_expire_status_info[0]['pay_time']));
-                        //已过期 支付时间 + 购买时长
-                        $course_expire = $pay_time + $course_expire_time;
+                        //判断课程是否过期 如果已过期就是支付时间 + 购买时长，如果没有过期，购买时长累计
+                        $room_subscription_info = DB::table('yz_appletslive_room_subscription')->where([['room_id', '=', $room_id], ['user_id', '=', $this->user_id]])->first();
+                        if (time() <= $room_subscription_info['course_expire']) {
+                            //未过期 现有过期时间戳 + 累计时长
+                            $course_expire = $room_subscription_info['course_expire'] + $course_expire_time;
+                        } else {
+                            //获取支付当天凌晨的时间
+                            $pay_time = strtotime(date('Y-m-d', $order_expire_status_info[0]['pay_time']));
+                            //已过期 支付时间 + 购买时长
+                            $course_expire = $pay_time + $course_expire_time;
+                        }
+                        //更新课程过期时间 如果后期允许一个商品关联多个课程，过期时间需要根据goods_id 关联的课程都更新下
+                        $up_course_expire_res = DB::table('yz_appletslive_room_subscription')->where([['room_id', '=', $room_id], ['user_id', '=', $this->user_id]])->update(['course_expire' => $course_expire]);
+                        if (!$up_course_expire_res) {
+                            DB::rollBack();//事务回滚
+                            return $this->errorJson('验证失败', [
+                                'buy_type' => $room_info['buy_type'], //课程是否付款
+                                'expire_time' => $room_info['expire_time'], //课程过期天数
+                                'is_buy' => $is_buy, // 是否购买 0否 1是
+                                'is_expire' => $is_expire, // 是否过期 0否 1是
+                                'course_expire' => 0,  //课程到期时间
+                                'course_expire_day' => 0  //课程剩余天数
+                            ]);
+                        }
+
                     }
 
-                    //更新课程过期时间 如果后期允许一个商品关联多个课程，过期时间需要根据goods_id 关联的课程都更新下
-                    $up_course_expire_res = DB::table('yz_appletslive_room_subscription')->where([['room_id', '=', $room_id], ['user_id', '=', $this->user_id]])->update(['course_expire' => $course_expire]);
-                    if (!$up_course_expire_res) {
-                        DB::rollBack();//事务回滚
-                        return $this->errorJson('验证失败', [
-                            'buy_type' => $room_info['buy_type'], //课程是否付款
-                            'expire_time' => $room_info['expire_time'], //课程过期天数
-                            'is_buy' => $is_buy, // 是否购买 0否 1是
-                            'is_expire' => $is_expire, // 是否过期 0否 1是
-                            'course_expire' => 0,  //课程到期时间
-                            'course_expire_day' => 0  //课程剩余天数
-                        ]);
-                    }
                 } else {
                     //如果不存在未累加的过期时间订单  查询课程过期时间
                     $room_subscription_info = DB::table('yz_appletslive_room_subscription')->where([['room_id', '=', $room_id], ['user_id', '=', $this->user_id]])->first();
                     $course_expire = $room_subscription_info['course_expire'];
                 }
+                if ($room_info['expire_time'] != -1) {
+                    //课程不是永久课程 更新时间
+                    if (time() <= $course_expire) { //判断是否过期
+                        $is_expire = 0;
+                        //计算剩余天数
+                        $course_expire_day = floor(($course_expire - time())/86400);
+                    }else{
+                        $is_expire = 1;
+                        $course_expire_day = 0;
+                    }
 
-                if (time() <= $course_expire) { //判断是否过期
+                } else {
+                    //永久课程直接返回-1 永不过期
                     $is_expire = 0;
-                    //计算剩余天数
-                    $course_expire_day = floor(($course_expire - time())/86400);
-                }else{
-                    $is_expire = 1;
-                    $course_expire_day = 0;
+                    $course_expire_day = -1;
                 }
 
             }
