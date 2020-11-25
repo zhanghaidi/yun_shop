@@ -523,9 +523,10 @@ class YunApp extends YunComponent
                  $member_id = $anchor_app->getMemberId($token);
                  break;
              case 2:
-                 $ajy_uid=DB::table('diagnostic_service_user')->where(['openid_token'=>$openid_token])->select('ajy_uid')->first();
+                 //fixbyzhd-增加芸众会员id 20201124
+                 $ajy_uid=DB::table('diagnostic_service_user')->where('openid_token', $openid_token)->orWhere('shop_openid_token', $openid_token)->select('ajy_uid')->first();
                  $member_id=$ajy_uid['ajy_uid'];
-                 //$member_id=$uid;
+
                  break;
              default:
                  if (Session::get('member_id')) {
