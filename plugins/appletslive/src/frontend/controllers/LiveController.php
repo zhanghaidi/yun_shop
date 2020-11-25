@@ -1389,6 +1389,7 @@ class LiveController extends BaseController
                         if ($val['course_expire_status'] == 1) {
                             continue;
                         }
+                        
                         //计算过期时间 更新时间 和 商品状态  更新商品管理order_goods表状态
                         $course_expire_time += $room_info['expire_time'] * 86400;
                         //累加之后更新订单状态
@@ -1420,7 +1421,7 @@ class LiveController extends BaseController
 
                     //更新课程过期时间 如果后期允许一个商品关联多个课程，过期时间需要根据goods_id 关联的课程都更新下
                     $up_course_expire_res = DB::table('yz_appletslive_room_subscription')->where([['room_id', '=', $room_id], ['user_id', '=', $this->user_id]])->update(['course_expire' => $course_expire]);
-                    if(!$up_course_expire_res){
+                    if (!$up_course_expire_res) {
                         DB::rollBack();//事务回滚
                         return $this->errorJson('验证失败', [
                             'buy_type' => $room_info['buy_type'], //课程是否付款
