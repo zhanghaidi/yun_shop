@@ -1353,11 +1353,14 @@ class LiveController extends BaseController
                 ])->get()->toArray();
             if (!empty($orders_info)) { //有购买完成的订单
 
+                DB::beginTransaction();//开启事务
+
                 $is_buy = 1;
                 //自动订阅课程
                 $this->autoSubscription($room_info['id']);
 
                 //累加课程过期时间 ---- 开始
+                //查询未累加时长的订单
                 $order_expire_status_info = DB::table('yz_order_goods')
                     ->join('yz_order', 'yz_order.id', '=', 'yz_order_goods.order_id')
                     ->select('yz_order_goods.id', 'yz_order_goods.course_expire_status', 'yz_order_goods.goods_id', 'yz_order_goods.order_id', 'yz_order.status', 'yz_order.pay_time')
@@ -1369,7 +1372,7 @@ class LiveController extends BaseController
                     ])->orderBy('yz_order.pay_time', 'asc')
                     ->get()->toArray();
 
-                if (!empty($order_expire_status_info)) { //更新课程过期时间
+                if (!empty($order_expire_status_info)) { //如果存在未累加的过期时间订单  循环订单更新课程过期时间
 
                     $course_expire_time = 0;
                     foreach ($order_expire_status_info as $k => $val) {
@@ -1378,35 +1381,64 @@ class LiveController extends BaseController
                         }
                         //计算过期时间 更新时间 和 商品状态  更新商品管理order_goods表状态
                         $course_expire_time += $room_info['expire_time'] * 86400;
-                        DB::table('yz_order_goods')->where([
-                            ['id', '=', $val['id']],
-                            ['goods_id', '=', $val['goods_id']],
-                            ['uid', '=', $this->user_id]
-                        ])->update(['course_expire_status' => 1]);
+                        //累加之后更新订单状态
+                        $up_order_goods_res = DB::table('yz_order_goods')->where([['id', '=', $val['id']], ['goods_id', '=', $val['goods_id']], ['uid', '=', $this->user_id]])->update(['course_expire_status' => 1]);
+                        if (!$up_order_goods_res) {
+                            DB::rollBack();//事务回滚
+                            return $this->errorJson('验证失败，更新', [
+                                'buy_type' => $room_info['buy_type'], //课程是否付款
+                                'expire_time' => $room_info['expire_time'], //课程过期天数
+                                'is_buy' => $is_buy, // 是否购买 0否 1是
+                                'is_expire' => $is_expire, // 是否过期 0否 1是
+                                'course_expire' => 0,  //课程到期时间
+                                'course_expire_day' => 0  //课程剩余天数
+                            ]);
+                        }
                     }
-                    //获取支付当天凌晨的时间
-                    $pay_time = strtotime(date('Y-m-d', $order_expire_status_info[0]['pay_time']));
-                    $course_expire = $pay_time + $course_expire_time;
+
+                    //判断课程是否过期 如果已过期就是支付时间 + 购买时长，如果没有过期，购买时长累计
+                    $room_subscription_info = DB::table('yz_appletslive_room_subscription')->where([['room_id', '=', $room_id], ['user_id', '=', $this->user_id]])->first();
+                    if (time() <= $room_subscription_info['course_expire']) {
+                        //未过期 现有过期时间戳 + 累计时长
+                        $course_expire = $room_subscription_info['course_expire'] + $course_expire_time;
+                    } else {
+                        //获取支付当天凌晨的时间
+                        $pay_time = strtotime(date('Y-m-d', $order_expire_status_info[0]['pay_time']));
+                        //已过期 支付时间 + 购买时长
+                        $course_expire = $pay_time + $course_expire_time;
+                    }
+
                     //更新课程过期时间 如果后期允许一个商品关联多个课程，过期时间需要根据goods_id 关联的课程都更新下
-                    $res = DB::table('yz_appletslive_room_subscription')->where([['room_id', '=', $room_id], ['user_id', '=', $this->user_id]])->update(['course_expire' => $course_expire]);
-                    if(!$res){
-                        $course_expire = 0;
+                    $up_course_expire_res = DB::table('yz_appletslive_room_subscription')->where([['room_id', '=', $room_id], ['user_id', '=', $this->user_id]])->update(['course_expire' => $course_expire]);
+                    if(!$up_course_expire_res){
+                        DB::rollBack();//事务回滚
+                        return $this->errorJson('验证失败', [
+                            'buy_type' => $room_info['buy_type'], //课程是否付款
+                            'expire_time' => $room_info['expire_time'], //课程过期天数
+                            'is_buy' => $is_buy, // 是否购买 0否 1是
+                            'is_expire' => $is_expire, // 是否过期 0否 1是
+                            'course_expire' => 0,  //课程到期时间
+                            'course_expire_day' => 0  //课程剩余天数
+                        ]);
                     }
                 } else {
-
+                    //如果不存在未累加的过期时间订单  查询课程过期时间
                     $room_subscription_info = DB::table('yz_appletslive_room_subscription')->where([['room_id', '=', $room_id], ['user_id', '=', $this->user_id]])->first();
                     $course_expire = $room_subscription_info['course_expire'];
                 }
 
-                if (time() <= $course_expire) {
+                if (time() <= $course_expire) { //判断是否过期
                     $is_expire = 0;
                     $course_expire_day = 0;
+                }else{
+                    //计算剩余天数
+                    $course_expire_day = floor(($course_expire - time())/86400);
                 }
-                //计算剩余天数
-                $course_expire_day = floor(($course_expire - time())/86400);
+
             }
+            DB::commit();//事务提交
         }
-        return $this->successJson('获取成功', [
+        return $this->successJson('验证成功', [
             'buy_type' => $room_info['buy_type'], //课程是否付款
             'expire_time' => $room_info['expire_time'], //课程过期天数
             'is_buy' => $is_buy, // 是否购买 0否 1是
