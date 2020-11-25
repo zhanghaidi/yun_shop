@@ -154,6 +154,11 @@ class RoomController extends BaseController
                 if (DB::table('yz_appletslive_room')->where('goods_id', $param['goods_id'])->where('id', '<>', $id)->first()) {
                     return $this->message('该商品已经关联其它课程', Url::absoluteWeb(''), 'danger');
                 }
+                //{{--fixby-wk-课程付费 20201125 商品必须是虚拟商品--}}
+                $goods_info = DB::table('yz_goods')->where('id', $param['goods_id'])->first();
+                if ($goods_info['type'] == 1) {
+                    return $this->message('关联商品必须是虚拟商品', Url::absoluteWeb(''), 'danger');
+                }
                 $upd_data['live_status'] = intval($param['live_status']);
                 $upd_data['is_selected'] = intval($param['is_selected']);//是否精选 0否 1是
                 $upd_data['tag'] = $param['tag'];//课程标签
@@ -233,6 +238,11 @@ class RoomController extends BaseController
                 //{{--fixby-wk-课程付费 20201124 一个课程只能关联一个商品--}}
                 if (DB::table('yz_appletslive_room')->where('goods_id', $param['goods_id'])->first()) {
                     return $this->message('该商品已经关联其它课程', Url::absoluteWeb(''), 'danger');
+                }
+                //{{--fixby-wk-课程付费 20201125 商品必须是虚拟商品--}}
+                $goods_info = DB::table('yz_goods')->where('id', $param['goods_id'])->first();
+                if ($goods_info['type'] == 1) {
+                    return $this->message('关联商品必须是虚拟商品', Url::absoluteWeb(''), 'danger');
                 }
                 $ist_data['live_status'] = intval($param['live_status']);
                 $ist_data['is_selected'] = intval($param['is_selected']);//是否精选 0否 1是
