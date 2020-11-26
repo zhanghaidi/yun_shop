@@ -1474,7 +1474,7 @@ class CacheService
     }
 
     /**
-     * ficBy-wk-20201126 获取用户订阅的课程信息 课程购买，过期状态
+         * ficBy-wk-20201126 获取用户订阅的课程信息 课程购买，过期状态
      * @param $user_id
      * @param $room_id
      */
@@ -1489,6 +1489,32 @@ class CacheService
         if (empty($userSubscriptionInfo)) {
             //没有查到订阅记录，用户没有购买过，因为购买是自动订阅的
             return false;
+        }
+
+        //获取课程信息
+        $room_info = DB::table('yz_appletslive_room')
+            ->select('id', 'name', 'buy_type', 'expire_time', 'goods_id')
+            ->where('type', 1)
+            ->where('id', $room_id)
+            ->where('delete_time', 0)
+            ->first();
+
+        if ($room_info['buy_type'] == 1 && $room_info['expire_time'] == -1) { //永久课程 判断用户是否购买成功
+
+            //验证是否购买过 是否有购买完成的订单
+            $orders_info = DB::table('yz_order_goods')
+                ->join('yz_order', 'yz_order.id', '=', 'yz_order_goods.order_id')
+                ->select('yz_order_goods.id', 'yz_order_goods.course_expire_status', 'yz_order_goods.goods_id', 'yz_order_goods.order_id', 'yz_order.status', 'yz_order.pay_time')
+                ->where([
+                    ['yz_order.status', '=', '3'], //订单状态 -1关闭,0待付款,1待发货,2待收货,3已完成
+                    ['yz_order_goods.goods_id', '=', $room_info['goods_id']],
+                    ['yz_order_goods.uid', '=', $user_id]
+                ])->first();
+
+            if (!empty($orders_info)) {
+                return true;
+            }
+
         }
 
         if (time() < $userSubscriptionInfo['course_expire']) {
