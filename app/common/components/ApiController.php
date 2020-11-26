@@ -64,7 +64,8 @@ class ApiController extends BaseController
         if ($type == 66 && $ju_sign == '6040bea') {
 
         } else {
-            $member_id = Session::get('member_id');
+            //fixbyzhd-zhd-20201125 暂时注释陆洋增加session，因为全局member_id会在下面生成
+            /*$member_id = Session::get('member_id');
             if ($type == 2) {
                 if (!$member_id && !empty($openid_token)) {
                     $member=Db::table('diagnostic_service_user')->where('openid_token', $openid_token)->orWhere('shop_openid_token', $openid_token)->first();
@@ -73,7 +74,7 @@ class ApiController extends BaseController
                     }
 
                 }
-            }
+            }*/
             $member = MemberFactory::create($type);
 
             if (is_null($member)) {

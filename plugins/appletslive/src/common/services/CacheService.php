@@ -86,7 +86,7 @@ class CacheService
             ->where('delete_time', 0)
             ->count();
         $list = DB::table('yz_appletslive_room')
-            ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag')
+            ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag', 'buy_type', 'goods_id' ,'expire_time')
             ->where('type', 1)
             ->where('delete_time', 0)
             ->orderBy('sort', 'desc')
@@ -133,7 +133,7 @@ class CacheService
         $cache_key = self::$cache_keys['recorded.roominfo'];
         $cache_val = Cache::get($cache_key);
         $info = DB::table('yz_appletslive_room')
-            ->select('id', 'type', 'roomid', 'name', 'anchor_name', 'cover_img', 'start_time', 'end_time','live_status', 'desc')
+            ->select('id', 'type', 'roomid', 'name', 'anchor_name', 'cover_img', 'start_time', 'end_time','live_status', 'desc', 'buy_type', 'goods_id' ,'expire_time')
             ->where('id', $room_id)
             ->first();
         if (!$cache_val) {
@@ -1451,7 +1451,7 @@ class CacheService
             ->where('delete_time', 0)
             ->count();
         $list = DB::table('yz_appletslive_room')
-            ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag')
+            ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag', 'buy_type', 'expire_time', 'goods_id')
             ->where('type', 1)
             ->where('is_selected', 1)
             ->where('delete_time', 0)
@@ -1473,5 +1473,31 @@ class CacheService
         Cache::add($cache_key, $cache_val, 1);
     }
 
+    /**
+     * ficBy-wk-20201126 获取用户订阅的课程信息 课程购买，过期状态
+     * @param $user_id
+     * @param $room_id
+     */
+    public static function getUserSubscriptionInfo($user_id, $room_id = 0)
+    {
+        $userSubscriptionInfo = DB::table('yz_appletslive_room_subscription')->where('uniacid', self::$uniacid)
+            ->where('user_id', $user_id)
+            ->where('room_id', $room_id)
+            ->where('type', 1)
+            ->first();
+
+        if (empty($userSubscriptionInfo)) {
+            //没有查到订阅记录，用户没有购买过，因为购买是自动订阅的
+            return false;
+        }
+
+        if (time() < $userSubscriptionInfo['course_expire']) {
+            //课程在有效期内
+            return true;
+        }
+
+        return false;
+
+    }
 
 }
