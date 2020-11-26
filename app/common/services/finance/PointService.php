@@ -187,6 +187,9 @@ class PointService
     const POINT_GIVE_BACK_UNENOUGH = 49;
     const POINT_GIVE_BACK_UNENOUGH_ATTACHED = '赠送积分回收不足';
 
+    const POINT_MODE_REGISTER = 50;
+    const POINT_MODE_REGISTER_ATTACHED = '注册赠送';
+
     const POINT = 0;
 
     public $point_data = array();
@@ -550,6 +553,9 @@ class PointService
                 break;
             case (49):
                 $mode_attribute = self::POINT_GIVE_BACK_UNENOUGH_ATTACHED;
+                break;
+            case (50):
+                $mode_attribute = self::POINT_MODE_REGISTER_ATTACHED;
                 break;
         }
         return $mode_attribute;
