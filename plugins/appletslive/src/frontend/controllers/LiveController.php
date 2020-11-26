@@ -575,6 +575,8 @@ class LiveController extends BaseController
                 $page_val['list'][$k]['view_num'] = $numdata[$key]['view_num'];
                 $page_val['list'][$k]['comment_num'] = $numdata[$key]['comment_num'];
                 $page_val['list'][$k]['has_subscription'] = (array_search($page_val['list'][$k]['id'], $my_subscription) === false) ? false : true;
+//              判断课程是否购买，是否在有效期内
+                $page_val['list'][$k]['has_course'] = ($this->user_id ? CacheService::getUserSubscriptionInfo($this->user_id, $v['id']) : false);
                 $page_val['list'][$k]['goods_info'] = [];
                 if($v['goods_id'] > 0 && $v['buy_type'] == 1){
                     $page_val['list'][$k]['goods_info'] = DB::table('yz_goods')->where('id',$v['goods_id'])->first();
@@ -720,6 +722,8 @@ class LiveController extends BaseController
                     $list[$k]['start_time'] = date('Y-m-d H:i', $list[$k]['start_time']);
                     $list[$k]['end_time'] = date('Y-m-d H:i', $list[$k]['end_time']);
                 }else if($list[$k]['type'] == 1){
+//              判断课程是否购买，是否在有效期内
+                    $list[$k]['has_course'] = CacheService::getUserSubscriptionInfo($this->user_id, $v['id']);
                     $list[$k]['goods_info'] = [];
                     if ($list[$k]['goods_id'] > 0 && $list[$k]['buy_type'] == 1) {
                         $list[$k]['goods_info'] = DB::table('yz_goods')->where('id', $list[$k]['goods_id'])->first();
@@ -1299,6 +1303,9 @@ class LiveController extends BaseController
                 $page_val['list'][$k]['view_num'] = $numdata[$key]['view_num'];
                 $page_val['list'][$k]['comment_num'] = $numdata[$key]['comment_num'];
                 $page_val['list'][$k]['has_subscription'] = (array_search($page_val['list'][$k]['id'], $my_subscription) === false) ? false : true;
+//              判断课程是否购买，是否在有效期内
+                $page_val['list'][$k]['has_course'] = ($this->user_id ? CacheService::getUserSubscriptionInfo($this->user_id, $v['id']) : false);
+
                 $page_val['list'][$k]['goods_info'] = [];
                 if($v['goods_id'] > 0 && $v['buy_type'] == 1){
                     $page_val['list'][$k]['goods_info'] = DB::table('yz_goods')->where('id',$v['goods_id'])->first();
