@@ -108,7 +108,13 @@ class LiveController extends BaseController
     public function followlink()
     {
         $setting = Setting::get('plugin.min_app');
-        return $this->successJson('获取成功', $setting['follow_link']);
+
+        $data['follow_link'] = $setting['follow_link'];
+//        fixBy-wk-20201126 增加企业微信加入群聊链接设置 灸师企业微信
+        $data['qy_wecht_group_link'] = $setting['qy_wecht_group_link'];
+        $data['jiushi_qy_wecht_link'] = $setting['jiushi_qy_wecht_link'];
+
+        return $this->successJson('获取成功', $data);
     }
 
     /************************ 测试用代码 BEGIN ************************/
