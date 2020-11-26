@@ -1473,5 +1473,31 @@ class CacheService
         Cache::add($cache_key, $cache_val, 1);
     }
 
+    /**
+     * ficBy-wk-20201126 获取用户订阅的课程信息 课程购买，过期状态
+     * @param $user_id
+     * @param $room_id
+     */
+    public static function getUserSubscriptionInfo($user_id, $room_id = 0)
+    {
+        $userSubscriptionInfo = DB::table('yz_appletslive_room_subscription')->where('uniacid', self::$uniacid)
+            ->where('user_id', $user_id)
+            ->where('room_id', $room_id)
+            ->where('type', 1)
+            ->first();
+
+        if (empty($userSubscriptionInfo)) {
+            //没有查到订阅记录，用户没有购买过，因为购买是自动订阅的
+            return false;
+        }
+
+        if (time() < $userSubscriptionInfo['course_expire']) {
+            //课程在有效期内
+            return true;
+        }
+
+        return false;
+
+    }
 
 }
