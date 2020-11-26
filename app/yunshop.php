@@ -525,12 +525,14 @@ class YunApp extends YunComponent
                  break;
              case 2:
                  //fixbyzhd-增加芸众会员id 20201124
-                 if($app_type == 'shop'){
-                     $ajy_uid=DB::table('diagnostic_service_user')->where('shop_openid_token', $openid_token)->select('ajy_uid')->first();
-                 }else{
-                     $ajy_uid=DB::table('diagnostic_service_user')->where('openid_token', $openid_token)->select('ajy_uid')->first();
+                 if($openid_token){
+                     if($app_type == 'shop'){
+                         $ajy_uid=DB::table('diagnostic_service_user')->where('shop_openid_token', $openid_token)->select('ajy_uid')->first();
+                     }else{
+                         $ajy_uid=DB::table('diagnostic_service_user')->where('openid_token', $openid_token)->select('ajy_uid')->first();
+                     }
+                     $member_id = $ajy_uid['ajy_uid'];
                  }
-                 $member_id = $ajy_uid['ajy_uid'];
                  break;
              default:
                  if (Session::get('member_id')) {
