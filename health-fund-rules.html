@@ -5,8 +5,7 @@
     <meta charset="utf-8">
     <title>健康金规则</title>
 </head>
-<meta name="viewport"
-    content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style type="text/css">
     * {
         margin: 0;
@@ -43,7 +42,7 @@
             type: "GET",
             url,
             dataType: "json",
-            success: function (data) {
+            success: function (res) {
                 $('.content').html(res.data.health_gold_rules)
             },
             error: function (jqXHR) {
