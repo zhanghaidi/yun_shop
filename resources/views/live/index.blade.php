@@ -1,0 +1,105 @@
+@extends('layouts.base')
+@section('title', '直播间列表')
+@section('content')
+    <div class="rightlist">
+
+        <div class="right-titpos">
+            <ul class="add-snav">
+                <li class="active"><a href="#">直播间列表</a></li>
+            </ul>
+        </div>
+
+        <div class="panel panel-info">
+            <div class="panel-body">
+                <form action=" " method="post" class="form-horizontal" role="form" >
+                    <input type="hidden" name="c" value="site"/>
+                    <input type="hidden" name="a" value="entry"/>
+                    <input type="hidden" name="m" value="yun_shop"/>
+
+                    <div class="form-group">
+                        <div class="col-sm-2 col-lg-3 col-xs-12">
+                            <input class="form-control" name="search[id]" type="text" value="{{ $search['id'] or ''}}" placeholder="直播间ID">
+                        </div>
+                        <div class="col-sm-2 col-lg-3 col-xs-12">
+                            <input class="form-control" name="search[name]" type="text" value="{{ $search['name'] or ''}}" placeholder="直播间名称">
+                        </div>
+                        <div class="col-sm-2 col-lg-3 col-xs-12">
+                            <input class="form-control" name="search[anchor_name]" type="text" value="{{ $search['anchor_name'] or ''}}" placeholder="主播名称">
+                        </div>
+                        <div class="col-xs-2 col-sm-2 col-lg-3 search-btn">
+                            <div class="btn-input">
+                                <input type="submit" class="btn btn-block btn-success" value="搜索">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">总数：{{ $roomList->total() }}&nbsp;&nbsp;&nbsp;&nbsp;<a class='btn btn-info' href="{{ yzWebUrl('live.live-room.edit') }}" style="margin-bottom: 2px">添加直播间</a>&nbsp;&nbsp;&nbsp;&nbsp;</div>
+            <div class="panel-body ">
+                <table class="table table-hover">
+                    <thead class="navbar-inner">
+                    <tr>
+                        <th style='width:5%; text-align: center;'>ID</th>
+                        <th style='width:5%; text-align: center;'>主播</th>
+                        <th style='width:8%; text-align: center;'>直播间名称</th>
+                        <th style='width:8%; text-align: center;'>封面图片</th>
+                        <th style='width:8%; text-align: center;'>分享图片</th>
+                        <th style='width:15%; text-align: center;'>推流URL</th>
+                        <th style='width:15%; text-align: center;'>拉流URL</th>
+                        <th style='width:8%; text-align: center;'>直播开始时间</th>
+                        <th style='width:8%; text-align: center;'>直播结束时间</th>
+                        <th style='width:8%; text-align: center;'>直播状态</th>
+                        <th style='width:8%; text-align: center;'>添加时间</th>
+                        <th style='width:15%; text-align: center;'>操作</th>
+                    </tr>
+                    </thead>
+                    @foreach($roomList as $list)
+                        <tr style="text-align: center;">
+                            <td>{{ $list->id }}</td>
+                            <td>{{ $list->anchor_name }}</td>
+                            <td>{{ $list->name }}</td>
+                            <td>
+                                <a href='{{yz_tomedia($list->picture)}}' target='_blank'><img src="{{yz_tomedia($list->cover_img)}}" style='width:100px;border:1px solid #ccc;padding:1px' /></a>
+                            </td>
+                            <td>
+                                <a href='{{yz_tomedia($list->picture)}}' target='_blank'><img src="{{yz_tomedia($list->share_img)}}" style='width:100px;border:1px solid #ccc;padding:1px' /></a>
+                            </td>
+                            <td>{{ $list->push_url }}</td>
+                            <td>{{ $list->pull_url }}</td>
+                            <td>{{ $list->start_time }}</td>
+                            <td>{{ $list->end_time }}</td>
+                            <td><label class="label label-info">{{ $list->status_parse }}</label></td>
+                            <td><span class='label label-default'>{{ $list->created_at }}</span></td>
+                            <td>
+                                @if( $list->live_status == 101 ) <a class='btn btn-default' href="{{ yzWebUrl('live.live-room.stop', array('id' => $list->id)) }}" style="margin-bottom: 2px">结束直播</a>                                          @elseif($list->end_time > date('Y-m-d H:i:s')) <a class='btn btn-default' href="{{ yzWebUrl('live.live-room.start', array('id' => $list->id)) }}" style="margin-bottom: 2px">开始直播</a>
+                                @endif
+                                <a class='btn btn-default' href="{{ yzWebUrl('live.live-room.edit', array('id' => $list->id)) }}" style="margin-bottom: 2px">编辑</a>
+
+                                    <a style="margin-bottom: 2px" href="javascript:;" data-url="{{ $list->push_url }}" class="btn btn-default copy_push">复制推流</a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </table>
+                {!! $page !!}
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('.copy_push').click(function(){
+                var input = document.createElement('input');
+                document.body.appendChild(input);
+                input.setAttribute('value', this.dataset.url);
+                input.select();
+                if (document.execCommand('copy')) {
+                    document.execCommand('copy');
+                    alert('复制成功');
+                }
+                document.body.removeChild(input);
+            });
+        });
+    </script>
+
+@endsection
