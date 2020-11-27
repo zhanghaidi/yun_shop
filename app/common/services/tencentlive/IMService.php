@@ -16,49 +16,68 @@ class IMService
 
     public function getGroupList()
     {
-        $url = self::getRequestUrl('group_open_http_svc','get_appid_group_list');
+        $url = self::getRequestUrl('group_open_http_svc', 'get_appid_group_list');
         $data = json_encode([
-              "Limit"=> 1000,
-              "Next"=> 0
+            "Limit" => 1000,
+            "Next" => 0
         ]);
-        return json_decode($this->curl_post($url,$data),true);
+        return json_decode($this->curl_post($url, $data), true);
     }
 
     public function getGroupMsg($group_id)
     {
-        $url = self::getRequestUrl('group_open_http_svc','group_msg_get_simple');
+        $url = self::getRequestUrl('group_open_http_svc', 'group_msg_get_simple');
         $data = json_encode([
-              "GroupId"=> $group_id,
-              "ReqMsgNumber"=> 100
+            "GroupId" => $group_id,
+            "ReqMsgNumber" => 100
         ]);
-        return json_decode($this->curl_post($url,$data),true);
+        return json_decode($this->curl_post($url, $data), true);
     }
 
-    public function createGroup($group_id,$name)
+
+    public function sendGroupMsg($group_id, $text)
     {
-        $url = self::getRequestUrl('group_open_http_svc','create_group');
+        $url = self::getRequestUrl('group_open_http_svc', 'send_group_msg');
         $data = json_encode([
-              "Type"=> 'AVChatRoom',
-              "GroupId"=> self::GROUP_PREFIX . $group_id,
-              "Name"=> $name
+            "GroupId" => $group_id,
+            "Random" => mt_rand(10000, 100000),
+            "MsgBody" => [
+                [
+                    "MsgType" => "TIMTextElem",
+                    "MsgContent" => [
+                        "Text" => $text
+                    ]
+                ]
+            ]
         ]);
-        return json_decode($this->curl_post($url,$data));
+        return json_decode($this->curl_post($url, $data), true);
+    }
+
+    public function createGroup($group_id, $name)
+    {
+        $url = self::getRequestUrl('group_open_http_svc', 'create_group');
+        $data = json_encode([
+            "Type" => 'AVChatRoom',
+            "GroupId" => self::GROUP_PREFIX . $group_id,
+            "Name" => $name
+        ]);
+        return json_decode($this->curl_post($url, $data));
     }
 
     public function getGroupInfo($group_id)
     {
-        $url = self::getRequestUrl('group_open_http_svc','get_group_info');
-        $data = json_encode(['a'=>1,'b'=>2]);
-        return json_decode($this->curl_post($url,$data),true);
+        $url = self::getRequestUrl('group_open_http_svc', 'get_group_info');
+        $data = json_encode(['a' => 1, 'b' => 2]);
+        return json_decode($this->curl_post($url, $data), true);
     }
 
     public function getOnlineMemberNum($group_id)
     {
-        if(!empty($group_id)){
-            $url = self::getRequestUrl('group_open_http_svc','get_online_member_num');
-            $data = json_encode(['GroupId'=>$group_id]);
-            $resp = json_decode($this->curl_post($url,$data));
-            if($resp->ErrorCode == 0){
+        if (!empty($group_id)) {
+            $url = self::getRequestUrl('group_open_http_svc', 'get_online_member_num');
+            $data = json_encode(['GroupId' => $group_id]);
+            $resp = json_decode($this->curl_post($url, $data));
+            if ($resp->ErrorCode == 0) {
                 return $resp->OnlineMemberNum;
             }
         }
@@ -66,14 +85,16 @@ class IMService
     }
 
 
-    protected static function getRequestUrl($servicename,$command){
+    protected static function getRequestUrl($servicename, $command)
+    {
         $usersig = self::getSign();
-        return self::BASE_URL . "{$servicename}/{$command}?sdkappid=" . self::SDK_APPID . '&Identifier=' . self::IDENTIFIER . '&usersig=' . $usersig . '&random=' . mt_rand(1000,1000000) . '&contenttype=json';
+        return self::BASE_URL . "{$servicename}/{$command}?sdkappid=" . self::SDK_APPID . '&Identifier=' . self::IDENTIFIER . '&usersig=' . $usersig . '&random=' . mt_rand(1000, 1000000) . '&contenttype=json';
     }
 
-    public static function getSign($userId = ''){
-        $TLSSigAPIv2 = new TLSSigAPIv2(self::SDK_APPID,self::APP_KEY);
-        if(empty($userId))
+    public static function getSign($userId = '')
+    {
+        $TLSSigAPIv2 = new TLSSigAPIv2(self::SDK_APPID, self::APP_KEY);
+        if (empty($userId))
             $userId = self::IDENTIFIER;
         return $TLSSigAPIv2->genUserSig($userId);
     }

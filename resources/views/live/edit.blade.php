@@ -33,7 +33,7 @@
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span >*</span>封面图片</label>
                             <div class="col-sm-9 col-xs-12 col-md-6 detail-logo">
                                 {!! app\common\helpers\ImageHelper::tplFormFieldImage('live[cover_img]', $live['cover_img']) !!}
-                                <span class="help-block">建议图片宽高比例为4:5</span>
+                                <span class="help-block">建议图片宽高比例为9:16</span>
                                 @if (!empty($live['cover_img']))
                                     <a href='{{yz_tomedia($live['cover_img'])}}' target='_blank'>
                                         <img src="{{yz_tomedia($live['cover_img'])}}" style='width:100px;border:1px solid #ccc;padding:1px' />
@@ -46,7 +46,7 @@
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span >*</span>分享图片</label>
                             <div class="col-sm-9 col-xs-12 col-md-6 detail-logo">
                                 {!! app\common\helpers\ImageHelper::tplFormFieldImage('live[share_img]', $live['share_img']) !!}
-                                <span class="help-block">建议图片宽高比例为4:5</span>
+                                <span class="help-block">建议图片宽高比例为5:4</span>
                                 @if (!empty($live['share_img']))
                                     <a href='{{yz_tomedia($live['share_img'])}}' target='_blank'>
                                         <img src="{{yz_tomedia($live['share_img'])}}" style='width:100px;border:1px solid #ccc;padding:1px' />
