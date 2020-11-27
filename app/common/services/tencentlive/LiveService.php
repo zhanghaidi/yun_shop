@@ -12,6 +12,8 @@ use TencentCloud\Common\Profile\HttpProfile;
 use TencentCloud\Common\Exception\TencentCloudSDKException;
 use TencentCloud\Live\V20180801\LiveClient;
 use TencentCloud\Live\V20180801\Models\DescribeLiveStreamStateRequest;
+use TencentCloud\Live\V20180801\Models\DropLiveStreamRequest;
+use TencentCloud\Live\V20180801\Models\ResumeLiveStreamRequest;
 
 class LiveService
 {
@@ -78,6 +80,51 @@ class LiveService
         if ($client) {
             $resp = $client->DescribeLiveStreamState($req);
             return $resp->StreamState;
+        } else {
+            return '';
+        }
+    }
+
+    public function dropLiveStream($streamName = '')
+    {
+        $live_setting = LiveSetService::getSetting();
+        $req = new DropLiveStreamRequest();
+        $params = array(
+            "StreamName" => self::SATREAM_NAME_RRE . $streamName,
+            "DomainName" => $live_setting['push_domain'],
+            "AppName" => self::APPNAME,
+        );
+
+        $client = $this->sendRequest($req, $params);
+
+        if ($client) {
+            try {
+                $resp = $client->DropLiveStream($req);
+                return $resp->RequestId;
+            } catch (TencentCloudSDKException $e) {
+                \Log::error("LiveService dropLiveStream,error:" . $e->getMessage());
+                return '';
+            }
+        } else {
+            return '';
+        }
+    }
+
+    public function resumeLiveStream($streamName = '')
+    {
+        $live_setting = LiveSetService::getSetting();
+        $req = new ResumeLiveStreamRequest();
+        $params = array(
+            "StreamName" => self::SATREAM_NAME_RRE . $streamName,
+            "DomainName" => $live_setting['push_domain'],
+            "AppName" => self::APPNAME,
+        );
+
+        $client = $this->sendRequest($req, $params);
+
+        if ($client) {
+            $resp = $client->ResumeLiveStream($req);
+            return $resp->RequestId;
         } else {
             return '';
         }

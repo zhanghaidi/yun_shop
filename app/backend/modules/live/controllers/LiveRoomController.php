@@ -94,6 +94,7 @@ class LiveRoomController extends BaseController
             $this->verifyRoom($id);
             $this->room_model->live_status = 101;
             if($this->room_model->save() !== false){
+                (new LiveService())->resumeLiveStream($id);
                 return $this->message('开始直播成功', Url::absoluteWeb('live.live-room.index'));
             }else{
                 return $this->message('开始直播失败', Url::absoluteWeb('live.live-room.index'));
@@ -109,6 +110,10 @@ class LiveRoomController extends BaseController
             $this->verifyRoom($id);
             $this->room_model->live_status = 103;
             if($this->room_model->save() !== false){
+                $live_service = new LiveService();
+                if($live_service->getDescribeLiveStreamState($id) == 'active'){
+                    $live_service->dropLiveStream($id);
+                }
                 return $this->message('结束直播成功', Url::absoluteWeb('live.live-room.index'));
             }else{
                 return $this->message('结束直播失败', Url::absoluteWeb('live.live-room.index'));
