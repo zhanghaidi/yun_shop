@@ -43,7 +43,7 @@
             type: "GET",
             url,
             dataType: "json",
-            success: function (data) {
+            success: function (res) {
                 $('.content').html(res.data.health_gold_rules)
             },
             error: function (jqXHR) {
