@@ -26,12 +26,12 @@ class LiveRoomController extends ApiController
 
     const PAGE_SIZE = 10;
 
-    protected $ignoreAction = ['index','detail','getMsgList'];
+    protected $ignoreAction = ['index','detail','getMsgList','sendMsg'];
 
     public function index()
     {
-        $_model = new LiveService();
-        return $this->successJson('调试接口',$_model->getDescribeLiveStreamState(3));
+//        $_model = new LiveService();
+//        return $this->successJson('调试接口',$_model->getDescribeLiveStreamState(3));
 //        return $this->successJson('调试接口',$_model->dropLiveStream(3));
         $im_service = new IMService();
 //        return $this->successJson('调试接口',$im_service->getGroupList());
@@ -49,6 +49,13 @@ class LiveRoomController extends ApiController
             return $this->errorJson('请登录');
         }
 
+    }
+
+    public function sendMsg(){
+        $im_service = new IMService();
+        $id = request()->id ? request()->id : 3;
+        $msg = request()->text ? request()->text : 'This is test ' . date('Y-m-d H:i:s');
+        return $this->successJson('调试接口',$im_service->sendGroupMsg(IMService::GROUP_PREFIX . $id ,$msg));
     }
 
     public function detail()
@@ -90,7 +97,7 @@ class LiveRoomController extends ApiController
         if (empty($list['data'])) {
             return $this->errorJson('没有找到消息记录');
         }else{
-            return $this->successJson('获取消息记录成功', $list['data']);
+            return $this->successJson('获取消息记录成功', $list);
         }
     }
 

@@ -2975,6 +2975,30 @@ class Menu
                             ],
                         ]
                     ],
+                    'im_log' => [
+                        'name'       => 'IM消息日志',
+                        'url'        => 'live.IM-log.index',
+                        'url_params' => '',
+                        'permit'     => 1,
+                        'menu'       => 1,
+                        'icon'       => 'fa-cog',
+                        'sort'       => 0,
+                        'item'       => 'im_log',
+                        'parents'    => ['live'],
+                        'child'            => [
+                            'im_log_del' => [
+                                'name'       => 'IM消息日志删除',
+                                'url'        => 'live.IM-log.del',
+                                'url_params' => '',
+                                'permit'     => 1,
+                                'menu'       => 1,
+                                'icon'       => 'fa-cog',
+                                'sort'       => 0,
+                                'item'       => 'im_log_del',
+                                'parents'    => ['live','im_log'],
+                            ],
+                        ]
+                    ]
                 ]
 
             ],
