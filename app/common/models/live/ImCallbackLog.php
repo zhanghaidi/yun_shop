@@ -107,17 +107,21 @@ class ImCallbackLog extends BaseModel
     {
         $model = $query->where('uniacid', \YunShop::app()->uniacid);
 
+        if (!empty($search['callback_command'])) {
+            $query->where('callback_command', 'like', '%' . trim($search['callback_command']) . '%');
+        }
+
         if (!empty($search['group_id'])) {
-            $query->where('group_id', 'like', '%' . $search['name'] . '%');
+            $query->where('group_id', '=', trim($search['group_id']));
         }
 
-        if (!empty($search['id'])) {
-            $query->where('id', '=', $search['id']);
+        if ($search['is_time']) {
+            if ($search['time']['start'] != '请选择' && $search['time']['end'] != '请选择') {
+                $range = [strtotime($search['time']['start']), strtotime($search['time']['end'])];
+                $model->whereBetween('created_at', $range);
+            }
         }
 
-        if (!empty($search['anchor_name'])) {
-            $query->where('anchor_name', 'like', '%' . $search['anchor_name'] . '%');
-        }
         return $model;
     }
 
@@ -168,6 +172,12 @@ class ImCallbackLog extends BaseModel
             }
         }
         return 0;
+    }
+
+    static public function del($start, $end)
+    {
+        $range = [strtotime($start), strtotime($end)];
+        return static::whereBetween('created_at', $range);
     }
 
 }
