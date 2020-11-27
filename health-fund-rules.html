@@ -35,8 +35,8 @@
 </html>
 <script src="./static/js//jquery-2.2.3.min.js"></script>
 <script type="text/javascript">
-    let url = "https://devhw.aijuyi.net/app/index.php?i=45&t=0&v=1.0.1&from=wxapp&c=entry&a=wxapp&m=ajy_services&do=";
-    url = `${url}HealthGoldRules&debug=508`;
+    let host = window.location.host;
+    let url = `https://${host}/app/index.php?i=45&t=0&v=1.0.1&from=wxapp&c=entry&a=wxapp&m=ajy_services&do=HealthGoldRules&debug=508`;
     $(function () {
         $.ajax({
             type: "GET",
