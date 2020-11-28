@@ -12,6 +12,7 @@ use app\common\components\BaseController;
 use app\common\facades\Setting;
 use app\common\services\tencentlive\IMService;
 use app\common\models\live\ImCallbackLog;
+use app\common\services\tencentlive\LiveSetService;
 
 class IMCallbackController extends BaseController
 {
@@ -23,7 +24,7 @@ class IMCallbackController extends BaseController
         $req_data = request()->input();
         $input_data = request()->getContent();
         \Log::debug('IMCallback req_data:' . json_encode($req_data, 320) . ' input_data:' . $input_data);
-        if($req_data['SdkAppid'] != IMService::SDK_APPID){
+        if($req_data['SdkAppid'] != LiveSetService::getIMSetting('sdk_appid')){
             return $this->responJson(4002, 'error', 'illegal SdkAppid!');
         }
 

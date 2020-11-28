@@ -12,6 +12,7 @@ namespace app\frontend\modules\live\controllers;
 
 use app\common\components\ApiController;
 use app\common\facades\Setting;
+use app\common\services\tencentlive\LiveSetService;
 use app\frontend\models\Member;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
@@ -26,12 +27,12 @@ class LiveRoomController extends ApiController
 
     const PAGE_SIZE = 10;
 
-    protected $ignoreAction = ['index','detail','getMsgList','sendMsg'];
+    protected $ignoreAction = ['index','detail','getMsgList','sendMsg','testRisk'];
 
     public function index()
     {
-//        $_model = new LiveService();
-//        return $this->successJson('调试接口',$_model->getDescribeLiveStreamState(3));
+        $_model = new LiveService();
+        return $this->successJson('调试接口',$_model->getDescribeLiveStreamState('ajygroup-3'));
 //        return $this->successJson('调试接口',$_model->dropLiveStream(3));
         $im_service = new IMService();
 //        return $this->successJson('调试接口',$im_service->getGroupList());
@@ -51,11 +52,21 @@ class LiveRoomController extends ApiController
 
     }
 
+    public function testRisk(){
+        $appid = 'wxcaa8acf49f845662';
+        $token = \app\common\modules\wechat\UnifyAccesstoken::getAccessToken($appid);
+        $url = 'https://api.weixin.qq.com/wxa/getuserriskrank?access_token=' . $token;
+        $http = new \GuzzleHttp\Client;
+        $response = $http->post($url, ['body' => \GuzzleHttp\json_encode(['appid' => $appid, 'openid' => 'oP9ym5GwRtM0YlIyMjLXzD5niYX4', 'scene' => 1,'mobile_no'=>'15010139836','client_ip'=>request()->getClientIp()])]);
+        var_dump($response->getBody()->getContents());die;
+    }
+
     public function sendMsg(){
         $im_service = new IMService();
         $id = request()->id ? request()->id : 3;
         $msg = request()->text ? request()->text : 'This is test ' . date('Y-m-d H:i:s');
-        return $this->successJson('调试接口',$im_service->sendGroupMsg(IMService::GROUP_PREFIX . $id ,$msg));
+        $_model = CloudLiveRoom::where('id',$id)->first();
+        return $this->successJson('调试接口',$im_service->sendGroupMsg($_model->group_id ,$msg));
     }
 
     public function detail()
@@ -93,7 +104,7 @@ class LiveRoomController extends ApiController
         $pageSize = \YunShop::request()->get('pagesize');
         $pageSize = $pageSize ? $pageSize : self::PAGE_SIZE;
 
-        $list = ImCallbackLog::uniacid()->where([['callback_command','=','Group.CallbackAfterSendMsg'],['group_id','=',$_model->group_id],['sdk_appid','=',IMService::SDK_APPID]])->orderby('id','desc')->paginate($pageSize)->toArray();
+        $list = ImCallbackLog::uniacid()->where([['callback_command','=','Group.CallbackAfterSendMsg'],['group_id','=',$_model->group_id],['sdk_appid','=',LiveSetService::getIMSetting('sdk_appid')]])->orderby('id','desc')->paginate($pageSize)->toArray();
         if (empty($list['data'])) {
             return $this->errorJson('没有找到消息记录');
         }else{

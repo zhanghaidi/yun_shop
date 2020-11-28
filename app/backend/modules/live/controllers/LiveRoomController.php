@@ -66,7 +66,7 @@ class LiveRoomController extends BaseController
                 }
                 if($this->room_model->id){
                     $upd_data = [
-                        'roomid' => $this->room_model->id,
+                        'stream_name' => LiveSetService::getSetting('stream_name_pre') . $this->room_model->id,
                         'push_url' => LiveService::getPushUrl($this->room_model->id,request()->live['time']['end']),
                         'pull_url' => LiveService::getPullUrl($this->room_model->id),
                     ];
@@ -93,8 +93,8 @@ class LiveRoomController extends BaseController
         if($id){
             $this->verifyRoom($id);
             $this->room_model->live_status = 101;
-            if($this->room_model->save() !== false){
-                (new LiveService())->resumeLiveStream($id);
+            if($this->room_model->save() !== $this->room_model){
+                (new LiveService())->resumeLiveStream($this->room_model->stream_name);
                 return $this->message('开始直播成功', Url::absoluteWeb('live.live-room.index'));
             }else{
                 return $this->message('开始直播失败', Url::absoluteWeb('live.live-room.index'));
@@ -111,8 +111,8 @@ class LiveRoomController extends BaseController
             $this->room_model->live_status = 103;
             if($this->room_model->save() !== false){
                 $live_service = new LiveService();
-                if($live_service->getDescribeLiveStreamState($id) == 'active'){
-                    $live_service->dropLiveStream($id);
+                if($live_service->getDescribeLiveStreamState($this->room_model->stream_name) == 'active'){
+                    $live_service->dropLiveStream($this->room_model->stream_name);
                 }
                 return $this->message('结束直播成功', Url::absoluteWeb('live.live-room.index'));
             }else{
