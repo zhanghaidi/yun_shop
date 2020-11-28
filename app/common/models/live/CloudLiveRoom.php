@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int id
  * @property int uniacid
  * @property string name
- * @property int roomid
+ * @property string stream_name
  * @property string cover_img
  * @property int live_status
  * @property Carbon start_time
@@ -23,6 +23,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string share_img
  * @property string push_url
  * @property string pull_url
+ * @property string group_id
+ * @property string group_name
  */
 class CloudLiveRoom extends BaseModel
 {
@@ -55,7 +57,7 @@ class CloudLiveRoom extends BaseModel
             'id' => 'ID',
             'uniacid' => '公众号 ID',
             'name' => '直播间名称',
-            'roomid' => '直播房间ID',
+            'stream_name' => '直播流名称',
             'cover_img' => '封面图片',
             'live_status' => '直播间状态',
             'start_time' => '开播时间',
@@ -64,6 +66,8 @@ class CloudLiveRoom extends BaseModel
             'share_img' => '分享图片',
             'push_url' => '推流URL',
             'pull_url' => '拉流URL',
+            'group_id' => '直播群id',
+            'group_name' => '直播群名称',
             'created_at' => '创建时间',
         ];
     }
@@ -78,7 +82,7 @@ class CloudLiveRoom extends BaseModel
             'id' => 'integer',
             'uniacid' => 'required|integer',
             'name' => 'required',
-            'roomid' => 'integer',
+            'stream_name' => 'string',
             'cover_img' => 'required|string',
             'anchor_name' => 'required|string',
             'share_img' => 'required|string',

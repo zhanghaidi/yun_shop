@@ -4,15 +4,11 @@ namespace app\common\services\tencentlive;
 
 use app\common\facades\Setting;
 use app\common\services\tencentlive\TLSSigAPIv2;
+use app\common\services\tencentlive\LiveSetService;
 
 class IMService
 {
-
     const BASE_URL = 'https://console.tim.qq.com/v4/';
-    const SDK_APPID = 1400453551;
-    const APP_KEY = '464deac44508f37a57cd4cf309720826f8fddf2a55413ec499a1fe3047c4ca10';
-    const IDENTIFIER = 'ajy';
-    const GROUP_PREFIX = 'ajygroup-';
 
     public function getGroupList()
     {
@@ -53,12 +49,12 @@ class IMService
         return json_decode($this->curl_post($url, $data), true);
     }
 
-    public function createGroup($group_id, $name)
+    public function createGroup($room_id, $name)
     {
         $url = self::getRequestUrl('group_open_http_svc', 'create_group');
         $data = json_encode([
             "Type" => 'AVChatRoom',
-            "GroupId" => self::GROUP_PREFIX . $group_id,
+            "GroupId" => LiveSetService::getIMSetting('group_pre') . '-' . $room_id,
             "Name" => $name
         ]);
         return json_decode($this->curl_post($url, $data));
@@ -88,14 +84,14 @@ class IMService
     protected static function getRequestUrl($servicename, $command)
     {
         $usersig = self::getSign();
-        return self::BASE_URL . "{$servicename}/{$command}?sdkappid=" . self::SDK_APPID . '&Identifier=' . self::IDENTIFIER . '&usersig=' . $usersig . '&random=' . mt_rand(1000, 1000000) . '&contenttype=json';
+        return self::BASE_URL . "{$servicename}/{$command}?sdkappid=" . LiveSetService::getIMSetting('sdk_appid') . '&Identifier=' . LiveSetService::getIMSetting('identifier') . '&usersig=' . $usersig . '&random=' . mt_rand(1000, 1000000) . '&contenttype=json';
     }
 
     public static function getSign($userId = '')
     {
-        $TLSSigAPIv2 = new TLSSigAPIv2(self::SDK_APPID, self::APP_KEY);
+        $TLSSigAPIv2 = new TLSSigAPIv2(LiveSetService::getIMSetting('sdk_appid'), LiveSetService::getIMSetting('app_key'));
         if (empty($userId))
-            $userId = self::IDENTIFIER;
+            $userId = LiveSetService::getIMSetting('identifier');
         return $TLSSigAPIv2->genUserSig($userId);
     }
 

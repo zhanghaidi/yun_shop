@@ -14,10 +14,6 @@ use TencentCloud\Live\V20180801\LiveClient;
 
 class LiveService
 {
-    const APPNAME = '110648';
-    const SECRETID = 'AKIDXpsgGavRJvYy6zyz5vWx1s88wWr2cwvk'; //云 API 密钥 SecretId;
-    const SECRETKEY = 'OXR4SciZMyMVO3as1HIAvvhEVVGQL0Vk'; //云 API 密钥 SecretKey;
-    const SATREAM_NAME_RRE = 'ajylive';
     public static $StreamState = [0 => 'inactive', 1 => 'active', 2 => 'forbid']; //active：活跃，inactive：非活跃，forbid：禁播。
 
     /**
@@ -28,31 +24,30 @@ class LiveService
      * @param time 过期时间 sample 2016-11-12 12:00:00
      * @return String url
      */
-    public static function getPushUrl($streamName = '', $time = null)
+    public static function getPushUrl($room_id = '', $time = null)
     {
-        if ($streamName && $time) {
+        if ($room_id && $time) {
             $live_setting = LiveSetService::getSetting();
-            if (empty($live_setting)) {
-                return '';
+            if (!empty($live_setting)) {
+                $streamName = $live_setting['stream_name_pre'] . $room_id;
+                $key = $live_setting['push_key'];
+                $domain = $live_setting['push_domain'];
+                $txTime = strtoupper(base_convert(strtotime($time), 10, 16));
+                $txSecret = md5($key . $streamName . $txTime);
+                $ext_str = "?" . http_build_query(array(
+                        "txSecret" => $txSecret,
+                        "txTime" => $txTime
+                    ));
+                return "rtmp://" . $domain . "/live/" . $streamName . (isset($ext_str) ? $ext_str : "");
             }
-            $streamName = self::SATREAM_NAME_RRE . $streamName;
-            $key = $live_setting['push_key'];
-            $domain = $live_setting['push_domain'];
-            $txTime = strtoupper(base_convert(strtotime($time), 10, 16));
-            $txSecret = md5($key . $streamName . $txTime);
-            $ext_str = "?" . http_build_query(array(
-                    "txSecret" => $txSecret,
-                    "txTime" => $txTime
-                ));
-            return "rtmp://" . $domain . "/live/" . $streamName . (isset($ext_str) ? $ext_str : "");
         }
         return '';
     }
 
-    public static function getPullUrl($streamName = '')
+    public static function getPullUrl($room_id = '')
     {
-        if ($streamName) {
-            $streamName = self::SATREAM_NAME_RRE . $streamName;
+        if ($room_id) {
+            $streamName = LiveSetService::getSetting('stream_name_pre') . $room_id;
             $domain = LiveSetService::getSetting('pull_domain');
             return "rtmp://" . $domain . "/live/" . $streamName;
         }
@@ -66,7 +61,7 @@ class LiveService
     public function getDescribeLiveStreamState($streamName = '')
     {
         $params = array(
-            "StreamName" => self::SATREAM_NAME_RRE . $streamName,
+            "StreamName" => $streamName,
         );
 
         $resp = $this->callClient('DescribeLiveStreamState', $params);
@@ -84,7 +79,7 @@ class LiveService
     public function dropLiveStream($streamName = '')
     {
         $params = array(
-            "StreamName" => self::SATREAM_NAME_RRE . $streamName,
+            "StreamName" => $streamName,
         );
 
         $resp = $this->callClient('DropLiveStream', $params);
@@ -102,7 +97,7 @@ class LiveService
     public function resumeLiveStream($streamName = '')
     {
         $params = array(
-            "StreamName" => self::SATREAM_NAME_RRE . $streamName,
+            "StreamName" => $streamName,
         );
 
         $resp = $this->callClient('ResumeLiveStream', $params);
@@ -130,10 +125,21 @@ class LiveService
 
         $common_param = [
             "DomainName" => $live_setting['push_domain'],
-            "AppName" => self::APPNAME,
+            "AppName" => $live_setting['app_name'],
         ];
         $send_params = array_merge($common_param, $params);
-        $client = $this->sendRequest($req, $send_params);
+
+        $cred = new Credential($live_setting['secret_id'], $live_setting['secret_key']);
+
+        $httpProfile = new HttpProfile();
+        $httpProfile->setEndpoint("live.tencentcloudapi.com");
+
+        $clientProfile = new ClientProfile();
+        $clientProfile->setHttpProfile($httpProfile);
+
+        $client = new LiveClient($cred, "", $clientProfile);
+
+        $req->fromJsonString(json_encode($send_params));
 
         try {
             $resp = call_user_func_array(array($client, $action), array($req));
@@ -143,25 +149,6 @@ class LiveService
             return false;
         }
 
-    }
-
-    protected function sendRequest($req, $params)
-    {
-        $client = $this->getClient();
-        $req->fromJsonString(json_encode($params));
-        return $client;
-    }
-
-    protected function getClient()
-    {
-        $cred = new Credential(self::SECRETID, self::SECRETKEY);
-        $httpProfile = new HttpProfile();
-        $httpProfile->setEndpoint("live.tencentcloudapi.com");
-
-        $clientProfile = new ClientProfile();
-        $clientProfile->setHttpProfile($httpProfile);
-        $client = new LiveClient($cred, "", $clientProfile);
-        return $client;
     }
 
 }
