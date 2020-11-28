@@ -11,9 +11,6 @@ use TencentCloud\Common\Profile\ClientProfile;
 use TencentCloud\Common\Profile\HttpProfile;
 use TencentCloud\Common\Exception\TencentCloudSDKException;
 use TencentCloud\Live\V20180801\LiveClient;
-use TencentCloud\Live\V20180801\Models\DescribeLiveStreamStateRequest;
-use TencentCloud\Live\V20180801\Models\DropLiveStreamRequest;
-use TencentCloud\Live\V20180801\Models\ResumeLiveStreamRequest;
 
 class LiveService
 {
@@ -63,83 +60,96 @@ class LiveService
         return '';
     }
 
+    /*
+     * 获取直播流状态
+     */
     public function getDescribeLiveStreamState($streamName = '')
     {
-        $live_setting = LiveSetService::getSetting();
-
-        $req = new DescribeLiveStreamStateRequest();
-
         $params = array(
             "StreamName" => self::SATREAM_NAME_RRE . $streamName,
-            "DomainName" => $live_setting['push_domain'],
-            "AppName" => self::APPNAME,
         );
 
-        $client = $this->sendRequest($req, $params);
+        $resp = $this->callClient('DescribeLiveStreamState', $params);
 
-        if ($client) {
-            $resp = $client->DescribeLiveStreamState($req);
+        if ($resp) {
             return $resp->StreamState;
         } else {
             return '';
         }
     }
 
+    /*
+     * 断开直播流
+     */
     public function dropLiveStream($streamName = '')
     {
-        $live_setting = LiveSetService::getSetting();
-        $req = new DropLiveStreamRequest();
         $params = array(
             "StreamName" => self::SATREAM_NAME_RRE . $streamName,
-            "DomainName" => $live_setting['push_domain'],
-            "AppName" => self::APPNAME,
         );
 
-        $client = $this->sendRequest($req, $params);
+        $resp = $this->callClient('DropLiveStream', $params);
 
-        if ($client) {
-            try {
-                $resp = $client->DropLiveStream($req);
-                return $resp->RequestId;
-            } catch (TencentCloudSDKException $e) {
-                \Log::error("LiveService dropLiveStream,error:" . $e->getMessage());
-                return '';
-            }
+        if ($resp) {
+            return $resp->RequestId;
         } else {
-            return '';
+            return false;
         }
     }
 
+    /*
+     * 恢复直播流
+     */
     public function resumeLiveStream($streamName = '')
     {
-        $live_setting = LiveSetService::getSetting();
-        $req = new ResumeLiveStreamRequest();
         $params = array(
             "StreamName" => self::SATREAM_NAME_RRE . $streamName,
-            "DomainName" => $live_setting['push_domain'],
-            "AppName" => self::APPNAME,
         );
 
-        $client = $this->sendRequest($req, $params);
+        $resp = $this->callClient('ResumeLiveStream', $params);
 
-        if ($client) {
-            $resp = $client->ResumeLiveStream($req);
+        if ($resp) {
             return $resp->RequestId;
         } else {
-            return '';
+            return false;
         }
+    }
+
+    /**
+     * 请求腾讯云直播接口
+     * @param action 操作名称
+     * @param params 操作需要参数
+     * @return mixed resp
+     */
+    protected function callClient($action = '', $params = [])
+    {
+        require_once base_path('vendor/tencentcloud/src/TencentCloud/Live/V20180801/Models/' . ucfirst($action) . 'Request.php');
+        $live_setting = LiveSetService::getSetting();
+
+        $req_class = "TencentCloud" . "\\" . ucfirst("live") . "\\" . "V20180801\\Models" . "\\" . ucfirst($action) . "Request";
+        $req = new $req_class();
+
+        $common_param = [
+            "DomainName" => $live_setting['push_domain'],
+            "AppName" => self::APPNAME,
+        ];
+        $send_params = array_merge($common_param, $params);
+        $client = $this->sendRequest($req, $send_params);
+
+        try {
+            $resp = call_user_func_array(array($client, $action), array($req));
+            return $resp;
+        } catch (TencentCloudSDKException $e) {
+            \Log::error("LiveService callClient,error:" . $e->getMessage() . ",action:{$action}," . json_encode($send_params));
+            return false;
+        }
+
     }
 
     protected function sendRequest($req, $params)
     {
-        try {
-            $client = $this->getClient();
-            $req->fromJsonString(json_encode($params));
-            return $client;
-        } catch (TencentCloudSDKException $e) {
-            \Log::error("LiveService sendRequest,error:" . $e->getMessage());
-            return '';
-        }
+        $client = $this->getClient();
+        $req->fromJsonString(json_encode($params));
+        return $client;
     }
 
     protected function getClient()
