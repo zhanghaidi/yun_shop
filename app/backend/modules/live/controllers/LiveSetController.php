@@ -17,20 +17,26 @@ class LiveSetController extends BaseController
     public function see()
     {
         $live = LiveSetService::getSetting();
-        $requestModel = \YunShop::request()->live;
+        $im = LiveSetService::getIMSetting();
+        $live_req = \YunShop::request()->live;
+        $im_req = \YunShop::request()->im;
 
-        if ($requestModel) {
-            array_walk($requestModel, function (&$item) {
+        if ($live_req && $im_req) {
+            array_walk($live_req, function (&$item) {
                 $item = trim($item);
             });
-            if (Setting::set('shop.live', $requestModel)) {
+            array_walk($im_req, function (&$item) {
+                $item = trim($item);
+            });
+            if (Setting::set('shop.live', $live_req) && Setting::set('shop.im', $im_req)) {
                 return $this->message('云直播设置成功', Url::absoluteWeb('live.live-set.see'));
             } else {
                 $this->error('云直播设置失败');
             }
         }
         return view('live.set', [
-            'live' => $live
+            'live' => $live,
+            'im' => $im
         ])->render();
     }
 
