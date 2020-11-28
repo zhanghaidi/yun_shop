@@ -67,7 +67,7 @@ class IMService
     public function getGroupInfo($group_id)
     {
         $url = self::getRequestUrl('group_open_http_svc', 'get_group_info');
-        $data = json_encode(['a' => 1, 'b' => 2]);
+        $data = json_encode(['GroupIdList' => [$group_id]]);
         return json_decode($this->curl_post($url, $data), true);
     }
 
