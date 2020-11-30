@@ -594,7 +594,23 @@ class GoodsController extends GoodsApiController
             $where = function ($query) use ($field, $goodIdsSearch) {
                 $query->whereIn($field, json_decode($goodIdsSearch, true));
             };
+        }else{
+            //fixBy-wk-20201130 搜索接口过滤关联课程的商品 避免和根据商品id获取商品的筛选条件冲突，两者只能用一个
+            $course_goods = DB::table('yz_appletslive_room')
+                ->select('id', 'goods_id')
+                ->where('type',1)
+                ->where('goods_id','>',0)
+                ->get()->toArray();
+            if(!empty($course_goods)){
+                $goods_ids = array_unique(array_column($course_goods, 'goods_id'));
+
+                $field = 'id';
+                $where = function ($query) use ($field, $goods_ids) {
+                    $query->whereNotIn($field, $goods_ids);
+                };
+            }
         }
+
 
         $build = $goods_model->Search($requestSearch)->selectRaw("thumb,market_price,price,cost_price,title, " . DB::getTablePrefix() . "yz_goods.id as goods_id")
             ->where("status", 1)
