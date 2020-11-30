@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string pull_url
  * @property string group_id
  * @property string group_name
+ * @property int sort
  */
 class CloudLiveRoom extends BaseModel
 {
@@ -68,6 +69,7 @@ class CloudLiveRoom extends BaseModel
             'pull_url' => '拉流URL',
             'group_id' => '直播群id',
             'group_name' => '直播群名称',
+            'sort' => '排序',
             'created_at' => '创建时间',
         ];
     }
@@ -88,6 +90,7 @@ class CloudLiveRoom extends BaseModel
             'share_img' => 'required|string',
             'push_url' => 'string',
             'pull_url' => 'string',
+            'sort' => 'integer',
             'start_time' => 'required|integer',
             'end_time' => 'required|integer',
         ];

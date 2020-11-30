@@ -60,12 +60,17 @@
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">有效期</label>
                             <div class="col-sm-9 col-xs-12">
                                 {!! app\common\helpers\DateRange::tplFormFieldDateRange('live[time]', [
-                               'starttime'=>$live['start_time'],
-                               'endtime'=>$live['end_time'],
-                               'start'=>0,
-                               'end'=>0
+                               'starttime'=>$live['start_time'] ? $live['start_time'] : date('Y-m-d H:i:s') ,
+                               'endtime'=>$live['end_time']  ? $live['end_time'] : date('Y-m-d H:i:s', time() + 86400),
+                               'start'=> 0,
+                               'end'=> 0
                                ], true) !!}
                             </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">排序</label>
+                            <div class="col-sm-9 col-xs-12"><input type="text" name="live[sort]" class="form-control" value="{{$live['sort'] ? $live['sort'] : 0}}" placeholder="请输入排序字段"/></div>
                         </div>
 
                         <div class="form-group">
