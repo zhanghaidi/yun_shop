@@ -10,6 +10,7 @@
 namespace app\frontend\modules\live\controllers;
 
 
+use app\backend\modules\tracking\models\DiagnosticServiceUser;
 use app\common\components\ApiController;
 use app\common\facades\Setting;
 use app\common\services\tencentlive\LiveSetService;
@@ -88,6 +89,22 @@ class LiveRoomController extends ApiController
         $_model->online_num = $im_service->getOnlineMemberNum($_model->group_id);
 
         return $this->successJson('获取直播间信息成功！',$_model->toArray());
+    }
+
+    public function getMemberInfo(){
+        $uid = intval(request()->uid);
+
+        if (!$uid) {
+            return  $this->errorJson('会员ID为空');
+        }
+
+        $member_info = DiagnosticServiceUser::where('ajy_uid',$uid)->select('ajy_uid as uid','nickname','avatar','avatarUrl')->first();
+
+        if($member_info){
+            return $this->successJson('获取会员信息成功！',$member_info);
+        }else{
+            return  $this->errorJson('会员ID为空');
+        }
     }
 
     public function getMsgList(){
