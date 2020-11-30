@@ -241,6 +241,7 @@
                         <thead class="navbar-inner">
                         <tr>
                             <th style='width:6%; text-align: center;'>主键ID</th>
+                            <th style='width:6%; text-align: center;'>小程序主体</th>
                             <th style='width:6%; text-align: center;'>小程序版本</th>
                             <th style='width:6%; text-align: center;'>上级页面</th>
                             <th style='width:12%; text-align: center;'>来源类型</th>
@@ -257,6 +258,7 @@
                         @foreach($pageList as $list)
                             <tr>
                                 <td style="text-align: center;">{{ $list->id }}</td>
+                                <td style="text-align: center;">{{ $list->app_type }}</td>
                                 <td style="text-align: center;">{{ $list->app_version }}</td>
                                 <td style="text-align: center;" title="{{ $list->parent_page }}">{{ $list->parent_page }}</td>
                                 <td style="text-align: center;">
