@@ -6,6 +6,7 @@ namespace app\common\services\tencentlive;
 require_once base_path('vendor/tencentcloud/vendor/autoload.php');
 
 use app\common\services\tencentlive\LiveSetService;
+use app\common\models\live\CloudLiveRoom;
 use TencentCloud\Common\Credential;
 use TencentCloud\Common\Profile\ClientProfile;
 use TencentCloud\Common\Profile\HttpProfile;
@@ -53,6 +54,20 @@ class LiveService
         }
 
         return '';
+    }
+
+    public function getLiveList($page_size,$status = 0){
+        $where = [
+            ['end_time','>=',time()]
+        ];
+
+        return CloudLiveRoom::uniacid()->select('id','name','cover_img','live_status','start_time','end_time','anchor_name','share_img','pull_url','group_id','sort')->where($where)->orderby('sort','desc')->where(function ($query) use ($status){
+            if($status > 0){
+                $query->where('live_status',$status);
+            }else{
+                $query->whereIn('live_status',[101,102,105]);
+            }
+        })->paginate($page_size);
     }
 
     /*

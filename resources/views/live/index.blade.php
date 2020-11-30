@@ -42,6 +42,7 @@
                     <thead class="navbar-inner">
                     <tr>
                         <th style='width:5%; text-align: center;'>ID</th>
+                        <th style='width:5%; text-align: center;'>排序</th>
                         <th style='width:5%; text-align: center;'>主播</th>
                         <th style='width:8%; text-align: center;'>直播间名称</th>
                         <th style='width:8%; text-align: center;'>封面图片</th>
@@ -58,6 +59,7 @@
                     @foreach($roomList as $list)
                         <tr style="text-align: center;">
                             <td>{{ $list->id }}</td>
+                            <td>{{ $list->sort }}</td>
                             <td>{{ $list->anchor_name }}</td>
                             <td>{{ $list->name }}</td>
                             <td>

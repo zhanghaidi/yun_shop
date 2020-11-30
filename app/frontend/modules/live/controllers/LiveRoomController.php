@@ -27,7 +27,7 @@ class LiveRoomController extends ApiController
 
     const PAGE_SIZE = 10;
 
-    protected $ignoreAction = ['index','detail','getMsgList','sendMsg','testRisk'];
+    protected $ignoreAction = ['index','detail','getMsgList','sendMsg','getLiveList'];
 
     public function index()
     {
@@ -52,21 +52,22 @@ class LiveRoomController extends ApiController
 
     }
 
-    public function testRisk(){
-        $appid = 'wxcaa8acf49f845662';
-        $token = \app\common\modules\wechat\UnifyAccesstoken::getAccessToken($appid);
-        $url = 'https://api.weixin.qq.com/wxa/getuserriskrank?access_token=' . $token;
-        $http = new \GuzzleHttp\Client;
-        $response = $http->post($url, ['body' => \GuzzleHttp\json_encode(['appid' => $appid, 'openid' => 'oP9ym5GwRtM0YlIyMjLXzD5niYX4', 'scene' => 1,'mobile_no'=>'15010139836','client_ip'=>request()->getClientIp()])]);
-        var_dump($response->getBody()->getContents());die;
-    }
-
     public function sendMsg(){
         $im_service = new IMService();
         $id = request()->id ? request()->id : 3;
         $msg = request()->text ? request()->text : 'This is test ' . date('Y-m-d H:i:s');
         $_model = CloudLiveRoom::where('id',$id)->first();
         return $this->successJson('调试接口',$im_service->sendGroupMsg($_model->group_id ,$msg));
+    }
+
+    public function getLiveList(){
+        $page_size = request()->get('pagesize');
+        $page_size = $page_size ? $page_size : self::PAGE_SIZE;
+        $status = request()->get('status',0);
+
+        $live_service = new LiveService();
+        $list = $live_service->getLiveList($page_size,$status);
+        return $this->successJson('获取直播间列表成功', $list);
     }
 
     public function detail()
