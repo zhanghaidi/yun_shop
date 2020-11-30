@@ -258,7 +258,7 @@
                         @foreach($pageList as $list)
                             <tr>
                                 <td style="text-align: center;">{{ $list->id }}</td>
-                                <td style="text-align: center;">{{ $list->app_type }}</td>
+                                <td style="text-align: center;"> @if($list->app_type == 'main')主体 @elseif ($list->app_type == 'shop') 商城 @endif </td>
                                 <td style="text-align: center;">{{ $list->app_version }}</td>
                                 <td style="text-align: center;" title="{{ $list->parent_page }}">{{ $list->parent_page }}</td>
                                 <td style="text-align: center;">
