@@ -20,12 +20,12 @@
                 <div class='panel panel-default'>
                     <div class='panel-body'>
                         <div class="form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">直播间名称</label>
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span >*</span>直播间名称</label>
                             <div class="col-sm-9 col-xs-12"><input type="text" name="live[name]" class="form-control" value="{{$live['name']}}" placeholder="请输入直播间名称"/></div>
                         </div>
 
                         <div class="form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">主播名称</label>
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span >*</span>主播名称</label>
                             <div class="col-sm-9 col-xs-12"><input type="text" name="live[anchor_name]" class="form-control" value="{{$live['anchor_name']}}" placeholder="请输入主播名称"/></div>
                         </div>
 
@@ -40,6 +40,11 @@
                                     </a>
                                 @endif
                             </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span >*</span>分享标题</label>
+                            <div class="col-sm-9 col-xs-12"><input type="text" name="live[share_title]" class="form-control" value="{{$live['share_title']}}" placeholder="请输入分享标题"/></div>
                         </div>
 
                         <div class="form-group">
