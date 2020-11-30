@@ -13,6 +13,7 @@ use app\common\facades\Setting;
 use app\common\services\tencentlive\IMService;
 use app\common\models\live\ImCallbackLog;
 use app\common\services\tencentlive\LiveSetService;
+use Yunshop\Appletslive\common\services\BaseService;
 
 class IMCallbackController extends BaseController
 {
@@ -24,54 +25,85 @@ class IMCallbackController extends BaseController
         $req_data = request()->input();
         $input_data = request()->getContent();
         \Log::debug('IMCallback req_data:' . json_encode($req_data, 320) . ' input_data:' . $input_data);
-        if($req_data['SdkAppid'] != LiveSetService::getIMSetting('sdk_appid')){
+        if ($req_data['SdkAppid'] != LiveSetService::getIMSetting('sdk_appid')) {
             return $this->responJson(4002, 'error', 'illegal SdkAppid!');
         }
 
         if (!empty($input_data)) {
             $callback_data = $input_data;
-            $input_data = json_decode($input_data,true);
+            $input_data = json_decode($input_data, true);
             $_model = new ImCallbackLog();
-            $type_str = substr($input_data['CallbackCommand'],0,strpos($input_data['CallbackCommand'],'.'));
+            $type_str = substr($input_data['CallbackCommand'], 0, strpos($input_data['CallbackCommand'], '.'));
             $data = [
-                'uniacid'   => \YunShop::app()->uniacid,
-                'sdk_appid' =>  $req_data['SdkAppid'],
-                'type'      =>  $_model->getType($type_str),
-                'callback_command' =>  $input_data['CallbackCommand'],
-                'callback_data' =>  $callback_data,
-                'client_iP' =>  $req_data['ClientIP'],
+                'uniacid' => \YunShop::app()->uniacid,
+                'sdk_appid' => $req_data['SdkAppid'],
+                'type' => $_model->getType($type_str),
+                'callback_command' => $input_data['CallbackCommand'],
+                'callback_data' => $callback_data,
+                'client_iP' => $req_data['ClientIP'],
                 'created_at' => time()
             ];
-            if(in_array($input_data['CallbackCommand'],['Group.CallbackAfterSendMsg'])){
-                $data = array_merge($data,$this->getMsgData($input_data,$_model));
+            $extra = [];
+            if (in_array($input_data['CallbackCommand'], ['Group.CallbackAfterSendMsg'])) {
+                $data = array_merge($data, $this->getMsgData($input_data, $_model));
+            } elseif (in_array($input_data['CallbackCommand'], ['Group.CallbackBeforeSendMsg'])) {
+                $data = array_merge($data, $this->getMsgData($input_data, $_model));
+                $text = $this->filterMsg($input_data['MsgBody'][0]['MsgContent']['Text']);
+                $extra['MsgBody'] = [
+                    [
+                        "MsgType" => $input_data['MsgBody'][0]['MsgType'], // 文本
+                        "MsgContent" => [
+                            "Text" => $text
+                        ]
+                    ]
+                ];
+            }else{
+                return $this->responJson();
             }
             $_model->fill($data)->save();
-            return $this->responJson();
+            return $this->responJson(0, 'OK', '', $extra);
         } else {
             return $this->responJson(4001, 'error', 'body empty!');
         }
 
     }
 
-    protected function getMsgData($input_data,$_model){
+    protected function getMsgData($input_data, $_model)
+    {
         $msg_data = [
-            'group_id'  =>  $input_data['GroupId'],
-            'from_account'  =>  $input_data['From_Account'],
-            'Operator_Account'  =>  empty($input_data['Operator_Account']) ? '' : $input_data['Operator_Account'],
-            'msg_time'  =>  $input_data['MsgTime'],
-            'msg_type'  =>  $_model->getMsgType($input_data['MsgBody'][0]['MsgType']),
-            'msg_content'  =>  $input_data['MsgBody'][0]['MsgContent']['Text'],
+            'group_id' => $input_data['GroupId'],
+            'from_account' => $input_data['From_Account'],
+            'Operator_Account' => empty($input_data['Operator_Account']) ? '' : $input_data['Operator_Account'],
+            'msg_time' => $input_data['MsgTime'],
+            'msg_type' => $_model->getMsgType($input_data['MsgBody'][0]['MsgType']),
+            'msg_content' => $input_data['MsgBody'][0]['MsgContent']['Text'],
         ];
         return $msg_data;
     }
 
-    protected function responJson($ErrorCode = 0, $ActionStatus = 'OK', $ErrorInfo = '')
+    protected function responJson($ErrorCode = 0, $ActionStatus = 'OK', $ErrorInfo = '', $extra = [])
     {
-        return response()->json([
+        $res_data = [
             "ActionStatus" => $ActionStatus,
             "ErrorInfo" => $ErrorInfo,
             "ErrorCode" => $ErrorCode
-        ], 200, ['charset' => 'utf-8']);
+        ];
+        if($extra){
+            $resp_data = array_merge($res_data, $extra);
+        }
+        return response()->json($resp_data, 200, ['charset' => 'utf-8']);
+    }
+
+    protected function filterMsg($text)
+    {
+        $_model = new BaseService();
+        $res_json = json_decode($text);
+        if($res_json){
+            $res_json->text = $_model->textCheck($res_json->text);
+            return json_encode($res_json,320);
+        }else{
+            return $_model->textCheck($text);
+        }
     }
 
 }
