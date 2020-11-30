@@ -30,6 +30,19 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span >*</span>主播头像</label>
+                            <div class="col-sm-9 col-xs-12 col-md-6 detail-logo">
+                                {!! app\common\helpers\ImageHelper::tplFormFieldImage('live[header_img]', $live['header_img']) !!}
+                                <span class="help-block">建议正方形图片</span>
+                                @if (!empty($live['header_img']))
+                                    <a href='{{yz_tomedia($live['header_img'])}}' target='_blank'>
+                                        <img src="{{yz_tomedia($live['header_img'])}}" style='width:100px;border:1px solid #ccc;padding:1px' />
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span >*</span>封面图片</label>
                             <div class="col-sm-9 col-xs-12 col-md-6 detail-logo">
                                 {!! app\common\helpers\ImageHelper::tplFormFieldImage('live[cover_img]', $live['cover_img']) !!}
