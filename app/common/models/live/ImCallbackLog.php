@@ -35,7 +35,7 @@ class ImCallbackLog extends BaseModel
     public $dates = ['deleted_at'];
     protected $guarded = [''];
     protected $casts = ['msg_time' => 'date', 'updated_at' => 'date', 'created_at' => 'date'];
-    protected $appends = ['type_parse','msg_type_parse'];
+    protected $appends = ['type_parse','msg_type_parse','msg_content_parse'];
 
     protected static $type = [['', '未知'], ['State', '在线状态'], ['Sns', '资料关系链'], ['C2C', '单聊消息'], ['Group', '群组系统']];
     protected static $msgType = [['', '未知'], ['TIMTextElem', '文本消息'], ['TIMLocationElem', '地理位置消息'], ['TIMFaceElem', '表情消息'], ['TIMCustomElem', '自定义消息'], ['TIMSoundElem', '语音消息'], ['TIMImageElem', '图像消息'], ['TIMFileElem', '文件消息'], ['TIMVideoFileElem', '视频消息']];
@@ -101,6 +101,11 @@ class ImCallbackLog extends BaseModel
     public function getMsgTypeParseAttribute()
     {
         return $this->parseMsgType($this->msg_type);
+    }
+
+    public function getMsgContentParseAttribute()
+    {
+        return $this->parseMsgContent($this->msg_content);
     }
 
     public function scopeSearch(Builder $query, $search)
@@ -172,6 +177,15 @@ class ImCallbackLog extends BaseModel
             }
         }
         return 0;
+    }
+
+    public function parseMsgContent($msg_content)
+    {
+        $res_josn = json_decode($msg_content);
+        if($res_josn && isset($res_josn->text)){
+            return $res_josn->text;
+        }
+        return $msg_content;
     }
 
     static public function del($start, $end)

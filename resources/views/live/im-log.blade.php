@@ -86,7 +86,7 @@
                     <td style="text-align: center;">{{$row->from_account}}</td>
                     <td style="text-align: center;">{{$row->callback_command}}</td>
                     <td style="text-align: center;">{{$row->msg_type_parse}}</td>
-                    <td style="text-align: center;">{{$row->msg_content}}</td>
+                    <td style="text-align: left;white-space: normal;word-break: break-all;">{{$row->msg_content_parse}}</td>
                     <td style="text-align: center;">{{$row->msg_time}}</td>
                     <td style="text-align: center;">{{$row->created_at}}</td>
                     <td style="text-align: center;">{{$row->client_iP}}</td>
