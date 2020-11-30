@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Carbon start_time
  * @property Carbon end_time
  * @property string anchor_name
+ * @property string share_title
  * @property string share_img
  * @property string push_url
  * @property string pull_url
@@ -64,6 +65,7 @@ class CloudLiveRoom extends BaseModel
             'start_time' => '开播时间',
             'end_time' => '结束时间',
             'anchor_name' => '主播名称',
+            'share_title' => '分享标题',
             'share_img' => '分享图片',
             'push_url' => '推流URL',
             'pull_url' => '拉流URL',
@@ -83,10 +85,11 @@ class CloudLiveRoom extends BaseModel
         return [
             'id' => 'integer',
             'uniacid' => 'required|integer',
-            'name' => 'required',
+            'name' => 'required|string',
             'stream_name' => 'string',
             'cover_img' => 'required|string',
             'anchor_name' => 'required|string',
+            'share_title' => 'required|string',
             'share_img' => 'required|string',
             'push_url' => 'string',
             'pull_url' => 'string',
