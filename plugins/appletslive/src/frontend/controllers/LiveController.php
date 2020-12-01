@@ -38,7 +38,7 @@ class LiveController extends BaseController
     protected $user_id = 0;
     protected $uniacid = 45;
     protected $is_follow_account = false;
-
+    protected $is_ios;
     /**
      * LiveController constructor.
      */
@@ -47,6 +47,7 @@ class LiveController extends BaseController
         parent::__construct();
         $this->user_id = \YunShop::app()->getMemberId();
         $this->is_follow_account = $this->checkIsFollowAccount();
+        $this-> is_ios = request()->get('os') == 'ios' ? true : false;
     }
 
     /**
@@ -560,6 +561,7 @@ class LiveController extends BaseController
     {
         $page = request()->get('page', 1);
         $limit = request()->get('limit', 10);
+
 
         $page_val = CacheService::getRecordedRoomList($page, $limit);
         if (!empty($page_val['list'])) {
