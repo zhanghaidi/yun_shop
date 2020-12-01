@@ -90,6 +90,18 @@ class IMService
         return 0;
     }
 
+    public function forbidSendMsg($group_id,$userId,$time = 0)
+    {
+        if (!empty($userId)) {
+            $url = self::getRequestUrl('group_open_http_svc', 'forbid_send_msg');
+            $data = json_encode(['GroupId'=>$group_id,'Members_Account' => [$userId],'ShutUpTime'=>$time]);
+            $resp = json_decode($this->curl_post($url, $data));
+            if ($resp->ErrorCode == 0) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     protected static function getRequestUrl($servicename, $command)
     {

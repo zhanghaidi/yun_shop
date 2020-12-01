@@ -45,22 +45,26 @@ class IMCallbackController extends BaseController
             ];
             $extra = [];
             if (in_array($input_data['CallbackCommand'], ['Group.CallbackAfterSendMsg'])) {
-                $data = array_merge($data, $this->getMsgData($input_data, $_model));
+                foreach ($input_data['MsgBody'] as $v){
+                    $insert_data = array_merge($data, $this->getMsgData($input_data,$v,$_model));
+                    $_model->fill($insert_data)->save();
+                }
             } elseif (in_array($input_data['CallbackCommand'], ['Group.CallbackBeforeSendMsg'])) {
-                $data = array_merge($data, $this->getMsgData($input_data, $_model));
-                $text = $this->filterMsg($input_data['MsgBody'][0]['MsgContent']['Text']);
-                $extra['MsgBody'] = [
-                    [
+                $extra['MsgBody'] = [];
+                foreach ($input_data['MsgBody'] as $v){
+                    $insert_data = array_merge($data, $this->getMsgData($input_data,$v,$_model));
+                    $text = $this->filterMsg($v['MsgContent']['Text']);
+                    $_model->fill($insert_data)->save();
+                    $extra['MsgBody'][] = [
                         "MsgType" => $input_data['MsgBody'][0]['MsgType'], // 文本
                         "MsgContent" => [
                             "Text" => $text
                         ]
-                    ]
-                ];
+                    ];
+                }
             }else{
                 return $this->responJson();
             }
-            $_model->fill($data)->save();
             return $this->responJson(0, 'OK', '', $extra);
         } else {
             return $this->responJson(4001, 'error', 'body empty!');
@@ -68,15 +72,15 @@ class IMCallbackController extends BaseController
 
     }
 
-    protected function getMsgData($input_data, $_model)
+    protected function getMsgData($input_data,$msg_body, $_model)
     {
         $msg_data = [
             'group_id' => $input_data['GroupId'],
             'from_account' => $input_data['From_Account'],
             'Operator_Account' => empty($input_data['Operator_Account']) ? '' : $input_data['Operator_Account'],
             'msg_time' => $input_data['MsgTime'],
-            'msg_type' => $_model->getMsgType($input_data['MsgBody'][0]['MsgType']),
-            'msg_content' => $input_data['MsgBody'][0]['MsgContent']['Text'],
+            'msg_type' => $_model->getMsgType($msg_body['MsgType']),
+            'msg_content' => $msg_body['MsgContent']['Text'],
         ];
         return $msg_data;
     }
