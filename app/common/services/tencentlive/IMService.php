@@ -49,6 +49,16 @@ class IMService
         return json_decode($this->curl_post($url, $data), true);
     }
 
+    public function sendSysGroupMsg($group_id, $text)
+    {
+        $url = self::getRequestUrl('group_open_http_svc', 'send_group_system_notification');
+        $data = json_encode([
+            "GroupId" => $group_id,
+            "Content" => $text,
+        ]);
+        return json_decode($this->curl_post($url, $data), true);
+    }
+
     public function createGroup($room_id, $name)
     {
         $url = self::getRequestUrl('group_open_http_svc', 'create_group');
