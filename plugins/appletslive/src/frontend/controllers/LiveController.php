@@ -562,28 +562,85 @@ class LiveController extends BaseController
         $page = request()->get('page', 1);
         $limit = request()->get('limit', 10);
 
+        if($this->is_ios){
+            $offset = ($page - 1) * $limit;
+            $not_show_list = DB::table('yz_appletslive_room')
+                ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag', 'buy_type', 'ios_open', 'ios_goods_id', 'expire_time', 'goods_id')
+                ->where('type', 1)
+                ->where('delete_time', 0)
+                ->where('buy_type',1)
+                ->where('ios_open',0)
+                ->orderBy('sort', 'desc')
+                ->orderBy('id', 'desc')
+                ->get();
 
-        $page_val = CacheService::getRecordedRoomList($page, $limit);
-        if (!empty($page_val['list'])) {
-            $page_val['list'] = $page_val['list']->toArray();
-            $numdata = CacheService::getRoomNum(array_column($page_val['list'], 'id'));
-            $my_subscription = ($this->user_id ? CacheService::getUserSubscription($this->user_id) : []);
+            $not_show_array = array();
+            foreach ($not_show_list as $val){
+                $not_show_array[] = $val['id'];
+            }
 
-            foreach ($page_val['list'] as $k => $v) {
+            $total = DB::table('yz_appletslive_room')
+                ->where('type', 1)
+                ->where('delete_time', 0)
+                ->whereNotIn('id',$not_show_array)
+                ->count();
+            $list = DB::table('yz_appletslive_room')
+                ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag', 'buy_type', 'ios_open', 'ios_goods_id', 'expire_time', 'goods_id')
+                ->where('type', 1)
+                ->where('delete_time', 0)
+                ->whereNotIn('id',$not_show_array)
+                ->orderBy('sort', 'desc')
+                ->orderBy('id', 'desc')
+                ->offset($offset)
+                ->limit($limit)
+                ->get();
 
-                $key = 'key_' . $v['id'];
-                $page_val['list'][$k]['hot_num'] = $numdata[$key]['hot_num'];
-                $page_val['list'][$k]['subscription_num'] = $numdata[$key]['subscription_num'];
-                $page_val['list'][$k]['view_num'] = $numdata[$key]['view_num'];
-                $page_val['list'][$k]['comment_num'] = $numdata[$key]['comment_num'];
-                $page_val['list'][$k]['has_subscription'] = (array_search($page_val['list'][$k]['id'], $my_subscription) === false) ? false : true;
+            $page_val = compact('total','totalPage','list');
+            if (!empty($page_val['list'])) {
+                //$page_val['list'] = $page_val['list']->toArray();
+                $numdata = CacheService::getRoomNum(array_column($page_val['list'], 'id'));
+                $my_subscription = ($this->user_id ? CacheService::getUserSubscription($this->user_id) : []);
+                foreach ($page_val['list'] as $k => $v) {
+                    $key = 'key_' . $v['id'];
+                    $page_val['list'][$k]['hot_num'] = $numdata[$key]['hot_num'];
+                    $page_val['list'][$k]['subscription_num'] = $numdata[$key]['subscription_num'];
+                    $page_val['list'][$k]['view_num'] = $numdata[$key]['view_num'];
+                    $page_val['list'][$k]['comment_num'] = $numdata[$key]['comment_num'];
+                    $page_val['list'][$k]['has_subscription'] = (array_search($page_val['list'][$k]['id'], $my_subscription) === false) ? false : true;
 //              判断课程是否购买，是否在有效期内
-                $page_val['list'][$k]['has_course'] = ($this->user_id ? CacheService::getUserSubscriptionInfo($this->user_id, $v['id']) : false);
-                $page_val['list'][$k]['goods_info'] = [];
-                if($v['goods_id'] > 0 && $v['buy_type'] == 1){
-                    $page_val['list'][$k]['goods_info'] = DB::table('yz_goods')->where('id',$v['goods_id'])->first();
-                }
+                    $page_val['list'][$k]['has_course'] = ($this->user_id ? CacheService::getUserSubscriptionInfo($this->user_id, $v['id']) : false);
 
+                    $page_val['list'][$k]['goods_info'] = [];
+                    if($v['goods_id'] > 0 && $v['buy_type'] == 1){
+                        $page_val['list'][$k]['goods_info'] = DB::table('yz_goods')->where('id',$v['goods_id'])->first();
+                    }
+                }
+            }
+
+        }else {
+
+            $page_val = CacheService::getRecordedRoomList($page, $limit);
+            if (!empty($page_val['list'])) {
+                $page_val['list'] = $page_val['list']->toArray();
+                $numdata = CacheService::getRoomNum(array_column($page_val['list'], 'id'));
+                $my_subscription = ($this->user_id ? CacheService::getUserSubscription($this->user_id) : []);
+
+                foreach ($page_val['list'] as $k => $v) {
+
+                    $key = 'key_' . $v['id'];
+                    $page_val['list'][$k]['hot_num'] = $numdata[$key]['hot_num'];
+                    $page_val['list'][$k]['subscription_num'] = $numdata[$key]['subscription_num'];
+                    $page_val['list'][$k]['view_num'] = $numdata[$key]['view_num'];
+                    $page_val['list'][$k]['comment_num'] = $numdata[$key]['comment_num'];
+                    $page_val['list'][$k]['has_subscription'] = (array_search($page_val['list'][$k]['id'], $my_subscription) === false) ? false : true;
+//              判断课程是否购买，是否在有效期内
+                    $page_val['list'][$k]['has_course'] = ($this->user_id ? CacheService::getUserSubscriptionInfo($this->user_id, $v['id']) : false);
+                    $page_val['list'][$k]['goods_info'] = [];
+                    if ($v['goods_id'] > 0 && $v['buy_type'] == 1) {
+                        $page_val['list'][$k]['goods_info'] = DB::table('yz_goods')->where('id', $v['goods_id'])->first();
+                    }
+
+                }
             }
         }
 
@@ -1292,43 +1349,88 @@ class LiveController extends BaseController
     {
         $page = request()->get('page', 1);
         $limit = request()->get('limit', 3);
-
-        $page_val = CacheService::getRecordedSelectedRoomList($page, $limit);
-        if (!empty($page_val['list'])) {
-            $page_val['list'] = $page_val['list']->toArray();
-            $numdata = CacheService::getRoomNum(array_column($page_val['list'], 'id'));
-            $my_subscription = ($this->user_id ? CacheService::getUserSubscription($this->user_id) : []);
-            foreach ($page_val['list'] as $k => $v) {
-                $key = 'key_' . $v['id'];
-                $page_val['list'][$k]['hot_num'] = $numdata[$key]['hot_num'];
-                $page_val['list'][$k]['subscription_num'] = $numdata[$key]['subscription_num'];
-                $page_val['list'][$k]['view_num'] = $numdata[$key]['view_num'];
-                $page_val['list'][$k]['comment_num'] = $numdata[$key]['comment_num'];
-                $page_val['list'][$k]['has_subscription'] = (array_search($page_val['list'][$k]['id'], $my_subscription) === false) ? false : true;
-//              判断课程是否购买，是否在有效期内
-                $page_val['list'][$k]['has_course'] = ($this->user_id ? CacheService::getUserSubscriptionInfo($this->user_id, $v['id']) : false);
-
-                $page_val['list'][$k]['goods_info'] = [];
-                if($v['goods_id'] > 0 && $v['buy_type'] == 1){
-                    $page_val['list'][$k]['goods_info'] = DB::table('yz_goods')->where('id',$v['goods_id'])->first();
-                }
-            }
-        }
-        /*//ios
+        //ios
         if($this->is_ios){
+            $offset = ($page - 1) * $limit;
+            $not_show_list = DB::table('yz_appletslive_room')
+                ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag', 'buy_type', 'ios_open', 'ios_goods_id', 'expire_time', 'goods_id')
+                ->where('type', 1)
+                ->where('is_selected', 1)
+                ->where('delete_time', 0)
+                ->where('buy_type',1)
+                ->where('ios_open',0)
+                ->orderBy('sort', 'desc')
+                ->orderBy('id', 'desc')
+                ->get();
+
+            $not_show_array = array();
+            foreach ($not_show_list as $val){
+                $not_show_array[] = $val['id'];
+            }
+
+            $total = DB::table('yz_appletslive_room')
+                ->where('type', 1)
+                ->where('is_selected', 1)
+                ->where('delete_time', 0)
+                ->whereNotIn('id',$not_show_array)
+                ->count();
             $list = DB::table('yz_appletslive_room')
                 ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag', 'buy_type', 'ios_open', 'ios_goods_id', 'expire_time', 'goods_id')
                 ->where('type', 1)
                 ->where('is_selected', 1)
                 ->where('delete_time', 0)
-                ->where('buy_type')
+                ->whereNotIn('id',$not_show_array)
                 ->orderBy('sort', 'desc')
                 ->orderBy('id', 'desc')
+                ->offset($offset)
+                ->limit($limit)
                 ->get();
 
-        }else{
+            $page_val = compact('total','totalPage','list');
+            if (!empty($page_val['list'])) {
+                //$page_val['list'] = $page_val['list']->toArray();
+                $numdata = CacheService::getRoomNum(array_column($page_val['list'], 'id'));
+                $my_subscription = ($this->user_id ? CacheService::getUserSubscription($this->user_id) : []);
+                foreach ($page_val['list'] as $k => $v) {
+                    $key = 'key_' . $v['id'];
+                    $page_val['list'][$k]['hot_num'] = $numdata[$key]['hot_num'];
+                    $page_val['list'][$k]['subscription_num'] = $numdata[$key]['subscription_num'];
+                    $page_val['list'][$k]['view_num'] = $numdata[$key]['view_num'];
+                    $page_val['list'][$k]['comment_num'] = $numdata[$key]['comment_num'];
+                    $page_val['list'][$k]['has_subscription'] = (array_search($page_val['list'][$k]['id'], $my_subscription) === false) ? false : true;
+//              判断课程是否购买，是否在有效期内
+                    $page_val['list'][$k]['has_course'] = ($this->user_id ? CacheService::getUserSubscriptionInfo($this->user_id, $v['id']) : false);
 
-        }*/
+                    $page_val['list'][$k]['goods_info'] = [];
+                    if($v['goods_id'] > 0 && $v['buy_type'] == 1){
+                        $page_val['list'][$k]['goods_info'] = DB::table('yz_goods')->where('id',$v['goods_id'])->first();
+                    }
+                }
+            }
+
+        }else{
+            $page_val = CacheService::getRecordedSelectedRoomList($page, $limit);
+            if (!empty($page_val['list'])) {
+                $page_val['list'] = $page_val['list']->toArray();
+                $numdata = CacheService::getRoomNum(array_column($page_val['list'], 'id'));
+                $my_subscription = ($this->user_id ? CacheService::getUserSubscription($this->user_id) : []);
+                foreach ($page_val['list'] as $k => $v) {
+                    $key = 'key_' . $v['id'];
+                    $page_val['list'][$k]['hot_num'] = $numdata[$key]['hot_num'];
+                    $page_val['list'][$k]['subscription_num'] = $numdata[$key]['subscription_num'];
+                    $page_val['list'][$k]['view_num'] = $numdata[$key]['view_num'];
+                    $page_val['list'][$k]['comment_num'] = $numdata[$key]['comment_num'];
+                    $page_val['list'][$k]['has_subscription'] = (array_search($page_val['list'][$k]['id'], $my_subscription) === false) ? false : true;
+//              判断课程是否购买，是否在有效期内
+                    $page_val['list'][$k]['has_course'] = ($this->user_id ? CacheService::getUserSubscriptionInfo($this->user_id, $v['id']) : false);
+
+                    $page_val['list'][$k]['goods_info'] = [];
+                    if($v['goods_id'] > 0 && $v['buy_type'] == 1){
+                        $page_val['list'][$k]['goods_info'] = DB::table('yz_goods')->where('id',$v['goods_id'])->first();
+                    }
+                }
+            }
+        }
 
 
         return $this->successJson('获取成功', $page_val);
