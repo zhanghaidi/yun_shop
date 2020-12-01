@@ -86,7 +86,7 @@ class CacheService
             ->where('delete_time', 0)
             ->count();
         $list = DB::table('yz_appletslive_room')
-            ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag', 'buy_type', 'goods_id' ,'expire_time')
+            ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag', 'buy_type', 'goods_id' ,'ios_open', 'ios_goods_id','expire_time')
             ->where('type', 1)
             ->where('delete_time', 0)
             ->orderBy('sort', 'desc')
@@ -133,7 +133,7 @@ class CacheService
         $cache_key = self::$cache_keys['recorded.roominfo'];
         $cache_val = Cache::get($cache_key);
         $info = DB::table('yz_appletslive_room')
-            ->select('id', 'type', 'roomid', 'name', 'anchor_name', 'cover_img', 'start_time', 'end_time','live_status', 'desc', 'buy_type', 'goods_id' ,'expire_time')
+            ->select('id', 'type', 'roomid', 'name', 'anchor_name', 'cover_img', 'start_time', 'end_time','live_status', 'desc', 'buy_type', 'goods_id' ,'ios_open', 'ios_goods_id','expire_time')
             ->where('id', $room_id)
             ->first();
         if (!$cache_val) {
@@ -1451,7 +1451,7 @@ class CacheService
             ->where('delete_time', 0)
             ->count();
         $list = DB::table('yz_appletslive_room')
-            ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag', 'buy_type', 'ios_open','ios_goods_id', 'expire_time', 'goods_id')
+            ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag', 'buy_type', 'ios_open', 'ios_goods_id', 'expire_time', 'goods_id')
             ->where('type', 1)
             ->where('is_selected', 1)
             ->where('delete_time', 0)
@@ -1493,7 +1493,7 @@ class CacheService
 
         //获取课程信息
         $room_info = DB::table('yz_appletslive_room')
-            ->select('id', 'name', 'buy_type', 'expire_time', 'goods_id')
+            ->select('id', 'name', 'buy_type', 'expire_time', 'goods_id', 'ios_open', 'ios_goods_id')
             ->where('type', 1)
             ->where('id', $room_id)
             ->where('delete_time', 0)

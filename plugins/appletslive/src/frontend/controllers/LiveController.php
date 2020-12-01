@@ -1314,6 +1314,22 @@ class LiveController extends BaseController
                 }
             }
         }
+        /*//ios
+        if($this->is_ios){
+            $list = DB::table('yz_appletslive_room')
+                ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag', 'buy_type', 'ios_open', 'ios_goods_id', 'expire_time', 'goods_id')
+                ->where('type', 1)
+                ->where('is_selected', 1)
+                ->where('delete_time', 0)
+                ->where('buy_type')
+                ->orderBy('sort', 'desc')
+                ->orderBy('id', 'desc')
+                ->get();
+
+        }else{
+
+        }*/
+
 
         return $this->successJson('获取成功', $page_val);
     }
