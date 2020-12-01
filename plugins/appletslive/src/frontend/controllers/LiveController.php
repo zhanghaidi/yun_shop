@@ -598,7 +598,7 @@ class LiveController extends BaseController
             $totalPage = ceil($total / $limit);
             $page_val = compact('total','totalPage','list');
             if (!empty($page_val['list'])) {
-                //$page_val['list'] = $page_val['list']->toArray();
+                $page_val['list'] = $page_val['list']->toArray();
                 $numdata = CacheService::getRoomNum(array_column($page_val['list'], 'id'));
                 $my_subscription = ($this->user_id ? CacheService::getUserSubscription($this->user_id) : []);
                 foreach ($page_val['list'] as $k => $v) {
@@ -763,8 +763,35 @@ class LiveController extends BaseController
         $page = request()->get('page', 1);
         $limit = 10;
         $offset = ($page - 1) * $limit;
+        if($this->is_ios){
+            $not_show_list = DB::table('yz_appletslive_room')
+                ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag', 'buy_type', 'ios_open', 'ios_goods_id', 'expire_time', 'goods_id')
+                ->where('type', 1)
+                ->where('is_selected', 1)
+                ->where('delete_time', 0)
+                ->where('buy_type',1)
+                ->where('ios_open',0)
+                ->orderBy('sort', 'desc')
+                ->orderBy('id', 'desc')
+                ->get();
 
-        $my_subscription = CacheService::getUserSubscription($this->user_id);
+            $not_show_array = array();
+            foreach ($not_show_list as $val){
+                $not_show_array[] = $val['id'];
+            }
+            $my_subscription = DB::table('yz_appletslive_room_subscription')
+                ->where('uniacid', $this->uniacid)
+                ->where('user_id', $this->user_id)
+                ->whereNotIn('room_id', $not_show_array)
+                ->where('type', 1)
+                ->where('status', 1) //0 取消订阅 1 订阅 fixby-wk-20201005 订阅状态
+                ->pluck('room_id')->toArray();
+
+        }else{
+            $my_subscription = CacheService::getUserSubscription($this->user_id);
+
+        }
+
         $list = array_slice($my_subscription, $offset, $limit);
         foreach ($list as $k => $v) {
             $list[$k] = CacheService::getRoomInfo($v);
@@ -793,6 +820,7 @@ class LiveController extends BaseController
         }
 
         $total = count($my_subscription);
+
         return $this->successJson('获取成功', [
             'total' => $total,
             'totalPage' => ceil($total / $limit),
@@ -1389,7 +1417,7 @@ class LiveController extends BaseController
             $totalPage =  ceil($total / $limit);
             $page_val = compact('total','totalPage','list');
             if (!empty($page_val['list'])) {
-                //$page_val['list'] = $page_val['list']->toArray();
+                $page_val['list'] = $page_val['list']->toArray();
                 $numdata = CacheService::getRoomNum(array_column($page_val['list'], 'id'));
                 $my_subscription = ($this->user_id ? CacheService::getUserSubscription($this->user_id) : []);
                 foreach ($page_val['list'] as $k => $v) {
