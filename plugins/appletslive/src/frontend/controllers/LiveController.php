@@ -47,7 +47,7 @@ class LiveController extends BaseController
         parent::__construct();
         $this->user_id = \YunShop::app()->getMemberId();
         $this->is_follow_account = $this->checkIsFollowAccount();
-        $this-> is_ios = request()->get('os') == 'ios' ? true : false;
+        $this-> is_ios = request()->get('os_name') == 'ios' ? true : false;
     }
 
     /**
