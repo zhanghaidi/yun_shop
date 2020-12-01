@@ -95,6 +95,7 @@ class LiveRoomController extends ApiController
         $im_service = new IMService();
         $_model->online_num = $im_service->getOnlineMemberNum($_model->group_id);
         $_model->goods = $_model->goods(false);
+        $_model->quick_comment = array_column(DB::table('diagnostic_service_quick_comment')->select('content')->where([['type','=',7],['status','=',1]])->orderby('id','desc')->get()->toArray(),'content');
 
         return $this->successJson('获取直播间信息成功！',$_model->toArray());
     }
