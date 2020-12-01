@@ -595,6 +595,7 @@ class LiveController extends BaseController
                 ->limit($limit)
                 ->get();
 
+            $totalPage = ceil($total / $limit);
             $page_val = compact('total','totalPage','list');
             if (!empty($page_val['list'])) {
                 //$page_val['list'] = $page_val['list']->toArray();
@@ -1385,7 +1386,7 @@ class LiveController extends BaseController
                 ->offset($offset)
                 ->limit($limit)
                 ->get();
-
+            $totalPage =  ceil($total / $limit);
             $page_val = compact('total','totalPage','list');
             if (!empty($page_val['list'])) {
                 //$page_val['list'] = $page_val['list']->toArray();
