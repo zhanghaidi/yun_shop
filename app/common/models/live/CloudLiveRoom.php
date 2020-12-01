@@ -154,9 +154,13 @@ class CloudLiveRoom extends BaseModel
         return array_except($data, ['time','goods_names']);
     }
 
-    public function goods(){
+    public function goods($need_all = true){
         if(!empty($this->goods_ids)){
-            return Goods::uniacid()->whereIn('id',explode(',',$this->goods_ids))->get()->toArray();
+            if($need_all){
+                return Goods::uniacid()->whereIn('id',explode(',',$this->goods_ids))->get()->toArray();
+            }else{
+                return Goods::uniacid()->whereIn('id',explode(',',$this->goods_ids))->where('status',1)->orderby('display_order','desc')->get()->toArray();
+            }
         }
         return [];
     }

@@ -22,6 +22,7 @@ use app\common\models\live\CloudLiveRoom;
 use app\common\services\tencentlive\LiveService;
 use app\common\services\tencentlive\IMService;
 use app\common\models\live\ImCallbackLog;
+use app\common\models\Goods;
 
 class LiveRoomController extends ApiController
 {
@@ -58,7 +59,13 @@ class LiveRoomController extends ApiController
         $id = request()->id ? request()->id : 3;
         $msg = request()->text ? request()->text : 'This is test ' . date('Y-m-d H:i:s');
         $_model = CloudLiveRoom::where('id',$id)->first();
-        return $this->successJson('调试接口',$im_service->sendGroupMsg($_model->group_id ,$msg));
+        $data = [
+            'uid'=>'129424',
+            'nickname'=>'官方系统消息',
+            "avatar"=>"https://thirdwx.qlogo.cn/mmopen/vi_32/Q3auHgzwzM6ns6lmBSFQYYv4zzmIUctNv6KUmr2bKSfDTvh3UvOCxB5qXUX9wBrIG5VXFic3EyQgFOQVBdiaa1pQ/132",
+            'text'=>$msg
+        ];
+        return $this->successJson('调试接口',$im_service->sendSysGroupMsg($_model->group_id ,json_encode($data)));
     }
 
     public function getLiveList(){
@@ -87,6 +94,7 @@ class LiveRoomController extends ApiController
 
         $im_service = new IMService();
         $_model->online_num = $im_service->getOnlineMemberNum($_model->group_id);
+        $_model->goods = $_model->goods(false);
 
         return $this->successJson('获取直播间信息成功！',$_model->toArray());
     }
