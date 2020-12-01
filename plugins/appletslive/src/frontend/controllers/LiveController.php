@@ -598,7 +598,7 @@ class LiveController extends BaseController
             $totalPage = ceil($total / $limit);
             $page_val = compact('total','totalPage','list');
             if (!empty($page_val['list'])) {
-                //$page_val['list'] = $page_val['list']->toArray();
+                $page_val['list'] = $page_val['list']->toArray();
                 $numdata = CacheService::getRoomNum(array_column($page_val['list'], 'id'));
                 $my_subscription = ($this->user_id ? CacheService::getUserSubscription($this->user_id) : []);
                 foreach ($page_val['list'] as $k => $v) {
@@ -1417,7 +1417,7 @@ class LiveController extends BaseController
             $totalPage =  ceil($total / $limit);
             $page_val = compact('total','totalPage','list');
             if (!empty($page_val['list'])) {
-                //$page_val['list'] = $page_val['list']->toArray();
+                $page_val['list'] = $page_val['list']->toArray();
                 $numdata = CacheService::getRoomNum(array_column($page_val['list'], 'id'));
                 $my_subscription = ($this->user_id ? CacheService::getUserSubscription($this->user_id) : []);
                 foreach ($page_val['list'] as $k => $v) {
