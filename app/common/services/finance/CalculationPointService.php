@@ -36,14 +36,14 @@ class CalculationPointService
         //todo 如果不等于空，按商品设置赠送积分，否则按统一设置赠送积分
         if (isset($order_goods_model->hasOneGoods->hasOneSale) && !empty($order_goods_model->hasOneGoods->hasOneSale->point)) {
             if (strexists($order_goods_model->hasOneGoods->hasOneSale->point, '%')) {
-                $point_data['point'] = floatval(str_replace('%', '', $order_goods_model->hasOneGoods->hasOneSale->point) / 100 * $order_goods_model->payment_amount);
+                $point_data['point'] = round(str_replace('%', '', $order_goods_model->hasOneGoods->hasOneSale->point) / 100 * $order_goods_model->payment_amount);
             } else {
                 $point_data['point'] = $order_goods_model->hasOneGoods->hasOneSale->point * $order_goods_model->total;
             }
             $point_data['remark'] = '购买商品[' . $order_goods_model->hasOneGoods->title .'(比例:'. $order_goods_model->hasOneGoods->hasOneSale->point .')]赠送['.$point_data['point'].']积分！';
         } else if (!empty($point_set['give_point'] && $point_set['give_point'])) {
             if (strexists($point_set['give_point'], '%')) {
-                $point_data['point'] = floatval(str_replace('%', '', $point_set['give_point']) / 100 * $order_goods_model->payment_amount);
+                $point_data['point'] = round(str_replace('%', '', $point_set['give_point']) / 100 * $order_goods_model->payment_amount);
             } else {
                 $point_data['point'] = $point_set['give_point'] * $order_goods_model->total;
             }
@@ -64,8 +64,8 @@ class CalculationPointService
                     $point_data['point'] = $enough['give'];
                     $point_data['remark'] = '订单[' . $order_model->order_sn . ']消费满[' . $enough['enough'] . ']元赠送[' . $enough['give'] . ']积分';
                     if ($point_set['point_award_type'] == 1) {
-                        $point_data['point'] = $orderPrice * $enough['give'] / 100;
-                        $point_data['remark'] = '订单[' . $order_model->order_sn . ']消费满[' . $enough['enough'] . ']元赠送[' . $enough['give'] . '%]积分';
+                        $point_data['point'] = round($orderPrice * $enough['give'] / 100);
+                        $point_data['remark'] = '订单[' . $order_model->order_sn . ']消费满[' . $enough['enough'] . ']元赠送[' . $point_data['point'] . ']积分';
                     }
                 }
             }
@@ -77,8 +77,8 @@ class CalculationPointService
                 $point_data['remark'] = '订单[' . $order_model->order_sn . ']消费满[' . $point_set['enough_money'] . ']元赠送[' . $point_data['point'] . ']积分';
 
                 if ($point_set['point_award_type'] == 1) {
-                    $point_data['point'] = $orderPrice * $point_set['enough_point'] / 100;
-                    $point_data['remark'] = '订单[' . $order_model->order_sn . ']消费满[' . $point_set['enough_money'] . ']元赠送[' . $point_data['point'] . '%]积分';
+                    $point_data['point'] = round($orderPrice * $point_set['enough_point'] / 100);
+                    $point_data['remark'] = '订单[' . $order_model->order_sn . ']消费满[' . $point_set['enough_money'] . ']元赠送[' . $point_data['point'] . ']积分';
                 }
             }
         }
