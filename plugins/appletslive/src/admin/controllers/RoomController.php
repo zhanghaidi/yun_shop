@@ -151,31 +151,39 @@ class RoomController extends BaseController
 //            {{--fixby-wk-课程设置精选 20201019--}}
             if($room['type'] == 1){//课程状态 0筹备中 1更新中 2已完结
                 //{{--fixby-wk-课程付费 20201124 一个课程只能关联一个商品--}}
-                if (DB::table('yz_appletslive_room')->where('goods_id', $param['goods_id'])->where('id', '<>', $id)->first()) {
-                    return $this->message('该商品已经关联其它课程', Url::absoluteWeb(''), 'danger');
+                if ($param['goods_id'] > 0) {
+                    if (DB::table('yz_appletslive_room')->where('goods_id', $param['goods_id'])->where('id', '<>', $id)->first()) {
+                        return $this->message('该商品已经关联其它课程', Url::absoluteWeb(''), 'danger');
+                    }
+                    //{{--fixby-wk-课程付费 20201125 商品必须是虚拟商品--}}
+                    $goods_info = DB::table('yz_goods')->where('id', $param['goods_id'])->first();
+                    if ($goods_info['type'] == 1) {
+                        return $this->message('关联商品必须是虚拟商品', Url::absoluteWeb(''), 'danger');
+                    }
                 }
-                //{{--fixby-wk-课程付费 20201125 商品必须是虚拟商品--}}
-                $goods_info = DB::table('yz_goods')->where('id', $param['goods_id'])->first();
-                if ($goods_info['type'] == 1) {
-                    return $this->message('关联商品必须是虚拟商品', Url::absoluteWeb(''), 'danger');
-                }
+
                 $upd_data['live_status'] = intval($param['live_status']);
                 $upd_data['is_selected'] = intval($param['is_selected']);//是否精选 0否 1是
                 $upd_data['tag'] = $param['tag'];//课程标签
-                if($param['buy_type'] == 1){
-                    if(empty($param['goods_id'])){
+                if ($param['buy_type'] == 1) {
+                    if (empty($param['goods_id'])) {
                         return $this->message('请选择关联商品', Url::absoluteWeb(''), 'danger');
                     }
-                    if(!preg_match('/^(-1)|\d+$/',$param['expire_time'])){
+                    if (!preg_match('/^(-1)|\d+$/', $param['expire_time'])) {
                         return $this->message('课程有效期必须为整数', Url::absoluteWeb(''), 'danger');
+                    }
+                    if ($param['expire_time'] == 0) {
+                        return $this->message('课程有效期不能为零', Url::absoluteWeb(''), 'danger');
                     }
                     $upd_data['buy_type'] = 1;
                     $upd_data['expire_time'] = $param['expire_time'];
                     $upd_data['goods_id'] = $param['goods_id'];
-                }else{
+                    $upd_data['ios_open'] = $param['ios_open'];
+                } else {
                     $upd_data['buy_type'] = 0;
                     $upd_data['expire_time'] = 0;
                     $upd_data['goods_id'] = 0;
+                    $upd_data['ios_open'] = 0;
                 }
             }
             DB::table('yz_appletslive_room')->where('id', $id)->update($upd_data);
@@ -236,31 +244,39 @@ class RoomController extends BaseController
 //            {{--fixby-wk-课程设置精选 20201019--}}
             if($param['type'] == 1){//课程状态 0筹备中 1更新中 2已完结
                 //{{--fixby-wk-课程付费 20201124 一个课程只能关联一个商品--}}
-                if (DB::table('yz_appletslive_room')->where('goods_id', $param['goods_id'])->first()) {
-                    return $this->message('该商品已经关联其它课程', Url::absoluteWeb(''), 'danger');
+                if ($param['goods_id'] > 0) {
+                    if (DB::table('yz_appletslive_room')->where('goods_id', $param['goods_id'])->first()) {
+                        return $this->message('该商品已经关联其它课程', Url::absoluteWeb(''), 'danger');
+                    }
+                    //{{--fixby-wk-课程付费 20201125 商品必须是虚拟商品--}}
+                    $goods_info = DB::table('yz_goods')->where('id', $param['goods_id'])->first();
+                    if ($goods_info['type'] == 1) {
+                        return $this->message('关联商品必须是虚拟商品', Url::absoluteWeb(''), 'danger');
+                    }
                 }
-                //{{--fixby-wk-课程付费 20201125 商品必须是虚拟商品--}}
-                $goods_info = DB::table('yz_goods')->where('id', $param['goods_id'])->first();
-                if ($goods_info['type'] == 1) {
-                    return $this->message('关联商品必须是虚拟商品', Url::absoluteWeb(''), 'danger');
-                }
+
                 $ist_data['live_status'] = intval($param['live_status']);
                 $ist_data['is_selected'] = intval($param['is_selected']);//是否精选 0否 1是
                 $ist_data['tag'] = $param['tag'];//课程标签
-                if($param['buy_type'] == 1){
-                    if(empty($param['goods_id'])){
+                if ($param['buy_type'] == 1) {
+                    if (empty($param['goods_id'])) {
                         return $this->message('请选择关联商品', Url::absoluteWeb(''), 'danger');
                     }
-                    if(!preg_match('/^(-1)|\d+$/',$param['expire_time'])){
+                    if (!preg_match('/^(-1)|\d+$/', $param['expire_time'])) {
                         return $this->message('课程有效期必须为整数', Url::absoluteWeb(''), 'danger');
+                    }
+                    if ($param['expire_time'] == 0) {
+                        return $this->message('课程有效期不能为零', Url::absoluteWeb(''), 'danger');
                     }
                     $ist_data['buy_type'] = 1;
                     $ist_data['expire_time'] = $param['expire_time'];
                     $ist_data['goods_id'] = $param['goods_id'];
-                }else{
+                    $ist_data['ios_open'] = $param['ios_open'];
+                } else {
                     $ist_data['buy_type'] = 0;
                     $ist_data['expire_time'] = 0;
                     $ist_data['goods_id'] = 0;
+                    $ist_data['ios_open'] = 0;
                 }
             }
 
