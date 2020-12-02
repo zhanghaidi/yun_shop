@@ -165,18 +165,21 @@ class RoomController extends BaseController
                 $upd_data['live_status'] = intval($param['live_status']);
                 $upd_data['is_selected'] = intval($param['is_selected']);//是否精选 0否 1是
                 $upd_data['tag'] = $param['tag'];//课程标签
-                if($param['buy_type'] == 1){
-                    if(empty($param['goods_id'])){
+                if ($param['buy_type'] == 1) {
+                    if (empty($param['goods_id'])) {
                         return $this->message('请选择关联商品', Url::absoluteWeb(''), 'danger');
                     }
-                    if(!preg_match('/^(-1)|\d+$/',$param['expire_time'])){
+                    if (!preg_match('/^(-1)|\d+$/', $param['expire_time'])) {
                         return $this->message('课程有效期必须为整数', Url::absoluteWeb(''), 'danger');
+                    }
+                    if ($param['expire_time'] == 0) {
+                        return $this->message('课程有效期不能为零', Url::absoluteWeb(''), 'danger');
                     }
                     $upd_data['buy_type'] = 1;
                     $upd_data['expire_time'] = $param['expire_time'];
                     $upd_data['goods_id'] = $param['goods_id'];
                     $upd_data['ios_open'] = $param['ios_open'];
-                }else{
+                } else {
                     $upd_data['buy_type'] = 0;
                     $upd_data['expire_time'] = 0;
                     $upd_data['goods_id'] = 0;
@@ -255,18 +258,21 @@ class RoomController extends BaseController
                 $ist_data['live_status'] = intval($param['live_status']);
                 $ist_data['is_selected'] = intval($param['is_selected']);//是否精选 0否 1是
                 $ist_data['tag'] = $param['tag'];//课程标签
-                if($param['buy_type'] == 1){
-                    if(empty($param['goods_id'])){
+                if ($param['buy_type'] == 1) {
+                    if (empty($param['goods_id'])) {
                         return $this->message('请选择关联商品', Url::absoluteWeb(''), 'danger');
                     }
-                    if(!preg_match('/^(-1)|\d+$/',$param['expire_time'])){
+                    if (!preg_match('/^(-1)|\d+$/', $param['expire_time'])) {
                         return $this->message('课程有效期必须为整数', Url::absoluteWeb(''), 'danger');
+                    }
+                    if ($param['expire_time'] == 0) {
+                        return $this->message('课程有效期不能为零', Url::absoluteWeb(''), 'danger');
                     }
                     $ist_data['buy_type'] = 1;
                     $ist_data['expire_time'] = $param['expire_time'];
                     $ist_data['goods_id'] = $param['goods_id'];
                     $ist_data['ios_open'] = $param['ios_open'];
-                }else{
+                } else {
                     $ist_data['buy_type'] = 0;
                     $ist_data['expire_time'] = 0;
                     $ist_data['goods_id'] = 0;
