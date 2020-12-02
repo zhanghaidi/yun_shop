@@ -1544,7 +1544,7 @@ class LiveController extends BaseController
                     ])->orderBy('yz_order.pay_time', 'asc')
                     ->get()->toArray();
 
-                if (!empty($order_expire_status_info)) { //如果存在未累加的过期时间订单  循环订单更新课程过期时间
+                if (!empty($order_expire_status_info) && $room_info['expire_time'] != -1) { //如果存在未累加的过期时间订单  循环订单更新课程过期时间
 
                     $course_expire_time = 0;
                     foreach ($order_expire_status_info as $k => $val) {

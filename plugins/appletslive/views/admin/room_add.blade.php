@@ -62,6 +62,7 @@
                                 <input name="expire_time" type="text" class="form-control" value=""/>
                                 <span class='input-group-addon'>天</span>
                             </span>
+                            <span class='help-block' style="color: red">设置之后，严禁修改！请谨慎操作</span>
                             <span class='help-block'>过期时间单位为天，-1为永不过期</span>
                         </div>
                     </div>
@@ -74,6 +75,7 @@
                             <button class="btn btn-default nav-link-goods" style="display:inline-block" type="button" onclick="$('#modal-module-menus-goods').modal();">选择商品</button>
                         </span>
                             <a href="javascript:;" onclick="clearGoods()" style="margin-top:10px;display:inline-block;width: 20px;"  title="清除商品"><i class='fa fa-times'></i></a>
+                            <span class='help-block' style="color: red">设置之后，严禁修改！请谨慎操作</span>
                         </div>
                     </div>
                     <div class="form-group">
