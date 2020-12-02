@@ -175,10 +175,12 @@ class RoomController extends BaseController
                     $upd_data['buy_type'] = 1;
                     $upd_data['expire_time'] = $param['expire_time'];
                     $upd_data['goods_id'] = $param['goods_id'];
+                    $upd_data['ios_open'] = $param['ios_open'];
                 }else{
                     $upd_data['buy_type'] = 0;
                     $upd_data['expire_time'] = 0;
                     $upd_data['goods_id'] = 0;
+                    $upd_data['ios_open'] = 0;
                 }
             }
             DB::table('yz_appletslive_room')->where('id', $id)->update($upd_data);
@@ -263,10 +265,12 @@ class RoomController extends BaseController
                     $ist_data['buy_type'] = 1;
                     $ist_data['expire_time'] = $param['expire_time'];
                     $ist_data['goods_id'] = $param['goods_id'];
+                    $ist_data['ios_open'] = $param['ios_open'];
                 }else{
                     $ist_data['buy_type'] = 0;
                     $ist_data['expire_time'] = 0;
                     $ist_data['goods_id'] = 0;
+                    $ist_data['ios_open'] = 0;
                 }
             }
 
