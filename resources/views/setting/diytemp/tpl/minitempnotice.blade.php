@@ -82,6 +82,17 @@
                 </select>
             </div>
         </div>
+        <div class="form-group miniprogram-div">
+            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >小程序APPID</label>
+            <div class="col-sm-9 col-xs-12">
+                <select name="temp[appid]" class="form-control">
+                    @foreach(Illuminate\Support\Facades\DB::table('account_wxapp')->select('uniacid','key','name')->orderBy('uniacid','desc')->get() as $item)
+                        <option @if((empty($temp['appid']) && $item['uniacid'] == 45) || (!empty($temp['appid']) && $temp['appid'] == $item['key'])) selected @endif value="{{$item['key']}}">{{$item['name']}}</option>
+                    @endforeach
+                    {{--                    <option selected value="wxcaa8acf49f845662" >养居益</option>--}}
+                </select>
+            </div>
+        </div>
         <div class="form-group news_link-div" @if(!empty($temp['appid'])) style="display: none" @endif>
             <label class="col-xs-12 col-sm-3 col-md-2 control-label" >跳转链接地址</label>
             <div class="col-sm-9 col-xs-12">
@@ -92,17 +103,6 @@
                             </span>
                 </div>
                 {{--<input type="text"  id="title" name="temp[link]"  class="form-control" value="{{$temp['link']}}" placeholder="模版名称，例：订单完成模板（自定义）" data-rule-required='true' />--}}
-            </div>
-        </div>
-        <div class="form-group miniprogram-div" @if(empty($temp['appid'])) style="display: none" @endif>
-            <label class="col-xs-12 col-sm-3 col-md-2 control-label" >小程序APPID</label>
-            <div class="col-sm-9 col-xs-12">
-                <select name="temp[appid]" class="form-control">
-                    @foreach(Illuminate\Support\Facades\DB::table('account_wxapp')->select('uniacid','key','name')->orderBy('uniacid','desc')->get() as $item)
-                        <option @if((empty($temp['appid']) && $item['uniacid'] == 45) || (!empty($temp['appid']) && $temp['appid'] == $item['key'])) selected @endif value="{{$item['key']}}">{{$item['name']}}</option>
-                    @endforeach
-                    <option selected value="wxcaa8acf49f845662" >养居益</option>
-                </select>
             </div>
         </div>
         <div class="form-group miniprogram-div" @if(empty($temp['appid'])) style="display: none" @endif>
