@@ -43,16 +43,6 @@
                             </label>
                         </div>
                     </div>
-                    <div class="form-group expire-div" style="display: none;">
-                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">有效期</label>
-                        <div class="col-sm-9 col-xs-12 col-md-11">
-                            <span class="col-sm-3 col-xs-2 col-md-2 input-group">
-                                <input name="expire_time" type="text" class="form-control" value=""/>
-                                <span class='input-group-addon'>天</span>
-                            </span>
-                            <span class='help-block'>过期时间单位为天，-1为永不过期</span>
-                        </div>
-                    </div>
                     <div class="form-group ios_open-div" style="display: none;">
                         <label class="col-xs-12 col-sm-3 col-md-1 control-label">IOS显示开关</label>
                         <div class="col-sm-9 col-xs-12 col-md-11">
@@ -63,6 +53,16 @@
                                 <input type="radio" name="ios_open" value="0" checked="checked" />关闭
                             </label>
                             <span class='help-block'>关闭状态下，ios设备不显示该收费课程。</span>
+                        </div>
+                    </div>
+                    <div class="form-group expire-div" style="display: none;">
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">有效期</label>
+                        <div class="col-sm-9 col-xs-12 col-md-11">
+                            <span class="col-sm-3 col-xs-2 col-md-2 input-group">
+                                <input name="expire_time" type="text" class="form-control" value=""/>
+                                <span class='input-group-addon'>天</span>
+                            </span>
+                            <span class='help-block'>过期时间单位为天，-1为永不过期</span>
                         </div>
                     </div>
                     <div class="form-group goods-div" style="display: none;">
