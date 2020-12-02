@@ -137,7 +137,6 @@
                     @foreach(Illuminate\Support\Facades\DB::table('account_wxapp')->select('uniacid','key','name')->orderBy('uniacid','desc')->get() as $item)
                         <option @if((empty($temp['appid']) && $item['uniacid'] == 45) || (!empty($temp['appid']) && $temp['appid'] == $item['key'])) selected @endif value="{{$item['key']}}">{{$item['name']}}</option>
                     @endforeach
-                    <option selected value="wxcaa8acf49f845662" >养居益</option>
                 </select>
             </div>
         </div>
