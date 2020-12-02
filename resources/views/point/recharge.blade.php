@@ -44,7 +44,7 @@
                     <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-2 control-label">备注信息</label>
                         <div class="col-sm-9 col-xs-12">
-                            <textarea name="remark" rows="5" class="form-control"></textarea>
+                            <textarea name="remark" rows="5" class="form-control">{{ $note }}</textarea>
                         </div>
                     </div>
 

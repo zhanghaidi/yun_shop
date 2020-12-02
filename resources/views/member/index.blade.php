@@ -206,7 +206,7 @@
             </div>
             <div class="clearfix">
                 <div class="panel panel-default">
-                    <div class="panel-heading">总数：{{$total}}; 微信公众号会员：{{ $list['fans_count'] }}; 微信小程序会员：{{ $list['mini_count'] }}; APP会员：{{ $list['app_count'] }}; 微信开放平台会员：{{ $list['uni_count'] }}; 手机号绑定会员：{{ $list['phone_count'] }}; </div>
+                    <div class="panel-heading">总数：{{$total}}; 微信公众号会员：{{ $list['fans_count'] }}; 微信小程序会员：{{ $list['mini_count'] }}; APP会员：{{ $list['app_count'] }}; 微信开放平台会员：{{ $list['uni_count'] }}; 企业微信会员：{{ $list['qywechat_count'] }} 手机号绑定会员：{{ $list['phone_count'] }}; </div>
                     <div class="panel-body" style="margin-bottom:200px">
                         <table class="table table-hover " style="overflow:visible">
                             <thead class="navbar-inner">
@@ -322,7 +322,9 @@
                                         @if(!empty($row['has_one_douyin']))
                                             <i class="iconfont icon-all_trill" title="抖音" style="color:#23042b;font-size:30px"></i>
                                         @endif
-                                        
+                                        @if(!empty($row['has_one_qy_wechat']))
+                                            <i class="iconfont icon-all_wechat" title="企业微信" style="color:#23042b;font-size:30px"></i>
+                                        @endif
                                     </td>
                                     {{--<td>
                                         @if($row['yz_member']['is_black']==1)
