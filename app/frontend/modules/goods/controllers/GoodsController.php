@@ -79,7 +79,7 @@ class GoodsController extends GoodsApiController
                     return $query->select('goods_id', 'title', 'value')->orderby('displayorder','asc');
                 },
                 'hasManySpecs' => function ($query) {
-                    return $query->select('id', 'goods_id', 'title', 'description');
+                    return $query->select('id', 'goods_id', 'title', 'description')->orderby('display_order','asc');
                 },
                 'hasManyOptions' => function ($query) {
                     return $query->select('id', 'goods_id', 'title', 'thumb', 'product_price', 'market_price', 'stock', 'specs', 'weight');
