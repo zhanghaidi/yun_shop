@@ -1,0 +1,10 @@
+{
+  "name": "circle",
+  "version": "1.0.1",
+  "title": "圈子",
+  "description": "社交圈子",
+  "author": "zhd",
+  "url": "http://www.yunzshop.com",
+  "namespace": "Yunshop\\Circle",
+  "config": "config.tpl"
+}
