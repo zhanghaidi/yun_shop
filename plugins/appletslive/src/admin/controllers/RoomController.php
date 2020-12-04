@@ -629,8 +629,10 @@ class RoomController extends BaseController
             if (trim($search['del_sta']) !== '') {
                 if ($search['del_sta'] === '0') {
                     $where[] = ['del_sta', '=', 0];
-                } else {
+                } elseif ($search['del_sta'] === '1') {
                     $where[] = ['del_sta', '=', 1];
+                } else {
+                    $where[] = ['del_sta', '=', 2];
                 }
             }
         }
@@ -688,8 +690,10 @@ class RoomController extends BaseController
             if (trim($search['del_sta']) !== '') {
                 if ($search['del_sta'] === '0') {
                     $where[] = ['del_sta', '=', 0];
-                } else {
+                } elseif ($search['del_sta'] === '1') {
                     $where[] = ['del_sta', '=', 1];
+                } else {
+                    $where[] = ['del_sta', '=', 2];
                 }
             }
         }
