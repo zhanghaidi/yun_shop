@@ -769,6 +769,9 @@ class RoomController extends BaseController
 
         // 刷新接口数据缓存
         if ($del_res) {
+            //审核通过 增加评论数量
+            DB::table('yz_appletslive_room')->where('id', $replay->room_id)->decrement('comment_num');
+
             Cache::forget(CacheService::$cache_keys[$cache_key]);
             Cache::forget(CacheService::$cache_keys[$cache_key_replay_comment]);
 
