@@ -378,6 +378,7 @@ class CacheService
             ->select('id', 'user_id', 'content', 'create_time', 'parent_id', 'is_reply')
             ->where('uniacid', self::$uniacid)
             ->where('room_id', $room_id)
+            ->where('del_sta', 0)
             ->orderBy('id', 'desc')
             ->get()->toArray();
         if (empty($comment)) {
@@ -713,6 +714,7 @@ class CacheService
             ->select('id', 'user_id', 'content', 'create_time', 'parent_id', 'is_reply')
             ->where('uniacid', self::$uniacid)
             ->where('replay_id', $replay_id)
+            ->where('del_sta', 0)
             ->orderBy('id', 'desc')
             ->get()->toArray();
         if (empty($comment)) {
@@ -1222,6 +1224,7 @@ class CacheService
             ->select('id', 'user_id', 'content', 'create_time', 'parent_id', 'is_reply')
             ->where('uniacid', self::$uniacid)
             ->where('room_id', $album_id)
+            ->where('del_sta', 0)
             ->orderBy('id', 'desc')
             ->get()->toArray();
         if (empty($comment)) {
