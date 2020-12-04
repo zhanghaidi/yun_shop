@@ -62,7 +62,7 @@
                         <td>@if ($row['del_sta'] == 1)
                                 <span style="color: red">待审核</span> &nbsp;&nbsp;
                                 <a class='btn btn-success btn-delete'
-                                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.commentverify', ['id' => $row['id'],'type'=>'comment_verify'])}}"
+                                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.commentverify', ['id' => $row['id'],'type'=>'comment_list'])}}"
                                        title='通过审核'> 通过审核
                                 </a>
                             @else

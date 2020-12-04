@@ -814,7 +814,7 @@ class RoomController extends BaseController
             Cache::forget(CacheService::$cache_keys['recorded.roominfo']);
             Cache::forget(CacheService::$cache_keys['recorded.roomreplays']);
         }
-        if($input['type'] == 'comment_verify'){
+        if($input['type'] == 'comment_list'){
             return $this->message('评论审核成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.commentlist', ['rid' => $replay->room_id]));
         }else{
             return $this->message('评论审核成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.commentreplylist', ['id' => $replay->parent_id]));
