@@ -910,6 +910,9 @@ class LiveController extends BaseController
             CacheService::setRoomNum($input['room_id'], 'comment_num');
         }
         CacheService::setRoomComment($input['room_id']);
+        if(!$content_status){
+            return $this->errorJson('评论内容可能包含敏感词,请等待审核！', $sensitive_check);
+        }
         return $this->successJson('评论成功', ['id' => $id, 'content' => $content]);
     }
 
@@ -1075,6 +1078,9 @@ class LiveController extends BaseController
             CacheService::setReplayNum($input['replay_id'], 'comment_num');
         }
         CacheService::setReplayComment($input['replay_id']);
+        if(!$content_status){
+            return $this->errorJson('评论内容可能包含敏感词,请等待审核！', $sensitive_check);
+        }
         return $this->successJson('评论成功', ['id' => $id, 'content' => $content]);
     }
 
@@ -1367,6 +1373,9 @@ class LiveController extends BaseController
             CacheService::setBrandSaleAlbumNum($input['album_id'], 'comment_num');
         }
         CacheService::setBrandSaleAlbumComment($input['album_id']);
+        if(!$content_status){
+            return $this->errorJson('评论内容可能包含敏感词,请等待审核！', $sensitive_check);
+        }
         return $this->successJson('评论成功', ['id' => $id, 'content' => $content]);
     }
 
