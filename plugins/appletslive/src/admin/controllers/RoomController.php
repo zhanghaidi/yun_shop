@@ -622,7 +622,18 @@ class RoomController extends BaseController
 
         $input = \YunShop::request();
         $limit = 20;
+        $where = [];
+        if (isset($input->search)) {
+            $search = $input->search;
 
+            if (trim($search['del_sta']) !== '') {
+                if ($search['del_sta'] === '0') {
+                    $where[] = ['del_sta', '=', 0];
+                } else {
+                    $where[] = ['del_sta', '=', 1];
+                }
+            }
+        }
         //评论列表
         $where[] = ['room_id', '=', $rid];
         $where[] = ['is_reply', '=', 0];
@@ -668,12 +679,26 @@ class RoomController extends BaseController
     {
         $rid = request()->get('id', 0);
         $limit = 20;
+        $input = \YunShop::request();
 
+        $where = [];
+        if (isset($input->search)) {
+            $search = $input->search;
+
+            if (trim($search['del_sta']) !== '') {
+                if ($search['del_sta'] === '0') {
+                    $where[] = ['del_sta', '=', 0];
+                } else {
+                    $where[] = ['del_sta', '=', 1];
+                }
+            }
+        }
         //评论列表
         $comment_list = RoomComment::where([
                 ['parent_id', '=', $rid],
                 ['is_reply', '=', 1]
-            ])->paginate($limit);
+            ])->where($where)
+            ->paginate($limit);
 
         if ($comment_list->total() > 0) {
             foreach ($comment_list as $k => &$comment_value) {
@@ -690,9 +715,10 @@ class RoomController extends BaseController
         $pager = PaginationHelper::show($comment_list->total(), $comment_list->currentPage(), $comment_list->perPage());
 
         return view('Yunshop\Appletslive::admin.comment_reply_list', [
-            'rid' => $rid,
+            'id' => $rid,
             'comment_list' => $comment_list,
             'pager' => $pager,
+            'request' => $input,
         ])->render();
 
     }
