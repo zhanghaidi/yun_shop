@@ -1477,7 +1477,7 @@ class CacheService
     }
 
     /**
-         * ficBy-wk-20201126 获取用户订阅的课程信息 课程购买，过期状态
+     * ficBy-wk-20201126 获取用户订阅的课程信息 课程购买，过期状态
      * @param $user_id
      * @param $room_id
      */

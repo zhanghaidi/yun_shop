@@ -747,7 +747,7 @@ class LiveController extends BaseController
             $cache_key_room_num = 'api_live_room_num';
             Cache::forget($cache_key_room_num);
         }
-        
+
         return $this->successJson($msg);
 
     }
