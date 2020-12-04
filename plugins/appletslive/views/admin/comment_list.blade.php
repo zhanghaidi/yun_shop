@@ -9,6 +9,27 @@
     </div>
     <div class='panel panel-default'>
         <div class='panel-body'>
+            <form action="" method="get" class="form-horizontal" role="form" id="form2">
+                <input type="hidden" name="c" value="site"/>
+                <input type="hidden" name="a" value="entry"/>
+                <input type="hidden" name="m" value="yun_shop"/>
+                <input type="hidden" name="do" value="{{ $request['do'] }}"/>
+                <input type="hidden" name="route" value="plugin.appletslive.admin.controllers.room.commentlist"/>
+                <input type="hidden" name="rid" value="{{$request['rid']}}"/>
+                <div class="form-group">
+
+                    <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                        <select name="search[del_sta]" class="form-control">
+                            <option value="">评论状态</option>
+                            <option value="1" @if($request['search']['del_sta']=='1') selected @endif>待审核</option>
+                            <option value='0' @if($request['search']['del_sta']=='0') selected @endif>正常</option>
+                        </select>
+                    </div>
+                    <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                        <button type="submit" class="btn btn-success"><i class="fa fa-search"></i>搜索</button>
+                    </div>
+                </div>
+            </form>
             <div class="clearfix panel-heading" id="goodsTable">
                 <a id="" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;"
                    href="javascript:history.go(-1);">返回</a>
