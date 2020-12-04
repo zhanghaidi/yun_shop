@@ -19,6 +19,7 @@
                     <th style='width:10%;'>ID</th>
                     <th style='width:15%;'>用户头像/昵称</th>
                     <th style='width:15%;'>主评内容</th>
+                    <th style='width:25%;'>评论状态</th>
                     <th style='width:25%;'>评论时间</th>
                     <th style='width:30%;'>操作</th>
                 </tr>
@@ -37,6 +38,16 @@
                             {{$row['nickname']}}
                         </td>
                         <td>{{ $row['content'] }}</td>
+                        <td>@if ($row['del_sta'] == 1)
+                                <span style="color: red">待审核</span> &nbsp;&nbsp;
+                                <a class='btn btn-success btn-delete'
+                                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.commentverify', ['id' => $row['id'],'type'=>'comment_verify'])}}"
+                                       title='通过审核'> 通过审核
+                                </a>
+                            @else
+                                <span style="color: green">正常</span>
+                            @endif
+                        </td>
                         <td>{{ $row['create_time'] }}</td>
                         <td style="overflow:visible;">
                             <a class='btn btn-default'
