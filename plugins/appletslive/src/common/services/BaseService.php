@@ -282,7 +282,7 @@ class BaseService
         return true;
     }
 
-    public function textCheck($content)
+    public function textCheck($content, $verify = true)
     {
         $filterStrs = DB::table('diagnostic_service_sns_filter')->get()->toArray();
         $keywords = array();
@@ -297,7 +297,14 @@ class BaseService
         $keywords = array_unique($keywords);
         $lexicon = array_combine($keywords, array_fill(0, count($keywords), '*')); // 换字符
         $str = strtr($content, $lexicon);                 // 匹配替换
-        return $str;
+        //        fixBy-wk-20201204 评论内容包含敏感词 不让发表评论
+        if ($verify) {
+            if ($str != $content) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public function getToken()

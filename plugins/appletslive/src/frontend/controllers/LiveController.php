@@ -747,7 +747,7 @@ class LiveController extends BaseController
             $cache_key_room_num = 'api_live_room_num';
             Cache::forget($cache_key_room_num);
         }
-        
+
         return $this->successJson($msg);
 
     }
@@ -869,17 +869,32 @@ class LiveController extends BaseController
         if (!is_bool($sensitive_check) || $sensitive_check === false) {
             return $this->errorJson('评论内容包含敏感词', $sensitive_check);
         }
-        $content = $wxapp_base_service->textCheck($content);
 
         // 组装插入数据
         $comment_num_inc = true;
-        $insert_data = [
-            'uniacid' => $this->uniacid,
-            'room_id' => $input['room_id'],
-            'user_id' => $this->user_id,
-            'content' => $content,
-            'create_time' => time(),
-        ];
+//        fixBy-wk-20201204 评论内容包含敏感词
+        $content_status = $wxapp_base_service->textCheck($content);
+        if($content_status){
+            $insert_data = [
+                'uniacid' => $this->uniacid,
+                'room_id' => $input['room_id'],
+                'user_id' => $this->user_id,
+                'content' => $content,
+                'create_time' => time(),
+            ];
+        }else{
+            $comment_num_inc = false;
+            $insert_data = [
+                'uniacid' => $this->uniacid,
+                'room_id' => $input['room_id'],
+                'user_id' => $this->user_id,
+                'content' => $content,
+                'del_sta' => 1,
+                'create_time' => time(),
+            ];
+
+        }
+
         if (array_key_exists('parent_id', $input) && $input['parent_id'] > 0) {
             $parent = DB::table('yz_appletslive_room_comment')->where('id', $input['parent_id'])->first();
             if ($parent) {
@@ -895,6 +910,9 @@ class LiveController extends BaseController
             CacheService::setRoomNum($input['room_id'], 'comment_num');
         }
         CacheService::setRoomComment($input['room_id']);
+        if(!$content_status){
+            return $this->errorJson('评论内容可能包含敏感词,请等待审核！', $sensitive_check);
+        }
         return $this->successJson('评论成功', ['id' => $id, 'content' => $content]);
     }
 
@@ -1020,17 +1038,31 @@ class LiveController extends BaseController
         if (!is_bool($sensitive_check) || $sensitive_check === false) {
             return $this->errorJson('评论内容包含敏感词', $sensitive_check);
         }
-        $content = $wxapp_base_service->textCheck($content);
+        $content_status = $wxapp_base_service->textCheck($content);
 
+        //        fixBy-wk-20201204 评论内容包含敏感词
         // 组装插入数据
         $comment_num_inc = true;
-        $insert_data = [
-            'uniacid' => $this->uniacid,
-            'replay_id' => $input['replay_id'],
-            'user_id' => $this->user_id,
-            'content' => $content,
-            'create_time' => time(),
-        ];
+        if($content_status){
+            $insert_data = [
+                'uniacid' => $this->uniacid,
+                'replay_id' => $input['replay_id'],
+                'user_id' => $this->user_id,
+                'content' => $content,
+                'create_time' => time(),
+            ];
+        }else{
+            $comment_num_inc = false;
+            $insert_data = [
+                'uniacid' => $this->uniacid,
+                'replay_id' => $input['replay_id'],
+                'user_id' => $this->user_id,
+                'content' => $content,
+                'del_sta' => 1,
+                'create_time' => time(),
+            ];
+        }
+
         if (array_key_exists('parent_id', $input) && $input['parent_id'] > 0) {
             $parent = DB::table('yz_appletslive_replay_comment')->where('id', $input['parent_id'])->first();
             if ($parent) {
@@ -1046,6 +1078,9 @@ class LiveController extends BaseController
             CacheService::setReplayNum($input['replay_id'], 'comment_num');
         }
         CacheService::setReplayComment($input['replay_id']);
+        if(!$content_status){
+            return $this->errorJson('评论内容可能包含敏感词,请等待审核！', $sensitive_check);
+        }
         return $this->successJson('评论成功', ['id' => $id, 'content' => $content]);
     }
 
@@ -1298,17 +1333,31 @@ class LiveController extends BaseController
         if (!is_bool($sensitive_check) || $sensitive_check === false) {
             return $this->errorJson('评论内容包含敏感词', $sensitive_check);
         }
-        $content = $wxapp_base_service->textCheck($content);
+        $content_status = $wxapp_base_service->textCheck($content);
 
+        //        fixBy-wk-20201204 评论内容包含敏感词
         // 组装插入数据
         $comment_num_inc = true;
-        $insert_data = [
-            'uniacid' => $this->uniacid,
-            'room_id' => $input['album_id'],
-            'user_id' => $this->user_id,
-            'content' => $content,
-            'create_time' => time(),
-        ];
+        if($content_status){
+            $insert_data = [
+                'uniacid' => $this->uniacid,
+                'room_id' => $input['album_id'],
+                'user_id' => $this->user_id,
+                'content' => $content,
+                'create_time' => time(),
+            ];
+        }else{
+            $comment_num_inc = false;
+            $insert_data = [
+                'uniacid' => $this->uniacid,
+                'room_id' => $input['album_id'],
+                'user_id' => $this->user_id,
+                'content' => $content,
+                'del_sta' => 1,
+                'create_time' => time(),
+            ];
+        }
+
         if (array_key_exists('parent_id', $input) && $input['parent_id'] > 0) {
             $parent = DB::table('yz_appletslive_room_comment')->where('id', $input['parent_id'])->first();
             if ($parent) {
@@ -1324,6 +1373,9 @@ class LiveController extends BaseController
             CacheService::setBrandSaleAlbumNum($input['album_id'], 'comment_num');
         }
         CacheService::setBrandSaleAlbumComment($input['album_id']);
+        if(!$content_status){
+            return $this->errorJson('评论内容可能包含敏感词,请等待审核！', $sensitive_check);
+        }
         return $this->successJson('评论成功', ['id' => $id, 'content' => $content]);
     }
 
