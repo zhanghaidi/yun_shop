@@ -861,7 +861,22 @@ class LiveController extends BaseController
         if (is_string($input['content']) && strlen(trim($input['content'])) == 0) {
             return $this->errorJson('评论内容不能为空');
         }
-
+        //用户禁言
+        $user = DiagnosticServiceUser::where('ajy_uid', $this->user_id)->first();
+        if ($user->is_black == 1) {
+            if ($user->black_end_time > time()) {
+                response()->json([
+                    'result' => 301,
+                    'msg' => '您已被系统禁言！截止时间至：' . date('Y-m-d H:i:s', $user->black_end_time) . '申诉请联系管理员',
+                    'data' => false,
+                ], 200, ['charset' => 'utf-8'])->send();
+                exit;
+            } else {
+                $user->is_black = 0;
+                $user->black_content = '时间到期,自然解禁';
+                $user->save();
+            }
+        }
         // 评论内容敏感词过滤
         $content = trim($input['content']);
         $wxapp_base_service = new BaseService();
@@ -1030,7 +1045,23 @@ class LiveController extends BaseController
         if (is_string($input['content']) && strlen(trim($input['content'])) == 0) {
             return $this->errorJson('评论内容不能为空');
         }
+        //用户禁言
+        $user = DiagnosticServiceUser::where('ajy_uid', $this->user_id)->first();
 
+        if ($user->is_black == 1) {
+            if ($user->black_end_time > time()) {
+                response()->json([
+                    'result' => 301,
+                    'msg' => '您已被系统禁言！截止时间至：' . date('Y-m-d H:i:s', $user->black_end_time) . '申诉请联系管理员',
+                    'data' => false,
+                ], 200, ['charset' => 'utf-8'])->send();
+                exit;
+            } else {
+                $user->is_black = 0;
+                $user->black_content = '时间到期,自然解禁';
+                $user->save();
+            }
+        }
         // 评论内容敏感词过滤
         $content = trim($input['content']);
         $wxapp_base_service = new BaseService();
@@ -1325,7 +1356,23 @@ class LiveController extends BaseController
         if (is_string($input['content']) && strlen(trim($input['content'])) == 0) {
             return $this->errorJson('评论内容不能为空');
         }
-
+        //用户禁言
+        $user = DiagnosticServiceUser::where('ajy_uid', $this->user_id)->first();
+      
+        if ($user->is_black == 1) {
+            if ($user->black_end_time > time()) {
+                response()->json([
+                    'result' => 301,
+                    'msg' => '您已被系统禁言！截止时间至：' . date('Y-m-d H:i:s', $user->black_end_time) . '申诉请联系管理员',
+                    'data' => false,
+                ], 200, ['charset' => 'utf-8'])->send();
+                exit;
+            } else {
+                $user->is_black = 0;
+                $user->black_content = '时间到期,自然解禁';
+                $user->save();
+            }
+        }
         // 评论内容敏感词过滤
         $content = trim($input['content']);
         $wxapp_base_service = new BaseService();

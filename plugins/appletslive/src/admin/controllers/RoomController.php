@@ -804,8 +804,7 @@ class RoomController extends BaseController
                //拒绝通过 查看是否超过三次，三次之后禁言或加入黑名单
                 $delsta_count = RoomComment::where('user_id', $replay->user_id)->where('del_sta',2)->count();
                 if($delsta_count >= 3){
-                    DB::table('diagnostic_service_user')->where('id', $replay->room_id)
-                        ->update(['is_black' => 1, 'is_black_time' => time(),'black_end_time' => time() + 86400*365]);
+                    DB::table('diagnostic_service_user')->where('ajy_uid', $replay->user_id)->update(['is_black' => 1, 'is_black_time' => time(),'black_end_time' => time() + 86400*365]);
                 }
             }
 
