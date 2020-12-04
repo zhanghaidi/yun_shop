@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use Yunshop\Appletslive\common\services\CacheService;
 use Yunshop\Appletslive\common\services\BaseService;
+use app\backend\modules\tracking\models\DiagnosticServiceUser;
 use app\common\models\AccountWechats;
 use app\Jobs\SendTemplateMsgJob;
 
