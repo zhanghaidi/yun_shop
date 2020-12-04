@@ -63,9 +63,15 @@
                         <td>@if ($row['del_sta'] == 1)
                                 <span style="color: red">待审核</span> &nbsp;&nbsp;
                                 <a class='btn btn-success btn-delete'
-                                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.commentverify', ['id' => $row['id'],'type'=>'comment_reply_list'])}}"
+                                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.commentverify', ['id' => $row['id'],'del_sta' => 0,'type'=>'comment_reply_list'])}}"
                                    title='通过审核'> 通过审核
                                 </a>
+                                <a class='btn btn-danger btn-delete'
+                                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.commentverify', ['id' => $row['id'],'del_sta' => 2,'type'=>'comment_list'])}}"
+                                   title='拒绝审核'> 拒绝审核
+                                </a>
+                            @elseif($row['del_sta']==2)
+                                <span style="color: dimgrey"> 已拒绝</span>
                             @else
                                 <span style="color: green">正常</span>
                             @endif

@@ -772,7 +772,7 @@ class RoomController extends BaseController
         }
 
     }
-
+//  fixBy-wk-20201204  通过、拒绝审核
     public function commentverify()
     {
         $input = request()->all();
@@ -788,15 +788,25 @@ class RoomController extends BaseController
             return $this->message('数据不存在', Url::absoluteWeb(''), 'danger');
         }
 
-        $del_res = RoomComment::where('id', $replay->id)->update(['del_sta' => 0]);
+        $del_res = RoomComment::where('id', $replay->id)->update(['del_sta' => $input['del_sta']]);
 
         $cache_key = "api_live_room_comment|$replay->room_id";
         $cache_key_replay_comment = "api_live_replay_comment|$replay->room_id";
 
         // 刷新接口数据缓存
         if ($del_res) {
-            //审核通过 增加评论数量
-            DB::table('yz_appletslive_room')->where('id', $replay->room_id)->decrement('comment_num');
+
+            if ($input['del_sta'] == 0) {
+                //审核通过 增加评论数量
+                DB::table('yz_appletslive_room')->where('id', $replay->room_id)->decrement('comment_num');
+            }
+            if($input['del_sta'] == 2){
+               //拒绝通过 查看是否超过三次，三次之后禁言或加入黑名单
+                $delsta_count = RoomComment::where('user_id', $replay->user_id)->where('del_sta',2)->count();
+                if($delsta_count >= 3){
+                    DB::table('diagnostic_service_user')->where('ajy_uid', $replay->user_id)->update(['is_black' => 1, 'is_black_time' => time(),'black_end_time' => time() + 86400*365]);
+                }
+            }
 
             Cache::forget(CacheService::$cache_keys[$cache_key]);
             Cache::forget(CacheService::$cache_keys[$cache_key_replay_comment]);
