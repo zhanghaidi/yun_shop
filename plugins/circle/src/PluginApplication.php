@@ -21,7 +21,7 @@ class PluginApplication extends \app\common\services\PluginApplication
         /**
          * 设置菜单 config
          */
-        Config::set('plugins.circle.set_tabs', \Yunshop\Sign\Common\Config\SetTabsHook::getSetTabs());
+        Config::set('plugins.circle.set_tabs', \Yunshop\Circle\Common\Config\SetTabsHook::getSetTabs());
 
     }
 
@@ -32,7 +32,7 @@ class PluginApplication extends \app\common\services\PluginApplication
             'subtitle' => '圈子',
             'value' => 'circle',
             'param' => [
-                '圈子列表', '圈子详情', '圈子标签', '圈子分类'
+                '圈子列表'
             ]
         ]];
     }

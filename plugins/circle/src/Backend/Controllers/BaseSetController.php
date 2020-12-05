@@ -7,13 +7,13 @@
  * Email: livsyitian@163.com
  */
 
-namespace Yunshop\Sign\Backend\Controllers;
+namespace Yunshop\Circle\Backend\Controllers;
 
 
 use app\common\components\BaseController;
 use app\common\exceptions\ShopException;
 use app\common\helpers\Url;
-use Yunshop\Sign\Common\Services\SetService;
+use Yunshop\Circle\Common\Services\SetService;
 
 class BaseSetController extends BaseController
 {
@@ -23,6 +23,7 @@ class BaseSetController extends BaseController
 
     public function see()
     {
+        dd('Circle');
         //dd(SetService::getSignSet()['cumulative']);
         return view($this->view_value,['sign' => SetService::getSignSet()])->render();
     }

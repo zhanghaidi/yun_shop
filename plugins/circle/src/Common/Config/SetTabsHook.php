@@ -16,10 +16,10 @@ class SetTabsHook
     {
         return [
             'tab_base' => [
-                'title' => trans('Yunshop\Sign::sign.base_set_title'),
-                'route' => 'plugin.sign.Backend.Controllers.base-set.see',
+                'title' => trans('Yunshop\Circle::circle.base_set_title'),
+                'route' => 'plugin.circle.Backend.Controllers.base-set.see',
             ],
-            'tab_share' => [
+           /* 'tab_share' => [
                 'title' => trans('Yunshop\Sign::sign.share_set_title'),
                 'route' => 'plugin.sign.Backend.Controllers.share-set.see',
             ],
@@ -30,7 +30,7 @@ class SetTabsHook
             'tab_notice' => [
                 'title' => trans('Yunshop\Sign::sign.notice_set_title'),
                 'route' => 'plugin.sign.Backend.Controllers.notice-set.see',
-            ]
+            ]*/
         ];
     }
 
