@@ -31,16 +31,37 @@ class MenuHook
             'child'         => [
 
                 'base_set' => [
-                    'name'              => trans('Yunshop\Circle::circle.base_set_title'),
-                    'url'               => 'plugin.Circle.Backend.Controllers.base-set.see',
+                    'name'              => trans('Yunshop\Sign::sign.base_set_title'),
+                    'url'               => 'plugin.sign.Backend.Controllers.base-set.see',
                     'url_params'        => '',
                     'permit'            => 1,
                     'menu'              => 1,
                     'icon'              => 'fa-gears',
                     'item'              => 'base_set',
-                    'parents'           => ['circle'],
+                    'parents'           => ['sign'],
                     'child'             => [
 
+                        'base_set_see' => [
+                            'name'              => trans('Yunshop\Sign::sign.see_set'),
+                            'url'               => 'plugin.sign.Backend.Controllers.base-set.see',
+                            'url_params'        => '',
+                            'permit'            => 1,
+                            'menu'              => 0,
+                            'icon'              => '',
+                            'item'              => 'base_set_see',
+                            'parents'           => ['sign','base_set'],
+                        ],
+
+                        'base_set_store' => [
+                            'name'              => trans('Yunshop\Sign::sign.update_set'),
+                            'url'               => 'plugin.sign.Backend.Controllers.base-set.store',
+                            'url_params'        => '',
+                            'permit'            => 1,
+                            'menu'              => 0,
+                            'icon'              => '',
+                            'item'              => 'base_set_store',
+                            'parents'           => ['sign'],
+                        ],
                     ],
                 ],
 
