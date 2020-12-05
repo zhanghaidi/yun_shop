@@ -15,9 +15,9 @@ class MenuHook
     public static function menu()
     {
         $menu = [
-            'name'          => trans('Yunshop\Sign::sign.plugin_name'),
+            'name'          => trans('Yunshop\Circle::circle.plugin_name'),
             'type'          => 'marketing',
-            'url'           => 'plugin.sign.Backend.Modules.Sign.Controllers.sign',
+            'url'           => 'plugin.Circle.Backend.Modules.Circle.Controllers.index',
             'url_params'    => '',
             'permit'        => 1,
             'menu'          => 1,
