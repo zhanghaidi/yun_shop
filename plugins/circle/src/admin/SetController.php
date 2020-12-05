@@ -24,6 +24,7 @@ class SetController extends BaseController
             }
         }
 
+        var_dump(2);die;
         return view('Yunshop\Circle::admin.set',
             [
                 'set' => $set,
