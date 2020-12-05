@@ -28,11 +28,11 @@ class PluginApplication extends \app\common\services\PluginApplication
     public function getTemplateItems()
     {
         return ['circle.base' => [
-            'title' => trans('Yunshop\Circle::sign.plugin_name') . '通知',
+            'title' => trans('Yunshop\Circle::circle.plugin_name') . '圈子',
             'subtitle' => '圈子',
             'value' => 'circle',
             'param' => [
-                '昵称', '签到时间', '连签天数', '签到奖励',
+                '圈子列表', '圈子详情', '圈子标签', '圈子分类'
             ]
         ]];
     }
@@ -42,7 +42,7 @@ class PluginApplication extends \app\common\services\PluginApplication
         /**
          * 菜单、权限、路由
          */
-        Menu::current()->setPluginMenu(['circle' => \Yunshop\Sign\Common\Config\MenuHook::menu()]);
+        Menu::current()->setPluginMenu(['circle' => \Yunshop\Circle\Common\Config\MenuHook::menu()]);
     }
 
     public function boot()
