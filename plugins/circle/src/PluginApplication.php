@@ -21,21 +21,10 @@ class PluginApplication extends \app\common\services\PluginApplication
         /**
          * 设置菜单 config
          */
-        //Config::set('plugins.circle.set_tabs', \Yunshop\Circle\Common\Config\SetTabsHook::getSetTabs());
 
     }
 
-    /*public function getTemplateItems()
-    {
-        return ['circle.base' => [
-            'title' => trans('Yunshop\Circle::circle.plugin_name') . '圈子',
-            'subtitle' => '圈子',
-            'value' => 'circle',
-            'param' => [
-                '圈子列表'
-            ]
-        ]];
-    }*/
+
 
     protected function setMenuConfig()
     {
@@ -45,7 +34,7 @@ class PluginApplication extends \app\common\services\PluginApplication
         //Menu::current()->setPluginMenu(['circle' => \Yunshop\Circle\Common\Config\MenuHook::menu()]);
         Menu::current()->setPluginMenu('circle', [
             'name'              => '社交圈子',
-            'type'              => 'tool',
+            'type'              => 'marketing',
             'url'               => 'plugin.circle.admin.set.index',
             'url_params'        => '',
             'permit'            => 1,
