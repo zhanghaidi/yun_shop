@@ -45,7 +45,7 @@ class PluginApplication extends \app\common\services\PluginApplication
         //Menu::current()->setPluginMenu(['circle' => \Yunshop\Circle\Common\Config\MenuHook::menu()]);
         Menu::current()->setPluginMenu('circle', [
             'name'              => '社交圈子',
-            'type'              => 'tool',
+            'type'              => 'marketing',
             'url'               => 'plugin.circle.admin.set.index',
             'url_params'        => '',
             'permit'            => 1,
