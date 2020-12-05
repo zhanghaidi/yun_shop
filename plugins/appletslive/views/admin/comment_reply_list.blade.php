@@ -21,6 +21,7 @@
                     <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
                         <select name="search[del_sta]" class="form-control">
                             <option value="">评论状态</option>
+                            <option value="2" @if($request['search']['del_sta']=='2') selected @endif>已拒绝</option>
                             <option value="1" @if($request['search']['del_sta']=='1') selected @endif>待审核</option>
                             <option value='0' @if($request['search']['del_sta']=='0') selected @endif>正常</option>
                         </select>
