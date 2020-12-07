@@ -11,47 +11,19 @@ namespace app\backend\modules\jiushisms\controllers;
 
 
 use app\common\components\BaseController;
-use app\backend\modules\goods\models\Categorys;
 
 class JiushismsController extends BaseController
 {
 
-
-    public function categoryLink()
+    public function sendsms()
     {
-
-        $category_data = Categorys::getCategory();
-
-        return json_encode($category_data);
-    }
-
-
-
-    public function brandLink(){
-        $brands = \app\common\models\Brand::getBrands()->select('id', 'name')->get()->toArray();
-        $brand_data = [];
-
-        foreach ($brands as $key => $brand){
-            $brand_data[$key] = $brand;
-            $brand_data[$key]['url'] =  yzAppFullUrl('brandgoods/'.$brand['id']);
+        $post = request()->input();
+        if ($post) {
 
         }
-        return json_encode($brand_data);
+
+        return view('jiushisms.sendsms')->render();
     }
-
-    public function smallProceduresBrandLink(){
-        $brands = \app\common\models\Brand::getBrands()->select('id', 'name')->get()->toArray();
-        $brand_data = [];
-
-        foreach ($brands as $key => $brand){
-            $brand_data[$key] = $brand;
-            $brand_data[$key]['url'] =  '/packageB/member/category/brandgoods/brandgoods?id='.$brand['id'];
-
-        }
-        
-        return json_encode($brand_data);
-    }
-
 
 
 }
