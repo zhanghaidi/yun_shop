@@ -4979,6 +4979,61 @@ class Menu
                     ],
                 ],
             ],
+            'jiushi_sms' => [
+                'name'             => '发送短信',
+                'url'              => 'jiushisms.jiushisms.sendsms',
+                'url_params'       => '',
+                'permit'           => 1,
+                'menu'             => 1,
+                'top_show'         => 0,
+                'left_first_show'  => 1,
+                'left_second_show' => 1,
+                'icon'             => 'fa-wechat',
+                'parent_id'        => 0,
+                'sort'             => '6',
+                'item'             => 'jiushisms',
+                'parents'          => [],
+                'child'            => [
+                    'jiushi_sms_set' => [
+                        'name'       => '发短信',
+                        'url'        => 'jiushisms.jiushisms.sendsms',
+                        'url_params' => '',
+                        'permit'     => 1,
+                        'menu'       => 1,
+                        'icon'       => 'fa-cog',
+                        'sort'       => 0,
+                        'item'       => 'jiushisms',
+                        'parents'    => ['jiushisms'],
+                    ],
+                    'jiushi_sms_list' => [
+                        'name'       => '短信列表',
+                        'url'        => 'jiushisms.jiushisms.smslist',
+                        'url_params' => '',
+                        'permit'     => 1,
+                        'menu'       => 1,
+                        'icon'       => 'fa-cog',
+                        'sort'       => 0,
+                        'item'       => 'jiushisms',
+                        'parents'    => ['jiushisms'],
+                        'child'            => [
+                            'live_room_edit' => [
+                                'name'       => '直播间管理',
+                                'url'        => 'live.live-room.edit',
+                                'url_params' => '',
+                                'permit'     => 1,
+                                'menu'       => 1,
+                                'icon'       => 'fa-cog',
+                                'sort'       => 0,
+                                'item'       => 'live_room_edit',
+                                'parents'    => ['live','live_room'],
+                            ],
+                        ]
+                    ],
+
+                ]
+
+            ],
+
         ];
     }
 
