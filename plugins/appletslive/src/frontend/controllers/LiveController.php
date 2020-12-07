@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use Yunshop\Appletslive\common\services\CacheService;
 use Yunshop\Appletslive\common\services\BaseService;
+use app\backend\modules\tracking\models\DiagnosticServiceUser;
 use app\common\models\AccountWechats;
 use app\Jobs\SendTemplateMsgJob;
 
@@ -747,7 +748,7 @@ class LiveController extends BaseController
             $cache_key_room_num = 'api_live_room_num';
             Cache::forget($cache_key_room_num);
         }
-        
+
         return $this->successJson($msg);
 
     }
@@ -861,7 +862,22 @@ class LiveController extends BaseController
         if (is_string($input['content']) && strlen(trim($input['content'])) == 0) {
             return $this->errorJson('评论内容不能为空');
         }
-
+        //用户禁言
+        $user = DiagnosticServiceUser::where('ajy_uid', $this->user_id)->first();
+        if ($user->is_black == 1) {
+            if ($user->black_end_time > time()) {
+                response()->json([
+                    'result' => 301,
+                    'msg' => '您已被系统禁言！截止时间至：' . date('Y-m-d H:i:s', $user->black_end_time) . '申诉请联系管理员',
+                    'data' => false,
+                ], 200, ['charset' => 'utf-8'])->send();
+                exit;
+            } else {
+                $user->is_black = 0;
+                $user->black_content = '时间到期,自然解禁';
+                $user->save();
+            }
+        }
         // 评论内容敏感词过滤
         $content = trim($input['content']);
         $wxapp_base_service = new BaseService();
@@ -869,17 +885,32 @@ class LiveController extends BaseController
         if (!is_bool($sensitive_check) || $sensitive_check === false) {
             return $this->errorJson('评论内容包含敏感词', $sensitive_check);
         }
-        $content = $wxapp_base_service->textCheck($content);
 
         // 组装插入数据
         $comment_num_inc = true;
-        $insert_data = [
-            'uniacid' => $this->uniacid,
-            'room_id' => $input['room_id'],
-            'user_id' => $this->user_id,
-            'content' => $content,
-            'create_time' => time(),
-        ];
+//        fixBy-wk-20201204 评论内容包含敏感词
+        $content_status = $wxapp_base_service->textCheck($content);
+        if($content_status){
+            $insert_data = [
+                'uniacid' => $this->uniacid,
+                'room_id' => $input['room_id'],
+                'user_id' => $this->user_id,
+                'content' => $content,
+                'create_time' => time(),
+            ];
+        }else{
+            $comment_num_inc = false;
+            $insert_data = [
+                'uniacid' => $this->uniacid,
+                'room_id' => $input['room_id'],
+                'user_id' => $this->user_id,
+                'content' => $content,
+                'del_sta' => 1,
+                'create_time' => time(),
+            ];
+
+        }
+
         if (array_key_exists('parent_id', $input) && $input['parent_id'] > 0) {
             $parent = DB::table('yz_appletslive_room_comment')->where('id', $input['parent_id'])->first();
             if ($parent) {
@@ -895,6 +926,9 @@ class LiveController extends BaseController
             CacheService::setRoomNum($input['room_id'], 'comment_num');
         }
         CacheService::setRoomComment($input['room_id']);
+        if(!$content_status){
+            return $this->errorJson('评论内容可能包含敏感词,请等待审核！', $sensitive_check);
+        }
         return $this->successJson('评论成功', ['id' => $id, 'content' => $content]);
     }
 
@@ -1012,7 +1046,23 @@ class LiveController extends BaseController
         if (is_string($input['content']) && strlen(trim($input['content'])) == 0) {
             return $this->errorJson('评论内容不能为空');
         }
+        //用户禁言
+        $user = DiagnosticServiceUser::where('ajy_uid', $this->user_id)->first();
 
+        if ($user->is_black == 1) {
+            if ($user->black_end_time > time()) {
+                response()->json([
+                    'result' => 301,
+                    'msg' => '您已被系统禁言！截止时间至：' . date('Y-m-d H:i:s', $user->black_end_time) . '申诉请联系管理员',
+                    'data' => false,
+                ], 200, ['charset' => 'utf-8'])->send();
+                exit;
+            } else {
+                $user->is_black = 0;
+                $user->black_content = '时间到期,自然解禁';
+                $user->save();
+            }
+        }
         // 评论内容敏感词过滤
         $content = trim($input['content']);
         $wxapp_base_service = new BaseService();
@@ -1020,17 +1070,31 @@ class LiveController extends BaseController
         if (!is_bool($sensitive_check) || $sensitive_check === false) {
             return $this->errorJson('评论内容包含敏感词', $sensitive_check);
         }
-        $content = $wxapp_base_service->textCheck($content);
+        $content_status = $wxapp_base_service->textCheck($content);
 
+        //        fixBy-wk-20201204 评论内容包含敏感词
         // 组装插入数据
         $comment_num_inc = true;
-        $insert_data = [
-            'uniacid' => $this->uniacid,
-            'replay_id' => $input['replay_id'],
-            'user_id' => $this->user_id,
-            'content' => $content,
-            'create_time' => time(),
-        ];
+        if($content_status){
+            $insert_data = [
+                'uniacid' => $this->uniacid,
+                'replay_id' => $input['replay_id'],
+                'user_id' => $this->user_id,
+                'content' => $content,
+                'create_time' => time(),
+            ];
+        }else{
+            $comment_num_inc = false;
+            $insert_data = [
+                'uniacid' => $this->uniacid,
+                'replay_id' => $input['replay_id'],
+                'user_id' => $this->user_id,
+                'content' => $content,
+                'del_sta' => 1,
+                'create_time' => time(),
+            ];
+        }
+
         if (array_key_exists('parent_id', $input) && $input['parent_id'] > 0) {
             $parent = DB::table('yz_appletslive_replay_comment')->where('id', $input['parent_id'])->first();
             if ($parent) {
@@ -1046,6 +1110,9 @@ class LiveController extends BaseController
             CacheService::setReplayNum($input['replay_id'], 'comment_num');
         }
         CacheService::setReplayComment($input['replay_id']);
+        if(!$content_status){
+            return $this->errorJson('评论内容可能包含敏感词,请等待审核！', $sensitive_check);
+        }
         return $this->successJson('评论成功', ['id' => $id, 'content' => $content]);
     }
 
@@ -1290,7 +1357,23 @@ class LiveController extends BaseController
         if (is_string($input['content']) && strlen(trim($input['content'])) == 0) {
             return $this->errorJson('评论内容不能为空');
         }
-
+        //用户禁言
+        $user = DiagnosticServiceUser::where('ajy_uid', $this->user_id)->first();
+      
+        if ($user->is_black == 1) {
+            if ($user->black_end_time > time()) {
+                response()->json([
+                    'result' => 301,
+                    'msg' => '您已被系统禁言！截止时间至：' . date('Y-m-d H:i:s', $user->black_end_time) . '申诉请联系管理员',
+                    'data' => false,
+                ], 200, ['charset' => 'utf-8'])->send();
+                exit;
+            } else {
+                $user->is_black = 0;
+                $user->black_content = '时间到期,自然解禁';
+                $user->save();
+            }
+        }
         // 评论内容敏感词过滤
         $content = trim($input['content']);
         $wxapp_base_service = new BaseService();
@@ -1298,17 +1381,31 @@ class LiveController extends BaseController
         if (!is_bool($sensitive_check) || $sensitive_check === false) {
             return $this->errorJson('评论内容包含敏感词', $sensitive_check);
         }
-        $content = $wxapp_base_service->textCheck($content);
+        $content_status = $wxapp_base_service->textCheck($content);
 
+        //        fixBy-wk-20201204 评论内容包含敏感词
         // 组装插入数据
         $comment_num_inc = true;
-        $insert_data = [
-            'uniacid' => $this->uniacid,
-            'room_id' => $input['album_id'],
-            'user_id' => $this->user_id,
-            'content' => $content,
-            'create_time' => time(),
-        ];
+        if($content_status){
+            $insert_data = [
+                'uniacid' => $this->uniacid,
+                'room_id' => $input['album_id'],
+                'user_id' => $this->user_id,
+                'content' => $content,
+                'create_time' => time(),
+            ];
+        }else{
+            $comment_num_inc = false;
+            $insert_data = [
+                'uniacid' => $this->uniacid,
+                'room_id' => $input['album_id'],
+                'user_id' => $this->user_id,
+                'content' => $content,
+                'del_sta' => 1,
+                'create_time' => time(),
+            ];
+        }
+
         if (array_key_exists('parent_id', $input) && $input['parent_id'] > 0) {
             $parent = DB::table('yz_appletslive_room_comment')->where('id', $input['parent_id'])->first();
             if ($parent) {
@@ -1324,6 +1421,9 @@ class LiveController extends BaseController
             CacheService::setBrandSaleAlbumNum($input['album_id'], 'comment_num');
         }
         CacheService::setBrandSaleAlbumComment($input['album_id']);
+        if(!$content_status){
+            return $this->errorJson('评论内容可能包含敏感词,请等待审核！', $sensitive_check);
+        }
         return $this->successJson('评论成功', ['id' => $id, 'content' => $content]);
     }
 

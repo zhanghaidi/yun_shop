@@ -9,6 +9,28 @@
     </div>
     <div class='panel panel-default'>
         <div class='panel-body'>
+            <form action="" method="get" class="form-horizontal" role="form" id="form2">
+                <input type="hidden" name="c" value="site"/>
+                <input type="hidden" name="a" value="entry"/>
+                <input type="hidden" name="m" value="yun_shop"/>
+                <input type="hidden" name="do" value="{{ $request['do'] }}"/>
+                <input type="hidden" name="route" value="plugin.appletslive.admin.controllers.room.commentreplylist"/>
+                <input type="hidden" name="id" value="{{$request['id']}}"/>
+                <div class="form-group">
+
+                    <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                        <select name="search[del_sta]" class="form-control">
+                            <option value="">评论状态</option>
+                            <option value="2" @if($request['search']['del_sta']=='2') selected @endif>已拒绝</option>
+                            <option value="1" @if($request['search']['del_sta']=='1') selected @endif>待审核</option>
+                            <option value='0' @if($request['search']['del_sta']=='0') selected @endif>正常</option>
+                        </select>
+                    </div>
+                    <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                        <button type="submit" class="btn btn-success"><i class="fa fa-search"></i>搜索</button>
+                    </div>
+                </div>
+            </form>
             <div class="clearfix panel-heading" id="goodsTable">
                 <a id="" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;"
                    href="javascript:history.go(-1);">返回</a>
@@ -20,6 +42,7 @@
                     <th style='width:10%;'>ID</th>
                     <th style='width:15%;'>用户头像/昵称</th>
                     <th style='width:15%;'>评论内容</th>
+                    <th style='width:25%;'>评论状态</th>
                     <th style='width:25%;'>评论时间</th>
                     <th style='width:30%;'>操作</th>
                 </tr>
@@ -38,6 +61,22 @@
                             {{$row['nickname']}}
                         </td>
                         <td>{{ $row['content'] }}</td>
+                        <td>@if ($row['del_sta'] == 1)
+                                <span style="color: red">待审核</span> &nbsp;&nbsp;
+                                <a class='btn btn-success btn-delete'
+                                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.commentverify', ['id' => $row['id'],'del_sta' => 0,'type'=>'comment_reply_list'])}}"
+                                   title='通过审核'> 通过审核
+                                </a>
+                                <a class='btn btn-danger btn-delete'
+                                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.commentverify', ['id' => $row['id'],'del_sta' => 2,'type'=>'comment_list'])}}"
+                                   title='拒绝审核'> 拒绝审核
+                                </a>
+                            @elseif($row['del_sta']==2)
+                                <span style="color: dimgrey"> 已拒绝</span>
+                            @else
+                                <span style="color: green">正常</span>
+                            @endif
+                        </td>
                         <td>{{ $row['create_time'] }}</td>
                         <td style="overflow:visible;">
                             <a class='btn btn-default btn-delete'

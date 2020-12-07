@@ -622,9 +622,23 @@ class RoomController extends BaseController
 
         $input = \YunShop::request();
         $limit = 20;
+        $where = [];
+        if (isset($input->search)) {
+            $search = $input->search;
 
+            if (trim($search['del_sta']) !== '') {
+                if ($search['del_sta'] === '0') {
+                    $where[] = ['del_sta', '=', 0];
+                } elseif ($search['del_sta'] === '1') {
+                    $where[] = ['del_sta', '=', 1];
+                } else {
+                    $where[] = ['del_sta', '=', 2];
+                }
+            }
+        }
         //评论列表
         $where[] = ['room_id', '=', $rid];
+        $where[] = ['is_reply', '=', 0];
         $comment_list = RoomComment::where($where)
             ->orderBy('id', 'desc')
             ->paginate($limit);
@@ -667,12 +681,28 @@ class RoomController extends BaseController
     {
         $rid = request()->get('id', 0);
         $limit = 20;
+        $input = \YunShop::request();
 
+        $where = [];
+        if (isset($input->search)) {
+            $search = $input->search;
+
+            if (trim($search['del_sta']) !== '') {
+                if ($search['del_sta'] === '0') {
+                    $where[] = ['del_sta', '=', 0];
+                } elseif ($search['del_sta'] === '1') {
+                    $where[] = ['del_sta', '=', 1];
+                } else {
+                    $where[] = ['del_sta', '=', 2];
+                }
+            }
+        }
         //评论列表
         $comment_list = RoomComment::where([
                 ['parent_id', '=', $rid],
                 ['is_reply', '=', 1]
-            ])->paginate($limit);
+            ])->where($where)
+            ->paginate($limit);
 
         if ($comment_list->total() > 0) {
             foreach ($comment_list as $k => &$comment_value) {
@@ -689,9 +719,10 @@ class RoomController extends BaseController
         $pager = PaginationHelper::show($comment_list->total(), $comment_list->currentPage(), $comment_list->perPage());
 
         return view('Yunshop\Appletslive::admin.comment_reply_list', [
-            'rid' => $rid,
+            'id' => $rid,
             'comment_list' => $comment_list,
             'pager' => $pager,
+            'request' => $input,
         ])->render();
 
     }
@@ -742,6 +773,65 @@ class RoomController extends BaseController
             return $this->message('删除成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.commentlist', ['rid' => $replay->room_id]));
         }else{
             return $this->message('删除成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.commentreplylist', ['id' => $replay->parent_id]));
+        }
+
+    }
+//  fixBy-wk-20201204  通过、拒绝审核
+    public function commentverify()
+    {
+        $input = request()->all();
+        $id_invalid = false;
+        if (!array_key_exists('id', $input)) { // 房间id
+            $id_invalid = true;
+        }
+        $replay = RoomComment::where('id', intval($input['id']))->first();
+        if (empty($replay)) {
+            $id_invalid = true;
+        }
+        if ($id_invalid) {
+            return $this->message('数据不存在', Url::absoluteWeb(''), 'danger');
+        }
+
+        $del_res = RoomComment::where('id', $replay->id)->update(['del_sta' => $input['del_sta']]);
+
+        $cache_key = "api_live_room_comment|$replay->room_id";
+        $cache_key_replay_comment = "api_live_replay_comment|$replay->room_id";
+
+        // 刷新接口数据缓存
+        if ($del_res) {
+
+            if ($input['del_sta'] == 0) {
+                //审核通过 增加评论数量
+                DB::table('yz_appletslive_room')->where('id', $replay->room_id)->decrement('comment_num');
+            }
+            if($input['del_sta'] == 2){
+               //拒绝通过 查看是否超过三次，三次之后禁言或加入黑名单
+                $delsta_count = RoomComment::where('user_id', $replay->user_id)->where('del_sta',2)->count();
+                if($delsta_count >= 3){
+                    DB::table('diagnostic_service_user')->where('ajy_uid', $replay->user_id)->update(['is_black' => 1, 'is_black_time' => time(),'black_end_time' => time() + 86400*365]);
+                }
+            }
+
+            Cache::forget(CacheService::$cache_keys[$cache_key]);
+            Cache::forget(CacheService::$cache_keys[$cache_key_replay_comment]);
+
+            Cache::forget(CacheService::$cache_keys['brandsale.albumcomment']);
+            Cache::forget(CacheService::$cache_keys['brandsale.albumlist']);
+            Cache::forget(CacheService::$cache_keys['brandsale.albuminfo']);
+            Cache::forget(CacheService::$cache_keys['brandsale.albumliverooms']);
+
+            Cache::forget(CacheService::$cache_keys[$cache_key]);
+            Cache::forget(CacheService::$cache_keys[$cache_key_replay_comment]);
+
+            Cache::forget(CacheService::$cache_keys['brandsale.albumcomment']);
+            Cache::forget(CacheService::$cache_keys['recorded.roomlist']);
+            Cache::forget(CacheService::$cache_keys['recorded.roominfo']);
+            Cache::forget(CacheService::$cache_keys['recorded.roomreplays']);
+        }
+        if($input['type'] == 'comment_list'){
+            return $this->message('评论审核成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.commentlist', ['rid' => $replay->room_id]));
+        }else{
+            return $this->message('评论审核成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.commentreplylist', ['id' => $replay->parent_id]));
         }
 
     }
