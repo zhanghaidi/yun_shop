@@ -25,5 +25,9 @@ class JiushismsController extends BaseController
         return view('jiushisms.sendsms')->render();
     }
 
+    public function smslist(){
 
+        return view('jiushisms.smslist')->render();
+
+    }
 }
