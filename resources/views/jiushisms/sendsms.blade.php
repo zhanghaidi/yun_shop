@@ -14,17 +14,17 @@
                         <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">手机号</label>
                             <div class="col-sm-9 col-xs-12">
-                                <input type="text" name="phone_num" class="form-control" placeholder="请输入客户手机号"/>
+                                <input type="text" name="mobile" class="form-control" placeholder="请输入客户手机号"/>
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">灸师微信号</label>
                             <div class="col-sm-9 col-xs-12">
-                                <input type="text" name="jiushi_WeChat" class="form-control" placeholder="请输入灸师企业微信号"/>
+                                <input type="text" name="jiushi_wechat" class="form-control" placeholder="请输入灸师企业微信号"/>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">短信内容</label>
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">变量内容</label>
                             <div class="col-sm-9 col-xs-12">
                                 <textarea name="sms_content" rows="10" class="form-control"></textarea>
                             </div>
