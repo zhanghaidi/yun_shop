@@ -64,23 +64,23 @@ class FaceAnalysisLogManageController extends BaseController
             }
             $list = $list->where('mask', $searchData['mask']);
         }
-        if (isset($searchData['hair-length']) && in_array($searchData['hair-length'], [9, 1, 2, 3, 4])) {
-            if ($searchData['hair-length'] == 9) {
-                $searchData['hair-length'] = '0';
+        if (isset($searchData['hair_length']) && in_array($searchData['hair_length'], [9, 1, 2, 3, 4])) {
+            if ($searchData['hair_length'] == 9) {
+                $searchData['hair_length'] = '0';
             }
-            $list = $list->where('hair-length', $searchData['hair-length']);
+            $list = $list->where('hair_length', $searchData['hair_length']);
         }
-        if (isset($searchData['hair-bang']) && in_array($searchData['hair-bang'], [9, 1])) {
-            if ($searchData['hair-bang'] == 9) {
-                $searchData['hair-bang'] = '0';
+        if (isset($searchData['hair_bang']) && in_array($searchData['hair_bang'], [9, 1])) {
+            if ($searchData['hair_bang'] == 9) {
+                $searchData['hair_bang'] = '0';
             }
-            $list = $list->where('hair-bang', $searchData['hair-bang']);
+            $list = $list->where('hair_bang', $searchData['hair_bang']);
         }
-        if (isset($searchData['hair-color']) && in_array($searchData['hair-color'], [9, 1, 2, 3])) {
-            if ($searchData['hair-color'] == 9) {
-                $searchData['hair-color'] = '0';
+        if (isset($searchData['hair_color']) && in_array($searchData['hair_color'], [9, 1, 2, 3])) {
+            if ($searchData['hair_color'] == 9) {
+                $searchData['hair_color'] = '0';
             }
-            $list = $list->where('hair-color', $searchData['hair-color']);
+            $list = $list->where('hair_color', $searchData['hair_color']);
         }
         $list = $list->orderBy('id', 'desc')->paginate($this->pageSize)->toArray();
 

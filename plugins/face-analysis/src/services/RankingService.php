@@ -19,6 +19,11 @@ class RankingService
 
         $return = [];
         $label = (new FaceAnalysisService())->get('label');
+        $statusRs = Setting::get($label . '.ranking_status');
+        if ($statusRs <= 0) {
+            return $return;
+        }
+
         $sexRs = Setting::get($label . '.sex_ranking');
         if ($sexRs != 0) {
             if ($userRs->gender == 1) {
@@ -69,8 +74,8 @@ class RankingService
         $sexRs = Setting::get($label . '.sex_ranking');
         $ageRs = Setting::get($label . '.age_ranking');
         if ($sexRs != 0) {
-            $return[] = ['type'=>1,'name'=>'女神排行榜'];
-            $return[] = ['type'=>2,'name'=>'男神排行榜'];
+            $return[] = ['type' => 1, 'name' => '女神排行榜'];
+            $return[] = ['type' => 2, 'name' => '男神排行榜'];
         }
 
         if (!isset($ageRs['start'][0]) || !isset($ageRs['end'][0])) {
@@ -83,10 +88,10 @@ class RankingService
             }
             $type = $k * 2 + 10;
             if ($ageRs['sex'] == 1) {
-                $return[] = ['type'=>$type,'name'=>$v . ' - ' . $ageRs['end'][$k] . '岁女神榜'];
-                $return[] = ['type'=>$type+1,'name'=>$v . ' - ' . $ageRs['end'][$k] . '岁男神榜'];
+                $return[] = ['type' => $type, 'name' => $v . ' - ' . $ageRs['end'][$k] . '岁女神榜'];
+                $return[] = ['type' => $type + 1, 'name' => $v . ' - ' . $ageRs['end'][$k] . '岁男神榜'];
             } else {
-                $return[] = ['type'=>$type,'name'=>$v . ' - ' . $ageRs['end'][$k] . '岁榜'];
+                $return[] = ['type' => $type, 'name' => $v . ' - ' . $ageRs['end'][$k] . '岁榜'];
             }
         }
         return $return;

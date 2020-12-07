@@ -21,9 +21,9 @@ class CreateImsYzFaceAnalysisLogTable extends Migration
 				$table->tinyInteger('hat', false, true)->default(0)->comment('是否有帽子:0=无,1=有');
 				$table->tinyInteger('glass', false, true)->default(0)->comment('是否有眼镜:0=无,1=有');
 				$table->tinyInteger('mask', false, true)->default(0)->comment('是否有口罩:0=无,1=有');
-				$table->tinyInteger('hair-length', false, true)->default(0)->comment('头发长度:0光头, 1短发, 2中发, 3长发, 4绑发');
-				$table->tinyInteger('hair-bang', false, true)->default(0)->comment('是否有刘海:0=无,1=有');
-				$table->tinyInteger('hair-color', false, true)->default(0)->comment('发色:0=黑色,1=金色,2=棕色,3=灰白色');
+				$table->tinyInteger('hair_length', false, true)->default(0)->comment('头发长度:0光头, 1短发, 2中发, 3长发, 4绑发');
+				$table->tinyInteger('hair_bang', false, true)->default(0)->comment('是否有刘海:0=无,1=有');
+				$table->tinyInteger('hair_color', false, true)->default(0)->comment('发色:0=黑色,1=金色,2=棕色,3=灰白色');
 				$table->string('attribute',200)->default('')->comment('人脸属性');
 				$table->string('quality',200)->default('')->comment('图片质量');
 				$table->smallInteger('cost', false, true)->default(0)->comment('花费');

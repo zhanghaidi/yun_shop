@@ -12,12 +12,12 @@ class IntegralService
      * @param $serviceId 服务ID
      * @param $userId 用户ID
      * @param $beauty 颜值
-     * @param $isBefore 使用后/使用前
+     * @param $isBefore 是否使用前
      * 
      * @notice 使用前，如果积分和颜值有关，则返回100(颜值最大值)
      *         使用后，给出确定的积分
      */
-    public function getConsumeAndGain(int $serviceId, int $userId, int $beauty, bool $isBefore = true)
+    public function getConsumeAndGain(int $serviceId, int $userId, int $beauty = 0, bool $isBefore = true)
     {
         $label = (new FaceAnalysisService())->get('label');
         $settingRs = Setting::get($label);
@@ -33,7 +33,7 @@ class IntegralService
                 'uniacid' => $serviceId,
             ])->count();
             if ($isBefore === true) {
-                $userUseNumber -= 1;
+                $userUseNumber += 1;
             }
 
             if (!isset($settingRs['consume_frequency'])) {
@@ -45,7 +45,7 @@ class IntegralService
                 if (isset($settingRs['consume_type']) && $settingRs['consume_type'] == 2) {
                     $return['consume'] = isset($settingRs['consume_surplus']) ? $settingRs['consume_surplus'] : 0;
                 } else {
-                    if ($isBefore === false) {
+                    if ($isBefore === true) {
                         $return['consume'] = 100;
                     } else {
                         $return['consume'] = $beauty;
@@ -61,7 +61,7 @@ class IntegralService
                     'uniacid' => $serviceId,
                 ])->count();
                 if ($isBefore === true) {
-                    $userUseNumber -= 1;
+                    $userUseNumber += 1;
                 }
             }
 
@@ -72,7 +72,7 @@ class IntegralService
                 if (isset($settingRs['gain_type']) && $settingRs['gain_type'] == 2) {
                     $return['gain'] = isset($settingRs['gain_number']) ? $settingRs['gain_number'] : 0;
                 } else {
-                    if ($isBefore === false) {
+                    if ($isBefore === true) {
                         $return['gain'] = 100;
                     } else {
                         $return['gain'] = $beauty;

@@ -55,27 +55,27 @@
                                 <option value="1" @if($search['mask'] === '1') selected="selected" @endif>有</option>
                             </select>
                             <div class="input-group-addon">头发长度:</div>
-                            <select class="form-control" name="search[hair-length]">
+                            <select class="form-control" name="search[hair_length]">
                                 <option value="">全部</option>
-                                <option value="9" @if($search['hair-length'] === '0') selected="selected" @endif>光头</option>
-                                <option value="1" @if($search['hair-length'] === '1') selected="selected" @endif>短发</option>
-                                <option value="2" @if($search['hair-length'] === '2') selected="selected" @endif>中发</option>
-                                <option value="3" @if($search['hair-length'] === '3') selected="selected" @endif>长发</option>
-                                <option value="4" @if($search['hair-length'] === '4') selected="selected" @endif>绑发</option>
+                                <option value="9" @if($search['hair_length'] === '0') selected="selected" @endif>光头</option>
+                                <option value="1" @if($search['hair_length'] === '1') selected="selected" @endif>短发</option>
+                                <option value="2" @if($search['hair_length'] === '2') selected="selected" @endif>中发</option>
+                                <option value="3" @if($search['hair_length'] === '3') selected="selected" @endif>长发</option>
+                                <option value="4" @if($search['hair_length'] === '4') selected="selected" @endif>绑发</option>
                             </select>
                             <div class="input-group-addon">刘海:</div>
-                            <select class="form-control" name="search[hair-bang]">
+                            <select class="form-control" name="search[hair_bang]">
                                 <option value="">全部</option>
-                                <option value="9" @if($search['hair-bang'] === '0') selected="selected" @endif>无</option>
-                                <option value="1" @if($search['hair-bang'] === '1') selected="selected" @endif>有</option>
+                                <option value="9" @if($search['hair_bang'] === '0') selected="selected" @endif>无</option>
+                                <option value="1" @if($search['hair_bang'] === '1') selected="selected" @endif>有</option>
                             </select>
                             <div class="input-group-addon">发色:</div>
-                            <select class="form-control" name="search[hair-color]">
+                            <select class="form-control" name="search[hair_color]">
                                 <option value="">全部</option>
-                                <option value="9" @if($search['hair-color'] === '0') selected="selected" @endif>黑色</option>
-                                <option value="1" @if($search['hair-color'] === '1') selected="selected" @endif>金色</option>
-                                <option value="2" @if($search['hair-color'] === '2') selected="selected" @endif>棕色</option>
-                                <option value="3" @if($search['hair-color'] === '3') selected="selected" @endif>灰白色</option>
+                                <option value="9" @if($search['hair_color'] === '0') selected="selected" @endif>黑色</option>
+                                <option value="1" @if($search['hair_color'] === '1') selected="selected" @endif>金色</option>
+                                <option value="2" @if($search['hair_color'] === '2') selected="selected" @endif>棕色</option>
+                                <option value="3" @if($search['hair_color'] === '3') selected="selected" @endif>灰白色</option>
                             </select>
                         </div>
                     </div>
@@ -160,9 +160,9 @@
                         <td>@if($value['hat'] == 1) 有 @elseif($value['hat'] == 0) 无 @else 未知 @endif</td>
                         <td>@if($value['glass'] == 1) 有 @elseif($value['glass'] == 0) 无 @else 未知 @endif</td>
                         <td>@if($value['mask'] == 1) 有 @elseif($value['mask'] == 0) 无 @else 未知 @endif</td>
-                        <td>@if($value['hair-length'] == 1) 短发 @elseif($value['hair-length'] == 2) 中发 @elseif($value['hair-length'] == 3) 长发 @elseif($value['hair-length'] == 4) 绑发 @elseif($value['hair-length'] == 0) 光头 @else 未知 @endif</td>
-                        <td>@if($value['hair-bang'] == 1) 有 @elseif($value['hair-bang'] == 0) 无 @else 未知 @endif</td>
-                        <td>@if($value['hair-color'] == 1) 金色 @elseif($value['hair-color'] == 2) 棕色 @elseif($value['hair-color'] == 3) 灰白色 @elseif($value['hair-color'] == 0) 黑色 @else 未知 @endif</td>
+                        <td>@if($value['hair_length'] == 1) 短发 @elseif($value['hair_length'] == 2) 中发 @elseif($value['hair_length'] == 3) 长发 @elseif($value['hair_length'] == 4) 绑发 @elseif($value['hair_length'] == 0) 光头 @else 未知 @endif</td>
+                        <td>@if($value['hair_bang'] == 1) 有 @elseif($value['hair_bang'] == 0) 无 @else 未知 @endif</td>
+                        <td>@if($value['hair_color'] == 1) 金色 @elseif($value['hair_color'] == 2) 棕色 @elseif($value['hair_color'] == 3) 灰白色 @elseif($value['hair_color'] == 0) 黑色 @else 未知 @endif</td>
                         <td>{{$value['cost']}} 积分</td>
                         <td>{{$value['gain']}} 积分</td>
                         <td>{{$value['created_at']}}</td>

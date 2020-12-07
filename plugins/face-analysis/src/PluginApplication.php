@@ -55,6 +55,16 @@ class PluginApplication extends \app\common\services\PluginApplication
                     'parents' => ['face_analysis'],
                 ],
 
+                'face_analysis_statistics' => [
+                    'name' => '服务统计',
+                    'permit' => 1,
+                    'menu' => 1,
+                    'icon' => '',
+                    'url' => 'plugin.face-analysis.admin.face-analysis-statistics.province',
+                    'url_params' => '',
+                    'parents' => ['face_analysis'],
+                ],
+
                 'face_analysis_set' => [
                     'name' => '插件设置',
                     'permit' => 1,
