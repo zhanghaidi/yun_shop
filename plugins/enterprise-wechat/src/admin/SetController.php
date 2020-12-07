@@ -6,9 +6,7 @@ use app\common\components\BaseController;
 use app\common\facades\Setting;
 use app\common\helpers\Url;
 
-/**
-* 
-*/
+
 class SetController extends BaseController
 {
 
