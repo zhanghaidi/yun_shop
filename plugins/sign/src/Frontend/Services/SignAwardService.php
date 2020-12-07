@@ -161,7 +161,7 @@ class SignAwardService
             $days[$key] = $val['days'];
         }
         $max_day = max($days);//获取最大累计天数
-        if ($cumulative_number > $max_day) {
+        if ($cumulative_number > $max_day && $max_day > 0) {
             $multiple = floor($cumulative_number/$max_day);
             $cumulative_number = $cumulative_number - $max_day*$multiple;
         }
