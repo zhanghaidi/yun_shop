@@ -16,6 +16,7 @@ class SetController extends BaseController
     {
         $set = Setting::get('plugin.enterprise-wechat');
         $requestModel = \YunShop::request()->setdata;
+
         if ($requestModel) {
             if (Setting::set('plugin.enterprise-wechat', $requestModel)) {
                 return $this->message('设置成功', Url::absoluteWeb('plugin.enterprise-wechat.admin.set'));

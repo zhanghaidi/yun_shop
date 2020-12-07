@@ -53,8 +53,8 @@ class PluginApplication extends \app\common\services\PluginApplication
             'top_show'          => 0,
             'left_first_show'   => 0,
             'left_second_show'  => 1,
-            'icon'              => 'fa-hourglass-2',
-            'list_icon'         => 'enterprise_wechat',
+            'icon'              => 'fa-qywechat',
+            'list_icon'         => 'qywechat',
             'parents'           => [],
             'child'             => [
                 'enterprise-wechat' => [
