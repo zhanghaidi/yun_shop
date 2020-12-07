@@ -4,7 +4,7 @@ namespace Yunshop\EnterpriseWechat\api;
 
 use app\common\components\ApiController;
 use app\common\facades\Setting;
-use Yunshop\EnterpriseWechat\Common\services\QyWeiBanService;
+use Yunshop\EnterpriseWechat\services\QyWeiBanService;
 
 /**
  * Author: 芸众商城 www.yunzshop.com
