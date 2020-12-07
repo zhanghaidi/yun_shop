@@ -1,0 +1,11 @@
+{
+  "name": "face-analysis",
+  "version": "1.0.0",
+  "title": "人脸检测与分析",
+  "description": "使用腾讯(微信)的人脸检测服务，分析所提供图片的性别、年龄、魅力等数据，根据这些数据制作排行榜",
+  "author": "芸众",
+  "url": "http://www.yunzshop.com",
+  "namespace": "Yunshop\\FaceAnalysis",
+  "config": "config.tpl"
+
+}
