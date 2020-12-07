@@ -4844,7 +4844,7 @@ class Menu
                 'icon'             => 'fa-wechat',
                 'parent_id'        => 0,
                 'sort'             => '6',
-                'item'             => 'jiushisms',
+                'item'             => 'jiushi_sms',
                 'parents'          => [],
                 'child'            => [
                     'jiushi_sms_set' => [
@@ -4856,7 +4856,7 @@ class Menu
                         'icon'       => 'fa-cog',
                         'sort'       => 0,
                         'item'       => 'jiushi_sms_set',
-                        'parents'    => ['jiushisms',],
+                        'parents'    => ['jiushi_sms',],
                     ],
                     'jiushi_sms_list' => [
                         'name'       => '短信列表',
@@ -4867,10 +4867,8 @@ class Menu
                         'icon'       => 'fa-cog',
                         'sort'       => 0,
                         'item'       => 'jiushi_sms_list',
-                        'parents'    => ['jiushisms','jiushi_sms_list'],
-                        'child'            => [
+                        'parents'    => ['jiushi_sms',],
 
-                        ]
                     ],
 
                 ]
