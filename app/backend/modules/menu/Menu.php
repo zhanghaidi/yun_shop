@@ -4833,7 +4833,7 @@ class Menu
                 ],
             ],
             'jiushi_sms' => [
-                'name'             => '发送短信',
+                'name'             => '发短信',
                 'url'              => 'jiushisms.jiushisms.sendsms',
                 'url_params'       => '',
                 'permit'           => 1,
