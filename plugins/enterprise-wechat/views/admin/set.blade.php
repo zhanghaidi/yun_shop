@@ -15,16 +15,11 @@
                                 <input type="text" name="setdata[corpid]" class="form-control" value="{{ $setdata['corpid'] }}"/>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">企业微信课程群聊链接</label>
-                            <div class="col-sm-9 col-xs-12">
-                                <input type="text" name="min[qy_wecht_group_link]" class="form-control" value="{{ $set['qy_wecht_group_link'] }}"/>
-                            </div>
-                        </div>
+
                         <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">企业微信企业Secret</label>
                             <div class="col-sm-9 col-xs-12">
-                                <input type="password" name="min[corpsecret]" class="form-control" value="{{ $set['corpsecret'] }}"/>
+                                <input type="text" name="min[corpsecret]" class="form-control" value="{{ $set['corpsecret'] }}"/>
                             </div>
                         </div>
 
