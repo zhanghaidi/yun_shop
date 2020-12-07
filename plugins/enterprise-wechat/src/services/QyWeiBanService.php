@@ -26,24 +26,26 @@ class QyWeiBanService
             return;
 
         }
-        if(!$set['corpid']){
-            \Log::info('企业微信企业corpid不存在',$set);
+        if(!$set['weiban_corpid']){
+            \Log::info('企业微信微伴企业corpid不存在',$set);
             return;
         }
-        if(!$set['corpsecret']){
-            \Log::info('企业微信企业Secret不存在',$set);
+        if(!$set['weiban_secret']){
+            \Log::info('企业微信微伴Secret不存在',$set);
             return;
         }
 
 
         $data = array(
-            'corp_id' => $set['corpid'],
-            'corpsecret' => $set['corpsecret']
+            'corp_id' => $set['weiban_corpid'],
+            'secret' => $set['weiban_secret']
         );
         $url =  'https://open.weibanzhushou.com/open-api/access_token/get';
 
-        $response = ihttp_request($url, json_encode($data));
-        $result = @json_decode($response['content'], true);
+        var_dump($data);die;
+        $result = Curl::to($url)->withData(json_encode($data))->asJsonResponse(true)->post();
+        //$response = ihttp_request($url, json_encode($data));
+        //$result = @json_decode($response['content'], true);
 
         return $result['access_token'];
     }
