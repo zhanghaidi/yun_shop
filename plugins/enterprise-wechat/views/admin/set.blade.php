@@ -19,7 +19,7 @@
                         <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">企业微信企业Secret</label>
                             <div class="col-sm-9 col-xs-12">
-                                <input type="text" name="min[corpsecret]" class="form-control" value="{{ $set['corpsecret'] }}"/>
+                                <input type="text" name="setdata[corpsecret]" class="form-control encrypt" value="{{ $setdata['corpsecret'] }}"/>
                             </div>
                         </div>
 
