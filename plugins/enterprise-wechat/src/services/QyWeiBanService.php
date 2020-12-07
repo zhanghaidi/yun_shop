@@ -6,7 +6,7 @@
  * Time: 下午4:06
  */
 
-namespace Yunshop\EnterpriseWechat\Common\Services;
+namespace Yunshop\EnterpriseWechat\services;
 
 use Ixudra\Curl\Facades\Curl;
 
