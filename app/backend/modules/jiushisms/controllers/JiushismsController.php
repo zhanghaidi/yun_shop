@@ -12,9 +12,10 @@ namespace app\backend\modules\jiushisms\controllers;
 
 use app\backend\modules\member\models\Member;
 use app\common\components\BaseController;
-use app\common\helpers\Url;
 use app\common\services\txyunsms\SmsSingleSender;
-use model\Db;
+use Illuminate\Support\Facades\DB;
+use app\common\helpers\PaginationHelper;
+use app\common\helpers\Url;
 
 class JiushismsController extends BaseController
 {
@@ -40,7 +41,6 @@ class JiushismsController extends BaseController
                 }
                 //组装变量
                 $param =  [$post['jiushi_wechat'],$mobile];
-
                 //初始化发短息类
                 $ssender = new SmsSingleSender(trim($smsSet['tx_sdkappid']), trim($smsSet['tx_appkey']));
                 $response = $ssender->sendWithParam('86', $mobile, $smsSet['tx_templateJiushiSmsCode'],
@@ -50,21 +50,24 @@ class JiushismsController extends BaseController
                 if ($response->result == 0 && $response->errmsg == 'OK') {
                     //插入短信记录表
                     $insert_data = [
+                        'uniacid' => 39,
                         'mobile' => $mobile,
                         'content' => $post['jiushi_wechat'],
                         'result' => $response->errmsg,
                         'createtime' => time()
                     ];
+                    DB::table('yz_sendsms_log')->insert($insert_data);
                     return $this->message('发送成功！', Url::absoluteWeb('jiushisms.jiushisms.sendsms'), 'success');
                 } else {
                     \Log::debug($response->errmsg);
                     $insert_data = [
+                        'uniacid' => 39,
                         'mobile' => $mobile,
                         'content' => $post['jiushi_wechat'],
                         'result' => $response->errmsg,
                         'createtime' => time()
                     ];
-                    Db::table('yz_sendsms_log')->insert($insert_data);
+                    DB::table('yz_sendsms_log')->insert($insert_data);
                     return $this->message('发送失败！'.$response->errmsg, Url::absoluteWeb('jiushisms.jiushisms.sendsms'), 'danger');
                 }
             } catch (\Exception $e) {
@@ -77,7 +80,38 @@ class JiushismsController extends BaseController
 
     public function smslist(){
 
-        return view('jiushisms.smslist')->render();
+        $input = \YunShop::request();
+        $limit = 20;
+
+        // 处理搜索条件
+        $where = [];
+
+//        if (isset($input->search)) {
+//            $search = $input->search;
+//            if (intval($search['roomid']) > 0) {
+//                $where[] = ['roomid', '=', intval($search['roomid'])];
+//            }
+//            if (trim($search['name']) !== '') {
+//                $where[] = ['name', 'like', '%' . trim($search['name']) . '%'];
+//            }
+//
+//            if (trim($search['live_status']) !== '') {
+//                $where[] = ['live_status', '=', $search['live_status']];
+//            }
+//        }
+
+        $list = DB::table('yz_sendsms_log')->where($where)
+            ->orderBy('id', 'desc')
+            ->paginate($limit);
+
+        $pager = PaginationHelper::show($list->total(), $list->currentPage(), $list->perPage());
+
+        return view('jiushisms.smslist', [
+            'count' => $list->total(),
+            'pageList' => $list,
+            'pager' => $pager,
+            'request' => $input,
+        ])->render();
 
     }
 }
