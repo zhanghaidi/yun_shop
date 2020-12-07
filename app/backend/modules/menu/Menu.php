@@ -4832,6 +4832,61 @@ class Menu
                     ],
                 ],
             ],
+            'jiushi_sms' => [
+                'name'             => '发送短信',
+                'url'              => 'live.live-set.see',
+                'url_params'       => '',
+                'permit'           => 1,
+                'menu'             => 1,
+                'top_show'         => 0,
+                'left_first_show'  => 1,
+                'left_second_show' => 1,
+                'icon'             => 'fa-wechat',
+                'parent_id'        => 0,
+                'sort'             => '5',
+                'item'             => 'live',
+                'parents'          => [],
+                'child'            => [
+                    'jiushi_sms_set' => [
+                        'name'       => '发短信',
+                        'url'        => 'live.live-set.see',
+                        'url_params' => '',
+                        'permit'     => 1,
+                        'menu'       => 1,
+                        'icon'       => 'fa-cog',
+                        'sort'       => 0,
+                        'item'       => 'live_set',
+                        'parents'    => ['live'],
+                    ],
+                    'jiushi_sms_list' => [
+                        'name'       => '短信列表',
+                        'url'        => 'live.live-room.index',
+                        'url_params' => '',
+                        'permit'     => 1,
+                        'menu'       => 1,
+                        'icon'       => 'fa-cog',
+                        'sort'       => 0,
+                        'item'       => 'live_room',
+                        'parents'    => ['live'],
+                        'child'            => [
+                            'live_room_edit' => [
+                                'name'       => '直播间管理',
+                                'url'        => 'live.live-room.edit',
+                                'url_params' => '',
+                                'permit'     => 1,
+                                'menu'       => 1,
+                                'icon'       => 'fa-cog',
+                                'sort'       => 0,
+                                'item'       => 'live_room_edit',
+                                'parents'    => ['live','live_room'],
+                            ],
+                        ]
+                    ],
+
+                ]
+
+            ],
+
         ];
     }
 
