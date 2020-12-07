@@ -35,15 +35,17 @@ class QyWeiBanService
             return;
         }
 
+
         $data = array(
             'corp_id' => $set['corpid'],
             'corpsecret' => $set['corpsecret']
         );
         $url =  'https://open.weibanzhushou.com/open-api/access_token/get';
 
-        $response = Curl::to($url)->withData(['data' => json_encode($data)])->asJsonResponse(true)->post();
+        $response = ihttp_request($url, json_encode($data));
+        $result = @json_decode($response['content'], true);
 
-        return $response['access_token'];
+        return $result['access_token'];
     }
 
 
