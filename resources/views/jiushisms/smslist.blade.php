@@ -56,7 +56,7 @@
                                 <td>
                                     {{ $list['mobile'] }}
                                 </td>
-                                <td>{{ $list['createtime'] }}</td>
+                                <td>{{ date('Y-m-d H:i:s',$list['createtime']) }}</td>
                                 <td>
                                     @if($list['result'] == 'OK')
                                         <span class='label label-success'>成功</span>
