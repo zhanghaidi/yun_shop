@@ -155,12 +155,12 @@ class SignAwardService
 
         $point = 0;
         $coupons = array();
-//            fixBy-wk-20201206 解决连续签到只发一次的问题，修改为循环发放
+//      fixBy-wk-20201206 解决连续签到只发一次的问题，修改为循环发放
         $days = [];
-        foreach ($cumulative_set as $key => $item) {
-            $days[$key] = $item['days'];
+        foreach ($cumulative_set as $key => $val) {
+            $days[$key] = $val['days'];
         }
-        $max_day = max($days);//获取最大循环天数
+        $max_day = max($days);//获取最大累计天数
         if ($cumulative_number > $max_day) {
             $multiple = floor($cumulative_number/$max_day);
             $cumulative_number = $cumulative_number - $max_day*$multiple;
