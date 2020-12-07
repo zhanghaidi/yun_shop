@@ -5002,8 +5002,8 @@ class Menu
                         'menu'       => 1,
                         'icon'       => 'fa-cog',
                         'sort'       => 0,
-                        'item'       => 'jiushisms',
-                        'parents'    => ['jiushisms'],
+                        'item'       => 'jiushi_sms_set',
+                        'parents'    => ['jiushisms',],
                     ],
                     'jiushi_sms_list' => [
                         'name'       => '短信列表',
@@ -5013,9 +5013,10 @@ class Menu
                         'menu'       => 1,
                         'icon'       => 'fa-cog',
                         'sort'       => 0,
-                        'item'       => 'jiushisms',
-                        'parents'    => ['jiushisms'],
+                        'item'       => 'jiushi_sms_list',
+                        'parents'    => ['jiushisms','jiushi_sms_list'],
                         'child'            => [
+
                         ]
                     ],
 
