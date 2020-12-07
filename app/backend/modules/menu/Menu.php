@@ -5016,17 +5016,6 @@ class Menu
                         'item'       => 'jiushisms',
                         'parents'    => ['jiushisms'],
                         'child'            => [
-                            'live_room_edit' => [
-                                'name'       => '直播间管理',
-                                'url'        => 'live.live-room.edit',
-                                'url_params' => '',
-                                'permit'     => 1,
-                                'menu'       => 1,
-                                'icon'       => 'fa-cog',
-                                'sort'       => 0,
-                                'item'       => 'live_room_edit',
-                                'parents'    => ['live','live_room'],
-                            ],
                         ]
                     ],
 
