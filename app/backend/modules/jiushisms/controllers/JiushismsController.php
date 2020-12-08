@@ -128,7 +128,7 @@ class JiushismsController extends BaseController
                 }
 
                 //组装变量
-                $param = [$info['jiushi_wechat'], '100'];
+                $param = [$info['jiushi_wechat']];
                 //初始化发短息类
                 $ssender = new SmsSingleSender(trim($smsSet['tx_sdkappid']), trim($smsSet['tx_appkey']));
                 $response = $ssender->sendWithParam('86', $mobile, $smsSet['tx_templateJiushiSmsCode'],
