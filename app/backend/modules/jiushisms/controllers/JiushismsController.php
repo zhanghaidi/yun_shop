@@ -24,8 +24,25 @@ class JiushismsController extends BaseController
 
         $input = \YunShop::request();
         $limit = 20;
+        $where = [];
+        if (isset($input->search)) {
+            $search = $input->search;
 
-        $list = DB::table('jiushi_chat_chatuser')
+            if (intval($search['jiushi_id']) > 0) {
+                $where[] = ['id', '=', intval($search['jiushi_id'])];
+            }
+            if (trim($search['jiushi_name']) !== '') {
+                $where[] = ['jiushi_name', 'like', '%' . trim($search['jiushi_name']) . '%'];
+            }
+            if (trim($search['jiushi_wechat']) !== '') {
+                $where[] = ['jiushi_wechat', 'like', '%' . trim($search['jiushi_wechat']) . '%'];
+            }
+            if (trim($search['jiushi_wechat']) !== '') {
+                $where[] = ['jiushi_wechat', 'like', '%' . trim($search['jiushi_wechat']) . '%'];
+            }
+
+        }
+        $list = DB::table('jiushi_chat_chatuser')->where($where)
             ->orderBy('id', 'desc')
             ->paginate($limit);
 
@@ -212,6 +229,7 @@ class JiushismsController extends BaseController
         }
         $upd_data = [];
         $upd_data['friends_status'] = $param['friends_status'];
+        $upd_data['updatetime'] = time();
         $res = DB::table('yz_sendsms_log')->where('id', $id)->update($upd_data);
         if($res){
             return $this->message('更新成功！', Url::absoluteWeb('jiushisms.jiushisms.smslist'), 'success');
