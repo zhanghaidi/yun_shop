@@ -90,6 +90,13 @@ class QyWeiBanService
         }
         //获取订单列表数据
         $url = "https://open.weibanzhushou.com/open-api/order/list?access_token={$accessToken}";
+        $response = Curl::to($url)->asJsonResponse(true)->get();
+        if($response['errcode']!= 0){
+            throw new AppException("订单获取失败", $response['errmsge']);
+            \Log::info('企业微信微伴订单获取失败',$response);
+        }
+
+        return $response;
     }
 
 
