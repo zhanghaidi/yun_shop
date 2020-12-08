@@ -43,26 +43,25 @@
                     <table class="table table-hover" style="overflow:visible;">
                         <thead class="navbar-inner">
                         <tr>
-                            <th style='width:15%; text-align: center;'>ID</th>
-                            <th style='width:10%; text-align: center;'>手机号</th>
-                            <th style='width:12%; text-align: center;'>发送时间</th>
-                            <th style='width:10%; text-align: center;'>发送状态</th>
+                            <th style='width:15%; text-align: center;'>灸师ID</th>
+                            <th style='width:10%; text-align: center;'>灸师账号</th>
+                            <th style='width:10%; text-align: center;'>灸师真实姓名</th>
+                            <th style='width:10%; text-align: center;'>灸师微信号</th>
+                            <th style='width:10%;'>操作</th>
                         </tr>
                         </thead>
                         <tbody>
                         @foreach($pageList as $list)
                             <tr style="text-align: center;">
                                 <td>{{ $list['id'] }}</td>
-                                <td>
-                                    {{ $list['mobile'] }}
-                                </td>
-                                <td>{{ date('Y-m-d H:i:s',$list['createtime']) }}</td>
-                                <td>
-                                    @if($list['result'] == 'OK')
-                                        <span class='label label-success'>成功</span>
-                                    @else
-                                        <span class='label label-warning'>失败</span>
-                                    @endif
+                                <td>{{ $list['username'] }}</td>
+                                <td>{{ $list['jiushi_name'] }}</td>
+                                <td>{{ $list['jiushi_wechat'] }}</td>
+                                <td style="overflow:visible;">
+                                    <a class='btn btn-default'
+                                       href="{{yzWebUrl('jiushisms.jiushisms.jiushiedit', ['id' => $list['id']])}}"
+                                       title='编辑'><i class='fa fa-list'></i>编辑
+                                    </a>
                                 </td>
                             </tr>
                         @endforeach

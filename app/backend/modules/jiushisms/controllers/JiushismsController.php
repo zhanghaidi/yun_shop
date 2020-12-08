@@ -40,6 +40,24 @@ class JiushismsController extends BaseController
 
     }
 
+    //灸师编辑
+    public function jiushiedit(){
+        //接收参数
+        $id = request()->get('id', 0);
+
+        $info = DB::table('jiushi_chat_chatuser')->where('id', $id)->first();
+        if (!$info) {
+            return $this->message('灸师不存在', Url::absoluteWeb(''), 'danger');
+        }
+
+        return view('Yunshop\Appletslive::admin.replay_edit', [
+            'id' => $id,
+            'info' => $info,
+        ])->render();
+
+    }
+
+
     public function sendsms()
     {
         $post = request()->input();
