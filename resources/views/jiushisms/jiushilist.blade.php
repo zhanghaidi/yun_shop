@@ -16,15 +16,9 @@
                     <div class="form-group col-sm-11 col-lg-11 col-xs-12">
                         <div class="">
                             <div class='input-group'>
-                                <input class="form-control" name="search[order_sn]" type="text" value="{{ $search['order_sn'] or ''}}" placeholder="充值单号">
-                                <input class="form-control" name="search[realname]" type="text" value="{{ $search['realname'] or ''}}" placeholder="会员ID／会员姓名／昵称／手机号">
-                                <div class='form-input'>
-                                    <p class="input-group-addon price">充值区间</p>
-                                    <input class="form-control price" name="search[min_value]" type="text" value="{{ $search['min_value'] or ''}}" placeholder="最小">
-                                    <p class="line">—</p>
-                                    <input class="form-control price" name="search[max_value]" type="text" value="{{ $search['max_value'] or ''}}" placeholder="最大">
-                                </div>
-
+                                <input class="form-control" name="search[jiushi_wechat]" type="text" value="{{ $request['search']['jiushi_wechat'] or ''}}" placeholder="灸师微信号">
+                                <input class="form-control" name="search[jiushi_id]" type="text" value="{{ $request['search']['jiushi_id'] or ''}}" placeholder="灸师ID">
+                                <input class="form-control" name="search[jiushi_name]" type="text" value="{{ $request['search']['jiushi_name'] or ''}}" placeholder="灸师真实姓名">
                             </div>
                         </div>
                     </div>
