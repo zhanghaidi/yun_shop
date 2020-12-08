@@ -20,8 +20,35 @@
                                        value="{{ $request['search']['jiushi_wechat'] or ''}}" placeholder="灸师微信号">
                                 <input class="form-control" name="search[jiushi_id]" type="text"
                                        value="{{ $request['search']['jiushi_id'] or ''}}" placeholder="灸师ID">
-                                {{--                                <input class="form-control" name="search[jiushi_name]" type="text" value="{{ $request['search']['jiushi_name'] or ''}}" placeholder="灸师真实姓名">--}}
-                                <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                                <div class="col-xs-12 col-sm-2 col-md-2 col-lg-1">
+                                    <div class="search-select">
+                                        <select name="search[result]" class="form-control">
+                                            <option value="" selected>选择短信状态</option>
+                                            <option value="0" @if($request['search']['result'] == '0') selected @endif>
+                                                发送成功
+                                            </option>
+                                            <option value='1' @if($request['search']['result'] == '1') selected @endif>
+                                                发送失败
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-2 col-md-2 col-lg-1">
+                                    <div class="search-select">
+                                        <select name="search[friends_status]" class="form-control">
+                                            <option value="" selected>选择加友状态</option>
+                                            <option value="0"
+                                                    @if($request['search']['friends_status'] == '0') selected @endif>
+                                                加友失败
+                                            </option>
+                                            <option value='1'
+                                                    @if($request['search']['friends_status'] == '1') selected @endif>
+                                                加友成功
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-2 col-md-2 col-lg-1">
                                     <select name="search[searchtime]" class="form-control">
                                         <option value="" selected>请选择时间</option>
                                         <option value="0" @if($request['search']['searchtime']=='0') selected @endif>
@@ -31,7 +58,7 @@
                                     </select>
                                 </div>
 
-                                <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                                <div class="col-xs-12 col-sm-2 col-md-2 col-lg-1">
                                     <div class="search-select">
                                         {!! app\common\helpers\DateRange::tplFormFieldDateRange('search[date]', [
                                         'starttime'=>$request['search']?$request['search']['date']['start']:date('Y-m-01',time()),

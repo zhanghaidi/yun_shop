@@ -190,6 +190,17 @@ class JiushismsController extends BaseController
             if (intval($search['jiushi_id']) > 0) {
                 $where[] = ['jiushi_id', '=', intval($search['jiushi_id'])];
             }
+            if ($search['result'] !== '') {
+                if (intval($search['result']) == 0) {
+                    $where[] = ['result', '=', intval($search['result'])];
+                }
+                if (intval($search['result']) > 0) {
+                    $where[] = ['result', '>', 0];
+                }
+            }
+            if ($search['friends_status'] !== '') {
+                $where[] = ['friends_status', '=', intval($search['friends_status'])];
+            }
             if (trim($search['jiushi_name']) !== '') {
                 $where[] = ['jiushi_name', 'like', '%' . trim($search['jiushi_name']) . '%'];
             }
