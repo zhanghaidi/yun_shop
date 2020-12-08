@@ -190,6 +190,12 @@ class PointService
     const POINT_MODE_REGISTER = 50;
     const POINT_MODE_REGISTER_ATTACHED = '注册赠送';
 
+    const POINT_MODE_FACE_ANALYSIS_CONSUME = 51;
+    const POINT_MODE_FACE_ANALYSIS_CONSUME_ATTACHED = '人脸检测-花费';
+
+    const POINT_MODE_FACE_ANALYSIS_GAIN = 52;
+    const POINT_MODE_FACE_ANALYSIS_GAIN_ATTACHED = '人脸检测-赠送';
+
     const POINT = 0;
 
     public $point_data = array();
@@ -556,6 +562,12 @@ class PointService
                 break;
             case (50):
                 $mode_attribute = self::POINT_MODE_REGISTER_ATTACHED;
+                break;
+            case (51):
+                $mode_attribute = self::POINT_MODE_FACE_ANALYSIS_CONSUME_ATTACHED;
+                break;
+            case (52):
+                $mode_attribute = self::POINT_MODE_FACE_ANALYSIS_GAIN_ATTACHED;
                 break;
         }
         return $mode_attribute;
