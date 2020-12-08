@@ -18,14 +18,16 @@ class OrderTrackController extends ApiController
     public function sendOrderTrack()
     {
         $member_id = \YunShop::app()->getMemberId();
-        $goods_id = input('goods_id');
-        $action = input('action'); //动作类型 1：查看 2、收藏 3、加购 4：下单 5：支付
-        $val = input('val'); //根据action记录相应参数：加购记录加购商品数 下单记录订单编号
-        //$input = request()->all();
-        \Log::info('接收小程序传递的参数：'.$goods_id.' '.$action.' '.$val);
+
+        $input = request()->all();
+
+        \Log::info('接收小程序传递的参数：'.$input);
+        $goods_id = $input('goods_id');
+        $action = $input('action'); //动作类型 1：查看 2、收藏 3、加购 4：下单 5：支付
+        $val = $input('val'); //根据action记录相应参数：加购记录加购商品数 下单记录订单编号
         $user = DB::table('diagnostic_service_user')->select('ajy_uid','unionid')->where('ajy_uid', $member_id)->first();
         $goods = DB::table('yz_goods')->select('id','title','price')->where('id', $goods_id)->first();
-
+        
         $orderData = array(
             "shop_id" => "10820686",     //shop_id	str	否	店铺id，为店铺的唯一编号，若存在店铺数据，需携带此参数用于辨识区分店铺
             "shop_name" => "养居益商城",      //shop_name	str	否	店铺名称
