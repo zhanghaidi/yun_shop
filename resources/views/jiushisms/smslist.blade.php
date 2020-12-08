@@ -16,14 +16,18 @@
                     <div class="form-group col-sm-11 col-lg-11 col-xs-12">
                         <div class="">
                             <div class='input-group'>
-                                <input class="form-control" name="search[jiushi_wechat]" type="text" value="{{ $request['search']['jiushi_wechat'] or ''}}" placeholder="灸师微信号">
-                                <input class="form-control" name="search[jiushi_id]" type="text" value="{{ $request['search']['jiushi_id'] or ''}}" placeholder="灸师ID">
-{{--                                <input class="form-control" name="search[jiushi_name]" type="text" value="{{ $request['search']['jiushi_name'] or ''}}" placeholder="灸师真实姓名">--}}
+                                <input class="form-control" name="search[jiushi_wechat]" type="text"
+                                       value="{{ $request['search']['jiushi_wechat'] or ''}}" placeholder="灸师微信号">
+                                <input class="form-control" name="search[jiushi_id]" type="text"
+                                       value="{{ $request['search']['jiushi_id'] or ''}}" placeholder="灸师ID">
+                                {{--                                <input class="form-control" name="search[jiushi_name]" type="text" value="{{ $request['search']['jiushi_name'] or ''}}" placeholder="灸师真实姓名">--}}
                                 <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
                                     <select name="search[searchtime]" class="form-control">
                                         <option value="" selected>请选择时间</option>
-                                        <option value="0" @if($request['search']['searchtime']=='0') selected @endif>发送短信时间</option>
-{{--                                        <option value='1' @if($request['search']['searchtime']=='1') selected @endif>直播结束时间</option>--}}
+                                        <option value="0" @if($request['search']['searchtime']=='0') selected @endif>
+                                            发送短信时间
+                                        </option>
+                                        {{--                                        <option value='1' @if($request['search']['searchtime']=='1') selected @endif>直播结束时间</option>--}}
                                     </select>
                                 </div>
 
@@ -50,12 +54,12 @@
         </div>
         <div class="clearfix">
             <div class="panel panel-default">
-                <div class="panel-heading">总数：{{ $count }}</div>
+                <div class="panel-heading">总数：{{ $count }}&nbsp;&nbsp;成功百分比：{{ $success_percentage }} %</div>
                 <div class="panel-body">
                     <table class="table table-hover" style="overflow:visible;">
                         <thead class="navbar-inner">
                         <tr>
-                            <th style='width:15%; text-align: center;'>ID</th>
+                            <th style='width:15%; text-align: center;'>序号ID</th>
                             <th style='width:15%; text-align: center;'>灸师ID</th>
                             <th style='width:10%; text-align: center;'>客户手机号</th>
                             <th style='width:10%; text-align: center;'>灸师微信号</th>
@@ -87,9 +91,13 @@
                                 </td>
                                 <td style="overflow:visible;">
                                     @if( $list['friends_status'] == 1 )
-                                        <a class='btn btn-success' href="{{ yzWebUrl('jiushisms.jiushisms.jiushifriendsstatus', array('id' => $list['id'], 'friends_status' => 0)) }}" style="margin-bottom: 2px">加友成功</a>
+                                        <a class='btn btn-success'
+                                           href="{{ yzWebUrl('jiushisms.jiushisms.jiushifriendsstatus', array('id' => $list['id'], 'friends_status' => 0)) }}"
+                                           style="margin-bottom: 2px">加友成功</a>
                                     @else
-                                        <a class='btn btn-danger' href="{{ yzWebUrl('jiushisms.jiushisms.jiushifriendsstatus',  array('id' => $list['id'], 'friends_status' => 1)) }}" style="margin-bottom: 2px">加友失败</a>
+                                        <a class='btn btn-danger'
+                                           href="{{ yzWebUrl('jiushisms.jiushisms.jiushifriendsstatus',  array('id' => $list['id'], 'friends_status' => 1)) }}"
+                                           style="margin-bottom: 2px">加友失败</a>
                                     @endif
                                 </td>
                             </tr>

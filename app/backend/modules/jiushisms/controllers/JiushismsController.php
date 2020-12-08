@@ -20,7 +20,8 @@ use app\common\helpers\Url;
 class JiushismsController extends BaseController
 {
     //灸师列表
-    public function jiushilist(){
+    public function jiushilist()
+    {
 
         $input = \YunShop::request();
         $limit = 20;
@@ -58,7 +59,8 @@ class JiushismsController extends BaseController
     }
 
     //灸师编辑
-    public function jiushiedit(){
+    public function jiushiedit()
+    {
 
         if (request()->isMethod('post')) {
 
@@ -69,10 +71,10 @@ class JiushismsController extends BaseController
             if (!$info) {
                 return $this->message('灸师不存在', Url::absoluteWeb(''), 'danger');
             }
-            if(empty(trim($param['jiushi_name']))){
+            if (empty(trim($param['jiushi_name']))) {
                 return $this->message('灸师真实姓名不能为空', Url::absoluteWeb(''), 'danger');
             }
-            if(empty(trim($param['jiushi_wechat']))){
+            if (empty(trim($param['jiushi_wechat']))) {
                 return $this->message('灸师微信不能为空', Url::absoluteWeb(''), 'danger');
             }
             $upd_data = [];
@@ -80,7 +82,7 @@ class JiushismsController extends BaseController
             $upd_data['jiushi_wechat'] = $param['jiushi_wechat'];
 
             $res = DB::table('jiushi_chat_chatuser')->where('id', $id)->update($upd_data);
-            if($res){
+            if ($res) {
                 return $this->message('编辑成功！', Url::absoluteWeb('jiushisms.jiushisms.jiushilist'), 'success');
             }
             return $this->message('编辑失败！', Url::absoluteWeb(''), 'danger');
@@ -113,7 +115,7 @@ class JiushismsController extends BaseController
                     return false;
                 }
                 $post = request()->all();
-                if(empty($post['jiushi_wechat'])){
+                if (empty($post['jiushi_wechat'])) {
                     return $this->message('灸师企业微信号不能为空', Url::absoluteWeb(''), 'danger');
                 }
                 $info = DB::table('jiushi_chat_chatuser')->where('id', $post['jiushi_wechat'])->first();
@@ -126,7 +128,7 @@ class JiushismsController extends BaseController
                 }
 
                 //组装变量
-                $param =  [$info['jiushi_wechat'],'100'];
+                $param = [$info['jiushi_wechat'], '100'];
                 //初始化发短息类
                 $ssender = new SmsSingleSender(trim($smsSet['tx_sdkappid']), trim($smsSet['tx_appkey']));
                 $response = $ssender->sendWithParam('86', $mobile, $smsSet['tx_templateJiushiSmsCode'],
@@ -158,21 +160,23 @@ class JiushismsController extends BaseController
                         'createtime' => time()
                     ];
                     DB::table('yz_sendsms_log')->insert($insert_data);
-                    return $this->message('发送失败！'.$response->errmsg, Url::absoluteWeb('jiushisms.jiushisms.sendsms'), 'danger');
+                    return $this->message('发送失败！' . $response->errmsg, Url::absoluteWeb('jiushisms.jiushisms.sendsms'), 'danger');
                 }
             } catch (\Exception $e) {
-                return $this->message('发送失败！'.$response->errmsg, Url::absoluteWeb(''), 'danger');
+                return $this->message('发送失败！' . $response->errmsg, Url::absoluteWeb(''), 'danger');
             }
         }
         //查询灸师微信号
-        $jiushi_wechat_list = DB::table('jiushi_chat_chatuser')->select('id','jiushi_wechat')->where('jiushi_wechat','<>','')->orderBy('id', 'desc')->get()->toArray();
+        $jiushi_wechat_list = DB::table('jiushi_chat_chatuser')->select('id', 'jiushi_wechat')->where('jiushi_wechat', '<>', '')->orderBy('id', 'desc')->get()->toArray();
 
         return view('jiushisms.sendsms', [
             'wechat_list' => $jiushi_wechat_list,
         ])->render();
     }
+
 //短信记录
-    public function smslist(){
+    public function smslist()
+    {
 
         $input = \YunShop::request();
         $limit = 20;
@@ -198,28 +202,38 @@ class JiushismsController extends BaseController
             if ($search['searchtime'] !== '') {
                 $time_field = ($search['searchtime'] === '0') ? 'createtime' : 'updatetime';
                 $where_between[0] = $time_field;
-                $where_between[1] =  [strtotime($search['date']['start']), strtotime($search['date']['end'] . ' 23:59:59')];
+                $where_between[1] = [strtotime($search['date']['start']), strtotime($search['date']['end'] . ' 23:59:59')];
             }
 
         }
 
         $list = DB::table('yz_sendsms_log')->where($where)
-                ->whereBetween($where_between[0], $where_between[1])
+            ->whereBetween($where_between[0], $where_between[1])
             ->orderBy('id', 'desc')
             ->paginate($limit);
 
         $pager = PaginationHelper::show($list->total(), $list->currentPage(), $list->perPage());
+        //发送短信的总条数
+        $count_total = DB::table('yz_sendsms_log')->where('result', 0)->where($where)->whereBetween($where_between[0], $where_between[1])->count();
+        $friends_total = DB::table('yz_sendsms_log')->where('result', 0)->where('friends_status', 1)->where($where)->whereBetween($where_between[0], $where_between[1])->count();//加友成功的条数
+        $success_percentage = 0;
+        if ($count_total > 0) {
+            $success_percentage = floatval($count_total / $friends_total);
+        }
 
         return view('jiushisms.smslist', [
             'count' => $list->total(),
             'pageList' => $list,
             'pager' => $pager,
             'request' => $input,
+            'success_percentage' => $success_percentage * 100
         ])->render();
 
     }
+
 //更新加友状态
-    public function jiushifriendsstatus(){
+    public function jiushifriendsstatus()
+    {
 
         $param = request()->all();
         $id = $param['id'] ? $param['id'] : 0;
@@ -231,7 +245,7 @@ class JiushismsController extends BaseController
         $upd_data['friends_status'] = $param['friends_status'];
         $upd_data['updatetime'] = time();
         $res = DB::table('yz_sendsms_log')->where('id', $id)->update($upd_data);
-        if($res){
+        if ($res) {
             return $this->message('更新成功！', Url::absoluteWeb('jiushisms.jiushisms.smslist'), 'success');
         }
         return $this->message('更新失败！', Url::absoluteWeb(''), 'danger');
