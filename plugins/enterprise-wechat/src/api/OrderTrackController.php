@@ -78,10 +78,13 @@ class OrderTrackController extends ApiController
 
     public function removeOrderTrack()
     {
-        $order_id = 'SN20200706181820Xw';
-        $res = QyWeiBanService::removeOrder();
+        $order_id = trim(input('order_id'));
+        if(empty($order_id)){
+            return $this->errorJson('订单id不能为空', '');
+        }
+        $res = QyWeiBanService::removeOrder($order_id);
 
-        return $this->successJson($res['errmsge'], $res['order_info']);
+        return $this->successJson($res['errmsge'], '');
     }
 
 }
