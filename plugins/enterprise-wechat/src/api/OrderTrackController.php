@@ -21,8 +21,8 @@ class OrderTrackController extends ApiController
         $goods_id = input('goods_id');
         $action = input('action'); //动作类型 1：查看 2、收藏 3、加购 4：下单 5：支付
         $val = input('val'); //根据action记录相应参数：加购记录加购商品数 下单记录订单编号
-        $input = input();
-        \Log::info('接收小程序传递的参数：'.$input);
+        //$input = request()->all();
+        \Log::info('接收小程序传递的参数：'.$goods_id.' '.$action.' '.$val);
         $user = DB::table('diagnostic_service_user')->select('ajy_uid','unionid')->where('ajy_uid', $member_id)->first();
         $goods = DB::table('yz_goods')->select('id','title','price')->where('id', $goods_id)->first();
 
