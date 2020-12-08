@@ -64,12 +64,12 @@ class QyWeiBanService
             throw new AppException("订单不能为空");
         }
 
-        //订单信息同步接口https://open.weibanzhushou.com/open-api/order/import_order
         $accessToken = self::getAccessToken();
         if(!$accessToken){
             throw new AppException("access_token调用失败");
         }
 
+        //订单信息同步接口https://open.weibanzhushou.com/open-api/order/import_order
         $url = "https://open.weibanzhushou.com/open-api/order/import_order?access_token={$accessToken}";
 
         $response = Curl::to($url)->withData(json_encode($order))->withContentType('application/json')->asJsonResponse(true)->post();
@@ -82,7 +82,15 @@ class QyWeiBanService
 
     }
 
-
+    //获取用户订单
+    public static function getOrderList(){
+        $accessToken = self::getAccessToken();
+        if(!$accessToken){
+            throw new AppException("access_token调用失败");
+        }
+        //获取订单列表数据
+        $url = "https://open.weibanzhushou.com/open-api/order/list?access_token={$accessToken}";
+    }
 
 
 }

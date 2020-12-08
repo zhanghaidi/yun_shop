@@ -89,7 +89,13 @@ order_fields	OrderField[]	否	订单信息自定义字段，非订单基本字�
         //var_dump(json_encode($orderData));die;
 
         $res = QyWeiBanService::importOrder($orderData);
-        var_dump($res);die;
+        return $res;
+    }
+
+    public function getOrderTrack()
+    {
+        $res = QyWeiBanService::getOrderList();
+        return $res;
     }
 
 }
