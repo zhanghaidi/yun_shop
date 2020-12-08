@@ -14,6 +14,7 @@
                         <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">灸师真实姓名</label>
                             <div class="col-sm-9 col-xs-12">
+                                <input name="id" type="hidden" class="form-control" value="{{ $info['id'] }}" />
                                 <input type="text" name="jiushi_name" class="form-control" value="{{$info['jiushi_name']}}" placeholder="请输入灸师真实姓名"/>
                             </div>
                         </div>
@@ -31,7 +32,7 @@
                 <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
                     <div class="col-sm-9">
-                        <input type="submit" name="submit" value="发送短信"
+                        <input type="submit" name="submit" value="保存"
                                class="btn btn-primary col-lg-1" onclick='return formcheck()'/>
                     </div>
                 </div>
