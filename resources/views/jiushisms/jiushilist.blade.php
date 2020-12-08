@@ -48,7 +48,6 @@
                             <th style='width:10%; text-align: center;'>灸师真实姓名</th>
                             <th style='width:10%; text-align: center;'>灸师微信号</th>
                             <th style='width:10%; text-align: center;'>操作</th>
-                            <th style='width:10%; text-align: center;'>操作</th>
                         </tr>
                         </thead>
                         <tbody>

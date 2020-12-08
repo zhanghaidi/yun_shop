@@ -5004,6 +5004,19 @@ class Menu
                         'sort'       => 0,
                         'item'       => 'jiushi_list',
                         'parents'    => ['jiushi_sms',],
+                        'child' => [
+                            'jiushi_edit' => [
+                                'name' => '编辑灸师',
+                                'url' => 'jiushisms.jiushisms.jiushiedit',
+                                'url_params' => '',
+                                'permit' => 1,
+                                'menu' => 0,
+                                'icon' => '',
+                                'sort' => 0,
+                                'item' => 'jiushi_edit',
+                                'parents' => ['jiushi_sms', 'jiushi_list',],
+                            ],
+                        ]
                     ],
                     'jiushi_sms_set' => [
                         'name'       => '发短信',
@@ -5026,6 +5039,19 @@ class Menu
                         'sort'       => 0,
                         'item'       => 'jiushi_sms_list',
                         'parents'    => ['jiushi_sms',],
+                        'child' => [
+                            'jiushi_friends_status' => [
+                                'name' => '加友状态',
+                                'url' => 'jiushisms.jiushisms.jiushifriendsstatus',
+                                'url_params' => '',
+                                'permit' => 1,
+                                'menu' => 0,
+                                'icon' => '',
+                                'sort' => 0,
+                                'item' => 'jiushi_friends_status',
+                                'parents' => ['jiushi_sms', 'jiushi_sms_list',],
+                            ],
+                        ]
 
                     ],
 

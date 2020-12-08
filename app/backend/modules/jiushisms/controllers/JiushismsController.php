@@ -154,7 +154,7 @@ class JiushismsController extends BaseController
             'wechat_list' => $jiushi_wechat_list,
         ])->render();
     }
-
+//短信记录
     public function smslist(){
 
         $input = \YunShop::request();
@@ -162,22 +162,32 @@ class JiushismsController extends BaseController
 
         // 处理搜索条件
         $where = [];
+        $where_between = ['createtime', [0, strtotime('20991231')]];
+        if (isset($input->search)) {
+            $search = $input->search;
 
-//        if (isset($input->search)) {
-//            $search = $input->search;
-//            if (intval($search['roomid']) > 0) {
-//                $where[] = ['roomid', '=', intval($search['roomid'])];
-//            }
-//            if (trim($search['name']) !== '') {
-//                $where[] = ['name', 'like', '%' . trim($search['name']) . '%'];
-//            }
-//
-//            if (trim($search['live_status']) !== '') {
-//                $where[] = ['live_status', '=', $search['live_status']];
-//            }
-//        }
+            if (intval($search['jiushi_id']) > 0) {
+                $where[] = ['jiushi_id', '=', intval($search['jiushi_id'])];
+            }
+            if (trim($search['jiushi_name']) !== '') {
+                $where[] = ['jiushi_name', 'like', '%' . trim($search['jiushi_name']) . '%'];
+            }
+            if (trim($search['jiushi_wechat']) !== '') {
+                $where[] = ['jiushi_wechat', 'like', '%' . trim($search['jiushi_wechat']) . '%'];
+            }
+            if (trim($search['jiushi_wechat']) !== '') {
+                $where[] = ['jiushi_wechat', 'like', '%' . trim($search['jiushi_wechat']) . '%'];
+            }
+            if ($search['searchtime'] !== '') {
+                $time_field = ($search['searchtime'] === '0') ? 'createtime' : 'updatetime';
+                $where_between[0] = $time_field;
+                $where_between[1] =  [strtotime($search['date']['start']), strtotime($search['date']['end'] . ' 23:59:59')];
+            }
+
+        }
 
         $list = DB::table('yz_sendsms_log')->where($where)
+                ->whereBetween($where_between[0], $where_between[1])
             ->orderBy('id', 'desc')
             ->paginate($limit);
 
@@ -190,5 +200,22 @@ class JiushismsController extends BaseController
             'request' => $input,
         ])->render();
 
+    }
+//更新加友状态
+    public function jiushifriendsstatus(){
+
+        $param = request()->all();
+        $id = $param['id'] ? $param['id'] : 0;
+        $info = DB::table('yz_sendsms_log')->where('id', $id)->first();
+        if (!$info) {
+            return $this->message('记录不存在', Url::absoluteWeb(''), 'danger');
+        }
+        $upd_data = [];
+        $upd_data['friends_status'] = $param['friends_status'];
+        $res = DB::table('yz_sendsms_log')->where('id', $id)->update($upd_data);
+        if($res){
+            return $this->message('更新成功！', Url::absoluteWeb('jiushisms.jiushisms.smslist'), 'success');
+        }
+        return $this->message('更新失败！', Url::absoluteWeb(''), 'danger');
     }
 }
