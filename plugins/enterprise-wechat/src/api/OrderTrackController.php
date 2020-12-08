@@ -17,8 +17,8 @@ class OrderTrackController extends ApiController
         $member_id = \YunShop::app()->getMemberId();
 
         $orderData = array(
-            //"shop_id"=>"xj184389276483",     //shop_id	str	否	店铺id，为店铺的唯一编号，若存在店铺数据，需携带此参数用于辨识区分店铺
-            //"shop_name"=> "养居益商城",      //shop_name	str	否	店铺名称
+            "shop_id"=>"10820686",     //shop_id	str	否	店铺id，为店铺的唯一编号，若存在店铺数据，需携带此参数用于辨识区分店铺
+            "shop_name"=> "养居益商城",      //shop_name	str	否	店铺名称
             "item_id" => '19',   //item_id	str	是	商品id
             "item_name" => "测试商品", //item_name	str	是	商品名称
             "item_price"=>"22.02",//item_price	str	是	商品价格
@@ -31,7 +31,7 @@ class OrderTrackController extends ApiController
             "create_time"=>1607393333,//create_time	int	是	订单创建时间
             "paid_time"=>1607393333,//paid_time	int	是	订单支付时间
             "unionid"=>"oauhut_9G96tG9xMF3poiEKyzBNI",//unionid	str	是	客户的unionid
-            "order_type"=>"足迹类型",//order_type	str	是	订单类型，限制不超过12个字节（英文1字节，汉字2字节）此参数对应侧边栏的订单名称的显示
+            "order_type"=>"用户足迹",//order_type	str	是	订单类型，限制不超过12个字节（英文1字节，汉字2字节）此参数对应侧边栏的订单名称的显示
             //shop_fields	ShopField[]否	店铺信息自定义字段列表，非店铺基本字段。字段说明见 ShopField数据模型
             /*"shop_fields"=>array(
                 [
@@ -72,6 +72,14 @@ class OrderTrackController extends ApiController
     public function getOrderTrack()
     {
         $res = QyWeiBanService::getOrderList();
+
+        return $this->successJson($res['errmsge'], $res['order_info']);
+    }
+
+    public function removeOrderTrack()
+    {
+        $order_id = 'SN20200706181820Xw';
+        $res = QyWeiBanService::removeOrder();
 
         return $this->successJson($res['errmsge'], $res['order_info']);
     }
