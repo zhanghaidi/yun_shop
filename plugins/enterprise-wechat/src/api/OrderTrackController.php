@@ -92,7 +92,7 @@ order_fields	OrderField[]	否	订单信息自定义字段，非订单基本字�
         return $res;
     }
 
-    public function getWenBanOrderTrack()
+    public function getOrderTrack()
     {
         $res = QyWeiBanService::getOrderList();
         return $res;
