@@ -42,6 +42,32 @@ class JiushismsController extends BaseController
 
     //灸师编辑
     public function jiushiedit(){
+
+        if (request()->isMethod('post')) {
+
+            $param = request()->all();
+            $id = $param['id'] ? $param['id'] : 0;
+            $info = DB::table('jiushi_chat_chatuser')->where('id', $id)->first();
+
+            if (!$info) {
+                return $this->message('灸师不存在', Url::absoluteWeb(''), 'danger');
+            }
+            if(empty($param['jiushi_name'])){
+                return $this->message('灸师真实姓名不能为空', Url::absoluteWeb(''), 'danger');
+            }
+            if(empty($param['jiushi_wechat'])){
+                return $this->message('灸师微信不能为空', Url::absoluteWeb(''), 'danger');
+            }
+            $upd_data = [];
+            $upd_data['jiushi_name'] = $param['jiushi_name'];
+            $upd_data['jiushi_wechat'] = $param['jiushi_wechat'];
+
+            $res = DB::table('jiushi_chat_chatuser')->where('id', $id)->update($upd_data);
+            if($res){
+                return $this->message('编辑成功！', Url::absoluteWeb('jiushisms.jiushisms.jiushilist'), 'success');
+            }
+            return $this->message('编辑失败！', Url::absoluteWeb(''), 'danger');
+        }
         //接收参数
         $id = request()->get('id', 0);
 
@@ -50,7 +76,7 @@ class JiushismsController extends BaseController
             return $this->message('灸师不存在', Url::absoluteWeb(''), 'danger');
         }
 
-        return view('Yunshop\Appletslive::admin.replay_edit', [
+        return view('jiushisms.jiushiedit', [
             'id' => $id,
             'info' => $info,
         ])->render();
