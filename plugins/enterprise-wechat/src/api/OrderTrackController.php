@@ -48,14 +48,14 @@ order_fields	OrderField[]	否	订单信息自定义字段，非订单基本字�
             "payment_amount"=>"40",//payment_amount	int	是	购买总金额
             "discount_amount"=>"0.00",//discount_amount	int	否	优惠金额
             "payment_channel"=>"微信",//payment_channel	str	否	支付渠道
-            "order_id"=>"2020-12-08",//order_id	str	是	订单号
+            "order_id"=>"SN20200706181820Xw",//order_id	str	是	订单号
             "order_status"=>"浏览",//order_status	str	是	订单状态
-            "create_time"=>1593565941,//create_time	int	是	订单创建时间
-            "paid_time"=>1593565949,//paid_time	int	是	订单支付时间
+            "create_time"=>1607393333,//create_time	int	是	订单创建时间
+            "paid_time"=>1607393333,//paid_time	int	是	订单支付时间
             "unionid"=>"oauhut_9G96tG9xMF3poiEKyzBNI",//unionid	str	是	客户的unionid
             "order_type"=>"足迹类型",//order_type	str	是	订单类型，限制不超过12个字节（英文1字节，汉字2字节）此参数对应侧边栏的订单名称的显示
             //shop_fields	ShopField[]否	店铺信息自定义字段列表，非店铺基本字段。字段说明见 ShopField数据模型
-            "shop_fields"=>array(
+            /*"shop_fields"=>array(
                 [
                     "field_name"=>"养居益商城",
                     "value"=>"营业中",
@@ -65,9 +65,9 @@ order_fields	OrderField[]	否	订单信息自定义字段，非订单基本字�
                     "value"=>"4.3",
                 ]
 
-            ),
+            ),*/
             //item_fields	ItemField[]	否	商品信息自定义字段列表，非商品的基本字段。字段说明见 ItemField数据模型
-            "item_fields"=>array(
+           /* "item_fields"=>array(
                 [
                 "field_name"=>"商品描述",
                 "value"=>"商品足记",
@@ -76,13 +76,9 @@ order_fields	OrderField[]	否	订单信息自定义字段，非订单基本字�
                 "field_name"=>"商品类别",
                 "value"=>"实体商品",
                 ]
-            ),
+            ),*/
             //order_fields	OrderField[]	否	订单信息自定义字段，非订单基本字段列表。字段说明见 OrderField数据模型
             "order_fields"=>array(
-                [
-                    "field_name"=>"订单备注",
-                    "value"=>"发邮箱123@qq.com",
-                ],
                 [
                     "field_name"=>"买家手机号",
                     "value"=>"13607697385",
