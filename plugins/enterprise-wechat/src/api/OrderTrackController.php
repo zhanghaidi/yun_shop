@@ -5,6 +5,7 @@ namespace Yunshop\EnterpriseWechat\api;
 use app\common\components\ApiController;
 use app\common\facades\Setting;
 use Yunshop\EnterpriseWechat\services\QyWeiBanService;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Author: 芸众商城 www.yunzshop.com
@@ -17,23 +18,30 @@ class OrderTrackController extends ApiController
     public function sendOrderTrack()
     {
         $member_id = \YunShop::app()->getMemberId();
+        $goods_id = input('goods_id');
+        $action = input('action'); //动作类型 1：查看 2、收藏 3、加购 4：下单 5：支付
+        $val = input('val'); //根据action记录相应参数：加购记录加购商品数 下单记录订单编号
+        $input = input();
+        \Log::info('接收小程序传递的参数：'.$input);
+        $user = DB::table('diagnostic_service_user')->select('ajy_uid','unionid')->where('ajy_uid', $member_id)->first();
+        $goods = DB::table('yz_goods')->select('id','title','price')->where('id', $goods_id)->first();
 
         $orderData = array(
             "shop_id" => "10820686",     //shop_id	str	否	店铺id，为店铺的唯一编号，若存在店铺数据，需携带此参数用于辨识区分店铺
             "shop_name" => "养居益商城",      //shop_name	str	否	店铺名称
-            "item_id" => '20',   //item_id	str	是	商品id
-            "item_name" => "雷火灸", //item_name	str	是	商品名称
-            "item_price" => "22.02",//item_price	str	是	商品价格
+            "item_id" => $goods_id,   //item_id	str	是	商品id
+            "item_name" => $goods['title'], //item_name	str	是	商品名称
+            "item_price" => $goods['price'],//item_price	str	是	商品价格
             "amount" => 1,//amount	int	是	购买数量
-            "payment_amount" => "22.02",//payment_amount	int	是	购买总金额
-            //"discount_amount"=>"0.00",//discount_amount	int	否	优惠金额
-            //"payment_channel" => "微信",//payment_channel	str	否	支付渠道
-            "order_id" => "SN20200706181820Xw",//order_id	str	是	订单号
+            "payment_amount" => $goods['price'],//payment_amount	int	是	购买总金额
+            "order_id" => date('Y-m-d H:i:s').'-'.$member_id.'-'.$goods_id,//order_id	str	是	订单号
             "order_status" => "浏览",//order_status	str	是	订单状态
             "create_time" => 1607393333,//create_time	int	是	订单创建时间
             "paid_time" => 1607393333,//paid_time	int	是	订单支付时间
-            "unionid" => "oauhut_9G96tG9xMF3poiEKyzBNI",//unionid	str	是	客户的unionid
+            "unionid" => $user['unionid'],//unionid	str	是	客户的unionid
             "order_type" => "用户足迹",//order_type	str	是	订单类型，限制不超过12个字节（英文1字节，汉字2字节）此参数对应侧边栏的订单名称的显示
+            //"discount_amount"=>"0.00",//discount_amount	int	否	优惠金额
+            //"payment_channel" => "微信",//payment_channel	str	否	支付渠道
             //shop_fields	ShopField[]否	店铺信息自定义字段列表，非店铺基本字段。字段说明见 ShopField数据模型
             /*"shop_fields" => array(
                 [
@@ -66,6 +74,19 @@ class OrderTrackController extends ApiController
 
             )*/
         );
+
+        if($action == 1){
+            $orderData['order_status'] = '查看';
+        }elseif ($action == 2){
+            $orderData['order_status'] = '收藏';
+        }elseif ($action == 3){
+            $orderData['order_status'] = '加购';
+            $orderData['amount'] = intval($val); //加购件数
+        }elseif ($action == 4){
+            $orderData['order_status'] = '下单';
+        }elseif ($action == 5){
+            $orderData['order_status'] = '支付';
+        }
 
         $res = QyWeiBanService::importOrder($orderData);
 

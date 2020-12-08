@@ -64,7 +64,7 @@ class QyWeiBanService
         if (!$accessToken) {
             throw new AppException("access_token调用失败");
         }
-
+        \Log::info('上报传递的参数：'.$order);
         //订单信息同步接口https://open.weibanzhushou.com/open-api/order/import_order
         $url = "https://open.weibanzhushou.com/open-api/order/import_order?access_token={$accessToken}";
 
