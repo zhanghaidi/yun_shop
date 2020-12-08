@@ -52,10 +52,10 @@ class JiushismsController extends BaseController
             if (!$info) {
                 return $this->message('灸师不存在', Url::absoluteWeb(''), 'danger');
             }
-            if(empty($param['jiushi_name'])){
+            if(empty(trim($param['jiushi_name']))){
                 return $this->message('灸师真实姓名不能为空', Url::absoluteWeb(''), 'danger');
             }
-            if(empty($param['jiushi_wechat'])){
+            if(empty(trim($param['jiushi_wechat']))){
                 return $this->message('灸师微信不能为空', Url::absoluteWeb(''), 'danger');
             }
             $upd_data = [];
@@ -83,12 +83,11 @@ class JiushismsController extends BaseController
 
     }
 
-
+    //发送短信
     public function sendsms()
     {
-        $post = request()->input();
 
-        if ($post['submit']) {
+        if (request()->isMethod('post')) {
             try {
                 //sms_send 是否开启
                 $smsSet = \Setting::get('shop.sms');
@@ -96,15 +95,21 @@ class JiushismsController extends BaseController
                 if ($smsSet['type'] != 5 || empty($smsSet['tx_templateJiushiSmsCode'])) {
                     return false;
                 }
-                $mobile = trim($post['mobile']);
-                if (empty($mobile)) {
-                    return $this->message('手机号不能为空', Url::absoluteWeb(''), 'danger');
-                }
+                $post = request()->all();
                 if(empty($post['jiushi_wechat'])){
                     return $this->message('灸师企业微信号不能为空', Url::absoluteWeb(''), 'danger');
                 }
+                $info = DB::table('jiushi_chat_chatuser')->where('id', $post['jiushi_wechat'])->first();
+                if (!$info) {
+                    return $this->message('灸师不存在', Url::absoluteWeb(''), 'danger');
+                }
+                $mobile = trim($post['mobile']);
+                if (empty($mobile)) {
+                    return $this->message('接收手机号不能为空', Url::absoluteWeb(''), 'danger');
+                }
+
                 //组装变量
-                $param =  [$post['jiushi_wechat'],$mobile];
+                $param =  [$info['jiushi_wechat'],'100'];
                 //初始化发短息类
                 $ssender = new SmsSingleSender(trim($smsSet['tx_sdkappid']), trim($smsSet['tx_appkey']));
                 $response = $ssender->sendWithParam('86', $mobile, $smsSet['tx_templateJiushiSmsCode'],
@@ -116,8 +121,10 @@ class JiushismsController extends BaseController
                     $insert_data = [
                         'uniacid' => 39,
                         'mobile' => $mobile,
-                        'content' => $post['jiushi_wechat'],
-                        'result' => $response->errmsg,
+                        'jiushi_wechat' => $info['jiushi_wechat'],
+                        'jiushi_id' => $post['jiushi_wechat'],
+                        'result' => $response->result,
+                        'result_error_msg' => $response->errmsg,
                         'createtime' => time()
                     ];
                     DB::table('yz_sendsms_log')->insert($insert_data);
@@ -127,8 +134,10 @@ class JiushismsController extends BaseController
                     $insert_data = [
                         'uniacid' => 39,
                         'mobile' => $mobile,
-                        'content' => $post['jiushi_wechat'],
-                        'result' => $response->errmsg,
+                        'jiushi_wechat' => $info['jiushi_wechat'],
+                        'jiushi_id' => $post['jiushi_wechat'],
+                        'result' => $response->result,
+                        'result_error_msg' => $response->errmsg,
                         'createtime' => time()
                     ];
                     DB::table('yz_sendsms_log')->insert($insert_data);
@@ -138,8 +147,12 @@ class JiushismsController extends BaseController
                 return $this->message('发送失败！'.$response->errmsg, Url::absoluteWeb(''), 'danger');
             }
         }
+        //查询灸师微信号
+        $jiushi_wechat_list = DB::table('jiushi_chat_chatuser')->select('id','jiushi_wechat')->where('jiushi_wechat','<>','')->orderBy('id', 'desc')->get()->toArray();
 
-        return view('jiushisms.sendsms')->render();
+        return view('jiushisms.sendsms', [
+            'wechat_list' => $jiushi_wechat_list,
+        ])->render();
     }
 
     public function smslist(){
