@@ -4994,6 +4994,17 @@ class Menu
                 'item'             => 'jiushi_sms',
                 'parents'          => [],
                 'child'            => [
+                    'jiushi_list' => [
+                        'name'       => '灸师列表',
+                        'url'        => 'jiushisms.jiushisms.jiushilist',
+                        'url_params' => '',
+                        'permit'     => 1,
+                        'menu'       => 1,
+                        'icon'       => 'fa-list-ul',
+                        'sort'       => 0,
+                        'item'       => 'jiushi_list',
+                        'parents'    => ['jiushi_sms',],
+                    ],
                     'jiushi_sms_set' => [
                         'name'       => '发短信',
                         'url'        => 'jiushisms.jiushisms.sendsms',
@@ -5011,7 +5022,7 @@ class Menu
                         'url_params' => '',
                         'permit'     => 1,
                         'menu'       => 1,
-                        'icon'       => 'fa-cog',
+                        'icon'       => 'fa-list-ul',
                         'sort'       => 0,
                         'item'       => 'jiushi_sms_list',
                         'parents'    => ['jiushi_sms',],

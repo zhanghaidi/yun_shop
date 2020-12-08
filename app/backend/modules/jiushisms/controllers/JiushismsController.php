@@ -19,6 +19,26 @@ use app\common\helpers\Url;
 
 class JiushismsController extends BaseController
 {
+    //灸师列表
+    public function jiushilist(){
+
+        $input = \YunShop::request();
+        $limit = 20;
+
+        $list = DB::table('jiushi_chat_chatuser')
+            ->orderBy('id', 'desc')
+            ->paginate($limit);
+
+        $pager = PaginationHelper::show($list->total(), $list->currentPage(), $list->perPage());
+
+        return view('jiushisms.jiushilist', [
+            'count' => $list->total(),
+            'pageList' => $list,
+            'pager' => $pager,
+            'request' => $input,
+        ])->render();
+
+    }
 
     public function sendsms()
     {
