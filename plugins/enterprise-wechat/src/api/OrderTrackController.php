@@ -13,6 +13,7 @@ use Yunshop\EnterpriseWechat\services\QyWeiBanService;
  */
 class OrderTrackController extends ApiController
 {
+    //订单导入
     public function sendOrderTrack()
     {
         $member_id = \YunShop::app()->getMemberId();
@@ -71,6 +72,7 @@ class OrderTrackController extends ApiController
         return $this->successJson($res['errmsge'], '');
     }
 
+    //获取订单列表
     public function getOrderTrack()
     {
         $res = QyWeiBanService::getOrderList();
@@ -78,6 +80,7 @@ class OrderTrackController extends ApiController
         return $this->successJson($res['errmsge'], $res['order_info']);
     }
 
+    //根据订单号移除订单
     public function removeOrderTrack()
     {
         $order_id = trim(input('order_id'));
@@ -89,6 +92,7 @@ class OrderTrackController extends ApiController
         return $this->successJson($res['errmsge'], '');
     }
 
+    //批量导入
     public function batchOrderTrack()
     {
         $orderList = array();
