@@ -45,8 +45,10 @@
                         <tr>
                             <th style='width:15%; text-align: center;'>ID</th>
                             <th style='width:10%; text-align: center;'>手机号</th>
+                            <th style='width:10%; text-align: center;'>灸师微信号</th>
                             <th style='width:12%; text-align: center;'>发送时间</th>
-                            <th style='width:10%; text-align: center;'>发送状态</th>
+                            <th style='width:10%; text-align: center;'>发送状态/原因</th>
+                            <th style='width:10%; text-align: center;'>加友状态</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -56,13 +58,24 @@
                                 <td>
                                     {{ $list['mobile'] }}
                                 </td>
+                                <td>
+                                    {{ $list['jiushi_wechat'] }}
+                                </td>
                                 <td>{{ date('Y-m-d H:i:s',$list['createtime']) }}</td>
                                 <td>
-                                    @if($list['result'] == 'OK')
-                                        <span class='label label-success'>成功</span>
+                                    @if($list['result'] == '0')
+                                        <span class='label label-success'>成功</span><br>
+                                        {{ $list['result_error_msg'] }}
                                     @else
-                                        <span class='label label-warning'>失败</span>
+                                        <span class='label label-warning'>失败</span><br>
+                                        {{ $list['result_error_msg'] }}
                                     @endif
+                                </td>
+                                <td style="overflow:visible;">
+                                    <a class='btn btn-default'
+                                       href="{{yzWebUrl('jiushisms.jiushisms.jiushiedit', ['id' => $list['id']])}}"
+                                       title='编辑'><i class='fa fa-list'></i>是否加好友成功
+                                    </a>
                                 </td>
                             </tr>
                         @endforeach

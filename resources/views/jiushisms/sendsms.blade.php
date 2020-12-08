@@ -20,7 +20,12 @@
                         <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">灸师微信号</label>
                             <div class="col-sm-9 col-xs-12">
-                                <input type="text" name="jiushi_wechat" class="form-control" placeholder="请输入灸师微信号"/>
+                                <select name='jiushi_wechat' class='form-control'>
+                                    <option value="">请选择灸师微信号</option>
+                                    @foreach ($wechat_list as $id => $name)
+                                        <option value="{{ $name['id'] }}">{{ $name['jiushi_wechat'] }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                     </div>

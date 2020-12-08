@@ -47,7 +47,8 @@
                             <th style='width:10%; text-align: center;'>灸师账号</th>
                             <th style='width:10%; text-align: center;'>灸师真实姓名</th>
                             <th style='width:10%; text-align: center;'>灸师微信号</th>
-                            <th style='width:10%;'>操作</th>
+                            <th style='width:10%; text-align: center;'>操作</th>
+                            <th style='width:10%; text-align: center;'>操作</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -58,7 +59,7 @@
                                 <td>{{ $list['jiushi_name'] }}</td>
                                 <td>{{ $list['jiushi_wechat'] }}</td>
                                 <td style="overflow:visible;">
-                                    <a class='btn btn-default'
+                                        <a class='btn btn-default'
                                        href="{{yzWebUrl('jiushisms.jiushisms.jiushiedit', ['id' => $list['id']])}}"
                                        title='编辑'><i class='fa fa-list'></i>编辑
                                     </a>
