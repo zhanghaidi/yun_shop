@@ -226,10 +226,11 @@ class JiushismsController extends BaseController
         $pager = PaginationHelper::show($list->total(), $list->currentPage(), $list->perPage());
         //发送短信的总条数
         $count_total = DB::table('yz_sendsms_log')->where('result', 0)->where($where)->whereBetween($where_between[0], $where_between[1])->count();
-        $friends_total = DB::table('yz_sendsms_log')->where('result', 0)->where('friends_status', 1)->where($where)->whereBetween($where_between[0], $where_between[1])->count();//加友成功的条数
+        //加友成功的条数
+        $friends_total = DB::table('yz_sendsms_log')->where('result', 0)->where('friends_status', 1)->where($where)->whereBetween($where_between[0], $where_between[1])->count();
         $success_percentage = 0;
         if ($count_total > 0) {
-            $success_percentage = floatval($count_total / $friends_total);
+            $success_percentage = sprintf('%.2f', $friends_total/$count_total);
         }
 
         return view('jiushisms.smslist', [
