@@ -16,9 +16,12 @@
                     <div class="form-group col-sm-11 col-lg-11 col-xs-12">
                         <div class="">
                             <div class='input-group'>
-                                <input class="form-control" name="search[jiushi_wechat]" type="text" value="{{ $request['search']['jiushi_wechat'] or ''}}" placeholder="灸师微信号">
-                                <input class="form-control" name="search[jiushi_id]" type="text" value="{{ $request['search']['jiushi_id'] or ''}}" placeholder="灸师ID">
-                                <input class="form-control" name="search[jiushi_name]" type="text" value="{{ $request['search']['jiushi_name'] or ''}}" placeholder="灸师真实姓名">
+                                <input class="form-control" name="search[jiushi_wechat]" type="text"
+                                       value="{{ $request['search']['jiushi_wechat'] or ''}}" placeholder="灸师微信号">
+                                <input class="form-control" name="search[jiushi_id]" type="text"
+                                       value="{{ $request['search']['jiushi_id'] or ''}}" placeholder="灸师ID">
+                                <input class="form-control" name="search[jiushi_name]" type="text"
+                                       value="{{ $request['search']['jiushi_name'] or ''}}" placeholder="灸师真实姓名">
                             </div>
                         </div>
                     </div>
@@ -52,7 +55,7 @@
                                 <td>{{ $list['jiushi_name'] }}</td>
                                 <td>{{ $list['jiushi_wechat'] }}</td>
                                 <td style="overflow:visible;">
-                                        <a class='btn btn-default'
+                                    <a class='btn btn-default'
                                        href="{{yzWebUrl('jiushisms.jiushisms.jiushiedit', ['id' => $list['id']])}}"
                                        title='编辑'><i class='fa fa-list'></i>编辑
                                     </a>
