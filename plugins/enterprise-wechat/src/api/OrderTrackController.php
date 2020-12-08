@@ -38,8 +38,8 @@ class OrderTrackController extends ApiController
             "payment_amount" => $goods['price'],//payment_amount	int	是	购买总金额
             "order_id" => date('Y-m-d H:i:s').'-'.$member_id.'-'.$goods_id,//order_id	str	是	订单号
             "order_status" => "浏览",//order_status	str	是	订单状态
-            "create_time" => 1607393333,//create_time	int	是	订单创建时间
-            "paid_time" => 1607393333,//paid_time	int	是	订单支付时间
+            "create_time" => time(),//create_time	int	是	订单创建时间
+            "paid_time" => time(),//paid_time	int	是	订单支付时间
             "unionid" => $user['unionid'],//unionid	str	是	客户的unionid
             "order_type" => "用户足迹",//order_type	str	是	订单类型，限制不超过12个字节（英文1字节，汉字2字节）此参数对应侧边栏的订单名称的显示
             //"discount_amount"=>"0.00",//discount_amount	int	否	优惠金额
