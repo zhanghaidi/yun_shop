@@ -16,15 +16,27 @@
                     <div class="form-group col-sm-11 col-lg-11 col-xs-12">
                         <div class="">
                             <div class='input-group'>
-                                <input class="form-control" name="search[order_sn]" type="text" value="{{ $search['order_sn'] or ''}}" placeholder="充值单号">
-                                <input class="form-control" name="search[realname]" type="text" value="{{ $search['realname'] or ''}}" placeholder="会员ID／会员姓名／昵称／手机号">
-                                <div class='form-input'>
-                                    <p class="input-group-addon price">充值区间</p>
-                                    <input class="form-control price" name="search[min_value]" type="text" value="{{ $search['min_value'] or ''}}" placeholder="最小">
-                                    <p class="line">—</p>
-                                    <input class="form-control price" name="search[max_value]" type="text" value="{{ $search['max_value'] or ''}}" placeholder="最大">
+                                <input class="form-control" name="search[jiushi_wechat]" type="text" value="{{ $search['jiushi_wechat'] or ''}}" placeholder="灸师微信号">
+                                <input class="form-control" name="search[jiushi_id]" type="text" value="{{ $search['jiushi_id'] or ''}}" placeholder="灸师ID">
+                                <input class="form-control" name="search[jiushi_name]" type="text" value="{{ $search['jiushi_name'] or ''}}" placeholder="灸师真实姓名">
+                                <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                                    <select name="search[searchtime]" class="form-control">
+                                        <option value="" selected>请选择时间</option>
+                                        <option value="0" @if($request['search']['searchtime']=='0') selected @endif>发送短信时间</option>
+{{--                                        <option value='1' @if($request['search']['searchtime']=='1') selected @endif>直播结束时间</option>--}}
+                                    </select>
                                 </div>
-
+                                <div class='form-input'>
+                                    <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                                    <div class="search-select">
+                                        {!! app\common\helpers\DateRange::tplFormFieldDateRange('search[date]', [
+                                        'starttime'=>$request['search']?$request['search']['date']['start']:date('Y-m-01',time()),
+                                        'endtime'=>$request['search']?$request['search']['date']['end']:date('Y-m-t',time()),
+                                        'start'=>0,'end'=>0
+                                        ], false) !!}
+                                    </div>
+                                </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -72,10 +84,11 @@
                                     @endif
                                 </td>
                                 <td style="overflow:visible;">
-                                    <a class='btn btn-default'
-                                       href="{{yzWebUrl('jiushisms.jiushisms.jiushiedit', ['id' => $list['id']])}}"
-                                       title='编辑'><i class='fa fa-list'></i>是否加好友成功
-                                    </a>
+                                    @if( $list['friends_status'] == 1 )
+                                        <a class='btn btn-success' href="{{ yzWebUrl('jiushisms.jiushisms.jiushifriendsstatus', array('id' => $list['id'], 'friends_status' => 0)) }}" style="margin-bottom: 2px">加友成功</a>
+                                    @else
+                                        <a class='btn btn-danger' href="{{ yzWebUrl('jiushisms.jiushisms.jiushifriendsstatus',  array('id' => $list['id'], 'friends_status' => 1)) }}" style="margin-bottom: 2px">加友失败</a>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach
