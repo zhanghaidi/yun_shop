@@ -121,6 +121,21 @@
                             </label>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">检测频率</label>
+                        <div class="col-sm-9 col-xs-12">
+                            <div class="input-group">
+                                <div class="input-group">
+                                    <div class="input-group-addon">每用户，在</div>
+                                    <input type="text" name="setdata[frequency][time]" class="form-control" value="{{$set['frequency']['time']}}" placeholder="请输入大于等于0的整数">
+                                    <div class="input-group-addon">分钟内，可检测</div>
+                                    <input type="text" name="setdata[frequency][number]" class="form-control" value="{{$set['frequency']['number']}}" placeholder="请输入大于等于0的整数">
+                                    <div class="input-group-addon">次</div>
+                                </div>
+                                <span class="help-block">任一数值设置为0，则代表不限制频率</span>
+                            </div>
+                        </div>
+                    </div>
 
                     <hr>
                     <div><b>排行榜控制:</b></div>
