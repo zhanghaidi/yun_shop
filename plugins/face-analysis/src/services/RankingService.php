@@ -4,24 +4,26 @@ namespace Yunshop\FaceAnalysis\services;
 
 use app\common\facades\Setting;
 use Yunshop\FaceAnalysis\models\FaceAnalysisLogModel;
+use Yunshop\FaceAnalysis\models\FaceBeautyRankingModel;
 
 class RankingService
 {
     public function getJoinable(int $serviceId, int $userId)
     {
-        $userRs = FaceAnalysisLogModel::select('id', 'gender', 'age')->where([
-            'member_id' => $userId,
-            'uniacid' => $serviceId,
-        ])->orderBy('id', 'desc')->first();
-        if (!isset($userRs->id)) {
-            return [];
-        }
-
         $return = [];
         $label = (new FaceAnalysisService())->get('label');
         $statusRs = Setting::get($label . '.ranking_status');
         if ($statusRs <= 0) {
             return $return;
+        }
+
+        $userRs = FaceAnalysisLogModel::select('id', 'gender', 'age')->where([
+            'member_id' => $userId,
+            'uniacid' => $serviceId,
+            'label' => $statusRs,
+        ])->orderBy('id', 'desc')->first();
+        if (!isset($userRs->id)) {
+            return [];
         }
 
         $sexRs = Setting::get($label . '.sex_ranking');
@@ -59,8 +61,6 @@ class RankingService
                         $return[] = $k * 2 + 10;
                     }
                 }
-
-                $return[] = $k + 5;
             }
         }
 
@@ -95,5 +95,64 @@ class RankingService
             }
         }
         return $return;
+    }
+
+    public function getUserRanking(int $serviceId, int $userId, int $label)
+    {
+        $userRs = FaceBeautyRankingModel::select('id', 'type', 'beauty')
+            ->where([
+                'member_id' => $userId,
+                'uniacid' => $serviceId,
+                'label' => $label,
+                'status' => 1,
+            ])->get()->toArray();
+        if (!isset($userRs[0])) {
+            $rankingRs = $this->getJoinable($serviceId, $userRs);
+            $logRs = FaceAnalysisLogModel::select('id',  'beauty')->where([
+                'member_id' => $userId,
+                'uniacid' => $serviceId,
+                'label' => $label,
+            ])->first();
+            if (isset($logRs->id)) {
+                $userRs = [];
+                foreach ($rankingRs as $v) {
+                    $userRs[] = [
+                        'type' => $v,
+                        'beauty' => $logRs->beauty,
+                    ];
+                }
+            }
+        }
+
+        if (!isset($userRs[0])) {
+            return [];
+        }
+
+        foreach ($userRs as $k => $v) {
+            $totalRs = FaceBeautyRankingModel::where([
+                'uniacid' => $serviceId,
+                'label' => $label,
+                'type' => $v['type'],
+                'status' => 1,
+            ])->count();
+
+            $afterRs = FaceBeautyRankingModel::where([
+                'uniacid' => $serviceId,
+                'label' => $label,
+                'type' => $v['type'],
+                'status' => 1,
+            ])->where('beauty', '<', $v['beauty'])->count();
+
+            $userRs[$k]['ranking'] = $totalRs - $afterRs;
+            $totalRs -= 1;
+            if ($totalRs <= 0 || $totalRs == $afterRs) {
+                $userRs[$k]['percent'] = 99;
+            } elseif ($afterRs == 0) {
+                $userRs[$k]['percent'] = 10;
+            } else {
+                $userRs[$k]['percent'] = ceil($afterRs / $totalRs * 100);
+            }
+        }
+        return $userRs;
     }
 }

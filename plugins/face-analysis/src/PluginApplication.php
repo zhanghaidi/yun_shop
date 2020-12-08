@@ -81,5 +81,7 @@ class PluginApplication extends \app\common\services\PluginApplication
 
     public function boot()
     {
+        $events = app('events');
+        $events->listen(\Yunshop\FaceAnalysis\Events\NewAnalysisSubmit::class,\Yunshop\FaceAnalysis\Listener\AnalysisLogRanking::class);
     }
 }
