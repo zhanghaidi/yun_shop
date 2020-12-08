@@ -112,7 +112,7 @@ class JiushismsController extends BaseController
                 $smsSet = \Setting::get('shop.sms');
                 //是否设置
                 if ($smsSet['type'] != 5 || empty($smsSet['tx_templateJiushiSmsCode'])) {
-                    return false;
+                    return $this->message('请先配置短信模板id', Url::absoluteWeb(''), 'danger');
                 }
                 $post = request()->all();
                 if (empty($post['jiushi_wechat'])) {
