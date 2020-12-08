@@ -21,7 +21,7 @@ class OrderTrackController extends ApiController
 
         $input = request()->all();
 
-        \Log::info('接收小程序传递的参数：'.json_encode($input));
+        \Log::info('接收小程序传递的参数：'.$member_id.json_encode($input));
         $goods_id = $input['goods_id'];
         $action = $input['action']; //动作类型 1：查看 2、收藏 3、加购 4：下单 5：支付
         $val = $input['val']; //根据action记录相应参数：加购记录加购商品数 下单记录订单编号
