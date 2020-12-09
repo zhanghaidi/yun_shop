@@ -18,4 +18,17 @@ class TencentCIService
         $content = str_replace('/', '_', $content);
         return $content;
     }
+
+    public static function supportFont()
+    {
+        return [
+            'simfang仿宋.ttf',
+            'simhei黑体.ttf',
+            'simkai楷体.ttf',
+            'simsun宋体.ttc',
+            'STHeiti Light华文黑体.ttc',
+            'STHeiti Medium.ttc',
+            '幼圆.TTF',
+        ];
+    }
 }

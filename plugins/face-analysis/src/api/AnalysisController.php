@@ -16,6 +16,7 @@ use Yunshop\FaceAnalysis\services\AnalysisService;
 use Yunshop\FaceAnalysis\services\FaceAnalysisService;
 use Yunshop\FaceAnalysis\services\IntegralService;
 use Yunshop\FaceAnalysis\services\RankingService;
+use Yunshop\FaceAnalysis\services\TencentCIService;
 use Yunshop\FaceAnalysis\Events\NewAnalysisSubmit;
 
 class AnalysisController extends ApiController
@@ -181,5 +182,149 @@ class AnalysisController extends ApiController
             'consume' => $log->cost,
             'gain' => $log->gain,
         ]);
+    }
+
+    public function share()
+    {
+        $id = intval(\YunShop::request()->id);
+        if ($id < 0) {
+            $id = 0;
+        }
+
+        $memberId = \YunShop::app()->getMemberId();
+        if ($memberId <= 0) {
+            return $this->errorJson('登录信息获取错误', $memberId);
+        }
+
+        $logRs = FaceAnalysisLogModel::getList()
+            ->select('id', 'uniacid', 'gender', 'age', 'beauty', 'label')
+            ->where('member_id', $memberId);
+        if ($id > 0) {
+            $logRs = $logRs->where('id', $id);
+        } else {
+            $logRs = $logRs->orderBy('id', 'desc');
+        }
+        $logRs = $logRs->first();
+        if (!isset($logRs->id)) {
+            return $this->errorJson('检测记录错误错误');
+        }
+
+        $memberRs = DB::table('diagnostic_service_user')->select('id', 'nickname', 'avatar')
+            ->where('ajy_uid', $memberId)->first();
+
+        $rankPercent = (new RankingService())->getUserRanking($logRs->uniacid, $memberId, $logRs->label, $logRs->beauty);
+        if (!isset($rankPercent[0])) {
+            $rankPercent = 99;
+        } else {
+            $rankPercent = array_column($rankPercent, 'percent');
+            $rankPercent = max($rankPercent);
+        }
+
+        // TODO 底图
+        $url = 'https://dev-1300631469.cos.ap-beijing.myqcloud.com/images/45/2020/12/U9y7Z9c2LaUDL2988LEJ81d9je9S7s.png?';
+        $url = 'https://dev-1300631469.cos.ap-beijing.myqcloud.com/images/45/2020/12/u7bchz3BbNdmMc6BcK4M6Qz6BB67Ka.png?';
+        $url = 'https://dev-1300631469.cos.ap-beijing.myqcloud.com/images/45/2020/12/it9Yu997MbYth0td0u343b4d9T4B7p.png?';
+
+        // 超越
+        $url .= 'watermark/2/text/';
+        $url .= TencentCIService::safeBase64($rankPercent . '%');
+        $url .= '/font/' . TencentCIService::safeBase64('simhei黑体.ttf');
+        $url .= '/fontsize/45';
+        $url .= '/fill/' . TencentCIService::safeBase64('#FF622D');
+        $url .= '/dissolve/100/gravity/northwest';
+        if ($rankPercent < 10) {
+            $url .= '/dx/135/dy/231';
+        } elseif ($rankPercent < 100) {
+            $url .= '/dx/125/dy/231';
+        } else {
+            $url .= '/dx/115/dy/231';
+        }
+        // var_dump($url);
+
+        // 头像
+        if (isset($memberRs['avatar']) && !empty($memberRs['avatar'])) {
+            $avatar = yz_tomedia($memberRs['avatar']);
+            $avatar = str_replace('https://', 'http://', $avatar);
+            $avatar .= '?imageMogr2/thumbnail/105x105!';
+            $avatar .= '|imageMogr2/rradius/52';
+            // var_dump($avatar);
+
+            $url .= '|watermark/1/image/';
+            $url .= TencentCIService::safeBase64($avatar);
+            $url .= '/gravity/northwest';
+            $url .= '/dx/109/dy/353';
+        }
+
+        // 昵称
+        if (isset($memberRs['nickname']) && !empty($memberRs['nickname'])) {
+            // $memberRs['nickname'] = 'NO.9725【灸师助理】';
+            // $memberRs['nickname'] = 'H 、y s(屏幕灯光音响设备租赁)';
+            // $memberRs['nickname'] = '人生如賭局就怕你戒了賭';
+            if (mb_strlen($memberRs['nickname']) > 4) {
+                $memberRs['nickname'] = mb_substr($memberRs['nickname'], 0, 2) . '***' . mb_substr($memberRs['nickname'], mb_strlen($memberRs['nickname']) - 2);
+            }
+            $url .= '|watermark/2/text/';
+            $url .= TencentCIService::safeBase64($memberRs['nickname']);
+            $url .= '/font/' . TencentCIService::safeBase64('simhei黑体.ttf');
+            $url .= '/fontsize/33';
+            $url .= '/dissolve/100/gravity/northwest';
+            if (mb_strlen($memberRs['nickname']) < 2) {
+                $url .= '/dx/130/dy/475';
+            } elseif (mb_strlen($memberRs['nickname']) < 4) {
+                $url .= '/dx/120/dy/475';
+            } else {
+                if (strlen($memberRs['nickname']) >= 12) {
+                    $url .= '/dx/75/dy/475';
+                } else {
+                    $url .= '/dx/95/dy/475';
+                }
+            }
+        }
+
+        // 检测信息 - 性别、年龄
+        $sexAndAgeTxt = '性别：';
+        if ($logRs->gender == 2) {
+            $sexAndAgeTxt .= '男 ';
+        } else {
+            $sexAndAgeTxt .= '女 ';
+        }
+        $sexAndAgeTxt .= '年龄：' . $logRs->age . '岁';
+        $url .= '|watermark/2/text/';
+        $url .= TencentCIService::safeBase64($sexAndAgeTxt);
+        $url .= '/font/' . TencentCIService::safeBase64('simhei黑体.ttf');
+        $url .= '/fontsize/35';
+        $url .= '/dissolve/100/gravity/northwest';
+        $url .= '/dx/300/dy/377';
+
+        // 检测信息 - 魅力
+        $beautyTxt = '魅力值：' . $logRs->beauty . '分';
+        $url .= '|watermark/2/text/';
+        $url .= TencentCIService::safeBase64($beautyTxt);
+        $url .= '/font/' . TencentCIService::safeBase64('simhei黑体.ttf');
+        $url .= '/fontsize/35';
+        $url .= '/dissolve/100/gravity/northwest';
+        $url .= '/dx/300/dy/437';
+
+        // 长度条 - 底
+        $bg1Url = 'http://dev-1300631469.cos.ap-beijing.myqcloud.com/images/45/2020/12/jX9G5y0V4YXi1ysUgfX8gY4gP6YDdB.png';
+        $bg1Url = str_replace('https://', 'http://', $bg1Url);
+        $bg1Url .= '?imageMogr2/thumbnail/368x12!';
+        $bg1Url .= '|imageMogr2/rradius/3';
+        $url .= '|watermark/1/image/';
+        $url .= TencentCIService::safeBase64($bg1Url);
+        $url .= '/gravity/northwest/dx/300/dy/488';
+
+        $bg2Url = 'http://dev-1300631469.cos.ap-beijing.myqcloud.com/images/45/2020/12/pa2JD0EMd0eKdaAmNty30m2p3ceJ11.png';
+        $bg2Url = str_replace('https://', 'http://', $bg2Url);
+        $bg2Url .= '?imageMogr2/thumbnail/';
+        $bg2Url .= ceil($logRs->beauty / 100 * 368);
+        $bg2Url .= 'x12!';
+        $bg2Url .= '|imageMogr2/rradius/3';
+        $url .= '|watermark/1/image/';
+        $url .= TencentCIService::safeBase64($bg2Url);
+        $url .= '/gravity/northwest/dx/300/dy/488';
+
+
+        echo $url;
     }
 }

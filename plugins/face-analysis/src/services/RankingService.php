@@ -97,7 +97,7 @@ class RankingService
         return $return;
     }
 
-    public function getUserRanking(int $serviceId, int $userId, int $label)
+    public function getUserRanking(int $serviceId, int $userId, int $label, int $beauty = 0)
     {
         $userRs = FaceBeautyRankingModel::select('id', 'type', 'beauty')
             ->where([
@@ -123,6 +123,14 @@ class RankingService
                 }
             }
         }
+
+        // 如果 魅力 传值，以传值为排行依据
+        if ($beauty > 0) {
+            foreach ($userRs as $k => $v) {
+                $userRs[$k]['beauty'] = $beauty;
+            }
+        }
+
 
         if (!isset($userRs[0])) {
             return [];
