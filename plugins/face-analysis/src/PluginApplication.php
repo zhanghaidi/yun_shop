@@ -73,6 +73,15 @@ class PluginApplication extends \app\common\services\PluginApplication
                     'url' => 'plugin.face-analysis.admin.face-analysis-set.index',
                     'url_params' => '',
                     'parents' => ['face_analysis'],
+                    'child' => [
+                        'face_analysis_share_set' => [
+                            'name' => '分享设置',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.face-analysis.admin.face-analysis-set.share',
+                            'parents' => ['face_analysis', 'face_analysis_set'],
+                        ],
+                    ]
                 ],
 
             ]
