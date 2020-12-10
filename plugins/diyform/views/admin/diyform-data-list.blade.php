@@ -45,7 +45,10 @@
                                     @if(is_array($val) && (strexists($val[0], 'image') || strexists($val[0], 'images') || strexists($val[0], 'newimage')))
                                         @foreach($val as $v)
                                             <img src='{{yz_tomedia($v)}}' style='width:30px;height:30px;padding:1px;border:1px solid #ccc' />
-
+                                            <br/>
+                                            {{$item['member_id'] ?: '未更新'}}
+                                            <br/>
+                                            {{$item['member']['nickname'] ?: '未更新'}}
                                         @endforeach
                                     @elseif(is_array($val) && (!strexists($val[0], 'image') || !strexists($val[0], 'images') || !strexists($val[0], 'newimage')))
                                         @foreach($val as $v)
