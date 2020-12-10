@@ -25,11 +25,11 @@
                 <div class="col-sm-9 col-xs-12">
 
                     <label class="radio-inline">
-                        <input type="radio" name="tp_submit_number" value="1" @if ($item['tp_submit_number'] == 1) checked="checked" @endif />
+                        <input type="radio" name="tp_submit_number" value="1" @if ($item['submit_number'] == 1) checked="checked" @endif />
                         单次
                     </label>
                     <label class="radio-inline">
-                        <input type="radio" name="tp_submit_number" value="0" @if ($item['tp_submit_number'] == 0) checked="checked" @endif />
+                        <input type="radio" name="tp_submit_number" value="0" @if ($item['submit_number'] == 0) checked="checked" @endif />
                         多次
                     </label>
 
