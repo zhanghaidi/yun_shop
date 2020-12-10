@@ -254,7 +254,7 @@ class DiyFormController extends BaseController
          */
 //        fixBY-wk-20201210 用户只需提交一次表单，第二次提交更新表单
         $formInfo = DiyformDataModel::where(['member_id' => $memberId, 'form_id' => $formId, 'form_type' => $formType])->first();
-        if (!empty($formInfo)) {
+        if (!empty($formInfo) && $formInfo['submit_number'] > 0) {
             $formDatas = [
                 'uniacid' => \YunShop::app()->uniacid,
                 'member_id' => $memberId,
@@ -276,7 +276,7 @@ class DiyFormController extends BaseController
             $formDataId = DiyformDataModel::insertGetId($formDatas);
         }
         if($formDataId){
-            if (!empty($formInfo)) {
+            if (!empty($formInfo) && $formInfo['submit_number'] > 0) {
                 $formDataId = $formInfo['id'];
             }
             return $this->successJson('保存成功',['form_data_id'=>$formDataId]);
