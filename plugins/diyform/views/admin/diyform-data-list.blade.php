@@ -22,7 +22,7 @@
             <tr>
                 <th>ID</th>
                 <th>创建时间</th>
-                <th>会员昵称</th>
+                <th>会员信息</th>
                 @foreach($fields as $field)
                     <th>{{$field['tp_name']}}</th>
                 @endforeach
@@ -36,7 +36,13 @@
                 <tr>
                     <td>{{$item['id']}}</td>
                     <td>{{$item['created_at']}}</td>
-                    <td>{{$item['member']['nickname'] ?: '未更新'}} </td>
+                    <td>
+                        <img src='{{yz_tomedia($item['member']['avatar'])}}' style='width:30px;height:30px;padding:1px;border:1px solid #ccc' />
+                        <br/>
+                        {{$item['member_id'] ?: '未更新'}}
+                        <br/>
+                        {{$item['member']['nickname'] ?: '未更新'}}
+                    </td>
                     @foreach($fields as $fname => $field)
 
                         <td>
@@ -45,10 +51,6 @@
                                     @if(is_array($val) && (strexists($val[0], 'image') || strexists($val[0], 'images') || strexists($val[0], 'newimage')))
                                         @foreach($val as $v)
                                             <img src='{{yz_tomedia($v)}}' style='width:30px;height:30px;padding:1px;border:1px solid #ccc' />
-                                            <br/>
-                                            {{$item['member_id'] ?: '未更新'}}
-                                            <br/>
-                                            {{$item['member']['nickname'] ?: '未更新'}}
                                         @endforeach
                                     @elseif(is_array($val) && (!strexists($val[0], 'image') || !strexists($val[0], 'images') || !strexists($val[0], 'newimage')))
                                         @foreach($val as $v)
