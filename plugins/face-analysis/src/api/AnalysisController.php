@@ -88,11 +88,7 @@ class AnalysisController extends ApiController
         ) {
             return $this->errorJson(isset($faceRs['msg']) ? $faceRs['msg'] : '未知错误', '');
         }
-        $faceRs = json_decode($faceRs['data'], true);
-        if (!isset($faceRs['FaceInfos']) || !isset($faceRs['FaceInfos'][0])) {
-            return $this->errorJson('人脸检测分析数据获取错误', $faceRs);
-        }
-        $faceRs = $faceRs['FaceInfos'][0];
+        $faceRs = $faceRs['data'];
         if (!isset($faceRs['X']) || !isset($faceRs['FaceAttributesInfo'])) {
             return $this->errorJson('人脸检测分析数据解析错误', $faceRs);
         }
