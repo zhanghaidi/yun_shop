@@ -22,14 +22,31 @@ class UserController extends ApiController
 {
     public function info()
     {
+        $memberId = \YunShop::app()->getMemberId();
         $logRs = FaceAnalysisLogModel::getList()
-            ->select('id', 'gender', 'age', 'beauty')
-            ->where('member_id', \YunShop::app()->getMemberId())
+            ->select('id', 'uniacid', 'member_id', 'gender', 'age', 'beauty')
+            ->where('member_id', $memberId)
             ->orderBy('id', 'desc')->first();
+
+        if (isset($logRs->id)) {
+            $costAndGain = (new IntegralService)->getConsumeAndGain(
+                $logRs->uniacid,
+                $logRs->member_id,
+                $logRs->beauty
+            );
+        } else {
+            $costAndGain = (new IntegralService)->getConsumeAndGain(
+                \YunShop::app()->uniacid,
+                $memberId
+            );
+        }
+
         return $this->successJson('成功', [
             'gender' => isset($logRs->id) ? $logRs->gender : 0,
             'age' => isset($logRs->id) ? $logRs->age : 0,
             'beauty' => isset($logRs->id) ? $logRs->beauty : 0,
+            'consume' => $costAndGain['consume'],
+            'gain' => $costAndGain['gain'],
         ]);
     }
 

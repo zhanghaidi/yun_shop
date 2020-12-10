@@ -9,6 +9,7 @@
 
             <div class="top">
                 <ul class="add-shopnav" id="myTab">
+                    <li @if($search['type'] == 0) class="active" @endif><a href="{{yzWebUrl('plugin.face-analysis.admin.face-beauty-ranking.index')}}">总榜</a></li>
                     @foreach($rank as $value)
                     <li @if($search['type'] == $value['type']) class="active" @endif><a href="{{yzWebUrl('plugin.face-analysis.admin.face-beauty-ranking.index')}}&search[type]={{$value['type']}}">{{$value['name']}} ({{$value['count']}})</a></li>
                     @endforeach

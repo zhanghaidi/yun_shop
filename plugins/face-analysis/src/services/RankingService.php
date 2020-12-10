@@ -8,11 +8,15 @@ use Yunshop\FaceAnalysis\models\FaceBeautyRankingModel;
 
 class RankingService
 {
-    public function getJoinable(int $serviceId, int $userId)
+    public function getJoinable(int $serviceId, int $userId, int $label = 0)
     {
         $return = [];
-        $label = (new FaceAnalysisService())->get('label');
-        $statusRs = Setting::get($label . '.ranking_status');
+        $serviceLabel = (new FaceAnalysisService())->get('label');
+        if ($label <= 0) {
+            $statusRs = Setting::get($serviceLabel . '.ranking_status');
+        } else {
+            $statusRs = $label;
+        }
         if ($statusRs <= 0) {
             return $return;
         }
@@ -26,7 +30,7 @@ class RankingService
             return [];
         }
 
-        $sexRs = Setting::get($label . '.sex_ranking');
+        $sexRs = Setting::get($serviceLabel . '.sex_ranking');
         if ($sexRs != 0) {
             if ($userRs->gender == 1) {
                 $return[] = 1;
@@ -35,7 +39,7 @@ class RankingService
             }
         }
 
-        $ageRs = Setting::get($label . '.age_ranking');
+        $ageRs = Setting::get($serviceLabel . '.age_ranking');
         if (isset($ageRs['start'][0]) && isset($ageRs['end'][0])) {
             foreach ($ageRs['start'] as $k => $v) {
                 if (!isset($ageRs['end'][$k])) {
@@ -107,12 +111,12 @@ class RankingService
                 'status' => 1,
             ])->get()->toArray();
         if (!isset($userRs[0])) {
-            $rankingRs = $this->getJoinable($serviceId, $userRs);
+            $rankingRs = $this->getJoinable($serviceId, $userId, $label);
             $logRs = FaceAnalysisLogModel::select('id',  'beauty')->where([
                 'member_id' => $userId,
                 'uniacid' => $serviceId,
                 'label' => $label,
-            ])->first();
+            ])->orderBy('id', 'desc')->first();
             if (isset($logRs->id)) {
                 $userRs = [];
                 foreach ($rankingRs as $v) {

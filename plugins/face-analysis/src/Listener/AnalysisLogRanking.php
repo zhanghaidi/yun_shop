@@ -61,7 +61,7 @@ class AnalysisLogRanking
             $maxLike = 0;
         }
 
-        $rankingRs = (new RankingService)->getJoinable($serviceId, $memberId);
+        $rankingRs = (new RankingService)->getJoinable($serviceId, $memberId, $label);
         $modifyIds = [];
         foreach ($rankingRs as $newType) {
             $tempId = 0;

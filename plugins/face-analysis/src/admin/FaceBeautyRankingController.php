@@ -33,6 +33,7 @@ class FaceBeautyRankingController extends BaseController
 
         $rankingRs = (new RankingService)->getAllTypeAndName();
         $typeRs = array_column($rankingRs, 'type');
+        $typeRs = array_merge([0], $typeRs);
         if (!isset($typeRs[0])) {
             return $this->message($this->error('没有开启中的排行榜榜单，请设置后再次查看'));
         }
@@ -57,12 +58,21 @@ class FaceBeautyRankingController extends BaseController
             }
         }
 
-        $list = FaceBeautyRankingModel::getList()->where([
-            'label' => $label,
-            'type' => $searchData['type'],
-        ])->orderBy('beauty', 'desc')
-            ->orderBy('like', 'desc')
-            ->orderBy('id', 'asc')->paginate($this->pageSize)->toArray();
+        if ($searchData['type'] == 0) {
+            $list = FaceBeautyRankingModel::getList()->where('label', $label)
+                ->groupBy('member_id')
+                ->orderBy('beauty', 'desc')
+                ->orderBy('like', 'desc')
+                ->orderBy('id', 'asc')->paginate($this->pageSize)->toArray();
+        } else {
+            $list = FaceBeautyRankingModel::getList()->where([
+                'label' => $label,
+                'type' => $searchData['type'],
+            ])->orderBy('beauty', 'desc')
+                ->orderBy('like', 'desc')
+                ->orderBy('id', 'asc')->paginate($this->pageSize)->toArray();
+        }
+
 
         $memberIds = array_column($list['data'], 'member_id');
         if (isset($memberIds[0])) {

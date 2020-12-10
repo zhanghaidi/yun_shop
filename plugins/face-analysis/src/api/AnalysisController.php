@@ -105,7 +105,7 @@ class AnalysisController extends ApiController
             $log->url = $url;
             if ($faceRs['FaceAttributesInfo']['Gender'] < 50) {
                 $log->gender = 1;
-            } elseif ($faceRs['FaceAttributesInfo']['Gender'] > 50) {
+            } elseif ($faceRs['FaceAttributesInfo']['Gender'] >= 50) {
                 $log->gender = 2;
             } else {
                 $log->gender = 0;
@@ -172,7 +172,7 @@ class AnalysisController extends ApiController
 
         event(new NewAnalysisSubmit($log->uniacid, $log->member_id, $log->label));
 
-        $rankRs = (new RankingService())->getUserRanking($log->uniacid, $log->member_id, $log->label);
+        $rankRs = (new RankingService())->getUserRanking($log->uniacid, $log->member_id, $log->label, $log->beauty);
 
         return $this->successJson('ok', [
             'gender' => $log->gender,
@@ -206,7 +206,7 @@ class AnalysisController extends ApiController
         }
         $logRs = $logRs->first();
         if (!isset($logRs->id)) {
-            return $this->errorJson('检测记录错误错误');
+            return $this->errorJson('检测记录获取错误');
         }
 
         $memberRs = DB::table('diagnostic_service_user')->select('id', 'nickname', 'avatar')
@@ -220,10 +220,21 @@ class AnalysisController extends ApiController
             $rankPercent = max($rankPercent);
         }
 
-        // TODO 底图
-        $url = 'https://dev-1300631469.cos.ap-beijing.myqcloud.com/images/45/2020/12/U9y7Z9c2LaUDL2988LEJ81d9je9S7s.png?';
-        $url = 'https://dev-1300631469.cos.ap-beijing.myqcloud.com/images/45/2020/12/u7bchz3BbNdmMc6BcK4M6Qz6BB67Ka.png?';
-        $url = 'https://dev-1300631469.cos.ap-beijing.myqcloud.com/images/45/2020/12/it9Yu997MbYth0td0u343b4d9T4B7p.png?';
+        $faceAnalysisService = new FaceAnalysisService();
+        $shareSetRs = Setting::get($faceAnalysisService->get('label') . '.share');
+        if (
+            !isset($shareSetRs['title']) || !isset($shareSetRs['image']) ||
+            empty($shareSetRs['title']) || empty($shareSetRs['image'])
+        ) {
+            return $this->errorJson('分享配置获取错误');
+        }
+        $shareSetRs['title'] = str_replace('{昵称}', $memberRs['nickname'], $shareSetRs['title']);
+        $shareSetRs['title'] = str_replace('{年龄}', $logRs->age, $shareSetRs['title']);
+        $shareSetRs['title'] = str_replace('{颜值}', $logRs->beauty, $shareSetRs['title']);
+        $shareSetRs['title'] = str_replace('{超越百分比}', $rankPercent . '%', $shareSetRs['title']);
+
+        // 底图
+        $url = yz_tomedia($shareSetRs['image']) . '?';
 
         // 超越
         $url .= 'watermark/2/text/';
@@ -239,7 +250,6 @@ class AnalysisController extends ApiController
         } else {
             $url .= '/dx/115/dy/231';
         }
-        // var_dump($url);
 
         // 头像
         if (isset($memberRs['avatar']) && !empty($memberRs['avatar'])) {
@@ -247,7 +257,6 @@ class AnalysisController extends ApiController
             $avatar = str_replace('https://', 'http://', $avatar);
             $avatar .= '?imageMogr2/thumbnail/105x105!';
             $avatar .= '|imageMogr2/rradius/52';
-            // var_dump($avatar);
 
             $url .= '|watermark/1/image/';
             $url .= TencentCIService::safeBase64($avatar);
@@ -314,6 +323,7 @@ class AnalysisController extends ApiController
         $url .= TencentCIService::safeBase64($bg1Url);
         $url .= '/gravity/northwest/dx/300/dy/488';
 
+        // 长度条 - 长度
         $bg2Url = 'http://dev-1300631469.cos.ap-beijing.myqcloud.com/images/45/2020/12/pa2JD0EMd0eKdaAmNty30m2p3ceJ11.png';
         $bg2Url = str_replace('https://', 'http://', $bg2Url);
         $bg2Url .= '?imageMogr2/thumbnail/';
@@ -324,7 +334,9 @@ class AnalysisController extends ApiController
         $url .= TencentCIService::safeBase64($bg2Url);
         $url .= '/gravity/northwest/dx/300/dy/488';
 
-
-        echo $url;
+        return $this->successJson('成功', [
+            'title' => $shareSetRs['title'],
+            'image' => $url
+        ]);
     }
 }
