@@ -252,17 +252,33 @@ class DiyFormController extends BaseController
         /**
          * @todo 验证表单提交数据
          */
-
-        $formDatas = [
-            'uniacid' => \YunShop::app()->uniacid,
-            'member_id' => $memberId,
-            'form_id' => $formId,
-            'data' => iserializer($formData[0]),
-            'form_type' => $formType,
-            'created_at' => time()
-        ];
-        $formDataId = DiyformDataModel::insertGetId($formDatas);
+//        fixBY-wk-20201210 用户只需提交一次表单，第二次提交更新表单
+        $formInfo = DiyformDataModel::where(['member_id' => $memberId, 'form_id' => $formId, 'form_type' => $formType])->orderBy('id', 'desc')->first();
+        if (!empty($formInfo) && $formInfo['submit_number'] > 0) {
+            $formDatas = [
+                'uniacid' => \YunShop::app()->uniacid,
+                'member_id' => $memberId,
+                'form_id' => $formId,
+                'data' => iserializer($formData[0]),
+                'form_type' => $formType,
+                'updated_at' => time()
+            ];
+            $formDataId = DiyformDataModel::updated($formDatas);
+        } else {
+            $formDatas = [
+                'uniacid' => \YunShop::app()->uniacid,
+                'member_id' => $memberId,
+                'form_id' => $formId,
+                'data' => iserializer($formData[0]),
+                'form_type' => $formType,
+                'created_at' => time()
+            ];
+            $formDataId = DiyformDataModel::insertGetId($formDatas);
+        }
         if($formDataId){
+            if (!empty($formInfo) && $formInfo['submit_number'] > 0) {
+                $formDataId = $formInfo['id'];
+            }
             return $this->successJson('保存成功',['form_data_id'=>$formDataId]);
         }
         return $this->successJson('保存失败');
