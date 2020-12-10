@@ -21,6 +21,21 @@ use Illuminate\Http\Request;
 class DiyFormController extends BaseController
 {
 
+    /**
+     * 需要登录
+     */
+    private function needLogin()
+    {
+        if (!$this->user_id) {
+            response()->json([
+                'result' => 41009,
+                'msg' => '请登录',
+                'data' => null,
+            ], 200, ['charset' => 'utf-8'])->send();
+            exit;
+        }
+    }
+
     // 上传图片接口
     public function upload()
     {
@@ -64,6 +79,7 @@ class DiyFormController extends BaseController
     // 查看一张表单时，将表单，表单数据查询返回给前端。
     public function getDiyFormTypeMemberData($request, $integrated = null,$formId = null)
     {
+        $this->needLogin();
         if($formId){
             $form_id = $formId;
         }else{
@@ -253,8 +269,10 @@ class DiyFormController extends BaseController
          * @todo 验证表单提交数据
          */
 //        fixBY-wk-20201210 用户只需提交一次表单，第二次提交更新表单
-        $formInfo = DiyformDataModel::where(['member_id' => $memberId, 'form_id' => $formId, 'form_type' => $formType])->orderBy('id', 'desc')->first();
-        if (!empty($formInfo) && $formInfo['submit_number'] > 0) {
+
+        $forms = DiyformTypeModel::find($formId);//查询表单信息
+        $formInfo = DiyformDataModel::where(['member_id' => $memberId, 'form_id' => $formId, 'form_type' => $formType])->orderBy('id', 'desc')->first()->toArray();
+        if (!empty($formInfo) && $forms->submit_number > 0) {
             $formDatas = [
                 'uniacid' => \YunShop::app()->uniacid,
                 'member_id' => $memberId,
@@ -263,7 +281,7 @@ class DiyFormController extends BaseController
                 'form_type' => $formType,
                 'updated_at' => time()
             ];
-            $formDataId = DiyformDataModel::updated($formDatas);
+            $formDataId = DiyformDataModel::where(['member_id' => $memberId, 'form_id' => $formId, 'form_type' => $formType, 'id' => $formInfo['id']])->update($formDatas);
         } else {
             $formDatas = [
                 'uniacid' => \YunShop::app()->uniacid,
@@ -275,11 +293,11 @@ class DiyFormController extends BaseController
             ];
             $formDataId = DiyformDataModel::insertGetId($formDatas);
         }
-        if($formDataId){
-            if (!empty($formInfo) && $formInfo['submit_number'] > 0) {
+        if ($formDataId) {
+            if (!empty($formInfo) && $forms->submit_number > 0) {
                 $formDataId = $formInfo['id'];
             }
-            return $this->successJson('保存成功',['form_data_id'=>$formDataId]);
+            return $this->successJson('保存成功', ['form_data_id' => $formDataId]);
         }
         return $this->successJson('保存失败');
     }
@@ -289,7 +307,7 @@ class DiyFormController extends BaseController
      */
     public function getSingleFormData()
     {
-
+        $this->needLogin();
         $form_id = intval(request()->input('form_id'));
         $form_data_id = intval(request()->input('form_data_id'));
 
