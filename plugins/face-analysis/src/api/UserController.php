@@ -79,4 +79,28 @@ class UserController extends ApiController
         }
         return $this->successJson('成功', $return);
     }
+
+    public function setting()
+    {
+        $return = [];
+        $faceAnalysisService = new FaceAnalysisService();
+        $set = Setting::get($faceAnalysisService->get('label') . '.need_phone');
+        if ($set == 1) {
+            $return['need_phone'] = 1;
+        } else {
+            $return['need_phone'] = 2;
+        }
+        $set = Setting::get($faceAnalysisService->get('label') . '.frequency');
+        if (isset($set['time']) && $set['time'] > 0) {
+            $return['frequency_time'] = $set['time'];
+        } else {
+            $return['frequency_time'] = 0;
+        }
+        if (isset($set['number']) && $set['number'] > 0) {
+            $return['frequency_number'] = $set['number'];
+        } else {
+            $return['frequency_number'] = 0;
+        }
+        return $this->successJson('成功', $return);
+    }
 }
