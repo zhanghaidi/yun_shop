@@ -253,7 +253,7 @@ class DiyFormController extends BaseController
          * @todo 验证表单提交数据
          */
 //        fixBY-wk-20201210 用户只需提交一次表单，第二次提交更新表单
-        $formInfo = DiyformDataModel::where(['member_id' => $memberId, 'form_id' => $formId, 'form_type' => $formType])->first();
+        $formInfo = DiyformDataModel::where(['member_id' => $memberId, 'form_id' => $formId, 'form_type' => $formType])->orderBy('id', 'desc')->first();
         if (!empty($formInfo) && $formInfo['submit_number'] > 0) {
             $formDatas = [
                 'uniacid' => \YunShop::app()->uniacid,
