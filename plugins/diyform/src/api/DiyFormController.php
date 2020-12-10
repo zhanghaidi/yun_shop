@@ -276,6 +276,9 @@ class DiyFormController extends BaseController
             $formDataId = DiyformDataModel::insertGetId($formDatas);
         }
         if($formDataId){
+            if (!empty($formInfo)) {
+                $formDataId = $formInfo['id'];
+            }
             return $this->successJson('保存成功',['form_data_id'=>$formDataId]);
         }
         return $this->successJson('保存失败');
