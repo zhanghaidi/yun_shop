@@ -278,7 +278,7 @@ class DiyFormController extends BaseController
 
         $forms = DiyformTypeModel::find($formId);//查询表单信息
         $formInfo = DiyformDataModel::where(['member_id' => $memberId, 'form_id' => $formId, 'form_type' => $formType])->orderBy('id', 'desc')->first();
-        if (!empty($formInfo) && $forms->submit_number > 0) {
+        if (!empty($formInfo['id']) && $forms->submit_number > 0) {
             $formDatas = [
                 'uniacid' => \YunShop::app()->uniacid,
                 'member_id' => $memberId,
@@ -300,7 +300,7 @@ class DiyFormController extends BaseController
             $formDataId = DiyformDataModel::insertGetId($formDatas);
         }
         if ($formDataId) {
-            if (!empty($formInfo) && $forms->submit_number > 0) {
+            if (!empty($formInfo['id']) && $forms->submit_number > 0) {
                 $formDataId = $formInfo['id'];
             }
             return $this->successJson('保存成功', ['form_data_id' => $formDataId]);
