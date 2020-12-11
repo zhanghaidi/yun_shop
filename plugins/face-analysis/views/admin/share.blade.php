@@ -38,9 +38,16 @@
             <div class="form-group">
                 <label class="col-xs-12 col-sm-3 col-md-2 control-label">分享图片 - 主空白背景图</label>
                 <div class="col-sm-9 col-xs-12">
-                    {!! app\common\helpers\ImageHelper::tplFormFieldImage('setdata[share][image]', $set['share']['image'])!!}
+                    {!! app\common\helpers\ImageHelper::tplFormFieldImage('setdata[share][image][main]', $set['share']['image']['main'])!!}
                     <span class='help-block'>主背景图修改后，需要后端开发人员修改程序，确认背景图上叠加的元素内容及其定位</span>
-                    <span class='help-block'>鉴于主背景图千变万化，所需细节元素各有不同，主背景上如需叠加图片元素，不便于进行设置，请通过程序自行解决</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label">分享图片 - 背景上所需元素图</label>
+                <div class="col-sm-9 col-xs-12">
+                    {!! app\common\helpers\ImageHelper::tplFormFieldImage('setdata[share][image][addition]', $set['share']['image']['addition'])!!}
+                    <span class='help-block'>元素图修改后，需要后端开发人员修改程序，确认背景图上叠加的元素内容及其定位</span>
                 </div>
             </div>
 

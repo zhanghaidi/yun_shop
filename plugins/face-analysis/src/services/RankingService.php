@@ -197,7 +197,7 @@ class RankingService
             }
 
             $totalRs -= 1;
-            if ($totalRs <= 0 || $totalRs == $afterRs) {
+            if ($totalRs <= 0 || $totalRs <= $afterRs) {
                 $userRs[$k]['percent'] = 99;
             } elseif ($afterRs == 0) {
                 $userRs[$k]['percent'] = 10;
