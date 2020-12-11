@@ -150,7 +150,9 @@ class RankingService
                 'label' => $label,
                 'status' => 1,
             ]);
-            if ($v['type'] != 0) {
+            if ($v['type'] == 0) {
+                $totalRs = $totalRs->groupBy('member_id');
+            } else {
                 $totalRs = $totalRs->where('type', $v['type']);
             }
             $totalRs = $totalRs->count();
@@ -160,7 +162,9 @@ class RankingService
                 'label' => $label,
                 'status' => 1,
             ]);
-            if ($v['type'] != 0) {
+            if ($v['type'] == 0) {
+                $afterRs = $afterRs->groupBy('member_id');
+            } else {
                 $afterRs = $afterRs->where('type', $v['type']);
             }
             $afterRs = $afterRs->where('beauty', '<=', $v['beauty'])->count();
@@ -168,6 +172,28 @@ class RankingService
             $userRs[$k]['ranking'] = $totalRs - $afterRs;
             if ($userRs[$k]['ranking'] <= 0) {
                 $userRs[$k]['ranking'] = 1;
+            }
+
+            $beautyEqualList = FaceBeautyRankingModel::select('id', 'member_id')->where([
+                'uniacid' => $serviceId,
+                'label' => $label,
+                'status' => 1,
+            ]);
+            if ($v['type'] == 0) {
+                $beautyEqualList = $beautyEqualList->groupBy('member_id');
+            } else {
+                $beautyEqualList = $beautyEqualList->where('type', $v['type']);
+            }
+            $beautyEqualList = $beautyEqualList->where('beauty', $v['beauty'])
+                ->orderBy('like', 'desc')
+                ->orderBy('id', 'desc')->get()->toArray();
+            foreach ($beautyEqualList as $info) {
+                if ($info['member_id'] != $userId) {
+                    $userRs[$k]['ranking'] += 1;
+                    continue;
+                }
+
+                break;
             }
 
             $totalRs -= 1;

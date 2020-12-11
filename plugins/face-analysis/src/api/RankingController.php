@@ -61,7 +61,7 @@ class RankingController extends ApiController
         }
         $rankingRs = $rankingRs->orderBy('beauty', 'desc')
             ->orderBy('like', 'desc')
-            ->orderBy('id', 'asc')
+            ->orderBy('id', 'desc')
             ->limit($pageSize)
             ->offset(($page - 1) * $pageSize)->get()->toArray();
 
