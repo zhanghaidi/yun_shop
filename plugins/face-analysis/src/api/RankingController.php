@@ -66,10 +66,10 @@ class RankingController extends ApiController
             ->offset(($page - 1) * $pageSize)->get()->toArray();
 
         $memberIds = array_column($rankingRs, 'member_id');
+        $memberId = \YunShop::app()->getMemberId();
         if (isset($memberIds[0])) {
             $memberRs = Member::select('uid', 'nickname', 'avatar')->whereIn('uid', $memberIds)->get()->toArray();
 
-            $memberId = \YunShop::app()->getMemberId();
             if ($memberId > 0) {
                 $likeRs = FaceBeautyRankingLikeLogModel::select('id', 'object_member_id')
                     ->whereIn('object_member_id', $memberIds)->where([
@@ -108,7 +108,44 @@ class RankingController extends ApiController
             $rankingRs[$k]['ranking'] = $baseRank + $k;
             unset($rankingRs[$k]['member_id']);
         }
-        return $this->successJson('成功', $rankingRs);
+
+        if ($memberId > 0) {
+            $userRanking = (new RankingService)->getUserRanking(
+                \YunShop::app()->uniacid,
+                $memberId,
+                $label
+            );
+
+            if (isset($userRanking[0])) {
+                $tempRank = [];
+                foreach ($userRanking as $v) {
+                    if ($v['type'] == $type) {
+                        $tempRank = $v;
+                        break;
+                    }
+                }
+                $userRanking = $tempRank;
+                unset($tempRank);
+            }
+
+            if (isset($userRanking[0]['beauty'])) {
+                $userLike = FaceBeautyRankingModel::getList()->select('id', 'like')
+                    ->where([
+                        'member_id' => $memberId,
+                        'label' => $label
+                    ])->first();
+            }
+        }
+
+        $return = [
+            'list' => $rankingRs,
+            'member_id' => $memberId,
+            'beauty' => isset($userRanking['beauty']) ? $userRanking['beauty'] : 0,
+            'like' => isset($userLike->id) ? $userLike->like : 0,
+            'ranking' => isset($userRanking['ranking']) ? $userRanking['ranking'] : 0,
+        ];
+
+        return $this->successJson('成功', $return);
     }
 
     public function like()
