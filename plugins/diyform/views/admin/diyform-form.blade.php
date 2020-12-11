@@ -20,7 +20,22 @@
                     <input type="text" name="tp_title" class="form-control tp_title" value="{{$item['title']}}" placeholder="表单名称，例：预约摄影" data-rule-required='true' />
                 </div>
             </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label must" style='width:110px;text-align: left;padding-left:22px;'  >允许提交次数</label>
+                <div class="col-sm-9 col-xs-12">
 
+                    <label class="radio-inline">
+                        <input type="radio" name="tp_submit_number" value="1" @if ($item['submit_number'] == 1) checked="checked" @endif />
+                        单次
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="tp_submit_number" value="0" @if ($item['submit_number'] == 0) checked="checked" @endif />
+                        多次
+                    </label>
+
+{{--                    <input type="radio" name="tp_submit_number" class="form-control tp_title" value="{{$item['tp_submit_number']}}" placeholder="允许提交次数" data-rule-required='true' />--}}
+                </div>
+            </div>
             <div class="form-group">
                 <label class="col-sm-2 control-label must" style='width:110px;text-align: left;padding-left:22px;'  >表单图片</label>
                 <div class="col-sm-9 col-xs-12 col-md-6 detail-logo">

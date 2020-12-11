@@ -45,8 +45,8 @@
                             {{--<i class="fa fa-qrcode"></i>--}}
                         {{--</a>--}}
                         <a href="javascript:;"
-                           data-clipboard-text="{{'/packageC/diyform/diyform?scene='.$row['id']}}"
-                           data-url="{{'/packageC/diyform/diyform?scene='.$row['id']}}"
+                           data-clipboard-text="{{'/pages/shopping/goods-form/index?form_id='.$row['id']}}"
+                           data-url="{{'/pages/shopping/goods-form/index?form_id='.$row['id']}}"
                            title="复制小程序链接" class="btn btn-default btn-sm js-clip"><i class="fa fa-link"></i>
                         </a>
                     </td>
@@ -54,7 +54,7 @@
 
                         <a href="javascript:;"
                            data-clipboard-text="{{yzAppFullUrl('diyform/'.$row['id'])}}"
-                           data-url="{{yzAppFullUrl('diyform/'.$row['id'])}}"
+                               data-url="{{yzAppFullUrl('diyform/'.$row['id'])}}"
                            title="复制链接" class="btn btn-default btn-sm js-clip"><i class="fa fa-link"></i>
                         </a>
                         <a class='btn btn-default'
