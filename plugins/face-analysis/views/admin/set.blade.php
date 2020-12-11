@@ -11,6 +11,7 @@
                 <ul class="add-shopnav" id="myTab">
                     <li @if(\YunShop::request()->route == 'plugin.face-analysis.admin.face-analysis-set.index') class="active" @endif><a href="{{yzWebUrl('plugin.face-analysis.admin.face-analysis-set.index')}}">基础设置</a></li>
                     <li @if(\YunShop::request()->route == 'plugin.face-analysis.admin.face-analysis-set.share') class="active" @endif><a href="{{yzWebUrl('plugin.face-analysis.admin.face-analysis-set.share')}}">分享设置</a></li>
+                    <li @if(\YunShop::request()->route == 'plugin.face-analysis.admin.face-analysis-set.rule') class="active" @endif><a href="{{yzWebUrl('plugin.face-analysis.admin.face-analysis-set.rule')}}">规则内容设置</a></li>
                 </ul>
             </div>
 

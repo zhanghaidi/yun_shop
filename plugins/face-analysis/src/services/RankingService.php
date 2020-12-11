@@ -153,9 +153,13 @@ class RankingService
                 'label' => $label,
                 'type' => $v['type'],
                 'status' => 1,
-            ])->where('beauty', '<', $v['beauty'])->count();
+            ])->where('beauty', '<=', $v['beauty'])->count();
 
             $userRs[$k]['ranking'] = $totalRs - $afterRs;
+            if ($userRs[$k]['ranking'] <= 0) {
+                $userRs[$k]['ranking'] = 1;
+            }
+
             $totalRs -= 1;
             if ($totalRs <= 0 || $totalRs == $afterRs) {
                 $userRs[$k]['percent'] = 99;

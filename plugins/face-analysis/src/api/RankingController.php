@@ -22,7 +22,7 @@ use Yunshop\FaceAnalysis\Events\NewAnalysisSubmit;
 
 class RankingController extends ApiController
 {
-    protected $publicAction = ['index'];
+    protected $publicAction = ['index', 'rule'];
 
     public function index()
     {
@@ -176,5 +176,14 @@ class RankingController extends ApiController
         }
 
         return $this->successJson('点赞成功', $maxLike);
+    }
+
+    public function rule()
+    {
+        $faceAnalysisService = new FaceAnalysisService();
+        $rule = Setting::get($faceAnalysisService->get('label') . '.rule');
+        !isset($rule) && $rule = '';
+        $rule = html_entity_decode($rule);
+        return $this->successJson('成功', $rule);
     }
 }
