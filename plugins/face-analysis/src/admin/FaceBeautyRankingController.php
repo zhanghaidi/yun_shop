@@ -63,14 +63,14 @@ class FaceBeautyRankingController extends BaseController
                 ->groupBy('member_id')
                 ->orderBy('beauty', 'desc')
                 ->orderBy('like', 'desc')
-                ->orderBy('id', 'asc')->paginate($this->pageSize)->toArray();
+                ->orderBy('id', 'desc')->paginate($this->pageSize)->toArray();
         } else {
             $list = FaceBeautyRankingModel::getList()->where([
                 'label' => $label,
                 'type' => $searchData['type'],
             ])->orderBy('beauty', 'desc')
                 ->orderBy('like', 'desc')
-                ->orderBy('id', 'asc')->paginate($this->pageSize)->toArray();
+                ->orderBy('id', 'desc')->paginate($this->pageSize)->toArray();
         }
 
 
