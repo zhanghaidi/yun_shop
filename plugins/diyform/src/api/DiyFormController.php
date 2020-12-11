@@ -21,6 +21,12 @@ use Illuminate\Http\Request;
 class DiyFormController extends BaseController
 {
 
+    public function __construct()
+    {
+        parent::__construct();
+        $this->user_id = \YunShop::app()->getMemberId();
+    }
+
     /**
      * 需要登录
      */
@@ -271,8 +277,8 @@ class DiyFormController extends BaseController
 //        fixBY-wk-20201210 用户只需提交一次表单，第二次提交更新表单
 
         $forms = DiyformTypeModel::find($formId);//查询表单信息
-        $formInfo = DiyformDataModel::where(['member_id' => $memberId, 'form_id' => $formId, 'form_type' => $formType])->orderBy('id', 'desc')->first()->toArray();
-        if (!empty($formInfo) && $forms->submit_number > 0) {
+        $formInfo = DiyformDataModel::where(['member_id' => $memberId, 'form_id' => $formId, 'form_type' => $formType])->orderBy('id', 'desc')->first();
+        if (!empty($formInfo['id']) && $forms->submit_number > 0) {
             $formDatas = [
                 'uniacid' => \YunShop::app()->uniacid,
                 'member_id' => $memberId,
@@ -294,7 +300,7 @@ class DiyFormController extends BaseController
             $formDataId = DiyformDataModel::insertGetId($formDatas);
         }
         if ($formDataId) {
-            if (!empty($formInfo) && $forms->submit_number > 0) {
+            if (!empty($formInfo['id']) && $forms->submit_number > 0) {
                 $formDataId = $formInfo['id'];
             }
             return $this->successJson('保存成功', ['form_data_id' => $formDataId]);
