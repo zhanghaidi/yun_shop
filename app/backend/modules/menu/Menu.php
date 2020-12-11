@@ -4832,6 +4832,86 @@ class Menu
                     ],
                 ],
             ],
+            'jiushi_sms' => [
+                'name'             => '发短信',
+                'url'              => 'jiushisms.jiushisms.sendsms',
+                'url_params'       => '',
+                'permit'           => 1,
+                'menu'             => 1,
+                'top_show'         => 0,
+                'left_first_show'  => 1,
+                'left_second_show' => 1,
+                'icon'             => 'fa-wechat',
+                'parent_id'        => 0,
+                'sort'             => '6',
+                'item'             => 'jiushi_sms',
+                'parents'          => [],
+                'child'            => [
+                    'jiushi_list' => [
+                        'name'       => '灸师列表',
+                        'url'        => 'jiushisms.jiushisms.jiushilist',
+                        'url_params' => '',
+                        'permit'     => 1,
+                        'menu'       => 1,
+                        'icon'       => 'fa-list-ul',
+                        'sort'       => 0,
+                        'item'       => 'jiushi_list',
+                        'parents'    => ['jiushi_sms',],
+                        'child' => [
+                            'jiushi_edit' => [
+                                'name' => '编辑灸师',
+                                'url' => 'jiushisms.jiushisms.jiushiedit',
+                                'url_params' => '',
+                                'permit' => 1,
+                                'menu' => 0,
+                                'icon' => '',
+                                'sort' => 0,
+                                'item' => 'jiushi_edit',
+                                'parents' => ['jiushi_sms', 'jiushi_list',],
+                            ],
+                        ]
+                    ],
+                    'jiushi_sms_set' => [
+                        'name'       => '发短信',
+                        'url'        => 'jiushisms.jiushisms.sendsms',
+                        'url_params' => '',
+                        'permit'     => 1,
+                        'menu'       => 1,
+                        'icon'       => 'fa-cog',
+                        'sort'       => 0,
+                        'item'       => 'jiushi_sms_set',
+                        'parents'    => ['jiushi_sms',],
+                    ],
+                    'jiushi_sms_list' => [
+                        'name'       => '短信列表',
+                        'url'        => 'jiushisms.jiushisms.smslist',
+                        'url_params' => '',
+                        'permit'     => 1,
+                        'menu'       => 1,
+                        'icon'       => 'fa-list-ul',
+                        'sort'       => 0,
+                        'item'       => 'jiushi_sms_list',
+                        'parents'    => ['jiushi_sms',],
+                        'child' => [
+                            'jiushi_friends_status' => [
+                                'name' => '加友状态',
+                                'url' => 'jiushisms.jiushisms.jiushifriendsstatus',
+                                'url_params' => '',
+                                'permit' => 1,
+                                'menu' => 0,
+                                'icon' => '',
+                                'sort' => 0,
+                                'item' => 'jiushi_friends_status',
+                                'parents' => ['jiushi_sms', 'jiushi_sms_list',],
+                            ],
+                        ]
+
+                    ],
+
+                ]
+
+            ],
+
         ];
     }
 
