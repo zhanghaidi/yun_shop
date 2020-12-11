@@ -25,10 +25,12 @@
 
             <form id="setform" action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
 
+            <div><b>有数据后的分享:</b></div>
+
             <div class="form-group">
                 <label class="col-xs-12 col-sm-3 col-md-2 control-label">分享标题</label>
                 <div class="col-sm-9 col-xs-12">
-                    <textarea name="setdata[share][title]" class="form-control" placeholder="请输入大于等于0的整数" rows="5">{{$set['share']['title']}}</textarea>
+                    <textarea name="setdata[share][title]" class="form-control" placeholder="请输入分享文本" rows="5">{{$set['share']['title']}}</textarea>
                     <span class='help-block'>分享标题中支持变量，请双击下面变量，增加到内容尾部</span>
                     <span class='help-block title-key'><i>{昵称}</i><i>{年龄}</i><i>{颜值}</i><i>{超越百分比}</i></span>
                 </div>
@@ -48,6 +50,24 @@
                 <div class="col-sm-9 col-xs-12">
                     {!! app\common\helpers\ImageHelper::tplFormFieldImage('setdata[share][image][addition]', $set['share']['image']['addition'])!!}
                     <span class='help-block'>元素图修改后，需要后端开发人员修改程序，确认背景图上叠加的元素内容及其定位</span>
+                </div>
+            </div>
+
+            <hr>
+            <div><b>无数据时的分享:</b></div>
+
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label">分享标题</label>
+                <div class="col-sm-9 col-xs-12">
+                    <textarea name="setdata[share][title-none]" class="form-control" placeholder="请输入分享文本" rows="5">{{$set['share']['title-none']}}</textarea>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label">分享图片</label>
+                <div class="col-sm-9 col-xs-12">
+                    {!! app\common\helpers\ImageHelper::tplFormFieldImage('setdata[share][image-none]', $set['share']['image-none'])!!}
                 </div>
             </div>
 
