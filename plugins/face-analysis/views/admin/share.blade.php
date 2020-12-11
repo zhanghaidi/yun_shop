@@ -53,6 +53,16 @@
                 </div>
             </div>
 
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label">所用COS源站域名</label>
+                <div class="col-sm-9 col-xs-12">
+                    <input type="text" name="setdata[share][image][domain]" class="form-control" value="{{$set['share']['image']['domain']}}" placeholder="请输入数据万象源站域名">
+                    <span class='help-block'>水印图片与源图片必须位于同一个存储桶下</span>
+                    <span class='help-block'>URL 需使用数据万象源站域名（不能使用 CDN 加速、COS 源站域名），例如examplebucket-1250000000.image.myqcloud.com属于 CDN 加速域名，不能在水印 URL 中使用</span>
+                    <span class='help-block'>URL 必须以http://开始，不能省略 HTTP 头，也不能填 HTTPS 头，例如examplebucket-1250000000.cos.ap-shanghai.myqcloud.com/shuiyin_2.png，https://examplebucket-1250000000.cos.ap-shanghai.myqcloud.com/shuiyin_2.png 为非法的水印 URL</span>
+                </div>
+            </div>
+
             <hr>
             <div><b>无数据时的分享:</b></div>
 
