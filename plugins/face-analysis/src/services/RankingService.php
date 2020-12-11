@@ -127,10 +127,12 @@ class RankingService
                 }
             }
         }
-        $userRs[] = [
-            'type' => 0,
-            'beauty' => $userRs[0]['beauty'],
-        ];
+        if (isset($userRs[0]['beauty'])) {
+            $userRs = array_merge([[
+                'type' => 0,
+                'beauty' => $userRs[0]['beauty'],
+            ]], $userRs);
+        }
 
         // 如果 魅力 传值，以传值为排行依据
         if ($beauty > 0) {
@@ -151,11 +153,13 @@ class RankingService
                 'status' => 1,
             ]);
             if ($v['type'] == 0) {
-                $totalRs = $totalRs->groupBy('member_id');
+                $totalRs = $totalRs->select('id')->groupBy('member_id')
+                    ->get()->toArray();
+                $totalRs = count($totalRs);
             } else {
-                $totalRs = $totalRs->where('type', $v['type']);
+                $totalRs = $totalRs->where('type', $v['type'])
+                    ->count();
             }
-            $totalRs = $totalRs->count();
 
             $afterRs = FaceBeautyRankingModel::where([
                 'uniacid' => $serviceId,
@@ -163,15 +167,20 @@ class RankingService
                 'status' => 1,
             ]);
             if ($v['type'] == 0) {
-                $afterRs = $afterRs->groupBy('member_id');
+                $afterRs = $afterRs->groupBy('member_id')
+                    ->where('beauty', '<=', $v['beauty'])
+                    ->get()->toArray();
+                $afterRs = count($afterRs);
             } else {
-                $afterRs = $afterRs->where('type', $v['type']);
+                $afterRs = $afterRs->where('type', $v['type'])
+                    ->where('beauty', '<=', $v['beauty'])->count();
             }
-            $afterRs = $afterRs->where('beauty', '<=', $v['beauty'])->count();
 
             $userRs[$k]['ranking'] = $totalRs - $afterRs;
             if ($userRs[$k]['ranking'] <= 0) {
                 $userRs[$k]['ranking'] = 1;
+            } else {
+                $userRs[$k]['ranking'] += 1;
             }
 
             $beautyEqualList = FaceBeautyRankingModel::select('id', 'member_id')->where([
