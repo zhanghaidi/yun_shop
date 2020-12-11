@@ -1,5 +1,7 @@
 <?php
 
+// https://cloud.tencent.com/document/product/1246/45371
+
 namespace Yunshop\FaceAnalysis\api;
 
 
@@ -220,7 +222,9 @@ class AnalysisController extends ApiController
         $shareSetRs = Setting::get($faceAnalysisService->get('label') . '.share');
         if (
             !isset($shareSetRs['title']) || !isset($shareSetRs['image']) ||
-            empty($shareSetRs['title']) || empty($shareSetRs['image'])
+            empty($shareSetRs['title']) || !isset($shareSetRs['image']['main']) ||
+            !isset($shareSetRs['image']['addition']) || empty($shareSetRs['image']['main']) ||
+            empty($shareSetRs['image']['addition'])
         ) {
             return $this->errorJson('分享配置获取错误');
         }
@@ -230,22 +234,79 @@ class AnalysisController extends ApiController
         $shareSetRs['title'] = str_replace('{超越百分比}', $rankPercent . '%', $shareSetRs['title']);
 
         // 底图
-        $url = yz_tomedia($shareSetRs['image']) . '?';
+        $url = yz_tomedia($shareSetRs['image']['main']) . '?';
 
-        // 超越
+        // 分值
         $url .= 'watermark/2/text/';
-        $url .= TencentCIService::safeBase64($rankPercent . '%');
-        $url .= '/font/' . TencentCIService::safeBase64('simhei黑体.ttf');
-        $url .= '/fontsize/45';
-        $url .= '/fill/' . TencentCIService::safeBase64('#FF622D');
-        $url .= '/dissolve/100/gravity/northwest';
-        if ($rankPercent < 10) {
-            $url .= '/dx/135/dy/231';
-        } elseif ($rankPercent < 100) {
-            $url .= '/dx/125/dy/231';
+        $url .= TencentCIService::safeBase64($logRs->beauty);
+        $url .= '/font/' . TencentCIService::safeBase64('STHeiti Light华文黑体.ttc');
+        if ($logRs->beauty >= 100) {
+            $url .= '/fontsize/168';
         } else {
-            $url .= '/dx/115/dy/231';
+            $url .= '/fontsize/188';
         }
+        $url .= '/fill/' . TencentCIService::safeBase64('#FFED46');
+        $url .= '/dissolve/100/gravity/northwest';
+        if ($logRs->beauty >= 100) {
+            $url .= '/dx/50/dy/150';
+        } elseif ($logRs->beauty <= 10) {
+            $url .= '/dx/60/dy/135';
+        } else {
+            $url .= '/dx/60/dy/135';
+        }
+
+        // 分
+        $url .= '|watermark/2/text/';
+        $url .= TencentCIService::safeBase64('分');
+        $url .= '/font/' . TencentCIService::safeBase64('STHeiti Light华文黑体.ttc');
+        $url .= '/fontsize/75';
+        $url .= '/fill/' . TencentCIService::safeBase64('#FFED46');
+        $url .= '/dissolve/100/gravity/northwest';
+        if ($logRs->beauty >= 100) {
+            $url .= '/dx/360/dy/250';
+        } elseif ($logRs->beauty < 10) {
+            $url .= '/dx/195/dy/250';
+        } else {
+            $url .= '/dx/290/dy/250';
+        }
+
+        // 超越了X%的人
+        $chaoyue = yz_tomedia($shareSetRs['image']['addition']);
+        $chaoyue = str_replace('https://', 'http://', $chaoyue) . '?';
+        $chaoyue .= 'watermark/2/text/';
+        $chaoyue .= TencentCIService::safeBase64($rankPercent . '%');
+        $chaoyue .= '/font/' . TencentCIService::safeBase64('STHeiti Light华文黑体.ttc');
+        if ($rankPercent >= 100) {
+            $chaoyue .= '/fontsize/25';
+        } else {
+            $chaoyue .= '/fontsize/30';
+        }
+        $chaoyue .= '/fill/' . TencentCIService::safeBase64('#FD612B');
+        $chaoyue .= '/dissolve/100/gravity/northwest';
+        if ($rankPercent >= 100) {
+            $chaoyue .= '/dx/120/dy/16';
+        } elseif ($rankPercent < 10) {
+            $chaoyue .= '/dx/130/dy/12';
+        } else {
+            $chaoyue .= '/dx/125/dy/12';
+        }
+        $url .= '|watermark/1/image/';
+        $url .= TencentCIService::safeBase64($chaoyue);
+        $url .= '/gravity/northwest';
+        if ($logRs->beauty >= 100) {
+            $url .= '/dx/360/dy/186';
+        } elseif ($logRs->beauty < 10) {
+            $url .= '/dx/195/dy/186';
+        } else {
+            $url .= '/dx/290/dy/186';
+        }
+
+        return $this->successJson('成功', [
+            'title' => $shareSetRs['title'],
+            'image' => $url
+        ]);
+
+        // 以下生成信息暂时保留，有对用户头像、昵称的处理，以及长度条的处理；保留用于后续可能的参考
 
         // 头像
         if (isset($memberRs['avatar']) && !empty($memberRs['avatar'])) {
