@@ -127,6 +127,10 @@ class RankingService
                 }
             }
         }
+        $userRs[] = [
+            'type' => 0,
+            'beauty' => $userRs[0]['beauty'],
+        ];
 
         // 如果 魅力 传值，以传值为排行依据
         if ($beauty > 0) {
@@ -144,16 +148,22 @@ class RankingService
             $totalRs = FaceBeautyRankingModel::where([
                 'uniacid' => $serviceId,
                 'label' => $label,
-                'type' => $v['type'],
                 'status' => 1,
-            ])->count();
+            ]);
+            if ($v['type'] != 0) {
+                $totalRs = $totalRs->where('type', $v['type']);
+            }
+            $totalRs = $totalRs->count();
 
             $afterRs = FaceBeautyRankingModel::where([
                 'uniacid' => $serviceId,
                 'label' => $label,
-                'type' => $v['type'],
                 'status' => 1,
-            ])->where('beauty', '<=', $v['beauty'])->count();
+            ]);
+            if ($v['type'] != 0) {
+                $afterRs = $afterRs->where('type', $v['type']);
+            }
+            $afterRs = $afterRs->where('beauty', '<=', $v['beauty'])->count();
 
             $userRs[$k]['ranking'] = $totalRs - $afterRs;
             if ($userRs[$k]['ranking'] <= 0) {
