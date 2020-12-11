@@ -96,4 +96,23 @@ class FaceAnalysisSetController extends BaseController
             'pluginName' => $faceAnalysis->get(),
         ]);
     }
+
+    public function rule()
+    {
+        $faceAnalysis = new FaceAnalysisService();
+        $set = Setting::getByGroup($faceAnalysis->get('label'));
+
+        $requestData = \YunShop::request()->setdata;
+        if ($requestData) {
+            $result = SetService::storeSet($requestData);
+            if ($result === true) {
+                return $this->message('保存设置成功', Url::absoluteWeb('plugin.face-analysis.admin.face-analysis-set.rule'));
+            }
+            return $this->error($result);
+        }
+        return view('Yunshop\FaceAnalysis::admin.rule', [
+            'set' => $set,
+            'pluginName' => $faceAnalysis->get(),
+        ]);
+    }
 }
