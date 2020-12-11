@@ -46,7 +46,7 @@ class AnalysisController extends ApiController
         $integralService = new IntegralService;
         $costRs = $integralService->getConsumeAndGain(\YunShop::app()->uniacid, $userRs->uid);
         if ($userRs->credit1 < $costRs['consume']) {
-            return $this->errorJson('您的健康金不足', $userRs->credit1);
+            return $this->errorJson('您的健康金不足', ['error'=>'1']);
         }
 
         $faceAnalysisService = new FaceAnalysisService();
@@ -55,7 +55,7 @@ class AnalysisController extends ApiController
         $needPhone = Setting::get($faceAnalysisService->get('label') . '.need_phone');
         if ($needPhone == 1) {
             if (empty($userRs->mobile)) {
-                return $this->errorJson('请先补充完善您的手机号码', $userRs->mobile);
+                return $this->errorJson('请先补充完善您的手机号码', ['error'=>'2']);
             }
         }
 
@@ -69,7 +69,7 @@ class AnalysisController extends ApiController
                 ->where('member_id', $userRs->uid)
                 ->where('created_at', '>=', $timeLimit)->count();
             if ($numberLimit >= $frequencySet['number']) {
-                return $this->errorJson('检测次数过于频繁，请稍后再试', $numberLimit);
+                return $this->errorJson('检测次数过于频繁，请稍后再试', ['error'=>'3']);
             }
         }
 
@@ -226,6 +226,11 @@ class AnalysisController extends ApiController
             !isset($shareSetRs['image']['addition']) || empty($shareSetRs['image']['main']) ||
             empty($shareSetRs['image']['addition'])
         ) {
+            return $this->successJson('成功', [
+                'title' => isset($shareSetRs['title-none']) ? $shareSetRs['title-none'] : '',
+                'image' => isset($shareSetRs['image-none']) ? $shareSetRs['image-none'] : ''
+            ]);
+
             return $this->errorJson('分享配置获取错误');
         }
         $shareSetRs['title'] = str_replace('{昵称}', $memberRs['nickname'], $shareSetRs['title']);
