@@ -5,9 +5,10 @@ namespace Yunshop\FaceAnalysis\admin;
 use app\common\components\BaseController;
 use app\common\facades\Setting;
 use app\common\helpers\Url;
+use Illuminate\Support\Facades\DB;
 use Yunshop\FaceAnalysis\models\FaceBeautyRankingModel;
-use Yunshop\FaceAnalysis\services\SetService;
 use Yunshop\FaceAnalysis\services\FaceAnalysisService;
+use Yunshop\FaceAnalysis\services\SetService;
 
 class FaceAnalysisSetController extends BaseController
 {
@@ -102,6 +103,13 @@ class FaceAnalysisSetController extends BaseController
         $faceAnalysis = new FaceAnalysisService();
         $set = Setting::getByGroup($faceAnalysis->get('label'));
 
+        $snsRs = DB::table('diagnostic_service_sns_board')
+            ->select('id', 'name')
+            ->where('status', 1)
+            ->orderBy('list_order', 'desc')
+            ->orderBy('id', 'asc')
+            ->get()->toArray();
+
         $requestData = \YunShop::request()->setdata;
         if ($requestData) {
             $result = SetService::storeSet($requestData);
@@ -113,6 +121,7 @@ class FaceAnalysisSetController extends BaseController
         return view('Yunshop\FaceAnalysis::admin.rule', [
             'set' => $set,
             'pluginName' => $faceAnalysis->get(),
+            'sns' => $snsRs,
         ]);
     }
 }

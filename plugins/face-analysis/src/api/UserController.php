@@ -2,21 +2,11 @@
 
 namespace Yunshop\FaceAnalysis\api;
 
-
 use app\common\components\ApiController;
 use app\common\facades\Setting;
-use app\common\models\Member;
-use app\common\services\finance\PointService;
-use app\frontend\modules\member\controllers\ServiceController;
-use Exception;
-use Illuminate\Support\Facades\DB;
 use Yunshop\FaceAnalysis\models\FaceAnalysisLogModel;
-use Yunshop\FaceAnalysis\models\FaceBeautyRankingModel;
-use Yunshop\FaceAnalysis\services\AnalysisService;
 use Yunshop\FaceAnalysis\services\FaceAnalysisService;
 use Yunshop\FaceAnalysis\services\IntegralService;
-use Yunshop\FaceAnalysis\services\RankingService;
-use Yunshop\FaceAnalysis\Events\NewAnalysisSubmit;
 
 class UserController extends ApiController
 {
@@ -101,6 +91,13 @@ class UserController extends ApiController
         } else {
             $return['frequency_number'] = 0;
         }
+        $set = Setting::get($faceAnalysisService->get('label') . '.sns');
+        if (isset($set['id'])) {
+            $return['sns_id'] = $set['id'];
+        } else {
+            $return['sns_id'] = 0;
+        }
+
         return $this->successJson('成功', $return);
     }
 }
