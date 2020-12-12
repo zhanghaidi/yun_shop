@@ -51,7 +51,9 @@ class AnalysisController extends ApiController
 
         $needPhone = Setting::get($faceAnalysisService->get('label') . '.need_phone');
         if ($needPhone == 1) {
-            if (empty($userRs->mobile)) {
+            $sUserRs = DB::table('diagnostic_service_user')->select('id', 'telephone')
+                ->where('ajy_uid', $userRs->uid)->first();
+            if (!isset($sUserRs['telephone']) || empty($sUserRs['telephone'])) {
                 return $this->errorJson('请先补充完善您的手机号码', ['error' => '2']);
             }
         }
@@ -85,7 +87,7 @@ class AnalysisController extends ApiController
             !isset($faceRs['code']) || $faceRs['code'] != 0 ||
             !isset($faceRs['data'])
         ) {
-            return $this->errorJson(isset($faceRs['msg']) ? $faceRs['msg'] : '未知错误', '', ['error' => 4]);
+            return $this->errorJson(isset($faceRs['msg']) ? $faceRs['msg'] : '未知错误', ['error' => 4]);
         }
         $faceRs = $faceRs['data'];
         if (!isset($faceRs['X']) || !isset($faceRs['FaceAttributesInfo'])) {
@@ -169,6 +171,8 @@ class AnalysisController extends ApiController
 
         $rankRs = (new RankingService())->getUserRanking($log->uniacid, $log->member_id, $log->label, $log->beauty);
 
+        $costRs = $integralService->getConsumeAndGain($log->uniacid, $log->member_id);
+
         return $this->successJson('ok', [
             'gender' => $log->gender,
             'age' => $log->age,
@@ -176,6 +180,7 @@ class AnalysisController extends ApiController
             'rank' => $rankRs,
             'consume' => $log->cost,
             'gain' => $log->gain,
+            'consume_next' => $costRs['consume'],
         ]);
     }
 
