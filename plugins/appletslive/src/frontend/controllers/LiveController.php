@@ -1013,8 +1013,11 @@ class LiveController extends BaseController
         }
         $numdata = CacheService::getReplayNum($replay_id);
         // $my_watch = ($this->user_id ? CacheService::getUserWatch($this->user_id) : []);
-        $replay_info['is_share'] = Room::getIsShareAttribute($replay_info);
-        unset($replay_info['display_type']);
+
+        $room = CacheService::getRoomInfo($replay_info['room_id']);
+        $replay_info['is_share'] = Room::getIsShareAttribute($room);
+        unset($replay_info['room_id']);
+        
         $replay_info['hot_num'] = $numdata['hot_num'];
         $replay_info['view_num'] = $numdata['view_num'];
         $replay_info['comment_num'] = $numdata['comment_num'];
