@@ -505,12 +505,19 @@ class CacheService
         $cache_key = self::$cache_keys['recorded.roomreplayinfo'];
         $cache_val = Cache::get($cache_key);
         $info = DB::table('yz_appletslive_replay')
-            ->select('id', 'rid', 'type', 'title', 'intro', 'cover_img', 'media_url', 'publish_time', 'time_long')
+            ->select('id', 'rid', 'room_id', 'type', 'title', 'intro', 'cover_img', 'media_url', 'publish_time', 'time_long')
             ->where('id', $replay_id)
             ->first();
         $info['minute'] = floor($info['time_long'] / 60);
         $info['second'] = $info['time_long'] % 60;
         $info['publish_time'] = date('Y-m-d H:i:s', $info['publish_time']);
+        if (isset($info['room_id'])) {
+            $roomRs = DB::table('yz_appletslive_room')->select('id','display_type')
+                ->where('id', $info['room_id'])->first();
+            $info['display_type'] = $roomRs['display_type'];
+        }
+        unset($info['room_id']);
+
         if ($cache_val) {
             $cache_val = [];
         }
