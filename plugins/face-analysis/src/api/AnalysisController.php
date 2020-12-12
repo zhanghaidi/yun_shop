@@ -85,11 +85,11 @@ class AnalysisController extends ApiController
             !isset($faceRs['code']) || $faceRs['code'] != 0 ||
             !isset($faceRs['data'])
         ) {
-            return $this->errorJson(isset($faceRs['msg']) ? $faceRs['msg'] : '未知错误', '');
+            return $this->errorJson(isset($faceRs['msg']) ? $faceRs['msg'] : '未知错误', '', ['error' => 4]);
         }
         $faceRs = $faceRs['data'];
         if (!isset($faceRs['X']) || !isset($faceRs['FaceAttributesInfo'])) {
-            return $this->errorJson('人脸检测分析数据解析错误', $faceRs);
+            return $this->errorJson('人脸检测分析数据解析错误', ['error' => 4]);
         }
 
         DB::beginTransaction();
