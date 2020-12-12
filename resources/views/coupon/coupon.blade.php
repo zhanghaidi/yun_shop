@@ -125,6 +125,15 @@
                 }
                 return true;
             })
+
+            $('input[name="coupon[use_type]"]').change(function(){
+                _type = $('input[name="coupon[use_type]"]:checked').val();
+                if (_type != 2) {
+                    $('.jump_switch_form').hide();
+                } else {
+                    $('.jump_switch_form').show();
+                }
+            });
         })
 
         {{--搜索分类--}}
