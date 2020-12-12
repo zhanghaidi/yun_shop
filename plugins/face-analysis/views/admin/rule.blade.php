@@ -33,6 +33,20 @@
                 </div>
             </div>
 
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label" style="width: 10%">讨论社区</label>
+                <div class="col-sm-9 col-xs-12">
+                    <div class="input-group">
+                        <select name="setdata[sns][id]" class="form-control">
+                            <option value="">请选择讨论社区</option>
+                            @foreach($sns as $value)
+                            <option value="{{$value['id']}}" @if($set['sns']['id'] == $value['id']) selected="selected" @endif>{{$value['name']}}</option>
+                            @endforeach 
+                        </select>
+                    </div>
+                </div>
+            </div>
+
 
             <div class="form-group">
                 <label class="col-sm-2 control-label"></label>
