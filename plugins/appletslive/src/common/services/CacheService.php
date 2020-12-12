@@ -511,12 +511,6 @@ class CacheService
         $info['minute'] = floor($info['time_long'] / 60);
         $info['second'] = $info['time_long'] % 60;
         $info['publish_time'] = date('Y-m-d H:i:s', $info['publish_time']);
-        if (isset($info['room_id'])) {
-            $roomRs = DB::table('yz_appletslive_room')->select('id','display_type')
-                ->where('id', $info['room_id'])->first();
-            $info['display_type'] = $roomRs['display_type'];
-        }
-        unset($info['room_id']);
 
         if ($cache_val) {
             $cache_val = [];
