@@ -171,6 +171,8 @@ class AnalysisController extends ApiController
 
         $rankRs = (new RankingService())->getUserRanking($log->uniacid, $log->member_id, $log->label, $log->beauty);
 
+        $costRs = $integralService->getConsumeAndGain($log->uniacid, $log->member_id);
+
         return $this->successJson('ok', [
             'gender' => $log->gender,
             'age' => $log->age,
@@ -178,6 +180,7 @@ class AnalysisController extends ApiController
             'rank' => $rankRs,
             'consume' => $log->cost,
             'gain' => $log->gain,
+            'consume_next' => $costRs['consume'],
         ]);
     }
 
