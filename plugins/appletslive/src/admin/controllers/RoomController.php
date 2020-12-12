@@ -127,7 +127,6 @@ class RoomController extends BaseController
     public function edit()
     {
         if (request()->isMethod('post')) {
-
             $param = request()->all();
             $upd_data = ['sort' => intval($param['sort'])];
             if (array_key_exists('name', $param)) { // 房间名
@@ -148,7 +147,7 @@ class RoomController extends BaseController
                 return $this->message('名称已存在', Url::absoluteWeb(''), 'danger');
             }
 
-//            {{--fixby-wk-课程设置精选 20201019--}}
+            // {{--fixby-wk-课程设置精选 20201019--}}
             if($room['type'] == 1){//课程状态 0筹备中 1更新中 2已完结
                 //{{--fixby-wk-课程付费 20201124 一个课程只能关联一个商品--}}
                 if ($param['goods_id'] > 0) {
@@ -186,6 +185,9 @@ class RoomController extends BaseController
                     $upd_data['ios_open'] = 0;
                 }
             }
+
+            $upd_data['display_type'] = Room::setDisplayStatus($param);
+
             DB::table('yz_appletslive_room')->where('id', $id)->update($upd_data);
 
             // 刷新接口数据缓存
@@ -202,6 +204,8 @@ class RoomController extends BaseController
 
         $id = request()->get('id', 0);
         $info = DB::table('yz_appletslive_room')->where('id', $id)->first();
+        $info['is_display'] = Room::getIsDisplayAttribute($info);
+        $info['is_share'] = Room::getIsShareAttribute($info);
 
         if (!$info) {
             return $this->message('无效的ID', Url::absoluteWeb(''), 'danger');
@@ -241,7 +245,7 @@ class RoomController extends BaseController
             if (DB::table('yz_appletslive_room')->where('name', $ist_data['name'])->first()) {
                 return $this->message('课程名称已存在', Url::absoluteWeb(''), 'danger');
             }
-//            {{--fixby-wk-课程设置精选 20201019--}}
+            // {{--fixby-wk-课程设置精选 20201019--}}
             if($param['type'] == 1){//课程状态 0筹备中 1更新中 2已完结
                 //{{--fixby-wk-课程付费 20201124 一个课程只能关联一个商品--}}
                 if ($param['goods_id'] > 0) {
@@ -279,6 +283,8 @@ class RoomController extends BaseController
                     $ist_data['ios_open'] = 0;
                 }
             }
+
+            $ist_data['display_type'] = Room::setDisplayStatus($param);
 
             DB::table('yz_appletslive_room')->insert($ist_data);
 
