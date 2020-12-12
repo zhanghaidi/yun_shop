@@ -93,7 +93,8 @@ class LiveRoomController extends ApiController
         $_model->push_url = '';
 
         $im_service = new IMService();
-        $_model->online_num = $im_service->getOnlineMemberNum($_model->group_id);
+//        $_model->online_num = $im_service->getOnlineMemberNum($_model->group_id);
+        $_model->online_num = 0;
         $_model->goods = $_model->goods(false);
         $_model->quick_comment = array_column(DB::table('diagnostic_service_quick_comment')->select('content')->where([['type','=',7],['status','=',1]])->orderby('id','desc')->get()->toArray(),'content');
 
