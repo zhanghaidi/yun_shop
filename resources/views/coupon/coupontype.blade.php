@@ -438,6 +438,20 @@
     </div>
 </div>
 
+<div class="form-group jump_switch_form">
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label">点击优惠券跳转</label>
+    <div class="col-sm-9 col-xs-12" >
+        <label class="radio-inline">
+            <input type="radio" name="coupon[jump_switch]" value="1" @if($coupon['jump_switch'] === 0 || $coupon['jump_switch'] === 1) checked @endif /> 商品详情页
+        </label>
+        <label class="radio-inline">
+            <input type="radio" name="coupon[jump_switch]" value="2" @if($coupon['jump_switch'] === 2)checked="true" @endif /> 商品购买页
+        </label>
+        <span class='help-block'>仅适用于虚拟商品(课程)类商品的跳转</span>
+
+    </div>
+</div>
+
 <div class="form-group">
     <label class="col-xs-12 col-sm-3 col-md-2 control-label">是否可领取</label>
     <div class="col-sm-9 col-xs-12" >
