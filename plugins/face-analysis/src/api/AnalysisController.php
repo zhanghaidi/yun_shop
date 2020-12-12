@@ -4,22 +4,19 @@
 
 namespace Yunshop\FaceAnalysis\api;
 
-
 use app\common\components\ApiController;
 use app\common\facades\Setting;
 use app\common\models\Member;
 use app\common\services\finance\PointService;
-use app\frontend\modules\member\controllers\ServiceController;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Yunshop\FaceAnalysis\Events\NewAnalysisSubmit;
 use Yunshop\FaceAnalysis\models\FaceAnalysisLogModel;
-use Yunshop\FaceAnalysis\models\FaceBeautyRankingModel;
 use Yunshop\FaceAnalysis\services\AnalysisService;
 use Yunshop\FaceAnalysis\services\FaceAnalysisService;
 use Yunshop\FaceAnalysis\services\IntegralService;
 use Yunshop\FaceAnalysis\services\RankingService;
 use Yunshop\FaceAnalysis\services\TencentCIService;
-use Yunshop\FaceAnalysis\Events\NewAnalysisSubmit;
 
 class AnalysisController extends ApiController
 {
@@ -46,7 +43,7 @@ class AnalysisController extends ApiController
         $integralService = new IntegralService;
         $costRs = $integralService->getConsumeAndGain(\YunShop::app()->uniacid, $userRs->uid);
         if ($userRs->credit1 < $costRs['consume']) {
-            return $this->errorJson('您的健康金不足', ['error'=>'1']);
+            return $this->errorJson('您的健康金不足', ['error' => '1']);
         }
 
         $faceAnalysisService = new FaceAnalysisService();
@@ -55,7 +52,7 @@ class AnalysisController extends ApiController
         $needPhone = Setting::get($faceAnalysisService->get('label') . '.need_phone');
         if ($needPhone == 1) {
             if (empty($userRs->mobile)) {
-                return $this->errorJson('请先补充完善您的手机号码', ['error'=>'2']);
+                return $this->errorJson('请先补充完善您的手机号码', ['error' => '2']);
             }
         }
 
@@ -69,7 +66,7 @@ class AnalysisController extends ApiController
                 ->where('member_id', $userRs->uid)
                 ->where('created_at', '>=', $timeLimit)->count();
             if ($numberLimit >= $frequencySet['number']) {
-                return $this->errorJson('检测次数过于频繁，请稍后再试', ['error'=>'3']);
+                return $this->errorJson('检测次数过于频繁，请稍后再试', ['error' => '3']);
             }
         }
 
@@ -138,7 +135,7 @@ class AnalysisController extends ApiController
                     'point_mode' => PointService::POINT_MODE_FACE_ANALYSIS_CONSUME,
                     'member_id' => $log->member_id,
                     'point' => $costRs['consume'],
-                    'remark' => ''
+                    'remark' => '',
                 ];
                 $point = new PointService($pointData);
                 $pointRs = $point->changePoint();
@@ -152,7 +149,7 @@ class AnalysisController extends ApiController
                     'point_mode' => PointService::POINT_MODE_FACE_ANALYSIS_GAIN,
                     'member_id' => $log->member_id,
                     'point' => $costRs['gain'],
-                    'remark' => ''
+                    'remark' => '',
                 ];
                 $point = new PointService($pointData);
                 $pointRs = $point->changePoint();
@@ -228,7 +225,7 @@ class AnalysisController extends ApiController
         ) {
             return $this->successJson('成功', [
                 'title' => isset($shareSetRs['title-none']) ? $shareSetRs['title-none'] : '',
-                'image' => isset($shareSetRs['image-none']) ? $shareSetRs['image-none'] : ''
+                'image' => isset($shareSetRs['image-none']) ? $shareSetRs['image-none'] : '',
             ]);
 
             return $this->errorJson('分享配置获取错误');
@@ -276,7 +273,7 @@ class AnalysisController extends ApiController
         }
 
         // 超越了X%的人
-        $chaoyue = yz_tomedia($shareSetRs['image']['addition']);
+        $chaoyue = rtrim($shareSetRs['image']['domain'], '/') . '/' . $shareSetRs['image']['addition'];
         $chaoyue = str_replace('https://', 'http://', $chaoyue) . '?';
         $chaoyue .= 'watermark/2/text/';
         $chaoyue .= TencentCIService::safeBase64($rankPercent . '%');
@@ -308,7 +305,7 @@ class AnalysisController extends ApiController
 
         return $this->successJson('成功', [
             'title' => $shareSetRs['title'],
-            'image' => $url
+            'image' => $url,
         ]);
 
         // 以下生成信息暂时保留，有对用户头像、昵称的处理，以及长度条的处理；保留用于后续可能的参考
@@ -398,7 +395,7 @@ class AnalysisController extends ApiController
 
         return $this->successJson('成功', [
             'title' => $shareSetRs['title'],
-            'image' => $url
+            'image' => $url,
         ]);
     }
 }
