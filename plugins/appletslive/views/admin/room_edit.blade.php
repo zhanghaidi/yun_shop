@@ -93,6 +93,28 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">在列表、搜索显示</label>
+                        <div class="col-sm-9 col-xs-12 col-md-11">
+                            <label class="radio-inline">
+                                <input type="radio" name="is_display" value="1" @if($info['is_display'] == 1) checked="checked" @endif /> 显示
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="is_display" value="2" @if($info['is_display'] == 2) checked="checked" @endif  />隐藏
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">分享控制</label>
+                        <div class="col-sm-9 col-xs-12 col-md-11">
+                            <label class="radio-inline">
+                                <input type="radio" name="is_share" value="1" @if($info['is_share'] == 1) checked="checked" @endif /> 可以分享
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="is_share" value="2" @if($info['is_share'] == 2) checked="checked" @endif  /> 不能分享
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-1 control-label">课程介绍</label>
                         <div class="col-sm-9 col-xs-12 col-md-11">
                             {!! yz_tpl_ueditor('desc', $info['desc']) !!}
