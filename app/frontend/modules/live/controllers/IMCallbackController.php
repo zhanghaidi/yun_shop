@@ -22,8 +22,7 @@ class IMCallbackController extends BaseController
      */
     public function index()
     {
-        $requestBody = file_get_contents("php://input");
-        \Log::info($requestBody);
+        //$requestBody = file_get_contents("php://input");
         $req_data = request()->input();
         $input_data = request()->getContent();
         \Log::debug('IMCallback req_data:' . json_encode($req_data, 320) . ' input_data:' . $input_data);
