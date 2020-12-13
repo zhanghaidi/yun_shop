@@ -1617,11 +1617,19 @@ class LiveController extends BaseController
     public function validateCourse()
     {
 
-        $room_id = request()->get('room_id');
+        $room_id = request()->get('room_id', 0);
+        $goods_id = request()->get('goods_id', 0);
+        $where = [];
+        if ($room_id) {
+            $where['id'] = $room_id;
+        }
+        if ($goods_id) {
+            $where['goods_id'] = $goods_id;
+        }
         $room_info = DB::table('yz_appletslive_room')
             ->select('id', 'name', 'buy_type', 'expire_time', 'goods_id')
             ->where('type', 1)
-            ->where('id', $room_id)
+            ->where($where)
             ->where('delete_time', 0)
             ->first();
 
@@ -1629,7 +1637,7 @@ class LiveController extends BaseController
         $is_expire = 1; //课程是否过期 0未过期 1过期了
         $course_expire = 0; //课程过期时间戳
 
-        if ($room_info['buy_type'] == 1) { //付费课程判断流程 免费课程不用判断
+        if (!empty($room_info) && $room_info['buy_type'] == 1) { //付费课程判断流程 免费课程不用判断
             //验证登录
             $this->needLogin();
             //验证是否购买过 是否有购买完成的订单
