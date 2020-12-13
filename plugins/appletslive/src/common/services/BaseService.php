@@ -302,9 +302,12 @@ class BaseService
             if ($str != $content) {
                 return false;
             }
+            return true;
+        }else{
+            return $str;
         }
 
-        return true;
+
     }
 
     public function getToken()
