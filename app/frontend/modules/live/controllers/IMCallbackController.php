@@ -22,6 +22,7 @@ class IMCallbackController extends BaseController
      */
     public function index()
     {
+        //$requestBody = file_get_contents("php://input");
         $req_data = request()->input();
         $input_data = request()->getContent();
         \Log::debug('IMCallback req_data:' . json_encode($req_data, 320) . ' input_data:' . $input_data);
@@ -52,8 +53,11 @@ class IMCallbackController extends BaseController
             } elseif (in_array($input_data['CallbackCommand'], ['Group.CallbackBeforeSendMsg'])) {
                 $extra['MsgBody'] = [];
                 foreach ($input_data['MsgBody'] as $v){
+
                     $insert_data = array_merge($data, $this->getMsgData($input_data,$v,$_model));
+                    \Log::info('Group.CallbackBeforeSendMsg' . json_encode($insert_data));
                     $text = $this->filterMsg($v['MsgContent']['Text']);
+                    \Log::info('Group.CallbackBeforeSendMsg' . $text);
                     $_model->fill($insert_data)->save();
                     $extra['MsgBody'][] = [
                         "MsgType" => $input_data['MsgBody'][0]['MsgType'], // 文本
@@ -103,10 +107,10 @@ class IMCallbackController extends BaseController
         $_model = new BaseService();
         $res_json = json_decode($text);
         if($res_json){
-            $res_json->text = $_model->textCheck($res_json->text);
+            $res_json->text = $_model->textCheck($res_json->text,false);
             return json_encode($res_json,320);
         }else{
-            return $_model->textCheck($text);
+            return $_model->textCheck($text,false);
         }
     }
 
