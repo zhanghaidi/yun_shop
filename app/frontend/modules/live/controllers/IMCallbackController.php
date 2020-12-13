@@ -108,10 +108,10 @@ class IMCallbackController extends BaseController
         $_model = new BaseService();
         $res_json = json_decode($text);
         if($res_json){
-            $res_json->text = $_model->textCheck($res_json->text);
+            $res_json->text = $_model->textCheck($res_json->text,false);
             return json_encode($res_json,320);
         }else{
-            return $_model->textCheck($text);
+            return $_model->textCheck($text,false);
         }
     }
 
