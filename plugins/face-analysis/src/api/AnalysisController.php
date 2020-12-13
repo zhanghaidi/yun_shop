@@ -136,7 +136,7 @@ class AnalysisController extends ApiController
                     'point_income_type' => PointService::POINT_INCOME_LOSE,
                     'point_mode' => PointService::POINT_MODE_FACE_ANALYSIS_CONSUME,
                     'member_id' => $log->member_id,
-                    'point' => $costRs['consume'],
+                    'point' => -$costRs['consume'],
                     'remark' => '',
                 ];
                 $point = new PointService($pointData);
