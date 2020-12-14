@@ -1,7 +1,6 @@
 <?php
 
 namespace app\common\models\live;
-;
 
 use Carbon\Carbon;
 use app\common\models\BaseModel;
@@ -77,6 +76,8 @@ class CloudLiveRoom extends BaseModel
             'group_id' => '直播群id',
             'group_name' => '直播群名称',
             'sort' => '排序',
+            'virtual_people' => '虚拟人数',
+            'virtual_num' => '虚拟倍数',
             'created_at' => '创建时间',
         ];
     }
@@ -101,6 +102,8 @@ class CloudLiveRoom extends BaseModel
             'push_url' => 'string',
             'pull_url' => 'string',
             'sort' => 'integer',
+            'virtual_people' => 'integer',
+            'virtual_num' => 'integer',
             'start_time' => 'required|integer',
             'end_time' => 'required|integer',
         ];
