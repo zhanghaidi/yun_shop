@@ -61,15 +61,15 @@ class IMLogController extends BaseController
     {
         $id = \YunShop::request()->id;
         if(empty($id)){
-            return $this->errorJson('id不能为空');
+            return $this->message('Id不能为空', '', 'error');
         }
         $res = ImCallbackLog::destroy($id);
 
         if(!$res){
-            return $this->errorJson('删除失败');
+            return $this->message('删除失败', '', 'error');
         }
 
-        return $this->successJson('删除成功');
+        return $this->message('删除成功', Url::absoluteWeb('live.IM-log.index'));
     }
 
 }
