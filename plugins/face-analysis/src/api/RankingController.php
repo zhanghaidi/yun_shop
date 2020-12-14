@@ -2,23 +2,16 @@
 
 namespace Yunshop\FaceAnalysis\api;
 
-
 use app\common\components\ApiController;
 use app\common\facades\Setting;
 use app\common\models\Member;
-use app\common\services\finance\PointService;
-use app\frontend\modules\member\controllers\ServiceController;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
-use Yunshop\FaceAnalysis\models\FaceAnalysisLogModel;
 use Yunshop\FaceAnalysis\models\FaceBeautyRankingLikeLogModel;
 use Yunshop\FaceAnalysis\models\FaceBeautyRankingModel;
-use Yunshop\FaceAnalysis\services\AnalysisService;
 use Yunshop\FaceAnalysis\services\FaceAnalysisService;
-use Yunshop\FaceAnalysis\services\IntegralService;
 use Yunshop\FaceAnalysis\services\RankingService;
-use Yunshop\FaceAnalysis\Events\NewAnalysisSubmit;
 
 class RankingController extends ApiController
 {
@@ -34,7 +27,6 @@ class RankingController extends ApiController
         if ($pageSize <= 0 || $pageSize > 100) {
             $pageSize = 10;
         }
-
 
         $faceAnalysisService = new FaceAnalysisService();
         $label = Setting::get($faceAnalysisService->get('label') . '.ranking_status');
@@ -73,9 +65,9 @@ class RankingController extends ApiController
             if ($memberId > 0) {
                 $likeRs = FaceBeautyRankingLikeLogModel::select('id', 'object_member_id')
                     ->whereIn('object_member_id', $memberIds)->where([
-                        'label' => $label,
-                        'member_id' => $memberId
-                    ])->get()->toArray();
+                    'label' => $label,
+                    'member_id' => $memberId,
+                ])->get()->toArray();
             } else {
                 $likeRs = [];
             }
@@ -106,7 +98,6 @@ class RankingController extends ApiController
         $baseRank = ($page - 1) * $pageSize + 1;
         foreach ($rankingRs as $k => $v) {
             $rankingRs[$k]['ranking'] = $baseRank + $k;
-            unset($rankingRs[$k]['member_id']);
         }
 
         if ($memberId > 0) {
@@ -128,11 +119,11 @@ class RankingController extends ApiController
                 unset($tempRank);
             }
 
-            if (isset($userRanking[0]['beauty'])) {
+            if (isset($userRanking['beauty'])) {
                 $userLike = FaceBeautyRankingModel::getList()->select('id', 'like')
                     ->where([
                         'member_id' => $memberId,
-                        'label' => $label
+                        'label' => $label,
                     ])->first();
             }
         }
@@ -157,7 +148,7 @@ class RankingController extends ApiController
 
         $infoRs = FaceBeautyRankingModel::getList()->select('id', 'label', 'member_id')->where([
             'id' => $id,
-            'status' => 1
+            'status' => 1,
         ])->first();
         if (!isset($infoRs->id)) {
             return $this->errorJson('参数错误 - 记录不存在', $id);
@@ -189,7 +180,7 @@ class RankingController extends ApiController
             $log->label = $infoRs->label;
             $log->save();
             if (!isset($log->id) || $log->id <= 0) {
-                throw new  Exception('点赞记录保存错误');
+                throw new Exception('点赞记录保存错误');
             }
 
             $listRs = FaceBeautyRankingModel::getList()->select('id', 'like')->where([
@@ -201,7 +192,7 @@ class RankingController extends ApiController
             $maxLike += 1;
             foreach ($listRs as $v) {
                 FaceBeautyRankingModel::where('id', $v['id'])->update([
-                    'like' => $maxLike
+                    'like' => $maxLike,
                 ]);
             }
 
