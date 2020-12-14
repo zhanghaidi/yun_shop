@@ -20,8 +20,6 @@ class SetService
             if ($array['consume_frequency'] <= 0) {
                 $array['consume_frequency'] = 0;
             }
-        } else {
-            $array['consume_frequency'] = 0;
         }
         if (isset($array['consume_number'])) {
             if ($array['consume_number'] <= 0) {
@@ -29,8 +27,6 @@ class SetService
             } elseif ($array['consume_number'] > 65535) {
                 $array['consume_number'] = 65535;
             }
-        } else {
-            $array['consume_number'] = 0;
         }
         if (isset($array['consume_surplus'])) {
             if ($array['consume_surplus'] <= 0) {
@@ -38,16 +34,12 @@ class SetService
             } elseif ($array['consume_surplus'] > 65535) {
                 $array['consume_surplus'] = 65535;
             }
-        } else {
-            $array['consume_surplus'] = 0;
         }
 
         if (isset($array['gain_frequency'])) {
             if ($array['gain_frequency'] <= 0) {
                 $array['gain_frequency'] = 0;
             }
-        } else {
-            $array['gain_frequency'] = 0;
         }
         if (isset($array['gain_number'])) {
             if ($array['gain_number'] <= 0) {
@@ -55,8 +47,6 @@ class SetService
             } elseif ($array['gain_number'] > 65535) {
                 $array['gain_number'] = 65535;
             }
-        } else {
-            $array['gain_number'] = 0;
         }
         if (isset($array['gain_surplus'])) {
             if ($array['gain_surplus'] <= 0) {
@@ -64,8 +54,6 @@ class SetService
             } elseif ($array['gain_surplus'] > 65535) {
                 $array['gain_surplus'] = 65535;
             }
-        } else {
-            $array['gain_surplus'] = 0;
         }
 
         foreach ($array as $key => $item) {
