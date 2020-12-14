@@ -75,6 +75,7 @@
                 <th style='width:6%;text-align: center;'>消息发送时间</th>
                 <th style='width:6%;text-align: center;'>创建时间</th>
                 <th style='width:6%;text-align: center;'>客户端IP地址</th>
+                <th>操作</th>
             </tr>
             </thead>
             <tbody>
@@ -90,6 +91,13 @@
                     <td style="text-align: center;">{{$row->msg_time}}</td>
                     <td style="text-align: center;">{{$row->created_at}}</td>
                     <td style="text-align: center;">{{$row->client_iP}}</td>
+                    <td style="text-align: center;">
+                        <a class='btn btn-warning'
+                           href="{{yzWebUrl('live.IM-log.deleted', ['id' => $row->id])}}"
+                           onclick="return confirm('确认删除此记录吗？');return false;"><i class="fa fa-remove"></i>
+                        </a>
+                    </td>
+
                 </tr>
 
             @endforeach
