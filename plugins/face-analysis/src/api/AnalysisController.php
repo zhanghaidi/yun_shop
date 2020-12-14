@@ -241,7 +241,7 @@ class AnalysisController extends ApiController
         $shareSetRs['title'] = str_replace('{超越百分比}', $rankPercent . '%', $shareSetRs['title']);
 
         // 底图
-        $url = yz_tomedia($shareSetRs['image']['main']) . '?';
+        $url = rtrim($shareSetRs['image']['domain'], '/') . '/' . $shareSetRs['image']['main'] . '?';
 
         // 分值
         $url .= 'watermark/2/text/';
