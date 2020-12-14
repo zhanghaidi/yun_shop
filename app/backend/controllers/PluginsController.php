@@ -242,10 +242,10 @@ class PluginsController extends BaseController
                 ->get();
             // dd($res);
 
-            // \Log::debug('-------update res-----', $res);
-            if (0 == $res['status']) {
+            // fixbyzhd-20201214-注释安装插件未授权提示
+            /*if (0 == $res['status']) {
                 throw new ShopException('应用未授权');
-            }
+            }*/
         }
     }
 
