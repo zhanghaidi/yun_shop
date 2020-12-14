@@ -56,4 +56,20 @@ class IMLogController extends BaseController
 
     }
 
+    //删除一条发言日志
+    public function deleted()
+    {
+        $id = \YunShop::request()->id;
+        if(empty($id)){
+            return $this->errorJson('id不能为空');
+        }
+        $res = ImCallbackLog::destroy($id);
+
+        if(!$res){
+            return $this->errorJson('删除失败');
+        }
+
+        return $this->successJson('删除成功');
+    }
+
 }
