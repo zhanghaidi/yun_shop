@@ -52,6 +52,8 @@
                         <th style='width:8%; text-align: center;'>直播开始时间</th>
                         <th style='width:8%; text-align: center;'>直播结束时间</th>
                         <th style='width:8%; text-align: center;'>直播状态</th>
+                        <th style='width:8%; text-align: center;'>虚拟人数</th>
+                        <th style='width:8%; text-align: center;'>虚拟倍数</th>
                         <th style='width:8%; text-align: center;'>添加时间</th>
                         <th style='width:15%; text-align: center;'>操作</th>
                     </tr>
@@ -68,11 +70,13 @@
                             <td>
                                 <a href='{{yz_tomedia($list->picture)}}' target='_blank'><img src="{{yz_tomedia($list->share_img)}}" style='width:100px;border:1px solid #ccc;padding:1px' /></a>
                             </td>
-                            <td>{{ $list->push_url }}</td>
-                            <td>{{ $list->pull_url }}</td>
+                            <td title="{{ $list->push_url }}">{{ $list->push_url }}</td>
+                            <td title="{{ $list->pull_url }}">{{ $list->pull_url }}</td>
                             <td>{{ $list->start_time }}</td>
                             <td>{{ $list->end_time }}</td>
                             <td><label class="label label-info">{{ $list->status_parse }}</label></td>
+                            <td>{{ $list->virtual_people }}</td>
+                            <td>{{ $list->virtual_num }}</td>
                             <td><span class='label label-default'>{{ $list->created_at }}</span></td>
                             <td>
                                 @if( $list->live_status == 101 ) <a class='btn btn-default' href="{{ yzWebUrl('live.live-room.stop', array('id' => $list->id)) }}" style="margin-bottom: 2px">结束直播</a>                                          @elseif($list->end_time > date('Y-m-d H:i:s')) <a class='btn btn-default' href="{{ yzWebUrl('live.live-room.start', array('id' => $list->id)) }}" style="margin-bottom: 2px">开始直播</a>

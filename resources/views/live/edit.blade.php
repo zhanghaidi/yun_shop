@@ -137,6 +137,14 @@
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">排序</label>
                             <div class="col-sm-9 col-xs-12"><input type="text" name="live[sort]" class="form-control" value="{{$live['sort'] ? $live['sort'] : 0}}" placeholder="请输入排序字段"/></div>
                         </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">虚拟人数</label>
+                            <div class="col-sm-9 col-xs-12"><input type="text" name="live[virtual_people]" class="form-control" value="{{$live['virtual_people'] ? $live['virtual_people'] : 0}}" placeholder="请输入直播间虚拟人数"/></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">虚拟倍数</label>
+                            <div class="col-sm-9 col-xs-12"><input type="text" name="live[virtual_num]" class="form-control" value="{{$live['virtual_num'] ? $live['virtual_num'] : 0}}" placeholder="请输入直播间虚拟倍数"/></div>
+                        </div>
 
                         <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">直播间状态</label>
