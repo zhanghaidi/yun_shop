@@ -96,8 +96,9 @@ class IMCallbackController extends BaseController
         if($msg_data['msg_type'] == 1){
             $msg_data['msg_content'] = $msg_body['MsgContent']['Text'];
         }elseif ($msg_data['msg_type'] == 4){
-            $msg_data['msg_content'] = $msg_body['MsgContent'];
+            $msg_data['msg_content'] = json_encode($msg_body['MsgContent']);
         }
+
         \Log::info('---------msg_data-------------' . json_encode($msg_data));
         return $msg_data;
     }

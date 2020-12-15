@@ -181,8 +181,12 @@ class ImCallbackLog extends BaseModel
     public function parseMsgContent($msg_content)
     {
         $res_josn = json_decode($msg_content);
-        if($res_josn && isset($res_josn->text)){
-            return $res_josn->text;
+        if($res_josn){
+            if(isset($res_josn->text)){
+                return $res_josn->text;
+            }else{
+                return $res_josn;
+            }
         }
         return $msg_content;
     }
