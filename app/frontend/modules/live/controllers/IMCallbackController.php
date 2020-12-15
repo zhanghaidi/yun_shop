@@ -50,6 +50,7 @@ class IMCallbackController extends BaseController
                 //发送信息前IM回调（可以用以内容过滤检测等）
                 foreach ($input_data['MsgBody'] as $v){
                     $insert_data = array_merge($data, $this->getMsgData($input_data,$v,$_model));
+
                     $_model->fill($insert_data)->save();
                 }
 
@@ -89,15 +90,15 @@ class IMCallbackController extends BaseController
             'Operator_Account' => empty($input_data['Operator_Account']) ? '' : $input_data['Operator_Account'],
             'msg_time' => $input_data['MsgTime'],
             'msg_type' => $_model->getMsgType($msg_body['MsgType']), //回调内容类型
-            //'msg_content' => $msg_body['MsgContent']['Text'],
+            'msg_content' => $msg_body['MsgContent']['Text'],
         ];
-        \Log::info('msg_type : ' . $msg_data['msg_type']);
+
         //根据回调类型获取回调内容
         if($msg_data['msg_type'] == 1){
             $msg_data['msg_content'] = $msg_body['MsgContent']['Text'];
-        }
-        if($msg_data['msg_type'] == 4)
+        }elseif ($msg_data['msg_type'] == 4){
             $msg_data['msg_content'] = $msg_body['MsgContent'];
+        }
         return $msg_data;
     }
 
