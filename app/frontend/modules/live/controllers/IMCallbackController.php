@@ -45,20 +45,25 @@ class IMCallbackController extends BaseController
                 'created_at' => time()
             ];
             $extra = [];
+
             if (in_array($input_data['CallbackCommand'], ['Group.CallbackAfterSendMsg'])) {
+                //发送信息前IM回调（可以用以内容过滤检测等）
                 foreach ($input_data['MsgBody'] as $v){
                     $insert_data = array_merge($data, $this->getMsgData($input_data,$v,$_model));
                     $_model->fill($insert_data)->save();
                 }
+
             } elseif (in_array($input_data['CallbackCommand'], ['Group.CallbackBeforeSendMsg'])) {
+                //发送信息前IM回调（可以用以内容过滤检测等）
                 $extra['MsgBody'] = [];
                 foreach ($input_data['MsgBody'] as $v){
 
                     $insert_data = array_merge($data, $this->getMsgData($input_data,$v,$_model));
                     \Log::info('Group.CallbackBeforeSendMsg' . json_encode($insert_data));
-                    $text = $this->filterMsg($v['MsgContent']['Text']);
+                    $text = $this->filterMsg($insert_data['msg_content']['text']);
                     \Log::info('Group.CallbackBeforeSendMsg' . $text);
                     $_model->fill($insert_data)->save();
+
                     $extra['MsgBody'][] = [
                         "MsgType" => $input_data['MsgBody'][0]['MsgType'], // 文本
                         "MsgContent" => [
@@ -83,9 +88,15 @@ class IMCallbackController extends BaseController
             'from_account' => $input_data['From_Account'],
             'Operator_Account' => empty($input_data['Operator_Account']) ? '' : $input_data['Operator_Account'],
             'msg_time' => $input_data['MsgTime'],
-            'msg_type' => $_model->getMsgType($msg_body['MsgType']),
-            'msg_content' => $msg_body['MsgContent']['Text'],
+            'msg_type' => $_model->getMsgType($msg_body['MsgType']), //回调内容类型
+            //'msg_content' => $msg_body['MsgContent']['Text'],
         ];
+        //根据回调类型获取回调内容
+        if($msg_data['msg_type'] == '文本消息'){
+            $msg_data['msg_content'] = $msg_body['MsgContent']['Text'];
+        }
+        if($msg_data['msg_type'] == '自定义消息')
+            $msg_data['msg_content'] = $msg_body['MsgContent'];
         return $msg_data;
     }
 
