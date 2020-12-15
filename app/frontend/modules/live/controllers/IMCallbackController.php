@@ -51,6 +51,10 @@ class IMCallbackController extends BaseController
                     $insert_data = array_merge($data, $this->getMsgData($input_data,$v,$_model));
                     \Log::info('Group.CallbackAfterSendMsg*************************$insert_data' . json_encode($insert_data));
                     $_model->fill($insert_data)->save();
+                    if($insert_data['msg_type'] == 4){
+                        $extra['MsgBody'] = $input_data['MsgBody'];
+                        return $this->responJson(0, 'OK', '', $extra);
+                    }
                 }
 
             } elseif (in_array($input_data['CallbackCommand'], ['Group.CallbackBeforeSendMsg'])) {
@@ -61,10 +65,7 @@ class IMCallbackController extends BaseController
                     $insert_data = array_merge($data, $this->getMsgData($input_data,$v,$_model));
                     if($insert_data['msg_type'] == 1){
                         $text = $this->filterMsg($v['MsgContent']['Text']);
-                    }elseif ($insert_data['msg_type'] == 4){
-                        $text = $v['MsgContent']['Desc'];
                     }
-
                     \Log::info('Group.CallbackBeforeSendMsg' . $text);
                     $_model->fill($insert_data)->save();
 
