@@ -96,8 +96,7 @@ class IMCallbackController extends BaseController
         //根据回调类型获取回调内容
         if($msg_data['msg_type'] == 1){
             $msg_data['msg_content'] = $msg_body['MsgContent']['Text'];
-        }
-        if($msg_data['msg_type'] == 4){
+        }elseif ($msg_data['msg_type'] == 4){
             $msg_data['msg_content'] = $msg_body['MsgContent'];
         }
         return $msg_data;
