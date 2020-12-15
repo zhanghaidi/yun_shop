@@ -70,6 +70,7 @@ class LiveRoomController extends BaseController
                         'push_url' => LiveService::getPushUrl($this->room_model->id,request()->live['time']['end']),
                         'pull_url' => LiveService::getPullUrl($this->room_model->id),
                     ];
+                    //创建直播对应的群聊IM群组
                     if(empty($this->room_model->group_id)){
                         $im_service = new IMService();
                         $res = $im_service->createGroup($this->room_model->id,$this->room_model->name);

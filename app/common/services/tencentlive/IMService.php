@@ -61,6 +61,7 @@ class IMService
         return json_decode($this->curl_post($url, $data), true);
     }
 
+    //创建群组API
     public function createGroup($room_id, $name)
     {
         $url = self::getRequestUrl('group_open_http_svc', 'create_group');

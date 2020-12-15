@@ -1,7 +1,6 @@
 <?php
 
 namespace app\common\models\live;
-;
 
 use Carbon\Carbon;
 use app\common\models\BaseModel;
