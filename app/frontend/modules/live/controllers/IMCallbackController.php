@@ -49,15 +49,15 @@ class IMCallbackController extends BaseController
                 //发送信息前IM回调（可以用以内容过滤检测等）
                 foreach ($input_data['MsgBody'] as $v){
                     $insert_data = array_merge($data, $this->getMsgData($input_data,$v,$_model));
-                    \Log::info('Group.CallbackAfterSendMsg*************************$insert_data' . json_encode($insert_data));
+
                     $_model->fill($insert_data)->save();
                     if($insert_data['msg_type'] == 4){
-                        $extra['MsgBody'] = $input_data['MsgBody'];
-
+                        $extra['MsgBody'] = $v;
+                        \Log::info('Group.CallbackAfterSendMsg*************************MsgBody' . json_encode($v));
+                        return $this->responJson(0, 'OK', '', $extra);
                     }
                 }
 
-                return $this->responJson(0, 'OK', '', $extra);
 
             } elseif (in_array($input_data['CallbackCommand'], ['Group.CallbackBeforeSendMsg'])) {
                 //发送信息前IM回调（可以用以内容过滤检测等）
