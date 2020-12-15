@@ -22,11 +22,9 @@ class IMCallbackController extends BaseController
      */
     public function index()
     {
-        $requestBody = file_get_contents("php://input");
         $req_data = request()->input();
         $input_data = request()->getContent();
-        \Log::info('$requestBody' . json_encode($requestBody));
-        \Log::info('IMCallback req_data:' . json_encode($req_data, 320) . ' input_data:' . $input_data);
+        \Log::info('IMCallback  req_data:' . json_encode($req_data, 320) . ' input_data:' . $input_data);
         if ($req_data['SdkAppid'] != LiveSetService::getIMSetting('sdk_appid')) {
             return $this->responJson(4002, 'error', 'illegal SdkAppid!');
         }
@@ -51,7 +49,7 @@ class IMCallbackController extends BaseController
                 //发送信息前IM回调（可以用以内容过滤检测等）
                 foreach ($input_data['MsgBody'] as $v){
                     $insert_data = array_merge($data, $this->getMsgData($input_data,$v,$_model));
-                    \Log::info('$insert_data' . json_encode($insert_data));
+                    \Log::info('Group.CallbackAfterSendMsg*************************$insert_data' . json_encode($insert_data));
                     $_model->fill($insert_data)->save();
                 }
 
@@ -61,8 +59,8 @@ class IMCallbackController extends BaseController
                 foreach ($input_data['MsgBody'] as $v){
 
                     $insert_data = array_merge($data, $this->getMsgData($input_data,$v,$_model));
-                    \Log::info('Group.CallbackBeforeSendMsg' . json_encode($insert_data));
-                    $text = $this->filterMsg($insert_data['msg_content']['text']);
+                    \Log::info('Group.CallbackBeforeSendMsg***************$insert_data' . json_encode($insert_data));
+                    $text = $this->filterMsg($v['MsgContent']['Text']);
                     \Log::info('Group.CallbackBeforeSendMsg' . $text);
                     $_model->fill($insert_data)->save();
 
@@ -91,7 +89,7 @@ class IMCallbackController extends BaseController
             'Operator_Account' => empty($input_data['Operator_Account']) ? '' : $input_data['Operator_Account'],
             'msg_time' => $input_data['MsgTime'],
             'msg_type' => $_model->getMsgType($msg_body['MsgType']), //回调内容类型
-            'msg_content' => $msg_body['MsgContent']['Text'],
+            //'msg_content' => $msg_body['MsgContent']['Text'],
         ];
 
         //根据回调类型获取回调内容
@@ -100,7 +98,7 @@ class IMCallbackController extends BaseController
         }elseif ($msg_data['msg_type'] == 4){
             $msg_data['msg_content'] = $msg_body['MsgContent'];
         }
-        \Log::info('msg_data' . $msg_data);
+        \Log::info('---------msg_data-------------' . json_encode($msg_data));
         return $msg_data;
     }
 
