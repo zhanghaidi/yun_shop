@@ -91,6 +91,7 @@ class IMCallbackController extends BaseController
             'msg_type' => $_model->getMsgType($msg_body['MsgType']), //回调内容类型
             //'msg_content' => $msg_body['MsgContent']['Text'],
         ];
+        \Log::info('msg_type : ' . $msg_data['msg_type']);
         //根据回调类型获取回调内容
         if($msg_data['msg_type'] == '文本消息'){
             $msg_data['msg_content'] = $msg_body['MsgContent']['Text'];
