@@ -53,9 +53,11 @@ class IMCallbackController extends BaseController
                     $_model->fill($insert_data)->save();
                     if($insert_data['msg_type'] == 4){
                         $extra['MsgBody'] = $input_data['MsgBody'];
-                        return $this->responJson(0, 'OK', '', $extra);
+
                     }
                 }
+
+                return $this->responJson(0, 'OK', '', $extra);
 
             } elseif (in_array($input_data['CallbackCommand'], ['Group.CallbackBeforeSendMsg'])) {
                 //发送信息前IM回调（可以用以内容过滤检测等）
@@ -76,6 +78,7 @@ class IMCallbackController extends BaseController
                         ]
                     ];
                 }
+
             }else{
                 return $this->responJson();
             }
