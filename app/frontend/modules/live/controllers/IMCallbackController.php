@@ -22,10 +22,11 @@ class IMCallbackController extends BaseController
      */
     public function index()
     {
-        //$requestBody = file_get_contents("php://input");
+        $requestBody = file_get_contents("php://input");
         $req_data = request()->input();
         $input_data = request()->getContent();
-        \Log::debug('IMCallback req_data:' . json_encode($req_data, 320) . ' input_data:' . $input_data);
+        \Log::info('$requestBody' . json_encode($requestBody));
+        \Log::info('IMCallback req_data:' . json_encode($req_data, 320) . ' input_data:' . $input_data);
         if ($req_data['SdkAppid'] != LiveSetService::getIMSetting('sdk_appid')) {
             return $this->responJson(4002, 'error', 'illegal SdkAppid!');
         }
@@ -50,7 +51,7 @@ class IMCallbackController extends BaseController
                 //发送信息前IM回调（可以用以内容过滤检测等）
                 foreach ($input_data['MsgBody'] as $v){
                     $insert_data = array_merge($data, $this->getMsgData($input_data,$v,$_model));
-
+                    \Log::info('$insert_data' . json_encode($insert_data));
                     $_model->fill($insert_data)->save();
                 }
 
