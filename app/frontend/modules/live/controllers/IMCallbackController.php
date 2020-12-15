@@ -59,8 +59,12 @@ class IMCallbackController extends BaseController
                 foreach ($input_data['MsgBody'] as $v){
 
                     $insert_data = array_merge($data, $this->getMsgData($input_data,$v,$_model));
-                    \Log::info('Group.CallbackBeforeSendMsg***************$insert_data' . json_encode($insert_data));
-                    $text = $this->filterMsg($v['MsgContent']['Text']);
+                    if($insert_data['msg_type'] == 1){
+                        $text = $this->filterMsg($v['MsgContent']['Text']);
+                    }elseif ($insert_data['msg_type'] == 4){
+                        $text = $v['MsgContent']['Desc'];
+                    }
+
                     \Log::info('Group.CallbackBeforeSendMsg' . $text);
                     $_model->fill($insert_data)->save();
 
