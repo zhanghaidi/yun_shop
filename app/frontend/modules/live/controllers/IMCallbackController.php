@@ -49,15 +49,8 @@ class IMCallbackController extends BaseController
                 //发送信息前IM回调（可以用以内容过滤检测等）
                 foreach ($input_data['MsgBody'] as $v){
                     $insert_data = array_merge($data, $this->getMsgData($input_data,$v,$_model));
-
                     $_model->fill($insert_data)->save();
-                    if($insert_data['msg_type'] == 4){
-                        $extra['MsgBody'] = $v;
-                        \Log::info('Group.CallbackAfterSendMsg*************************MsgBody' . json_encode($v));
-                        return $this->responJson(0, 'OK', '', $extra);
-                    }
                 }
-
 
             } elseif (in_array($input_data['CallbackCommand'], ['Group.CallbackBeforeSendMsg'])) {
                 //发送信息前IM回调（可以用以内容过滤检测等）
@@ -67,18 +60,21 @@ class IMCallbackController extends BaseController
                     $insert_data = array_merge($data, $this->getMsgData($input_data,$v,$_model));
                     if($insert_data['msg_type'] == 1){
                         $text = $this->filterMsg($v['MsgContent']['Text']);
+                        $extra['MsgBody'][] = [
+                            "MsgType" => $input_data['MsgBody'][0]['MsgType'], // 文本
+                            "MsgContent" => [
+                                "Text" => $text
+                            ]
+                        ];
+                    }elseif ($insert_data['msg_type'] == 4){
+                        $extra['MsgBody'][] = [
+                            "MsgType" => $input_data['MsgBody'][0]['MsgType'], // 文本
+                            "MsgContent" => $input_data['MsgBody'][0]['MsgContent']
+                        ];
                     }
-                    \Log::info('Group.CallbackBeforeSendMsg' . $text);
+
                     $_model->fill($insert_data)->save();
-
-                    $extra['MsgBody'][] = [
-                        "MsgType" => $input_data['MsgBody'][0]['MsgType'], // 文本
-                        "MsgContent" => [
-                            "Text" => $text
-                        ]
-                    ];
                 }
-
             }else{
                 return $this->responJson();
             }
