@@ -58,8 +58,10 @@ class IMCallbackController extends BaseController
                 foreach ($input_data['MsgBody'] as $v){
 
                     $insert_data = array_merge($data, $this->getMsgData($input_data,$v,$_model));
+                    $_model->fill($insert_data)->save();
+                    $id = $_model->id;
                     if($insert_data['msg_type'] == 1){
-                        $text = $this->filterMsg($v['MsgContent']['Text']);
+                        $text = $this->filterMsg($v['MsgContent']['Text'],$id);
                         $extra['MsgBody'][] = [
                             "MsgType" => $input_data['MsgBody'][0]['MsgType'], // 文本
                             "MsgContent" => [
@@ -78,7 +80,6 @@ class IMCallbackController extends BaseController
                         }
                     }
 
-                    $_model->fill($insert_data)->save();
                 }
             }else{
                 return $this->responJson();
@@ -125,12 +126,12 @@ class IMCallbackController extends BaseController
         return response()->json($resp_data, 200, ['charset' => 'utf-8']);
     }
 
-    protected function filterMsg($text)
+    protected function filterMsg($text,$id)
     {
         $_model = new BaseService();
         $res_json = json_decode($text);
         if($res_json){
-            $res_json->text = $_model->textCheck($res_json->text,false);
+            $res_json->text = '['.($id + 1).']'.$_model->textCheck($res_json->text,false);
             return json_encode($res_json,320);
         }else{
             return $_model->textCheck($text,false);
