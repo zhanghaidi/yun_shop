@@ -67,10 +67,15 @@ class IMCallbackController extends BaseController
                             ]
                         ];
                     }elseif ($insert_data['msg_type'] == 4){
+
                         $extra['MsgBody'][] = [
                             "MsgType" => $input_data['MsgBody'][0]['MsgType'], // 文本
                             "MsgContent" => $input_data['MsgBody'][0]['MsgContent']
                         ];
+                        //删除消息
+                        if($input_data['MsgBody'][0]['MsgContent']['Data'] == 'REMOVE_MSG'){
+                            ImCallbackLog::destroy($input_data['MsgBody'][0]['MsgContent']['Ext']);
+                        }
                     }
 
                     $_model->fill($insert_data)->save();
