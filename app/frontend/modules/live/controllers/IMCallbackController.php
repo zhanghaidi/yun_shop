@@ -60,6 +60,12 @@ class IMCallbackController extends BaseController
                     $insert_data = array_merge($data, $this->getMsgData($input_data,$v,$_model));
                     if($insert_data['msg_type'] == 1){
                         $text = $this->filterMsg($v['MsgContent']['Text']);
+                        $extra['MsgBody'][] = [
+                            "MsgType" => $input_data['MsgBody'][0]['MsgType'], // 文本
+                            "MsgContent" => [
+                                "Text" => $text
+                            ]
+                        ];
                     }elseif ($insert_data['msg_type'] == 4){
 
                         $extra['MsgBody'][] = [
@@ -71,16 +77,8 @@ class IMCallbackController extends BaseController
                             ImCallbackLog::destroy($input_data['MsgBody'][0]['MsgContent']['Ext']);
                         }
                     }
+
                     $_model->fill($insert_data)->save();
-                    $id = $_model->id;
-                    if($insert_data['msg_type'] == 1){
-                        $extra['MsgBody'][] = [
-                            "MsgType" => $input_data['MsgBody'][0]['MsgType'], // 文本
-                            "MsgContent" => [
-                                "Text" => $id.$text
-                            ]
-                        ];
-                    }
                 }
             }else{
                 return $this->responJson();
