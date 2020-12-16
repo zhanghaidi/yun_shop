@@ -31,9 +31,11 @@ class IMService
     }
 
 
+    //群组管理：在群组中发送普通消息
     public function sendGroupMsg($group_id, $text)
     {
         $url = self::getRequestUrl('group_open_http_svc', 'send_group_msg');
+
         $data = json_encode([
             "GroupId" => $group_id,
             "Random" => mt_rand(10000, 100000),
@@ -59,6 +61,7 @@ class IMService
         return json_decode($this->curl_post($url, $data), true);
     }
 
+    //创建群组API
     public function createGroup($room_id, $name)
     {
         $url = self::getRequestUrl('group_open_http_svc', 'create_group');

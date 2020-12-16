@@ -65,16 +65,17 @@
         <table class="table table-" style="table-layout:fixed;">
             <thead>
             <tr>
-                <th style='width:2%;text-align: center;'>日志ID</th>
-                <th style='width:4%;text-align: center;'>群组ID</th>
-                <th style='width:4%;text-align: center;'>回调类型</th>
-                <th style='width:5%;text-align: center;'>发送者</th>
-                <th style='width:10%;text-align: center;'>回调命令字</th>
-                <th style='width:4%;text-align: center;'>消息类型</th>
-                <th style='width:30%;text-align: center;'>消息内容</th>
-                <th style='width:6%;text-align: center;'>消息发送时间</th>
-                <th style='width:6%;text-align: center;'>创建时间</th>
-                <th style='width:6%;text-align: center;'>客户端IP地址</th>
+                <th style='text-align: center;'>日志ID</th>
+                <th style='text-align: center;'>群组ID</th>
+                <th style='text-align: center;'>回调类型</th>
+                <th style='text-align: center;'>发送者</th>
+                <th style='text-align: center;'>回调命令字</th>
+                <th style='text-align: center;'>消息类型</th>
+                <th style='text-align: center;'>消息内容</th>
+                <th style='text-align: center;'>消息发送时间</th>
+                <th style='text-align: center;'>创建时间</th>
+                <th style='text-align: center;'>客户端IP地址</th>
+                <th>操作</th>
             </tr>
             </thead>
             <tbody>
@@ -90,6 +91,13 @@
                     <td style="text-align: center;">{{$row->msg_time}}</td>
                     <td style="text-align: center;">{{$row->created_at}}</td>
                     <td style="text-align: center;">{{$row->client_iP}}</td>
+                    <td>
+                        <a class='btn btn-danger'
+                           href="{{yzWebUrl('live.IM-log.deleted', ['id' => $row->id])}}"
+                           onclick="return confirm('确认删除此记录吗？');return false;"><i class="fa fa-remove"></i>
+                        </a>
+                    </td>
+
                 </tr>
 
             @endforeach
