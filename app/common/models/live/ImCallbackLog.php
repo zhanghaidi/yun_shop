@@ -185,7 +185,7 @@ class ImCallbackLog extends BaseModel
             if(isset($res_josn->text)){
                 return $res_josn->text;
             }else{
-                return $res_josn;
+                return $res_josn->Data.':'.$res_josn->Ext;
             }
         }
         return $msg_content;
