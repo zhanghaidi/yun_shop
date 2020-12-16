@@ -77,7 +77,7 @@ class IMCallbackController extends BaseController
                         $extra['MsgBody'][] = [
                             "MsgType" => $input_data['MsgBody'][0]['MsgType'], // 文本
                             "MsgContent" => [
-                                "Text" => '['.$id.']'.$text
+                                "Text" => $id.$text
                             ]
                         ];
                     }
