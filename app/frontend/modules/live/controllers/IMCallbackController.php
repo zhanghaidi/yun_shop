@@ -50,6 +50,12 @@ class IMCallbackController extends BaseController
                 foreach ($input_data['MsgBody'] as $v){
                     $insert_data = array_merge($data, $this->getMsgData($input_data,$v,$_model));
                     $_model->fill($insert_data)->save();
+                    $id = $_model->id;
+
+                    //删除自定义消息中的消息ID
+                    if($input_data['MsgBody'][0]['MsgContent']['Data'] == 'REMOVE_MSG'){
+                        $_model->destroy($id);
+                    }
                 }
 
             } elseif (in_array($input_data['CallbackCommand'], ['Group.CallbackBeforeSendMsg'])) {
@@ -74,7 +80,7 @@ class IMCallbackController extends BaseController
                             "MsgType" => $input_data['MsgBody'][0]['MsgType'], // 文本
                             "MsgContent" => $input_data['MsgBody'][0]['MsgContent']
                         ];
-                        //删除消息
+                        //删除自定义消息中的消息ID
                         if($input_data['MsgBody'][0]['MsgContent']['Data'] == 'REMOVE_MSG'){
                             ImCallbackLog::destroy($input_data['MsgBody'][0]['MsgContent']['Ext']);
                         }
