@@ -95,7 +95,7 @@ class LiveRoomController extends ApiController
 
         $_model = CloudLiveRoom::where('id', $id)
             ->withCount('hasManyLike','hasManySubscription')
-            ->whereHas('is_subscription',function ($query) use ($member_id){
+            ->whereHas('isSubscription',function ($query) use ($member_id){
                 $query->where('user_id', $member_id);
             })->first();
 
