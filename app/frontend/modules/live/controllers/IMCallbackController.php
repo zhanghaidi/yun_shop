@@ -91,6 +91,12 @@ class IMCallbackController extends BaseController
 
                         }elseif ($input_data['MsgBody'][0]['MsgContent']['Data'] == 'LIKE_LIVE'){
                             //处理点赞回调
+                            /*$data = array(
+                                'uniacid' => \YunShop::app()->uniacid,
+                                'user_id' => $input_data['MsgBody'][0]['MsgContent']['Ext']['uid'],
+                                'room_id'=>$input_data['MsgBody'][0]['MsgContent']['Ext']['room_id']
+                            );*/
+                            \Log::info('LIKE_LIVE' . $input_data['MsgBody'][0]['MsgContent']['Ext']);
                             CloudLiveRoomLike::create([
                                 'uniacid' => \YunShop::app()->uniacid,
                                 'user_id' => $input_data['MsgBody'][0]['MsgContent']['Ext']['uid'],
