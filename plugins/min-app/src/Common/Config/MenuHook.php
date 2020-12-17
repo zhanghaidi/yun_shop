@@ -149,6 +149,16 @@ class MenuHook
                             'parents'    => ['min-app', 'plugin.min-app.admin.search'],
                             'item'       => 'plugin.min-app.admin.search',
                         ],
+                        'plugin.min-app.admin.search.one-key'  => [
+                            'name'       => '自动提交',
+                            'permit'     => 1,
+                            'menu'       => 0,
+                            'icon'       => '',
+                            'url'        => 'plugin.min-app.Backend.Controllers.search.one-key',
+                            'url_params' => '',
+                            'parents'    => ['min-app', 'plugin.min-app.admin.search'],
+                            'item'       => 'plugin.min-app.admin.search',
+                        ],
                     ]
                 ],
             ]

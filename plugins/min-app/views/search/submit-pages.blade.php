@@ -47,6 +47,12 @@
                             <div class="col-sm-9 col-xs-12"><input type="text" name="page[shopapp][query]" class="form-control" value="" placeholder="请输入所选择页面的页面参数" /></div>
                         </div>
 
+                        <div class="form-group">
+                            <div class="col-sm-9 col-xs-12 col-md-10 col-sm-offset-3 col-md-offset-2">
+                                小程序页面 和 页面参数，请参考 <a class="mp-links" href="javascript:void(0);">小程序页面路径</a>
+                            </div>
+                        </div>
+
                     </div>
 
                     <div class='panel-body'>
@@ -102,6 +108,14 @@ $(function(){
             $('.mainappSelect').hide();
             $('.shopappSelect').show();
         }
+    });
+
+    var linkUrl = '//www.aijuyi.net/static/pages/links.html';
+
+    $('.mp-links').click(function() {
+        linkUrl += '?v=' + new Date().getTime();
+        $('#mp-links-iframe').attr('src', linkUrl);
+        $('#mp-modal').modal()
     });
 });
 

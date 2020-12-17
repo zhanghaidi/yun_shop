@@ -36,7 +36,11 @@
             </div>
         </div>
         <div class="panel panel-default">
-            <div class="panel-heading">估算被索引数：{{ $response['hit_count'] }}&nbsp;&nbsp;&nbsp;&nbsp;<a class='btn btn-info' href="{{ yzWebUrl('plugin.min-app.Backend.Controllers.search.submit-pages') }}" style="margin-bottom: 2px">提交页面</a></div>
+            <div class="panel-heading">
+                估算被索引数：{{ $response['hit_count'] }}&nbsp;&nbsp;&nbsp;&nbsp;
+                <a class='btn btn-info' href="{{ yzWebUrl('plugin.min-app.Backend.Controllers.search.submit-pages') }}" style="margin-bottom: 2px">提交页面</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                <a class='btn btn-info' href="{{ yzWebUrl('plugin.min-app.Backend.Controllers.search.one-key') }}" style="margin-bottom: 2px">自动提交</a>&nbsp;&nbsp;&nbsp;&nbsp;
+            </div>
             <div class="panel-body ">
                 <table class="table table-hover">
                     <thead class="navbar-inner">
