@@ -11,6 +11,7 @@ use app\common\helpers\Url;
 use app\framework\Support\Facades\Log;
 use app\common\helpers\PaginationHelper;
 use app\common\services\tencentlive\IMService;
+use app\common\models\live\CloudLiveRoomGoods;
 
 class LiveRoomController extends BaseController
 {
@@ -55,16 +56,44 @@ class LiveRoomController extends BaseController
         }
 
         if (request()->live) {
+            $goods_sort = request()->live['goods_sort'];
             $this->room_model->fill(CloudLiveRoom::handleArray(request()->live, $id));
+
             $validator = $this->room_model->validator();
+
             if ($validator->fails()) {
                 $this->error($validator->messages());
             }else{
+
                 $ret = $this->room_model->save();
                 if (!$ret) {
                     return $this->message('保存直播间失败', Url::absoluteWeb('live.live-room.edit',['id'=>$id]), 'error');
                 }
-                if($this->room_model->id){
+
+                $cloud_live_room_goods = new CloudLiveRoomGoods();
+                $goods_id = explode(',',$this->room_model->goods_ids);
+
+                foreach ($goods_id as $k => $value) {
+                    $updata_live_room_goods = [
+                        'uniacid' => \YunShop::app()->uniacid,
+                        'room_id' => $this->room_model->id,
+                        'goods_ids' => $value,
+                        'sort' => $goods_sort[$k]
+                    ];
+
+                    $live_room_goods_model = $cloud_live_room_goods::where([
+                        'uniacid' => \YunShop::app()->uniacid,
+                        'room_id' => $this->room_model->id,
+                        'goods_ids' => $value,
+                    ])->first();
+                    if (!$live_room_goods_model) { //没有数据，新增
+                        $cloud_live_room_goods::create($live_room_goods_model);
+                    } else { // 有数据 更新
+                        $cloud_live_room_goods::where('id',$live_room_goods_model->id)->update($live_room_goods_model);
+                    }
+                }
+
+                if($this->room_model->id){//编辑更新
                     $upd_data = [
                         'stream_name' => LiveSetService::getSetting('stream_name_pre') . $this->room_model->id,
                         'push_url' => LiveService::getPushUrl($this->room_model->id,request()->live['time']['end']),
