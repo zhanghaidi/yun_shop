@@ -130,6 +130,37 @@ class MenuHook
                         ],
                     ]
                 ],
+                'plugin.min-app.admin.search' => [
+                    'name'       => '小程序搜索',
+                    'permit'     => 1,
+                    'menu'       => 1,
+                    'icon'       => '',
+                    'url'        => 'plugin.min-app.Backend.Controllers.search.site-search',
+                    'url_params' => '',
+                    'parents'    => ['min-app'],
+                    'child'      => [
+                        'plugin.min-app.admin.search.submit-pages'  => [
+                            'name'       => '提交页面',
+                            'permit'     => 1,
+                            'menu'       => 0,
+                            'icon'       => '',
+                            'url'        => 'plugin.min-app.Backend.Controllers.search.submit-pages',
+                            'url_params' => '',
+                            'parents'    => ['min-app', 'plugin.min-app.admin.search'],
+                            'item'       => 'plugin.min-app.admin.search',
+                        ],
+                        'plugin.min-app.admin.search.one-key'  => [
+                            'name'       => '自动提交',
+                            'permit'     => 1,
+                            'menu'       => 0,
+                            'icon'       => '',
+                            'url'        => 'plugin.min-app.Backend.Controllers.search.one-key',
+                            'url_params' => '',
+                            'parents'    => ['min-app', 'plugin.min-app.admin.search'],
+                            'item'       => 'plugin.min-app.admin.search',
+                        ],
+                    ]
+                ],
             ]
         ];
         return $menu;
