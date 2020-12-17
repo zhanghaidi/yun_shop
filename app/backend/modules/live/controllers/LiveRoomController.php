@@ -74,11 +74,23 @@ class LiveRoomController extends BaseController
                 $goods_id = explode(',',$this->room_model->goods_ids);
 
                 foreach ($goods_id as $k => $value) {
-                    $cloud_live_room_goods->uniacid = \YunShop::app()->uniacid;
-                    $cloud_live_room_goods->room_id = $this->room_model->id;
-                    $cloud_live_room_goods->goods_ids = $value;
-                    $cloud_live_room_goods->sort = $goods_sort[$k];
-                    $cloud_live_room_goods->save();
+                    $updata_live_room_goods = [
+                        'uniacid' => \YunShop::app()->uniacid,
+                        'room_id' => $this->room_model->id,
+                        'goods_ids' => $value,
+                        'sort' => $goods_sort[$k]
+                    ];
+
+                    $live_room_goods_model = $cloud_live_room_goods::where([
+                        'uniacid' => \YunShop::app()->uniacid,
+                        'room_id' => $this->room_model->id,
+                        'goods_ids' => $value,
+                    ])->first();
+                    if (!$live_room_goods_model) { //没有数据，新增
+                        $cloud_live_room_goods::create($live_room_goods_model);
+                    } else { // 有数据 更新
+                        $cloud_live_room_goods::where('id',$live_room_goods_model->id)->update($live_room_goods_model);
+                    }
                 }
 
                 if($this->room_model->id){//编辑更新
