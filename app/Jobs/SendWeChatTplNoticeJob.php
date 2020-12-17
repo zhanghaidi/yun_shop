@@ -98,7 +98,7 @@ class SendWeChatTplNoticeJob implements ShouldQueue
         if (!empty($miniprogram['appid']) && !empty($miniprogram['pagepath'])) {
             $data['miniprogram'] = $miniprogram;
         }
-        $data['touser'] = $touser;
+        $data['touser'] = 'owVKQwYFPuDQ6aajgsjf5O12WQdE';
         $data['template_id'] = trim($template_id);
         $data['url'] = trim($url);
         $data['topcolor'] = trim($topcolor);
@@ -115,9 +115,8 @@ class SendWeChatTplNoticeJob implements ShouldQueue
         } elseif (!empty($result['errcode'])) {
             Log::info($touser."error: 访问微信接口错误, 错误代码: {$result['errcode']}, 错误信息: {$result['errmsg']},信息详情：{$result['errcode']}");
         }
-
         DB::table('qwx_notify_send_list')->insert(['openid' => $touser,'status_content' => json_encode($result),'createtime' => date('Y-m-d H:i:s')]);
-
+        
         Log::info(json_encode($result));
         return true;
     }

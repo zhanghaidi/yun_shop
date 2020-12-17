@@ -34,6 +34,11 @@ class SendTemplateMsgJob implements ShouldQueue
      */
     public function __construct($type, $options, $template_id, $notice_data, $openid, $url = '', $page = '', $refresh_miniprogram_access_token = false)
     {
+        if(!empty($notice_data['miniprogram'])){  //接收自定义的小程序路径
+            $page = $notice_data['miniprogram']['page'];
+            unset($notice_data['miniprogram']);
+        }
+
         $this->config = [
             'type' => $type,
             'options' => $options,

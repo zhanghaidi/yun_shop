@@ -23,13 +23,29 @@ use app\common\services\tencentlive\LiveService;
 use app\common\services\tencentlive\IMService;
 use app\common\models\live\ImCallbackLog;
 use app\common\models\Goods;
+use app\common\models\live\CloudLiveRoomLike;
+use app\common\models\live\CloudLiveRoomSubscription;
 
 class LiveRoomController extends ApiController
 {
 
     const PAGE_SIZE = 10;
 
-    protected $ignoreAction = ['index','detail','getMsgList','sendMsg','getLiveList'];
+    protected $ignoreAction = ['index','detail','getMsgList','sendMsg','getLiveList','likeLiveRoom','subscriptionLiveRoom','unsubscriptionLiveRoom'];
+
+    public function __construct()
+    {
+        $member_id = \YunShop::app()->getMemberId();
+        if(!$member_id){
+            response()->json([
+                'result' => 41009,
+                'msg' => '请登录',
+                'data' => '',
+            ], 200, ['charset' => 'utf-8'])->send();
+            exit;
+        }
+
+    }
 
     public function index()
     {
@@ -85,16 +101,24 @@ class LiveRoomController extends ApiController
         if (!$id) {
             return  $this->errorJson('直播间ID为空');
         }
+        $member_id = \YunShop::app()->getMemberId();
 
-        $_model = CloudLiveRoom::where('id',$id)->first();
+        if(!$member_id){
+            return  $this->errorJson('用户ID为空');
+        }
+
+        $_model = CloudLiveRoom::where('id', $id)
+            ->withCount('hasManyLike','hasManySubscription')
+            ->first();
+
         if (!$_model) {
             return $this->errorJson('未获取到直播间');
         }
-        $_model->push_url = '';
 
+        $_model->push_url = '';
         $im_service = new IMService();
         $_model->online_num = $im_service->getOnlineMemberNum($_model->group_id);
-//        $_model->online_num = 0;
+        $_model->is_subscription = $_model->isSubscription($member_id);
         $_model->goods = $_model->goods(false);
         $_model->quick_comment = array_column(DB::table('diagnostic_service_quick_comment')->select('content')->where([['type','=',7],['status','=',1]])->orderby('id','desc')->get()->toArray(),'content');
 
@@ -138,6 +162,85 @@ class LiveRoomController extends ApiController
         }else{
             return $this->successJson('获取消息记录成功', $list);
         }
+    }
+
+    //直播间点赞
+
+    public function likeLiveRoom(){
+        $room_id = intval(request()->room_id);
+        if (!$room_id) {
+            return $this->errorJson('直播间ID为空');
+        }
+
+        $member_id = \YunShop::app()->getMemberId();
+
+        if(!$member_id){
+            return  $this->errorJson('用户ID为空');
+        }
+
+        $data = array(
+            'uniacid' => \YunShop::app()->uniacid,
+            'user_id' => $member_id,
+            'room_id' => $room_id,
+
+        );
+
+        CloudLiveRoomLike::firstOrCreate($data);
+
+        return $this->successJson('点赞成功');
+
+    }
+
+    //直播间订阅
+    public function subscriptionLiveRoom()
+    {
+        $room_id = intval(request()->room_id);
+
+        if (!$room_id) {
+            return $this->errorJson('直播间ID为空');
+        }
+
+        $member_id = \YunShop::app()->getMemberId();
+
+        if(!$member_id){
+            return  $this->errorJson('用户ID为空');
+        }
+
+        $params = array(
+            'uniacid' => \YunShop::app()->uniacid,
+            'user_id' => $member_id,
+            'room_id' => $room_id,
+        );
+
+        CloudLiveRoomSubscription::firstOrCreate($params);
+
+        return $this->successJson('直播间关注成功',['is_subscription' => 1]);
+    }
+
+    //取消订阅
+    public function unSubscriptionLiveRoom()
+    {
+        $room_id = intval(request()->room_id);
+
+        if (!$room_id) {
+            return $this->errorJson('直播间ID为空');
+        }
+
+        $member_id = \YunShop::app()->getMemberId();
+
+        if(!$member_id){
+            return  $this->errorJson('用户ID为空');
+        }
+
+        $params = array(
+            'uniacid' => \YunShop::app()->uniacid,
+            'user_id' => $member_id,
+            'room_id' => $room_id,
+        );
+
+        CloudLiveRoomSubscription::where($params)->delete();
+
+        return $this->successJson('直播间取消关注成功',['is_subscription' => 0]);
     }
 
 }

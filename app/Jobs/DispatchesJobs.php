@@ -18,10 +18,11 @@ class DispatchesJobs
 
     public static function dispatch($job, $queue)
     {
-        $is_open = Setting::getNotUniacid('supervisor.queue.is_classify');
+        //fixby-zlt-dispatchjob 2020-11-13 14:00
+        /*$is_open = Setting::getNotUniacid('supervisor.queue.is_classify');
         if ($is_open) {
             $job->queue = $queue;
-        }
+        }*/
         return app(Dispatcher::class)->dispatch($job);
     }
 
