@@ -65,8 +65,8 @@ class LiveRoomController extends BaseController
 
             if ($validator->fails()) {
                 $this->error($validator->messages());
-            }else{
-//                dd($this->room_model);die();
+            } else {
+
                 $ret = $this->room_model->save();
                 if (!$ret) {
                     return $this->message('保存直播间失败', Url::absoluteWeb('live.live-room.edit',['id'=>$id]), 'error');
@@ -74,7 +74,6 @@ class LiveRoomController extends BaseController
 //                fixBy-wk-20201217 云直播管理商品自定义排序
                 $cloud_live_room_goods = new CloudLiveRoomGoods();
                 $goods_id = explode(',',$this->room_model->goods_ids);
-
                 foreach ($goods_id as $k => $value) {
                     $updata_live_room_goods = [
                         'uniacid' => $this->room_model->uniacid,
@@ -84,7 +83,7 @@ class LiveRoomController extends BaseController
                     ];
 
                     $live_room_goods_model = $cloud_live_room_goods::where([
-                        'uniacid' => \YunShop::app()->uniacid,
+                        'uniacid' => $this->room_model->uniacid,
                         'room_id' => $this->room_model->id,
                         'goods_ids' => $value,
                     ])->first();
@@ -165,6 +164,25 @@ class LiveRoomController extends BaseController
         if (!$room_model) {
             return $this->message('未找到数据', Url::absoluteWeb('live.live-room.index'), 'error');
         }
+
+//        fixBy-wk-20201217 管理商品自定义排序
+        $cloud_live_room_goods = new CloudLiveRoomGoods();
+        $goods_sort = [];
+        $goods_id = explode(',',$room_model->goods_ids);
+        foreach ($goods_id as $k => $value) {
+            $live_room_goods_model = $cloud_live_room_goods::where([
+                'uniacid' => $room_model['uniacid'],
+                'room_id' => $room_model['id'],
+                'goods_ids' => $value,
+            ])->first();
+            if (!$live_room_goods_model) { //没有数据，默认值0
+                $goods_sort[$k] = 0;
+            } else { // 有数据 更新
+                $goods_sort[$k] = $live_room_goods_model['sort'];
+            }
+        }
+        $room_model['goods_sort'] = $goods_sort;
+
         $this->room_model = $room_model;
     }
     
