@@ -78,6 +78,7 @@
                                                     <button class="btn btn-default nav-link-goods" type="button" data-id="" >商品排序:</button>
                                                 </span>
                                                     <input class="form-control" type="text" name="live[goods_sort][]" data-id="{{$v['id']}}" data-name="goods_sort" value="{{$live['goods_sort'][$k]}}" style="width:400px;float:left"/>
+                                                    &nbsp; &nbsp;排序值越大，商品越靠前
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -98,6 +99,7 @@
                                                     <button class="btn btn-default nav-link-goods" type="button" data-id="" >商品排序:</button>
                                                 </span>
                                                 <input class="form-control" type="text" name="live[goods_sort][]" data-id="" data-name="goods_sort" value="0" style="width:400px;float:left"/>
+                                                &nbsp; &nbsp;排序值越大，商品越靠前
                                             </td>
                                         </tr>
                                     @endif
@@ -230,7 +232,7 @@
                 '<span class="input-group-btn" style="width:100px;float:left">' +
                 '<button class="btn btn-default nav-link-goods" type="button" data-id="" >商品排序:</button>' +
                 '</span>' +
-                '<input class="form-control" type="text" name="live[goods_sort][]" data-id="" data-name="goods_sort" value="0" style="width:400px;float:left"/>' +
+                '<input class="form-control" type="text" name="live[goods_sort][]" data-id="" data-name="goods_sort" value="0" style="width:400px;float:left"/>&nbsp; &nbsp;排序值越大，商品越靠前' +
                 '</td>' +
                 '</tr>';
             $('#param-items'+type).append(data);
