@@ -193,7 +193,7 @@ class SignReminder extends Command
             $param['notice_data'] = [
                 'thing1' => ['value' => $thing1_value, 'color' => '#173177'],
                 'thing2' => ['value' => $thing2_value, 'color' => '#173177'],
-                'name3' => ['value' => '坚持签到,有更多惊喜', 'color' => '#173177'],
+                'thing8' => ['value' => '坚持签到,有更多惊喜', 'color' => '#173177'],
             ];
         }
 
