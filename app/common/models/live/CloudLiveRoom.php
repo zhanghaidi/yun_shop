@@ -195,9 +195,9 @@ class CloudLiveRoom extends BaseModel
     }
 
     //获取用户是否订阅
-    public function isSubscription()
+    public function isSubscription($user_id)
     {
-        return $this->hasOne('app\common\models\live\CloudLiveRoomSubscription', 'room_id', 'id');
+        return $this->hasOne('app\common\models\live\CloudLiveRoomSubscription', 'room_id', 'id')->where('user_id' , $user_id);
     }
 
 
