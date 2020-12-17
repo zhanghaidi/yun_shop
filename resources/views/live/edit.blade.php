@@ -73,6 +73,12 @@
                                                         <button class="btn btn-default nav-link-goods" type="button" data-id="{{$v['id']}}" onclick="$('#modal-module-menus-goods').modal();$(this).parent().parent().addClass('focusgood')">选择商品</button>
                                                     </span>
                                                 </td>
+                                                <td colspan="2">
+                                                 <span class="input-group-btn" style="width:100px;float:left">
+                                                    <button class="btn btn-default nav-link-goods" type="button" data-id="" >商品排序:</button>
+                                                </span>
+                                                    <input class="form-control" type="text" name="live[goods_sort][]" data-id="{{$v['id']}}" data-name="goods_sort" value="{{$live['goods_sort'][$k]}}" style="width:400px;float:left"/>
+                                                </td>
                                             </tr>
                                         @endforeach
                                     @else

@@ -57,17 +57,19 @@ class LiveRoomController extends BaseController
 
         if (request()->live) {
             $request_data = request()->live;
+
             $goods_sort = $request_data['goods_sort'];
             unset($request_data['goods_sort']);
-            $this->room_model->fill(CloudLiveRoom::handleArray($request_data, $id));
-
+            $this->room_model = $this->room_model->fill(CloudLiveRoom::handleArray($request_data, $id));
             $validator = $this->room_model->validator();
-
             if ($validator->fails()) {
                 $this->error($validator->messages());
             } else {
-
+                if (!empty($this->room_model['goods_sort'])) {
+                    unset($this->room_model['goods_sort']);
+                }
                 $ret = $this->room_model->save();
+
                 if (!$ret) {
                     return $this->message('保存直播间失败', Url::absoluteWeb('live.live-room.edit',['id'=>$id]), 'error');
                 }
