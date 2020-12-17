@@ -56,40 +56,43 @@ class LiveRoomController extends BaseController
         }
 
         if (request()->live) {
-            $goods_sort = request()->live['goods_sort'];
-            $this->room_model->fill(CloudLiveRoom::handleArray(request()->live, $id));
+            $request_data = request()->live;
+            $goods_sort = $request_data['goods_sort'];
+            unset($request_data['goods_sort']);
+            $this->room_model->fill(CloudLiveRoom::handleArray($request_data, $id));
 
             $validator = $this->room_model->validator();
 
             if ($validator->fails()) {
                 $this->error($validator->messages());
-            }else{
+            } else {
 
                 $ret = $this->room_model->save();
                 if (!$ret) {
                     return $this->message('保存直播间失败', Url::absoluteWeb('live.live-room.edit',['id'=>$id]), 'error');
                 }
-
+//                fixBy-wk-20201217 云直播管理商品自定义排序
                 $cloud_live_room_goods = new CloudLiveRoomGoods();
                 $goods_id = explode(',',$this->room_model->goods_ids);
-
                 foreach ($goods_id as $k => $value) {
                     $updata_live_room_goods = [
-                        'uniacid' => \YunShop::app()->uniacid,
+                        'uniacid' => $this->room_model->uniacid,
                         'room_id' => $this->room_model->id,
                         'goods_ids' => $value,
                         'sort' => $goods_sort[$k]
                     ];
 
                     $live_room_goods_model = $cloud_live_room_goods::where([
-                        'uniacid' => \YunShop::app()->uniacid,
+                        'uniacid' => $this->room_model->uniacid,
                         'room_id' => $this->room_model->id,
                         'goods_ids' => $value,
                     ])->first();
                     if (!$live_room_goods_model) { //没有数据，新增
-                        $cloud_live_room_goods::create($live_room_goods_model);
+                        $updata_live_room_goods['created_at'] = time();
+                        $cloud_live_room_goods::create($updata_live_room_goods);
                     } else { // 有数据 更新
-                        $cloud_live_room_goods::where('id',$live_room_goods_model->id)->update($live_room_goods_model);
+                        $updata_live_room_goods['updated_at'] = time();
+                        $cloud_live_room_goods::where('id',$live_room_goods_model->id)->update($updata_live_room_goods);
                     }
                 }
 
@@ -162,6 +165,25 @@ class LiveRoomController extends BaseController
         if (!$room_model) {
             return $this->message('未找到数据', Url::absoluteWeb('live.live-room.index'), 'error');
         }
+
+//        fixBy-wk-20201217 管理商品自定义排序
+        $cloud_live_room_goods = new CloudLiveRoomGoods();
+        $goods_sort = [];
+        $goods_id = explode(',',$room_model->goods_ids);
+        foreach ($goods_id as $k => $value) {
+            $live_room_goods_model = $cloud_live_room_goods::where([
+                'uniacid' => $room_model['uniacid'],
+                'room_id' => $room_model['id'],
+                'goods_ids' => $value,
+            ])->first();
+            if (!$live_room_goods_model) { //没有数据，默认值0
+                $goods_sort[$k] = 0;
+            } else { // 有数据 更新
+                $goods_sort[$k] = $live_room_goods_model['sort'];
+            }
+        }
+        $room_model['goods_sort'] = $goods_sort;
+
         $this->room_model = $room_model;
     }
     
