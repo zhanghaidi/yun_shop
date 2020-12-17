@@ -7,6 +7,9 @@ use app\common\models\BaseModel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use app\common\models\Goods;
+use app\common\models\live\CloudLiveRoomLike;
+use app\common\models\live\CloudLiveRoomSubscription;
+use app\backend\modules\tracking\models\DiagnosticServiceUser;
 
 /**
  * Class CloudLiveRoom
@@ -177,5 +180,19 @@ class CloudLiveRoom extends BaseModel
     {
         return self::$liveStatus[$status];
     }
+
+    //关联点赞
+    public function hasManyLike()
+    {
+
+        return $this->hasMany('app\common\models\live\CloudLiveRoomLike', 'room_id', 'id');
+    }
+
+    //关联订阅
+    public function hasManySubscription()
+    {
+        return $this->hasMany('app\common\models\live\CloudLiveRoomSubscription', 'room_id', 'id');
+    }
+
 
 }
