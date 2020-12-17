@@ -190,7 +190,7 @@ class LiveRoomController extends ApiController
 
         );
 
-        CloudLiveRoomLike::firstOrCreate($data);
+        CloudLiveRoomLike::create($data);
 
         return $this->successJson('点赞成功');
 
