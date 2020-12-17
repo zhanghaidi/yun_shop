@@ -12,8 +12,6 @@ class CloudLiveRoomSubscription extends BaseModel
 
     public $table = 'yz_cloud_live_room_subscription';
 
-    public $timestamps = false;
-
     protected $guarded = [''];
 
 
