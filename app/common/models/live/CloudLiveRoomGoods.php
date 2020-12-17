@@ -41,5 +41,5 @@ class CloudLiveRoomGoods extends BaseModel
     protected $guarded = [''];
 
     protected $casts = ['updated_at' => 'date', 'created_at' => 'date'];
-    protected $fillable = ['room_id','goods_ids','sort'];
+    protected $fillable = ['uniacid','room_id','goods_ids','sort','created_at','updated_at'];
 }
