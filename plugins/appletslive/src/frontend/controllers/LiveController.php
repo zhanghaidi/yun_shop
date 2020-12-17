@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use Yunshop\Appletslive\common\services\CacheService;
 use Yunshop\Appletslive\common\services\BaseService;
+use Yunshop\Appletslive\common\models\Room;
 use app\backend\modules\tracking\models\DiagnosticServiceUser;
 use app\common\models\AccountWechats;
 use app\Jobs\SendTemplateMsgJob;
@@ -586,9 +587,10 @@ class LiveController extends BaseController
                 ->whereNotIn('id',$not_show_array)
                 ->count();
             $list = DB::table('yz_appletslive_room')
-                ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag', 'buy_type', 'ios_open', 'ios_goods_id', 'expire_time', 'goods_id')
+                ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag', 'buy_type', 'ios_open', 'ios_goods_id', 'expire_time', 'goods_id', 'display_type')
                 ->where('type', 1)
                 ->where('delete_time', 0)
+                ->whereIn('display_type', [1, 2])
                 ->whereNotIn('id',$not_show_array)
                 ->orderBy('sort', 'desc')
                 ->orderBy('id', 'desc')
@@ -604,12 +606,14 @@ class LiveController extends BaseController
                 $my_subscription = ($this->user_id ? CacheService::getUserSubscription($this->user_id) : []);
                 foreach ($page_val['list'] as $k => $v) {
                     $key = 'key_' . $v['id'];
+                    $page_val['list'][$k]['is_share'] = Room::getIsShareAttribute($v);
+                    unset($page_val['list'][$k]['display_type']);
                     $page_val['list'][$k]['hot_num'] = $numdata[$key]['hot_num'];
                     $page_val['list'][$k]['subscription_num'] = $numdata[$key]['subscription_num'];
                     $page_val['list'][$k]['view_num'] = $numdata[$key]['view_num'];
                     $page_val['list'][$k]['comment_num'] = $numdata[$key]['comment_num'];
                     $page_val['list'][$k]['has_subscription'] = (array_search($page_val['list'][$k]['id'], $my_subscription) === false) ? false : true;
-//              判断课程是否购买，是否在有效期内
+                    // 判断课程是否购买，是否在有效期内
                     $page_val['list'][$k]['has_course'] = ($this->user_id ? CacheService::getUserSubscriptionInfo($this->user_id, $v['id']) : false);
 
                     $page_val['list'][$k]['goods_info'] = [];
@@ -620,7 +624,6 @@ class LiveController extends BaseController
             }
 
         }else {
-
             $page_val = CacheService::getRecordedRoomList($page, $limit);
             if (!empty($page_val['list'])) {
                 $page_val['list'] = $page_val['list']->toArray();
@@ -628,14 +631,15 @@ class LiveController extends BaseController
                 $my_subscription = ($this->user_id ? CacheService::getUserSubscription($this->user_id) : []);
 
                 foreach ($page_val['list'] as $k => $v) {
-
                     $key = 'key_' . $v['id'];
+                    $page_val['list'][$k]['is_share'] = Room::getIsShareAttribute($v);
+                    unset($page_val['list'][$k]['display_type']);
                     $page_val['list'][$k]['hot_num'] = $numdata[$key]['hot_num'];
                     $page_val['list'][$k]['subscription_num'] = $numdata[$key]['subscription_num'];
                     $page_val['list'][$k]['view_num'] = $numdata[$key]['view_num'];
                     $page_val['list'][$k]['comment_num'] = $numdata[$key]['comment_num'];
                     $page_val['list'][$k]['has_subscription'] = (array_search($page_val['list'][$k]['id'], $my_subscription) === false) ? false : true;
-//              判断课程是否购买，是否在有效期内
+                    // 判断课程是否购买，是否在有效期内
                     $page_val['list'][$k]['has_course'] = ($this->user_id ? CacheService::getUserSubscriptionInfo($this->user_id, $v['id']) : false);
                     $page_val['list'][$k]['goods_info'] = [];
                     if ($v['goods_id'] > 0 && $v['buy_type'] == 1) {
@@ -670,6 +674,8 @@ class LiveController extends BaseController
         $numdata = CacheService::getRoomNum($room_id);
         // $subscription = CacheService::getRoomSubscription($room_id);
         // $room_info['subscription'] = $subscription;
+        $room_info['is_share'] = Room::getIsShareAttribute($room_info);
+        unset($room_info['display_type']);
         $room_info['hot_num'] = $numdata['hot_num'];
         $room_info['subscription_num'] = $numdata['subscription_num'];
         $room_info['view_num'] = $numdata['view_num'];
@@ -764,34 +770,35 @@ class LiveController extends BaseController
         $page = request()->get('page', 1);
         $limit = 10;
         $offset = ($page - 1) * $limit;
-        if($this->is_ios){
-            $not_show_list = DB::table('yz_appletslive_room')
-                ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag', 'buy_type', 'ios_open', 'ios_goods_id', 'expire_time', 'goods_id')
-                ->where('type', 1)
-                ->where('is_selected', 1)
-                ->where('delete_time', 0)
-                ->where('buy_type',1)
-                ->where('ios_open',0)
-                ->orderBy('sort', 'desc')
-                ->orderBy('id', 'desc')
-                ->get();
+        // fix 2020-12-12上线课程 显示/分享 状态控制开关，把原IOS不显示付费课程的逻辑取消了
+        // if($this->is_ios){
+        //     $not_show_list = DB::table('yz_appletslive_room')
+        //         ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag', 'buy_type', 'ios_open', 'ios_goods_id', 'expire_time', 'goods_id')
+        //         ->where('type', 1)
+        //         ->where('is_selected', 1)
+        //         ->where('delete_time', 0)
+        //         ->where('buy_type',1)
+        //         ->where('ios_open',0)
+        //         ->orderBy('sort', 'desc')
+        //         ->orderBy('id', 'desc')
+        //         ->get();
 
-            $not_show_array = array();
-            foreach ($not_show_list as $val){
-                $not_show_array[] = $val['id'];
-            }
-            $my_subscription = DB::table('yz_appletslive_room_subscription')
-                ->where('uniacid', $this->uniacid)
-                ->where('user_id', $this->user_id)
-                ->whereNotIn('room_id', $not_show_array)
-                ->where('type', 1)
-                ->where('status', 1) //0 取消订阅 1 订阅 fixby-wk-20201005 订阅状态
-                ->pluck('room_id')->toArray();
+        //     $not_show_array = array();
+        //     foreach ($not_show_list as $val){
+        //         $not_show_array[] = $val['id'];
+        //     }
+        //     $my_subscription = DB::table('yz_appletslive_room_subscription')
+        //         ->where('uniacid', $this->uniacid)
+        //         ->where('user_id', $this->user_id)
+        //         ->whereNotIn('room_id', $not_show_array)
+        //         ->where('type', 1)
+        //         ->where('status', 1) //0 取消订阅 1 订阅 fixby-wk-20201005 订阅状态
+        //         ->pluck('room_id')->toArray();
 
-        }else{
-            $my_subscription = CacheService::getUserSubscription($this->user_id);
-
-        }
+        // }else{
+        //     $my_subscription = CacheService::getUserSubscription($this->user_id);
+        // }
+        $my_subscription = CacheService::getUserSubscription($this->user_id);
 
         $list = array_slice($my_subscription, $offset, $limit);
         foreach ($list as $k => $v) {
@@ -802,6 +809,8 @@ class LiveController extends BaseController
             $numdata = CacheService::getRoomNum(array_column($list, 'id'));
             foreach ($list as $k => $v) {
                 $key = 'key_' . $v['id'];
+                $list[$k]['is_share'] = Room::getIsShareAttribute($v);
+                unset($list[$k]['display_type']);
                 $list[$k]['hot_num'] = $numdata[$key]['hot_num'];
                 $list[$k]['subscription_num'] = $numdata[$key]['subscription_num'];
                 $list[$k]['view_num'] = $numdata[$key]['view_num'];
@@ -810,7 +819,7 @@ class LiveController extends BaseController
                     $list[$k]['start_time'] = date('Y-m-d H:i', $list[$k]['start_time']);
                     $list[$k]['end_time'] = date('Y-m-d H:i', $list[$k]['end_time']);
                 }else if($list[$k]['type'] == 1){
-//              判断课程是否购买，是否在有效期内
+                    // 判断课程是否购买，是否在有效期内
                     $list[$k]['has_course'] = CacheService::getUserSubscriptionInfo($this->user_id, $v['id']);
                     $list[$k]['goods_info'] = [];
                     if ($list[$k]['goods_id'] > 0 && $list[$k]['buy_type'] == 1) {
@@ -1005,6 +1014,10 @@ class LiveController extends BaseController
         }
         $numdata = CacheService::getReplayNum($replay_id);
         // $my_watch = ($this->user_id ? CacheService::getUserWatch($this->user_id) : []);
+
+        $room = CacheService::getRoomInfo($replay_info['rid']);
+        $replay_info['is_share'] = Room::getIsShareAttribute($room);
+
         $replay_info['hot_num'] = $numdata['hot_num'];
         $replay_info['view_num'] = $numdata['view_num'];
         $replay_info['comment_num'] = $numdata['comment_num'];
@@ -1504,10 +1517,11 @@ class LiveController extends BaseController
                 ->whereNotIn('id',$not_show_array)
                 ->count();
             $list = DB::table('yz_appletslive_room')
-                ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag', 'buy_type', 'ios_open', 'ios_goods_id', 'expire_time', 'goods_id')
+                ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag', 'buy_type', 'ios_open', 'ios_goods_id', 'expire_time', 'goods_id', 'display_type')
                 ->where('type', 1)
                 ->where('is_selected', 1)
                 ->where('delete_time', 0)
+                ->whereIn('display_type', [1, 2])
                 ->whereNotIn('id',$not_show_array)
                 ->orderBy('sort', 'desc')
                 ->orderBy('id', 'desc')
@@ -1522,12 +1536,14 @@ class LiveController extends BaseController
                 $my_subscription = ($this->user_id ? CacheService::getUserSubscription($this->user_id) : []);
                 foreach ($page_val['list'] as $k => $v) {
                     $key = 'key_' . $v['id'];
+                    $page_val['list'][$k]['is_share'] = Room::getIsShareAttribute($v);
+                    unset($page_val['list'][$k]['display_type']);
                     $page_val['list'][$k]['hot_num'] = $numdata[$key]['hot_num'];
                     $page_val['list'][$k]['subscription_num'] = $numdata[$key]['subscription_num'];
                     $page_val['list'][$k]['view_num'] = $numdata[$key]['view_num'];
                     $page_val['list'][$k]['comment_num'] = $numdata[$key]['comment_num'];
                     $page_val['list'][$k]['has_subscription'] = (array_search($page_val['list'][$k]['id'], $my_subscription) === false) ? false : true;
-//              判断课程是否购买，是否在有效期内
+                    // 判断课程是否购买，是否在有效期内
                     $page_val['list'][$k]['has_course'] = ($this->user_id ? CacheService::getUserSubscriptionInfo($this->user_id, $v['id']) : false);
 
                     $page_val['list'][$k]['goods_info'] = [];
@@ -1545,12 +1561,14 @@ class LiveController extends BaseController
                 $my_subscription = ($this->user_id ? CacheService::getUserSubscription($this->user_id) : []);
                 foreach ($page_val['list'] as $k => $v) {
                     $key = 'key_' . $v['id'];
+                    $page_val['list'][$k]['is_share'] = Room::getIsShareAttribute($v);
+                    unset($page_val['list'][$k]['display_type']);
                     $page_val['list'][$k]['hot_num'] = $numdata[$key]['hot_num'];
                     $page_val['list'][$k]['subscription_num'] = $numdata[$key]['subscription_num'];
                     $page_val['list'][$k]['view_num'] = $numdata[$key]['view_num'];
                     $page_val['list'][$k]['comment_num'] = $numdata[$key]['comment_num'];
                     $page_val['list'][$k]['has_subscription'] = (array_search($page_val['list'][$k]['id'], $my_subscription) === false) ? false : true;
-//              判断课程是否购买，是否在有效期内
+                    // 判断课程是否购买，是否在有效期内
                     $page_val['list'][$k]['has_course'] = ($this->user_id ? CacheService::getUserSubscriptionInfo($this->user_id, $v['id']) : false);
 
                     $page_val['list'][$k]['goods_info'] = [];
@@ -1599,11 +1617,19 @@ class LiveController extends BaseController
     public function validateCourse()
     {
 
-        $room_id = request()->get('room_id');
+        $room_id = request()->get('room_id', 0);
+        $goods_id = request()->get('goods_id', 0);
+        $where = [];
+        if ($room_id) {
+            $where['id'] = $room_id;
+        }
+        if ($goods_id) {
+            $where['goods_id'] = $goods_id;
+        }
         $room_info = DB::table('yz_appletslive_room')
             ->select('id', 'name', 'buy_type', 'expire_time', 'goods_id')
             ->where('type', 1)
-            ->where('id', $room_id)
+            ->where($where)
             ->where('delete_time', 0)
             ->first();
 
@@ -1611,7 +1637,7 @@ class LiveController extends BaseController
         $is_expire = 1; //课程是否过期 0未过期 1过期了
         $course_expire = 0; //课程过期时间戳
 
-        if ($room_info['buy_type'] == 1) { //付费课程判断流程 免费课程不用判断
+        if (!empty($room_info) && $room_info['buy_type'] == 1) { //付费课程判断流程 免费课程不用判断
             //验证登录
             $this->needLogin();
             //验证是否购买过 是否有购买完成的订单

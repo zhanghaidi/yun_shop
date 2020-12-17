@@ -122,6 +122,7 @@ class FansService
                     $newMember = new Member();// 创建一条基本的会员主表数据
                     $newMember->uniacid = \Yunshop::app()->uniacid;
                     $newMember->groupid = $info['groupid'];
+//                    fixBy-wk-20201214 兼容自定义修改头像和昵称，同步的时候不同步用户的昵称和头像信息
                     $newMember->nickname = $info['nickname'];
                     $newMember->avatar = $info['headimgurl'];
                     $newMember->nationality = $info['country'];
@@ -142,6 +143,7 @@ class FansService
                     $fans->uniacid = \Yunshop::app()->uniacid;
                     $fans->acid = \Yunshop::app()->uniacid;
                     $fans->openid = $info['openid'];
+//                    fixBy-wk-20201214 兼容自定义修改头像和昵称，同步的时候不同步用户的昵称和头像信息
                     $fans->nickname = $info['nickname'];
                     $fans->followtime = $info['subscribe_time'];
                     $fans->unionid = !empty($info['unionid']) ? $info['unionid'] : '';
@@ -166,6 +168,7 @@ class FansService
                         $member = Member::uniacid()->where('uid','=',$fans->uid)->first();
                         if (!empty($member)) {
                             $member->groupid = $info['groupid'];
+//                            fixBy-wk-20201214 兼容自定义修改头像和昵称，同步的时候不同步用户的昵称和头像信息
                             $member->nickname = $info['nickname'];
                             $member->avatar = $info['headimgurl'];
                             $member->nationality = $info['country'];

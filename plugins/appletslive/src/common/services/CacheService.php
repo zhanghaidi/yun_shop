@@ -86,9 +86,10 @@ class CacheService
             ->where('delete_time', 0)
             ->count();
         $list = DB::table('yz_appletslive_room')
-            ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag', 'buy_type', 'goods_id' ,'ios_open', 'ios_goods_id','expire_time')
+            ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag', 'buy_type', 'goods_id' ,'ios_open', 'ios_goods_id','expire_time', 'display_type')
             ->where('type', 1)
             ->where('delete_time', 0)
+            ->whereIn('display_type', [1, 2])
             ->orderBy('sort', 'desc')
             ->orderBy('id', 'desc')
             ->offset($offset)
@@ -133,7 +134,7 @@ class CacheService
         $cache_key = self::$cache_keys['recorded.roominfo'];
         $cache_val = Cache::get($cache_key);
         $info = DB::table('yz_appletslive_room')
-            ->select('id', 'type', 'roomid', 'name', 'anchor_name', 'cover_img', 'start_time', 'end_time','live_status', 'desc', 'buy_type', 'goods_id' ,'ios_open', 'ios_goods_id','expire_time')
+            ->select('id', 'type', 'roomid', 'name', 'anchor_name', 'cover_img', 'start_time', 'end_time','live_status', 'desc', 'buy_type', 'goods_id' ,'ios_open', 'ios_goods_id','expire_time', 'display_type')
             ->where('id', $room_id)
             ->first();
         if (!$cache_val) {
@@ -510,6 +511,7 @@ class CacheService
         $info['minute'] = floor($info['time_long'] / 60);
         $info['second'] = $info['time_long'] % 60;
         $info['publish_time'] = date('Y-m-d H:i:s', $info['publish_time']);
+
         if ($cache_val) {
             $cache_val = [];
         }
@@ -1452,12 +1454,14 @@ class CacheService
             ->where('type', 1)
             ->where('is_selected', 1)
             ->where('delete_time', 0)
+            ->whereIn('display_type', [1, 2])
             ->count();
         $list = DB::table('yz_appletslive_room')
-            ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag', 'buy_type', 'ios_open', 'ios_goods_id', 'expire_time', 'goods_id')
+            ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag', 'buy_type', 'ios_open', 'ios_goods_id', 'expire_time', 'goods_id', 'display_type')
             ->where('type', 1)
             ->where('is_selected', 1)
             ->where('delete_time', 0)
+            ->whereIn('display_type', [1, 2])
             ->orderBy('sort', 'desc')
             ->orderBy('id', 'desc')
             ->offset($offset)
