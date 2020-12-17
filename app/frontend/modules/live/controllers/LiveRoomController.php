@@ -118,7 +118,12 @@ class LiveRoomController extends ApiController
         $_model->push_url = '';
         $im_service = new IMService();
         $_model->online_num = $im_service->getOnlineMemberNum($_model->group_id);
-        $_model->is_subscription = $_model->isSubscription($member_id);
+        //获取用户订阅状态
+        $_model->is_subscription = 0;
+        $userSubscription = CloudLiveRoomSubscription::where(['room_id'=>$_model->id,'user_id'=>$member_id])->first();
+        if(!empty($userSubscription)){
+            $_model->is_subscription = 1;
+        }
         $_model->goods = $_model->goods(false);
         $_model->quick_comment = array_column(DB::table('diagnostic_service_quick_comment')->select('content')->where([['type','=',7],['status','=',1]])->orderby('id','desc')->get()->toArray(),'content');
 
