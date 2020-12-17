@@ -44,7 +44,7 @@ class CloudLiveRoom extends BaseModel
     protected $guarded = [''];
     protected $mediaFields = ['cover_img', 'share_img', 'header_img'];
     protected $casts = ['start_time' => 'date', 'end_time' => 'date', 'updated_at' => 'date', 'created_at' => 'date'];
-    protected $appends = ['status_parse','is_subscription','like_num','subscription_num'];
+    protected $appends = ['status_parse'];
 
     protected static $liveStatus = [0 => '关闭', 101 => '直播中', 102 => '未开始', 103 => '已结束', 104 => '禁播', 105 => '暂停', 106 => '异常', 107 => '已过期'];
 
