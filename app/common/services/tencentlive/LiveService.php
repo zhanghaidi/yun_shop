@@ -61,7 +61,7 @@ class LiveService
             ['end_time','>=',time()]
         ];
 
-        return CloudLiveRoom::uniacid()->select('id','name','cover_img','live_status','start_time','end_time','anchor_name','share_img','pull_url','group_id','sort','virtual_people','virtual_num')->where($where)->orderby('sort','desc')->where(function ($query) use ($status){
+        return CloudLiveRoom::uniacid()->select('id','name','cover_img','live_status','start_time','end_time','anchor_name','share_img','pull_url','group_id','sort','virtual_people','virtual_num')->where($where)->orderby('sort','desc')->withCount('hasManyLike','hasManySubscription')->where(function ($query) use ($status){
             if($status > 0){
                 $query->where('live_status',$status);
             }else{
