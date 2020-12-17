@@ -31,7 +31,7 @@ class LiveRoomController extends ApiController
 
     const PAGE_SIZE = 10;
 
-    protected $ignoreAction = ['index','detail','getMsgList','sendMsg','getLiveList'];
+    protected $ignoreAction = ['index','detail','getMsgList','sendMsg','getLiveList','likeLiveRoom','subscriptionLiveRoom','unsubscriptionLiveRoom'];
 
     public function __construct()
     {
