@@ -14,6 +14,7 @@ use app\common\services\tencentlive\IMService;
 use app\common\models\live\ImCallbackLog;
 use app\common\services\tencentlive\LiveSetService;
 use Yunshop\Appletslive\common\services\BaseService;
+use app\common\models\live\CloudLiveRoomLike;
 
 class IMCallbackController extends BaseController
 {
@@ -52,8 +53,11 @@ class IMCallbackController extends BaseController
                     $_model->fill($insert_data)->save();
                     $id = $_model->id;
 
-                    //删除自定义消息中的消息ID
                     if($input_data['MsgBody'][0]['MsgContent']['Data'] == 'REMOVE_MSG'){
+                        //删除删消息回调记录
+                        $_model->destroy($id);
+                    }elseif ($input_data['MsgBody'][0]['MsgContent']['Data'] == 'LIKE_LIVE'){
+                        //删除点赞回调记录
                         $_model->destroy($id);
                     }
                 }
@@ -69,7 +73,7 @@ class IMCallbackController extends BaseController
                     if($insert_data['msg_type'] == 1){
                         $text = $this->filterMsg($v['MsgContent']['Text'],$id);
                         $extra['MsgBody'][] = [
-                            "MsgType" => $input_data['MsgBody'][0]['MsgType'], // 文本
+                            "MsgType" => $input_data['MsgBody'][0]['MsgType'], // 文本消息
                             "MsgContent" => [
                                 "Text" => $text
                             ]
@@ -77,12 +81,21 @@ class IMCallbackController extends BaseController
                     }elseif ($insert_data['msg_type'] == 4){
 
                         $extra['MsgBody'][] = [
-                            "MsgType" => $input_data['MsgBody'][0]['MsgType'], // 文本
+                            "MsgType" => $input_data['MsgBody'][0]['MsgType'], // 自定义消息
                             "MsgContent" => $input_data['MsgBody'][0]['MsgContent']
                         ];
-                        //删除自定义消息中的消息ID
+
                         if($input_data['MsgBody'][0]['MsgContent']['Data'] == 'REMOVE_MSG'){
+                            //删除自定义消息中的消息ID
                             ImCallbackLog::destroy($input_data['MsgBody'][0]['MsgContent']['Ext']);
+
+                        }elseif ($input_data['MsgBody'][0]['MsgContent']['Data'] == 'LIKE_LIVE'){
+                            //处理点赞回调
+                            CloudLiveRoomLike::create([
+                                'uniacid' => \YunShop::app()->uniacid,
+                                'user_id' => $input_data['MsgBody'][0]['MsgContent']['Ext']['uid'],
+                                'room_id'=>$input_data['MsgBody'][0]['MsgContent']['Ext']['room_id']
+                            ]);
                         }
                     }
 
