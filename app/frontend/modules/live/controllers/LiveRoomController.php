@@ -86,7 +86,7 @@ class LiveRoomController extends ApiController
             return  $this->errorJson('直播间ID为空');
         }
 
-        $_model = CloudLiveRoom::where('id',$id)->first();
+        $_model = CloudLiveRoom::where('id',$id)->withCount('hasManyLike','hasManySubscription')->first();
         if (!$_model) {
             return $this->errorJson('未获取到直播间');
         }
@@ -94,7 +94,7 @@ class LiveRoomController extends ApiController
 
         $im_service = new IMService();
         $_model->online_num = $im_service->getOnlineMemberNum($_model->group_id);
-//        $_model->online_num = 0;
+
         $_model->goods = $_model->goods(false);
         $_model->quick_comment = array_column(DB::table('diagnostic_service_quick_comment')->select('content')->where([['type','=',7],['status','=',1]])->orderby('id','desc')->get()->toArray(),'content');
 
@@ -138,6 +138,26 @@ class LiveRoomController extends ApiController
         }else{
             return $this->successJson('获取消息记录成功', $list);
         }
+    }
+
+    //直播间点赞
+
+    public function likeLiveRoom(){
+        $id = intval(request()->id);
+
+        if (!$id) {
+            return  $this->errorJson('直播间ID为空');
+        }
+
+        $member_id = \YunShop::app()->getMemberId();
+
+        if(!$member_id){
+            return  $this->errorJson('用户ID为空');
+        }
+
+
+
+
     }
 
 }
