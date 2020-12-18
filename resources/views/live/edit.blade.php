@@ -73,6 +73,13 @@
                                                         <button class="btn btn-default nav-link-goods" type="button" data-id="{{$v['id']}}" onclick="$('#modal-module-menus-goods').modal();$(this).parent().parent().addClass('focusgood')">选择商品</button>
                                                     </span>
                                                 </td>
+                                                <td colspan="2">
+                                                 <span class="input-group-btn" style="width:100px;float:left">
+                                                    <button class="btn btn-default nav-link-goods" type="button" data-id="" >商品排序:</button>
+                                                </span>
+                                                    <input class="form-control" type="text" name="live[goods_sort][]" data-id="{{$v['id']}}" data-name="goods_sort" value="{{$live['goods_sort'][$k]}}" style="width:400px;float:left"/>
+                                                    &nbsp; &nbsp;排序值越大，商品越靠前
+                                                </td>
                                             </tr>
                                         @endforeach
                                     @else
@@ -84,8 +91,15 @@
                                                 <input type="hidden" class="form-control" name="live[goods_ids][]" data-id="" data-name="goodsids"  value="" style="width:200px;float:left"  />
                                                 <input class="form-control" type="text" name="live[goods_names][]" data-id="" data-name="goodsnames" value="" style="width:400px;float:left" readonly="true">
                                                 <span class="input-group-btn">
-                                                    <button class="btn btn-default nav-link-goods" type="button" data-id="" onclick="$('#modal-module-menus-goods').modal();$(this).parent().parent().addClass('focusgood')">选择商品</button>
+                                                    <button style="width:100px;float:left" class="btn btn-default nav-link-goods" type="button" data-id="" onclick="$('#modal-module-menus-goods').modal();$(this).parent().parent().addClass('focusgood')">选择商品</button>
                                                 </span>
+                                            </td>
+                                            <td colspan="2">
+                                                 <span class="input-group-btn" style="width:100px;float:left">
+                                                    <button class="btn btn-default nav-link-goods" type="button" data-id="" >商品排序:</button>
+                                                </span>
+                                                <input class="form-control" type="text" name="live[goods_sort][]" data-id="" data-name="goods_sort" value="0" style="width:400px;float:left"/>
+                                                &nbsp; &nbsp;排序值越大，商品越靠前
                                             </td>
                                         </tr>
                                     @endif
@@ -205,7 +219,22 @@
 
     <script>
         function addParam(type) {
-            var data = '<tr><td style="text-align: center;width: 40px"><a href="javascript:;" onclick="deleteParam(this)" style="margin-top:10px;" title="删除"><i class=\'fa fa-times\'></i></a></td><td colspan="2"><input type="hidden" class="form-control" name="live[goods_ids][]"  data-id="{$id}" data-name="goodsids" value="" placeholder="按钮名称" style="width:200px;float:left"  /><input class="form-control" type="text" data-id="{$id}" data-name="goodsnames" placeholder="" value="" name="live[goods_names][]" style="width:400px;float:left" readonly="true"><span class="input-group-btn"><button class="btn btn-default nav-link-goods" type="button" data-id="{$id}" onclick="$(\'#modal-module-menus-goods\').modal();$(this).parent().parent().addClass(\'focusgood\')">选择商品</button></span></td></tr>';
+            var data = '<tr>' +
+                '<td style="text-align: center;width: 40px">' +
+                '<a href="javascript:;" onclick="deleteParam(this)" style="margin-top:10px;" title="删除"><i class=\'fa fa-times\'></i></a>' +
+                '</td><td colspan="2">' +
+                '<input type="hidden" class="form-control" name="live[goods_ids][]"  data-id="{$id}" data-name="goodsids" value="" placeholder="按钮名称" style="width:200px;float:left"  />' +
+                '<input class="form-control" type="text" data-id="{$id}" data-name="goodsnames" placeholder="" value="" name="live[goods_names][]" style="width:400px;float:left" readonly="true">' +
+                '<span class="input-group-btn"><button class="btn btn-default nav-link-goods" type="button" data-id="{$id}" onclick="$(\'#modal-module-menus-goods\').modal();$(this).parent().parent().addClass(\'focusgood\')">选择商品</button>' +
+                '</span>' +
+                '</td>' +
+                '<td colspan="2">' +
+                '<span class="input-group-btn" style="width:100px;float:left">' +
+                '<button class="btn btn-default nav-link-goods" type="button" data-id="" >商品排序:</button>' +
+                '</span>' +
+                '<input class="form-control" type="text" name="live[goods_sort][]" data-id="" data-name="goods_sort" value="0" style="width:400px;float:left"/>&nbsp; &nbsp;排序值越大，商品越靠前' +
+                '</td>' +
+                '</tr>';
             $('#param-items'+type).append(data);
         }
 

@@ -22,6 +22,7 @@ namespace Yunshop\Appletslive\frontend\controllers;
 
 use app\common\exceptions\AppException;
 use app\common\facades\Setting;
+use app\Jobs\DispatchesJobs;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use Yunshop\Appletslive\common\services\CacheService;
@@ -174,7 +175,40 @@ class LiveController extends BaseController
             'result' => $result,
         ]);
     }
+    public function testsendwxapptemplatemsg()
+    {
+        $start_time = implode('.', array_reverse(explode(' ', substr(microtime(), 2))));
 
+        $options = [
+            'app_id' => 'wxcaa8acf49f845662',
+            'secret' => 'f627c835de1b4ba43fe2cbcb95236c52',
+        ];
+        define('SIGN_PATH', 'pages/template/rumours/index?_source=share&_s_path=/pages/rumours/signin/index');//签到小程序跳转地址地址
+        $jump_page = SIGN_PATH;
+        $template_id = 'ZQzayZvME4-DaYnkHIBDzPNyttv738hpYkKA4iBbY5Y';
+        $thing1_value = '签到领取健康金';
+        $thing2_value = '点击领取守护家人健康';
+        $notice_data = [
+            'thing1' => ['value' => $thing1_value, 'color' => '#173177'],
+            'thing2' => ['value' => $thing2_value, 'color' => '#173177'],
+            'thing8' => ['value' => '坚持签到,有更多惊喜', 'color' => '#173177'],
+        ];
+        $openid = 'oP9ym5HvAsT8-TOgvzjc-2CPHPAg';
+        $page = $jump_page;
+
+        $job = new SendTemplateMsgJob('wxapp', $options, $template_id, $notice_data, $openid, '', $page);
+        $dispatch = DispatchesJobs::dispatchNow($job);
+//        $dispatch = dispatch($job);
+        $result['wxapp'] = ['job' => $job, 'dispatch' => $dispatch];
+
+        $end_time = implode('.', array_reverse(explode(' ', substr(microtime(), 2))));
+        return $this->successJson('未签到提醒队列测试', [
+            'start_time' => $start_time,
+            'end_time' => $end_time,
+            'cost' => bcsub($end_time, $start_time, 8) . ' seconds',
+            'result' => $result,
+        ]);
+    }
     /**
      * 测试发送一条微信公众号模板消息
      */

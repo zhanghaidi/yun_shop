@@ -22,10 +22,9 @@ class IMCallbackController extends BaseController
      */
     public function index()
     {
-        //$requestBody = file_get_contents("php://input");
         $req_data = request()->input();
         $input_data = request()->getContent();
-        \Log::debug('IMCallback req_data:' . json_encode($req_data, 320) . ' input_data:' . $input_data);
+        \Log::info('IMCallback  req_data:' . json_encode($req_data, 320) . ' input_data:' . $input_data);
         if ($req_data['SdkAppid'] != LiveSetService::getIMSetting('sdk_appid')) {
             return $this->responJson(4002, 'error', 'illegal SdkAppid!');
         }
@@ -45,26 +44,48 @@ class IMCallbackController extends BaseController
                 'created_at' => time()
             ];
             $extra = [];
+
             if (in_array($input_data['CallbackCommand'], ['Group.CallbackAfterSendMsg'])) {
+                //发送信息前IM回调（可以用以内容过滤检测等）
                 foreach ($input_data['MsgBody'] as $v){
                     $insert_data = array_merge($data, $this->getMsgData($input_data,$v,$_model));
                     $_model->fill($insert_data)->save();
+                    $id = $_model->id;
+
+                    //删除自定义消息中的消息ID
+                    if($input_data['MsgBody'][0]['MsgContent']['Data'] == 'REMOVE_MSG'){
+                        $_model->destroy($id);
+                    }
                 }
+
             } elseif (in_array($input_data['CallbackCommand'], ['Group.CallbackBeforeSendMsg'])) {
+                //发送信息前IM回调（可以用以内容过滤检测等）
                 $extra['MsgBody'] = [];
                 foreach ($input_data['MsgBody'] as $v){
 
                     $insert_data = array_merge($data, $this->getMsgData($input_data,$v,$_model));
-                    \Log::info('Group.CallbackBeforeSendMsg' . json_encode($insert_data));
-                    $text = $this->filterMsg($v['MsgContent']['Text']);
-                    \Log::info('Group.CallbackBeforeSendMsg' . $text);
                     $_model->fill($insert_data)->save();
-                    $extra['MsgBody'][] = [
-                        "MsgType" => $input_data['MsgBody'][0]['MsgType'], // 文本
-                        "MsgContent" => [
-                            "Text" => $text
-                        ]
-                    ];
+                    $id = $_model->id;
+                    if($insert_data['msg_type'] == 1){
+                        $text = $this->filterMsg($v['MsgContent']['Text'],$id);
+                        $extra['MsgBody'][] = [
+                            "MsgType" => $input_data['MsgBody'][0]['MsgType'], // 文本
+                            "MsgContent" => [
+                                "Text" => $text
+                            ]
+                        ];
+                    }elseif ($insert_data['msg_type'] == 4){
+
+                        $extra['MsgBody'][] = [
+                            "MsgType" => $input_data['MsgBody'][0]['MsgType'], // 文本
+                            "MsgContent" => $input_data['MsgBody'][0]['MsgContent']
+                        ];
+                        //删除自定义消息中的消息ID
+                        if($input_data['MsgBody'][0]['MsgContent']['Data'] == 'REMOVE_MSG'){
+                            ImCallbackLog::destroy($input_data['MsgBody'][0]['MsgContent']['Ext']);
+                        }
+                    }
+
                 }
             }else{
                 return $this->responJson();
@@ -83,9 +104,18 @@ class IMCallbackController extends BaseController
             'from_account' => $input_data['From_Account'],
             'Operator_Account' => empty($input_data['Operator_Account']) ? '' : $input_data['Operator_Account'],
             'msg_time' => $input_data['MsgTime'],
-            'msg_type' => $_model->getMsgType($msg_body['MsgType']),
-            'msg_content' => $msg_body['MsgContent']['Text'],
+            'msg_type' => $_model->getMsgType($msg_body['MsgType']), //回调内容类型
+            //'msg_content' => $msg_body['MsgContent']['Text'],
         ];
+
+        //根据回调类型获取回调内容
+        if($msg_data['msg_type'] == 1){
+            $msg_data['msg_content'] = $msg_body['MsgContent']['Text'];
+        }elseif ($msg_data['msg_type'] == 4){
+            $msg_data['msg_content'] = json_encode($msg_body['MsgContent']);
+        }
+
+        \Log::info('---------msg_data-------------' . json_encode($msg_data));
         return $msg_data;
     }
 
@@ -102,11 +132,12 @@ class IMCallbackController extends BaseController
         return response()->json($resp_data, 200, ['charset' => 'utf-8']);
     }
 
-    protected function filterMsg($text)
+    protected function filterMsg($text,$id)
     {
         $_model = new BaseService();
         $res_json = json_decode($text);
         if($res_json){
+            $res_json->msg_id = $id+1;
             $res_json->text = $_model->textCheck($res_json->text,false);
             return json_encode($res_json,320);
         }else{
