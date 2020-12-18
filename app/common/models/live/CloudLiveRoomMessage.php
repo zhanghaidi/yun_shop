@@ -15,4 +15,8 @@ class CloudLiveRoomMessage extends BaseModel
 
     protected $guarded = [''];
 
+    protected $casts = [
+        'msg_content' => 'json',
+    ];
+
 }
