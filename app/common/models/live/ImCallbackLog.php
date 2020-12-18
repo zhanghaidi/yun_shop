@@ -2,7 +2,6 @@
 
 namespace app\common\models\live;
 
-use Carbon\Carbon;
 use app\common\models\BaseModel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -30,10 +29,11 @@ class ImCallbackLog extends BaseModel
     use SoftDeletes;
 
     public $table = "yz_im_callback_log";
-    public $timestamps = false;
-    public $dates = ['deleted_at'];
     protected $guarded = [''];
-    protected $casts = ['msg_time' => 'date', 'updated_at' => 'date', 'created_at' => 'date'];
+    protected $casts = [
+        'msg_content' => 'json',
+        'callback_data' => 'json',
+    ];
     protected $appends = ['type_parse','msg_type_parse','msg_content_parse'];
 
     protected static $type = [['', '未知'], ['State', '在线状态'], ['Sns', '资料关系链'], ['C2C', '单聊消息'], ['Group', '群组系统']];
@@ -168,8 +168,9 @@ class ImCallbackLog extends BaseModel
         return self::$type[$type][1];
     }
 
-    public function getType($type_str)
+    public function getType($callbackCommand)
     {
+        $type_str = substr($callbackCommand, 0, strpos($callbackCommand, '.')); //截取回调方法前缀
         foreach (self::$type as $k => $v) {
             if ($v[0] == $type_str) {
                 return $k;
