@@ -17,6 +17,16 @@
                 <a class='btn btn-info' href="{{ yzWebUrl('plugin.min-app.Backend.Controllers.search.one-key', ['type' => 3]) }}" style="margin-bottom: 2px">课程详情</a>&nbsp;&nbsp;&nbsp;&nbsp;
                 <a class='btn btn-info' href="{{ yzWebUrl('plugin.min-app.Backend.Controllers.search.one-key', ['type' => 4]) }}" style="margin-bottom: 2px">商品详情</a>&nbsp;&nbsp;&nbsp;&nbsp;
                 <a class='btn btn-info' href="{{ yzWebUrl('plugin.min-app.Backend.Controllers.search.one-key', ['type' => 5]) }}" style="margin-bottom: 2px">穴位详情</a>&nbsp;&nbsp;&nbsp;&nbsp;
+
+                <div class="form-group" style="margin-top: 10px">
+                    <label class="radio-inline">
+                        <input type="radio" name="search[switch]" value="1" @if($set['search']['switch'] == 1) checked @endif> 自动推送开启
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="search[switch]" value="0" @if($set['search']['switch'] == 0) checked @endif> 自动推送关闭
+                    </label>
+                    <span class="help-text">修改配置后，请刷新页面</span>
+                </div>
             </div>
             <div class="panel-body ">
                 <table class="table table-hover">
@@ -159,6 +169,11 @@ $(function(){
     _ei = 1;
     $("table tr").each(function(){
         setTimeout(() => {
+            _switch = $('input[name="search[switch]"]:checked').val();
+            if (_switch != 1) {
+                return ;
+            }
+
             _id = $(this).attr('id');
             _minid = $(this).find('.app').find('input[name="minid"]').val();
             if (_minid == undefined || _minid <= 0 || _minid > 2) {
@@ -218,6 +233,23 @@ $(function(){
             $('.mainappSelect').hide();
             $('.shopappSelect').show();
         }
+    });
+
+    $('input[name="search[switch]"]').change(function(){
+        _switch = $('input[name="search[switch]"]:checked').val();
+        _url = "{{ yzWebUrl('plugin.min-app.Backend.Controllers.search.one-key') }}";
+        _url = _url.replace(/&amp;/g, '&');
+        _data = {
+            'search': {
+                'switch': _switch,
+            }
+        };
+        $.post(_url, _data, function(res){
+            if (res.result == 1) {
+            } else {
+                alert('设置出错了');
+            }
+        });
     });
 });
 </script>
