@@ -52,13 +52,13 @@ class IMCallbackController extends BaseController
             'client_iP' => $requestData['ClientIP'],
             'type' => $logModel->getType($contentArr['CallbackCommand']),
             'callback_command' => $contentArr['CallbackCommand'],
-            'callback_data' => $contentArr,
+            'callback_data' => json_encode($requestData, 320),
             'group_id' => $contentArr['GroupId'],
             'from_account' => $contentArr['From_Account'],
             'Operator_Account' => $contentArr['Operator_Account'],
             'msg_time' => $contentArr['MsgTime'],
             'msg_type' => $logModel->getMsgType($contentArr['MsgBody'][0]['MsgType']), //回调内容消息类型
-            'msg_content' => $contentArr['MsgBody'][0]['MsgContent']['Text'] ? json_decode($contentArr['MsgBody'][0]['MsgContent']['Text'], true) : $contentArr['MsgBody'][0]['MsgContent'] ,
+            'msg_content' => $contentArr['MsgBody'][0]['MsgContent']['Text'] ? json_encode(json_decode($contentArr['MsgBody'][0]['MsgContent']['Text'], true), 320) : $contentArr['MsgBody'][0]['MsgContent'] ,
         ];
 
         $extra = [];
