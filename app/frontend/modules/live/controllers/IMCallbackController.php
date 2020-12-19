@@ -115,6 +115,7 @@ class IMCallbackController extends BaseController
 
                 }elseif ($msgBody['MsgContent']['Data'] == 'LIKE_LIVE'){
                     //点赞处理
+                    \Log::info('========IM消息处理方法========' . json_encode($msgBody['MsgContent']['Ext'], 320));
                     CloudLiveRoomLike::create([
                         'uniacid' => \YunShop::app()->uniacid,
                         'user_id' => $msgBody['MsgContent']['Ext']['uid'],
