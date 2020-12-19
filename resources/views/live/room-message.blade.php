@@ -91,7 +91,7 @@
                                 </td>
                                 <td style="text-align: center;white-space: normal;word-break: break-all;">{{$list->msg_content->text}}</td>
                                 <td style="text-align: center;">{{$list->created_at}}</td>
-                                <td style="text-align: center;">{{$list->client_iP}}</td>
+                                <td style="text-align: center;">{{$list->client_ip}}</td>
                                 <td>
                                     <a class='btn btn-danger'
                                        href="{{yzWebUrl('live.live-room.room-message-del', ['id' => $list->id])}}"
