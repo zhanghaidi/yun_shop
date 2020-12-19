@@ -98,20 +98,20 @@ class IMCallbackController extends BaseController
     //消息统一处理方法
     protected function messageHandling($msgBody ,$msgData)
     {
-            $messageBody = $msgBody;
+            json_decode($msgBody['MsgContent'], true);
+
             if($msgBody['MsgType'] == 'TIMTextElem'){
                 //文本类型
                 $messageModel = new CloudLiveRoomMessage();
                 $msgData['msg_content'] = $msgBody['MsgContent']['Text'];
                 $messageModel->fill($msgData)->save();
                 $msg_id = $messageModel->id;
-                $textArr = json_decode($messageBody['MsgContent']['Text'], true);
 
-                $textArr['text'] = $this->filterMsg($textArr['text']);
-                $textArr['text']['msg_id'] = $msg_id;
-                \Log::info('========文本消息========' . $messageBody['MsgContent']['Text']);
-                \Log::info('========文本消息========' . $textArr);
-                $messageBody['MsgContent']['Text'] = json_encode($textArr,320);
+
+                $msgBody['MsgContent']['Text']['text'] = $this->filterMsg($msgBody['MsgContent']['Text']['text']);
+                $msgBody['MsgContent']['Text']['msg_id'] = $msg_id;
+
+                \Log::info('========文本消息========' . json_encode($msgBody['MsgContent']['Text'], 320));
             }elseif ($msgBody['MsgType'] == 'TIMTextElem'){
                 //自定义类型 删除消息、直播间点赞
                 if($msgBody['MsgContent']['Data'] == 'REMOVE_MSG'){
@@ -133,7 +133,7 @@ class IMCallbackController extends BaseController
 
         \Log::info('========IM消息处理方法========' . json_encode($msgBody, 320));
 
-        return $messageBody;
+        return $msgBody;
     }
 
     protected function responJson($ErrorCode = 0, $ActionStatus = 'OK', $ErrorInfo = '', $extra = [])
