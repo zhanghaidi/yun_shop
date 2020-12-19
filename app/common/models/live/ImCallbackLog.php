@@ -30,10 +30,10 @@ class ImCallbackLog extends BaseModel
 
     public $table = "yz_im_callback_log";
     protected $guarded = [''];
-    protected $casts = [
+    /*protected $casts = [
         'msg_content' => 'json',
         'callback_data' => 'json',
-    ];
+    ];*/
     protected $appends = ['type_parse','msg_type_parse'];
 
     protected static $type = [['', '未知'], ['State', '在线状态'], ['Sns', '资料关系链'], ['C2C', '单聊消息'], ['Group', '群组系统']];

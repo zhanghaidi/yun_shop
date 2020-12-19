@@ -15,9 +15,9 @@ class CloudLiveRoomMessage extends BaseModel
 
     protected $guarded = [''];
 
-    protected $casts = [
+    /*protected $casts = [
         'msg_content' => 'json',
-    ];
+    ];*/
 
     public function getMsgContentAttribute($value)
     {
