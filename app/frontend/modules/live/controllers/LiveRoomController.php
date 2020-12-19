@@ -162,7 +162,7 @@ class LiveRoomController extends ApiController
         $pageSize = \YunShop::request()->get('pagesize');
         $pageSize = $pageSize ? $pageSize : self::PAGE_SIZE;
 
-        $list = CloudLiveRoomMessage::uniacid()->where([['callback_command','=','Group.CallbackAfterSendMsg'],['group_id','=',$_model->group_id],['sdk_appid','=',LiveSetService::getIMSetting('sdk_appid')]])->orderby('id','desc')->paginate($pageSize)->toArray();
+        $list = CloudLiveRoomMessage::uniacid()->where([['group_id','=',$_model->group_id],['sdk_appid','=',LiveSetService::getIMSetting('sdk_appid')]])->orderby('id','desc')->paginate($pageSize)->toArray();
         if (empty($list['data'])) {
             return $this->errorJson('没有找到消息记录');
         }else{
