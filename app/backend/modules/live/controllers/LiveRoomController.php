@@ -223,9 +223,12 @@ class LiveRoomController extends BaseController
             return $this->message('Id不能为空', '', 'error');
         }
         $res = CloudLiveRoomMessage::destroy($id);
+
         if(!$res){
             return $this->message('删除失败', '', 'error');
         }
+
+        return $this->message('删除成功', Url::absoluteWeb('live.live-room.room-message'));
     }
     
 }
