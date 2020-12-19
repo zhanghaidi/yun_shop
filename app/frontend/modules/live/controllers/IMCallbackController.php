@@ -112,19 +112,18 @@ class IMCallbackController extends BaseController
             $msgBody['MsgContent']['Text'] = json_encode($msgBody['MsgContent']['Text'], 320);
             $messageModel->msg_content = $msgBody['MsgContent']['Text'];
             $messageModel->save();
-            \Log::info('========文本消息========' . $msgBody['MsgContent']['Text']);
-        }elseif ($msgBody['MsgType'] == 'TIMTextElem'){
+            \Log::info('========处理文本消息========' . $msgBody['MsgContent']['Text']);
+        }elseif ($msgBody['MsgType'] == 'TIMCustomElem'){
             //自定义类型 删除消息、直播间点赞
-            \Log::info('========自定义消息========' . $msgBody['MsgContent']);
             if($msgBody['MsgContent']['Data'] == 'REMOVE_MSG'){
                 //删除消息
-
+                \Log::info('========处理自定义删除========' . $msgBody['MsgContent']['Ext']);
                 CloudLiveRoomMessage::destroy($msgBody['MsgContent']['Ext']);
 
             }elseif ($msgBody['MsgContent']['Data'] == 'LIKE_LIVE'){
                 //点赞处理
-                //{"MsgContent":{"Data":"LIKE_LIVE","Desc":"Thumb up anchors","Ext":"{\"nickname\":\"侧耳倾听\",\"avatar\":\"https://thirdwx.qlogo.cn/mmopen/vi_32/PiajxSqBRaEJCSuDs517OJQJys43K4hFBUNTRgN4M6I9w8wdFWz1fZSiavCokJHfQxK5efEIIfRTHQn42LwLOLHw/132\",\"uid\":\"125519\",\"room_id\":3}","Sound":""},"MsgType":"TIMCustomElem"}
-                \Log::info('========自定义点赞========' . $msgBody['MsgContent']['Ext']);
+
+                \Log::info('========处理自定义点赞========' . $msgBody['MsgContent']['Ext']);
                 $ext = json_decode($msgBody['MsgContent']['Ext'], true);
                 CloudLiveRoomLike::create([
                     'uniacid' => \YunShop::app()->uniacid,
@@ -134,7 +133,7 @@ class IMCallbackController extends BaseController
             }
         }
 
-        \Log::info('========IM消息处理方法========' . json_encode($msgBody, 320));
+        \Log::info('========IM消息处理完毕结果========' . json_encode($msgBody, 320));
 
         return $msgBody;
     }
