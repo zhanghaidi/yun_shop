@@ -89,7 +89,7 @@ class IMLogController extends BaseController
 
         $pager = PaginationHelper::show($recordList->total(), $recordList->currentPage(), $recordList->perPage());
 
-        return view('live.message', [
+        return view('live.room-message', [
             'pageList'    => $recordList,
             'page'          => $pager,
             'search'        => $search
