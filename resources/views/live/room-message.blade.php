@@ -81,7 +81,7 @@
                         @foreach($pageList as $list)
                             <tr>
                                 <td style="text-align: center;">{{ $list->id }}</td>
-                                <td style="text-align: center;">{{$row->group_id}}</td>
+                                <td style="text-align: center;">{{$list->group_id}}</td>
                                 <td style="text-align: center;">
                                     <a href="{{yzWebUrl('live.live-room.room-message',array('search[keywords]' => $list->user_id ))}}">
                                         <img src='{{$list->user->avatarurl}}'
@@ -89,12 +89,12 @@
                                         {{ $list->user->nickname }}
                                     </a>
                                 </td>
-                                <td style="text-align: center;white-space: normal;word-break: break-all;">{{$row->msg_content->text}}</td>
-                                <td style="text-align: center;">{{$row->created_at}}</td>
-                                <td style="text-align: center;">{{$row->client_iP}}</td>
+                                <td style="text-align: center;white-space: normal;word-break: break-all;">{{$list->msg_content->text}}</td>
+                                <td style="text-align: center;">{{$list->created_at}}</td>
+                                <td style="text-align: center;">{{$list->client_iP}}</td>
                                 <td>
                                     <a class='btn btn-danger'
-                                       href="{{yzWebUrl('live.live-room.room-message-del', ['id' => $row->id])}}"
+                                       href="{{yzWebUrl('live.live-room.room-message-del', ['id' => $list->id])}}"
                                        onclick="return confirm('确认删除此记录吗？');return false;"><i class="fa fa-remove"></i>
                                     </a>
                                 </td>
