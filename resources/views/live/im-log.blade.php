@@ -87,7 +87,7 @@
                     <td style="text-align: center;">{{$row->from_account}}</td>
                     <td style="text-align: center;">{{$row->callback_command}}</td>
                     <td style="text-align: center;">{{$row->msg_type_parse}}</td>
-                    <td style="text-align: left;white-space: normal;word-break: break-all;">{{$row->msg_content_parse}}</td>
+                    <td style="text-align: left;white-space: normal;word-break: break-all;">@if($row->msg_type == 1) {{$row->msg_content->Text->text}} @elseif($row->msg_type == 4) {{$row->msg_content->Data}} {{$row->msg_content->Ext}} @endif</td>
                     <td style="text-align: center;">{{$row->msg_time}}</td>
                     <td style="text-align: center;">{{$row->created_at}}</td>
                     <td style="text-align: center;">{{$row->client_iP}}</td>

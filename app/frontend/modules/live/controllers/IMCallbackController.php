@@ -105,7 +105,7 @@ class IMCallbackController extends BaseController
                 $messageModel->fill($msgData)->save();
                 $msg_id = $messageModel->id;
                 $msgBody['MsgContent']['Text']['text'] = $this->filterMsg($msgBody['MsgContent']['Text']['text']);
-                $msgBody['MsgContent']['Text']['msg_id']= $msg_id;
+                $msgBody['MsgContent']['Text']['msg_id'] = $msg_id;
 
             }elseif ($msgBody['MsgType'] == 'TIMTextElem'){
                 //自定义类型 删除消息、直播间点赞

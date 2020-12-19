@@ -34,7 +34,7 @@ class ImCallbackLog extends BaseModel
         'msg_content' => 'json',
         'callback_data' => 'json',
     ];
-    protected $appends = ['type_parse','msg_type_parse','msg_content_parse'];
+    protected $appends = ['type_parse','msg_type_parse'];
 
     protected static $type = [['', '未知'], ['State', '在线状态'], ['Sns', '资料关系链'], ['C2C', '单聊消息'], ['Group', '群组系统']];
     protected static $msgType = [['', '未知'], ['TIMTextElem', '文本消息'], ['TIMLocationElem', '地理位置消息'], ['TIMFaceElem', '表情消息'], ['TIMCustomElem', '自定义消息'], ['TIMSoundElem', '语音消息'], ['TIMImageElem', '图像消息'], ['TIMFileElem', '文件消息'], ['TIMVideoFileElem', '视频消息']];
@@ -102,9 +102,9 @@ class ImCallbackLog extends BaseModel
         return $this->parseMsgType($this->msg_type);
     }
 
-    public function getMsgContentParseAttribute()
+    public function getMsgContentAttribute($value)
     {
-        return $this->parseMsgContent($this->msg_content);
+        return json_decode($value);
     }
 
     public function scopeSearch(Builder $query, $search)
@@ -177,19 +177,6 @@ class ImCallbackLog extends BaseModel
             }
         }
         return 0;
-    }
-
-    public function parseMsgContent($msg_content)
-    {
-        $res_josn = json_decode($msg_content);
-        if($res_josn){
-            if(isset($res_josn->text)){
-                return $res_josn->text;
-            }else{
-                return $res_josn->Data.':'.$res_josn->Ext;
-            }
-        }
-        return $msg_content;
     }
 
     static public function del($start, $end)
