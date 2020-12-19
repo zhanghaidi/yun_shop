@@ -2992,8 +2992,6 @@ class Menu
                                 'name'       => '直播聊天消息删除',
                                 'url'        => 'live.live-room.room-message-del',
                                 'url_params' => '',
-                                'permit'     => 1,
-                                'menu'       => 1,
                                 'icon'       => 'fa-cog',
                                 'sort'       => 0,
                                 'item'       => 'live_room_message_del',
