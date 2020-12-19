@@ -2973,29 +2973,29 @@ class Menu
                                 'item'       => 'live_room_stop',
                                 'parents'    => ['live','live_room'],
                             ],
-                        ]
-                    ],
-                    'room_message' => [
-                        'name'       => '直播间聊天消息',
-                        'url'        => 'live.IM-log.room-message',
-                        'url_params' => '',
-                        'permit'     => 1,
-                        'menu'       => 1,
-                        'icon'       => 'fa-cog',
-                        'sort'       => 0,
-                        'item'       => 'room_message',
-                        'parents'    => ['live'],
-                        'child'            => [
-                            'room_message_del' => [
-                                'name'       => '删除直播间聊天消息',
-                                'url'        => 'live.IM-log.room-message-del',
+                            'live_room_message' => [
+                                'name'       => '直播聊天消息',
+                                'url'        => 'live.live-room.im-message',
                                 'url_params' => '',
                                 'permit'     => 1,
                                 'menu'       => 1,
                                 'icon'       => 'fa-cog',
                                 'sort'       => 0,
-                                'item'       => 'room_message_del',
-                                'parents'    => ['live','room_message'],
+                                'item'       => 'live_room_stop',
+                                'parents'    => ['live','live_room'],
+                                'child'            => [
+                                    'live_room_message_del' => [
+                                        'name'       => '直播聊天删除',
+                                        'url'        => 'live.live-room.im-message-del',
+                                        'url_params' => '',
+                                        'permit'     => 1,
+                                        'menu'       => 1,
+                                        'icon'       => 'fa-cog',
+                                        'sort'       => 0,
+                                        'item'       => 'im_log_del',
+                                        'parents'    => ['live','live_room','live_room_message'],
+                                    ],
+                                ]
                             ],
                         ]
                     ],
