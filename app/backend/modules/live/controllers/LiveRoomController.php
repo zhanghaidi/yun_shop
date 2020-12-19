@@ -12,6 +12,7 @@ use app\framework\Support\Facades\Log;
 use app\common\helpers\PaginationHelper;
 use app\common\services\tencentlive\IMService;
 use app\common\models\live\CloudLiveRoomGoods;
+use app\common\models\live\CloudLiveRoomMessage;
 
 class LiveRoomController extends BaseController
 {
@@ -191,6 +192,44 @@ class LiveRoomController extends BaseController
         $room_model['goods_sort'] = $goods_sort;
 
         $this->room_model = $room_model;
+    }
+
+
+    //直播间消息列表
+    public function roomMessage()
+    {
+        $records = CloudLiveRoomMessage::records();
+
+        $search = \YunShop::request()->search;
+        if ($search) {
+
+            $records = $records->search($search);
+
+        }
+
+        $recordList = $records->orderBy('id', 'desc')->paginate();
+
+        $pager = PaginationHelper::show($recordList->total(), $recordList->currentPage(), $recordList->perPage());
+
+        return view('live.room-message', [
+            'pageList'    => $recordList,
+            'page'          => $pager,
+            'search'        => $search
+
+        ])->render();
+    }
+
+    //删除直播间消息
+    public function roomMessageDel(){
+
+        $id = \YunShop::request()->id;
+        if(empty($id)){
+            return $this->message('Id不能为空', '', 'error');
+        }
+        $res = CloudLiveRoomMessage::destroy($id);
+        if(!$res){
+            return $this->message('删除失败', '', 'error');
+        }
     }
     
 }

@@ -13,7 +13,7 @@ use app\common\components\BaseController;
 use app\common\helpers\Url;
 use app\common\helpers\PaginationHelper;
 use app\common\models\live\ImCallbackLog;
-use app\common\models\live\CloudLiveRoomMessage;
+
 
 class IMLogController extends BaseController
 {
@@ -73,40 +73,6 @@ class IMLogController extends BaseController
         return $this->message('删除成功', Url::absoluteWeb('live.IM-log.index'));
     }
 
-    //商品埋点数据
-    public function roomMessage()
-    {
-        $records = CloudLiveRoomMessage::records();
 
-        $search = \YunShop::request()->search;
-        if ($search) {
-
-            $records = $records->search($search);
-
-        }
-
-        $recordList = $records->orderBy('id', 'desc')->paginate();
-
-        $pager = PaginationHelper::show($recordList->total(), $recordList->currentPage(), $recordList->perPage());
-
-        return view('live.room-message', [
-            'pageList'    => $recordList,
-            'page'          => $pager,
-            'search'        => $search
-
-        ])->render();
-    }
-
-    public function roomMessageDel(){
-
-        $id = \YunShop::request()->id;
-        if(empty($id)){
-            return $this->message('Id不能为空', '', 'error');
-        }
-        $res = CloudLiveRoomMessage::destroy($id);
-        if(!$res){
-            return $this->message('删除失败', '', 'error');
-        }
-    }
 
 }
