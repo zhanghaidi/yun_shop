@@ -121,9 +121,14 @@ class LiveRoomController extends ApiController
         $_model->online_num = $im_service->getOnlineMemberNum($_model->group_id);
         //获取用户订阅状态
         $_model->is_subscription = 0;
+        $_model->is_like = 0;
         $userSubscription = CloudLiveRoomSubscription::where(['room_id'=>$_model->id,'user_id'=>$member_id])->first();
+        $userLike = CloudLiveRoomLike::where(['room_id'=>$_model->id,'user_id'=>$member_id])->first();
         if(!empty($userSubscription)){
             $_model->is_subscription = 1;
+        }
+        if(!empty($userLike)){
+            $_model->is_like = 1;
         }
         $_model->goods = $_model->goods(false);
         $_model->quick_comment = array_column(DB::table('diagnostic_service_quick_comment')->select('content')->where([['type','=',7],['status','=',1]])->orderby('id','desc')->get()->toArray(),'content');
