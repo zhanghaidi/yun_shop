@@ -2929,6 +2929,7 @@ class Menu
                         'item'       => 'live_set',
                         'parents'    => ['live'],
                     ],
+
                     'live_room' => [
                         'name'       => '直播间列表',
                         'url'        => 'live.live-room.index',
@@ -2973,29 +2974,30 @@ class Menu
                                 'item'       => 'live_room_stop',
                                 'parents'    => ['live','live_room'],
                             ],
-                            'live_room_message' => [
-                                'name'       => '直播聊天消息',
-                                'url'        => 'live.live-room.im-message',
+                        ]
+                    ],
+
+                    'live_room_message' => [
+                        'name'       => '直播聊天消息',
+                        'url'        => 'live.live-room.room-message',
+                        'url_params' => '',
+                        'permit'     => 1,
+                        'menu'       => 1,
+                        'icon'       => 'fa-cog',
+                        'sort'       => 0,
+                        'item'       => 'live_room_message',
+                        'parents'    => ['live'],
+                        'child'            => [
+                            'live_room_message_del' => [
+                                'name'       => '直播聊天消息删除',
+                                'url'        => 'live.live-room.room-message-del',
                                 'url_params' => '',
                                 'permit'     => 1,
                                 'menu'       => 1,
                                 'icon'       => 'fa-cog',
                                 'sort'       => 0,
-                                'item'       => 'live_room_stop',
-                                'parents'    => ['live','live_room'],
-                                'child'            => [
-                                    'live_room_message_del' => [
-                                        'name'       => '直播聊天删除',
-                                        'url'        => 'live.live-room.im-message-del',
-                                        'url_params' => '',
-                                        'permit'     => 1,
-                                        'menu'       => 1,
-                                        'icon'       => 'fa-cog',
-                                        'sort'       => 0,
-                                        'item'       => 'im_log_del',
-                                        'parents'    => ['live','live_room','live_room_message'],
-                                    ],
-                                ]
+                                'item'       => 'live_room_message_del',
+                                'parents'    => ['live','live_room_message'],
                             ],
                         ]
                     ],
