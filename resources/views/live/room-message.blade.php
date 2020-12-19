@@ -15,8 +15,8 @@
                     <input type="hidden" name="c" value="site"/>
                     <input type="hidden" name="a" value="entry"/>
                     <input type="hidden" name="m" value="yun_shop"/>
-                    <input type="hidden" name="do" value="im" id="form_do"/>
-                    <input type="hidden" name="route" value="live.IM-log.message" id="route"/>
+                    <input type="hidden" name="do" value="live" id="form_do"/>
+                    <input type="hidden" name="route" value="live.IM-log.room-message" id="route"/>
 
                     <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
                         <!-- <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">会员信息</label>-->
@@ -83,7 +83,7 @@
                                 <td style="text-align: center;">{{ $list->id }}</td>
                                 <td style="text-align: center;">{{$row->group_id}}</td>
                                 <td style="text-align: center;">
-                                    <a href="{{yzWebUrl('live.IM-log.message',array('search[keywords]' => $list->user_id ))}}">
+                                    <a href="{{yzWebUrl('live.IM-log.room-message',array('search[keywords]' => $list->user_id ))}}">
                                         <img src='{{$list->user->avatarurl}}'
                                              style='width:30px;height:30px;padding:1px;border:1px solid #ccc'/><br/>
                                         {{ $list->user->nickname }}
@@ -94,7 +94,7 @@
                                 <td style="text-align: center;">{{$row->client_iP}}</td>
                                 <td>
                                     <a class='btn btn-danger'
-                                       href="{{yzWebUrl('live.IM-log.message-del', ['id' => $row->id])}}"
+                                       href="{{yzWebUrl('live.IM-log.room-message-del', ['id' => $row->id])}}"
                                        onclick="return confirm('确认删除此记录吗？');return false;"><i class="fa fa-remove"></i>
                                     </a>
                                 </td>
