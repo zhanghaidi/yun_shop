@@ -58,7 +58,7 @@ class IMCallbackController extends BaseController
             'Operator_Account' => $contentArr['Operator_Account'],
             'msg_time' => $contentArr['MsgTime'],
             'msg_type' => $logModel->getMsgType($contentArr['MsgBody'][0]['MsgType']), //回调内容消息类型
-            'msg_content' => $contentArr['MsgBody'][0]['MsgContent']['Text'] ? $contentArr['MsgBody'][0]['MsgContent']['Text'] : $contentArr['MsgBody'][0]['MsgContent'] ,
+            'msg_content' => $contentArr['MsgBody'][0]['MsgContent']['Text'] ? json_decode($contentArr['MsgBody'][0]['MsgContent']['Text'], true) : $contentArr['MsgBody'][0]['MsgContent'] ,
         ];
 
         $extra = [];
