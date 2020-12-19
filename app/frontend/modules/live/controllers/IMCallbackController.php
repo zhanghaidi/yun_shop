@@ -90,49 +90,51 @@ class IMCallbackController extends BaseController
                 'user_id' => $contentArr['From_Account'],
             ];
             $msgBody = $this->messageHandling($contentArr['MsgBody'][0], $msgData);
+            $contentArr['MsgBody'][0] = $msgBody;
         }
 
-        return $this->responJson(0, 'OK', '', $msgBody);
+        return $this->responJson(0, 'OK', '', $contentArr);
     }
 
     //消息统一处理方法
     protected function messageHandling($msgBody ,$msgData)
     {
-            json_decode($msgBody['MsgContent'], true);
+        if($msgBody['MsgType'] == 'TIMTextElem'){
+            //文本类型
+            $messageModel = new CloudLiveRoomMessage();
+            $msgData['msg_content'] = $msgBody['MsgContent']['Text'];
+            $messageModel->fill($msgData)->save();
+            $msg_id = $messageModel->id;
+            $msgBody['MsgContent']['Text'] = json_decode($msgBody['MsgContent']['Text'], true);
 
-            if($msgBody['MsgType'] == 'TIMTextElem'){
-                //文本类型
-                $messageModel = new CloudLiveRoomMessage();
-                $msgData['msg_content'] = $msgBody['MsgContent']['Text'];
-                $messageModel->fill($msgData)->save();
-                $msg_id = $messageModel->id;
+            $msgBody['MsgContent']['Text']['text'] = $this->filterMsg($msgBody['MsgContent']['Text']['text']);
+            $msgBody['MsgContent']['Text']['msg_id'] = $msg_id;
+            $msgBody['MsgContent']['Text'] = json_encode($msgBody['MsgContent']['Text'], 320);
+            $messageModel->msg_content = $msgBody['MsgContent']['Text'];
+            $messageModel->save();
+            \Log::info('========文本消息========' . $msgBody['MsgContent']['Text']);
+        }elseif ($msgBody['MsgType'] == 'TIMTextElem'){
+            //自定义类型 删除消息、直播间点赞
+            if($msgBody['MsgContent']['Data'] == 'REMOVE_MSG'){
+                //删除消息
+                \Log::info('========自定义删除消息========' . json_encode($msgBody['MsgContent']['Ext'], 320));
+                ImCallbackLog::destroy($msgBody['MsgContent']['Ext']);
 
-
-                $msgBody['MsgContent']['Text']['text'] = $this->filterMsg($msgBody['MsgContent']['Text']['text']);
-                $msgBody['MsgContent']['Text']['msg_id'] = $msg_id;
-
-                \Log::info('========文本消息========' . json_encode($msgBody['MsgContent']['Text'], 320));
-            }elseif ($msgBody['MsgType'] == 'TIMTextElem'){
-                //自定义类型 删除消息、直播间点赞
-                if($msgBody['MsgContent']['Data'] == 'REMOVE_MSG'){
-                    //删除消息
-                    \Log::info('========自定义删除消息========' . json_encode($msgBody['MsgContent']['Ext'], 320));
-                    ImCallbackLog::destroy($msgBody['MsgContent']['Ext']);
-
-                }elseif ($msgBody['MsgContent']['Data'] == 'LIKE_LIVE'){
-                    //点赞处理
-                    //{"MsgContent":{"Data":"LIKE_LIVE","Desc":"Thumb up anchors","Ext":"{\"nickname\":\"侧耳倾听\",\"avatar\":\"https://thirdwx.qlogo.cn/mmopen/vi_32/PiajxSqBRaEJCSuDs517OJQJys43K4hFBUNTRgN4M6I9w8wdFWz1fZSiavCokJHfQxK5efEIIfRTHQn42LwLOLHw/132\",\"uid\":\"125519\",\"room_id\":3}","Sound":""},"MsgType":"TIMCustomElem"}
-                    \Log::info('========自定义点赞========' . json_encode($msgBody['MsgContent']['Ext'], 320));
-                    CloudLiveRoomLike::create([
-                        'uniacid' => \YunShop::app()->uniacid,
-                        'user_id' => $msgBody['MsgContent']['Ext']['uid'],
-                        'room_id'=> $msgBody['MsgContent']['Ext']['room_id']
-                    ]);
-                }
+            }elseif ($msgBody['MsgContent']['Data'] == 'LIKE_LIVE'){
+                //点赞处理
+                //{"MsgContent":{"Data":"LIKE_LIVE","Desc":"Thumb up anchors","Ext":"{\"nickname\":\"侧耳倾听\",\"avatar\":\"https://thirdwx.qlogo.cn/mmopen/vi_32/PiajxSqBRaEJCSuDs517OJQJys43K4hFBUNTRgN4M6I9w8wdFWz1fZSiavCokJHfQxK5efEIIfRTHQn42LwLOLHw/132\",\"uid\":\"125519\",\"room_id\":3}","Sound":""},"MsgType":"TIMCustomElem"}
+                \Log::info('========自定义点赞========' . json_encode($msgBody['MsgContent']['Ext'], 320));
+                $ext = json_decode($msgBody['MsgContent']['Ext'], true);
+                CloudLiveRoomLike::create([
+                    'uniacid' => \YunShop::app()->uniacid,
+                    'user_id' => $ext['uid'],
+                    'room_id'=> $ext['room_id']
+                ]);
             }
+        }
 
         \Log::info('========IM消息处理方法========' . json_encode($msgBody, 320));
-
+        \Log::info('========IM消息处理方法========' . $msgBody);
         return $msgBody;
     }
 
