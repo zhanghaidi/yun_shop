@@ -2988,7 +2988,7 @@ class Menu
                         'child'            => [
                             'im_log_del' => [
                                 'name'       => '删除直播间聊天消息',
-                                'url'        => 'live.IM-log.messageDel',
+                                'url'        => 'live.IM-log.message-del',
                                 'url_params' => '',
                                 'permit'     => 1,
                                 'menu'       => 1,
