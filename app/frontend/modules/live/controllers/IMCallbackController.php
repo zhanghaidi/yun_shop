@@ -31,7 +31,7 @@ class IMCallbackController extends BaseController
 
         $requestBody = request()->getContent(); //接收的post内容数据不包含网址参数
 
-        \Log::info('========IM回调数据========' . json_encode($requestData, 320));
+        \Log::info('========IM回调数据Start========' . json_encode($requestData, 320));
 
         if ($requestData['SdkAppid'] != LiveSetService::getIMSetting('sdk_appid')) {
             return $this->responJson(4002, 'error', 'illegal SdkAppid!');
@@ -122,6 +122,8 @@ class IMCallbackController extends BaseController
                     ]);
                 }
             }
+
+        \Log::info('========IM消息处理方法========' . json_encode($msgBody, 320));
 
         return $msgBody;
     }
