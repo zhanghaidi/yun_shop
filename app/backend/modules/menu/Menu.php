@@ -2975,8 +2975,33 @@ class Menu
                             ],
                         ]
                     ],
+                    'im_message' => [
+                        'name'       => '直播间聊天消息',
+                        'url'        => 'live.IM-log.message',
+                        'url_params' => '',
+                        'permit'     => 1,
+                        'menu'       => 1,
+                        'icon'       => 'fa-cog',
+                        'sort'       => 0,
+                        'item'       => 'im_message',
+                        'parents'    => ['live'],
+                        'child'            => [
+                            'im_log_del' => [
+                                'name'       => '删除直播间聊天消息',
+                                'url'        => 'live.IM-log.messageDel',
+                                'url_params' => '',
+                                'permit'     => 1,
+                                'menu'       => 1,
+                                'icon'       => 'fa-cog',
+                                'sort'       => 0,
+                                'item'       => 'im_message_del',
+                                'parents'    => ['live','im_message'],
+                            ],
+                        ]
+                    ],
+
                     'im_log' => [
-                        'name'       => 'IM消息日志',
+                        'name'       => 'IM回调日志',
                         'url'        => 'live.IM-log.index',
                         'url_params' => '',
                         'permit'     => 1,
@@ -2987,7 +3012,7 @@ class Menu
                         'parents'    => ['live'],
                         'child'            => [
                             'im_log_del' => [
-                                'name'       => 'IM消息日志删除',
+                                'name'       => 'IM回调日志删除',
                                 'url'        => 'live.IM-log.del',
                                 'url_params' => '',
                                 'permit'     => 1,
