@@ -25,6 +25,7 @@ use app\common\models\live\ImCallbackLog;
 use app\common\models\Goods;
 use app\common\models\live\CloudLiveRoomLike;
 use app\common\models\live\CloudLiveRoomSubscription;
+use app\common\models\live\CloudLiveRoomMessage;
 
 class LiveRoomController extends ApiController
 {
@@ -161,7 +162,7 @@ class LiveRoomController extends ApiController
         $pageSize = \YunShop::request()->get('pagesize');
         $pageSize = $pageSize ? $pageSize : self::PAGE_SIZE;
 
-        $list = ImCallbackLog::uniacid()->where([['callback_command','=','Group.CallbackAfterSendMsg'],['group_id','=',$_model->group_id],['sdk_appid','=',LiveSetService::getIMSetting('sdk_appid')]])->orderby('id','desc')->paginate($pageSize)->toArray();
+        $list = CloudLiveRoomMessage::uniacid()->where([['callback_command','=','Group.CallbackAfterSendMsg'],['group_id','=',$_model->group_id],['sdk_appid','=',LiveSetService::getIMSetting('sdk_appid')]])->orderby('id','desc')->paginate($pageSize)->toArray();
         if (empty($list['data'])) {
             return $this->errorJson('没有找到消息记录');
         }else{
