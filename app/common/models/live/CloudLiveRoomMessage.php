@@ -19,8 +19,13 @@ class CloudLiveRoomMessage extends BaseModel
         'msg_content' => 'json',
     ];
 
+    public function getMsgContentAttribute($value)
+    {
+        return json_decode($value);
+    }
+
     /**
-     * 获取与上报埋点相关的用户信息。
+     * 相关的用户信息。
      * return $this->hasOne('App\User', 'foreign_key', 'local_key');
      */
     public function user()
