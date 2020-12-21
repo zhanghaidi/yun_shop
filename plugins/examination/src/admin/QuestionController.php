@@ -3,6 +3,7 @@
 namespace Yunshop\Examination\admin;
 
 use app\common\components\BaseController;
+use app\common\helpers\PaginationHelper;
 use app\common\helpers\Url;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -50,11 +51,14 @@ class QuestionController extends BaseController
             }
         }
 
+        $pager = PaginationHelper::show($list['total'], $list['current_page'], $this->pageSize);
+
         return view('Yunshop\Examination::admin.question', [
             'pluginName' => ExaminationService::get('name'),
             'sort' => $questionSortTreeRs,
             'data' => $list['data'],
             'search' => $searchData,
+            'pager' => $pager,
         ]);
     }
 

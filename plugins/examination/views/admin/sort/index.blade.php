@@ -5,62 +5,7 @@
 
 <div class="rightlist">
     <div class="panel panel-default">
-        <div class="panel-heading">题库管理</div>
-        <div class="panel-body">
-            <form id="form1" role="form" class="form-horizontal form" method="post" action="">
-                <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                    <div class="input-group">
-                        <div class="input-group-addon">分类:</div>
-                        <select class="form-control" name="search[sort_id]">
-                            <option value="">全部</option>
-                            @foreach($sort as $v1)
-                                <option value="{{$v1['id']}}" @if($v1['id'] == $search['sort_id']) selected="selected" @endif>{{$v1['name']}}</option>
-                                @if($v1['children'])
-                                @foreach($v1['children'] as $v2)
-                                    <option value="{{$v2['id']}}" @if($v2['id'] == $search['sort_id']) selected="selected" @endif>{{$v2['name']}}</option>
-                                    @if($v2['children'])
-                                    @foreach($v2['children'] as $v3)
-                                        <option value="{{$v3['id']}}" @if($v3['id'] == $search['sort_id']) selected="selected" @endif>{{$v3['name']}}</option>
-                                    @endforeach
-                                    @endif
-                                @endforeach
-                                @endif
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                    <div class="input-group">
-                        <div class="input-group-addon">题型:</div>
-                        <select class="form-control" name="search[type]">
-                            <option value="">全部</option>
-                            <option value="1" @if($search['type'] == 1) selected="selected" @endif>单选题</option>
-                            <option value="2" @if($search['type'] == 2) selected="selected" @endif>多选题</option>
-                            <option value="3" @if($search['type'] == 3) selected="selected" @endif>判断题</option>
-                            <option value="4" @if($search['type'] == 4) selected="selected" @endif>填空题</option>
-                            <option value="5" @if($search['type'] == 5) selected="selected" @endif>问答题</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                    <div class="input-group">
-                        <div class="input-group-addon">题目:</div>
-                        <input type="text" placeholder="请输入题目进行模糊搜索" value="{{$search['problem']}}" name="search[problem]" class="form-control">
-                    </div>
-                </div>
-
-                <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                    <div class="input-group">
-                        <button class="btn btn-success"><i class="fa fa-search"></i> 搜索</button>
-                    </div>
-                </div>
-            </form>
-            <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                <a href="{{ yzWebUrl('plugin.examination.admin.question.add') }}" class="btn btn-info">添加题目</a>
-            </div>
-        </div>
+        <div class="panel-heading">题库分类管理</div>
     </div>
 
     <div class="panel panel-defualt">
@@ -68,30 +13,22 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th width="20%">题目</th>
-                        <th width="10%">题型</th>
-                        <th width="10%">分类</th>
-                        <th width="10%">最后更新时间</th>
-                        <th width="10%">状态</th>
+                        <th width="10%">ID</th>
+                        <th width="20%">名称</th>
+                        <th width="10%">排序</th>
+                        <th width="10%">题目数量</th>
+                        <th width="20%">创建时间</th>
                         <th width="10%">操作</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($data as $value)
                     <tr>
-                        <td>{{$value['problem']}}</td>
-                        <td>
-                            @if($value['type'] == 1) 单选 
-                            @elseif($value['type'] == 2) 多选 
-                            @elseif($value['type'] == 3) 判断
-                            @elseif($value['type'] == 4) 填空
-                            @elseif($value['type'] == 5) 问答
-                            @else 未知
-                            @endif
-                        </td>
-                        <td>{{$value['sort_name']}}</td>
-                        <td>{{$value['updated_at']}}</td>
-                        <td>@if($value['deleted_at']) 删除 @else 有效 @endif</td>
+                        <td>{{$value['id']}}</td>
+                        <td><a href="javascript:void(0);" title="查看子分类">{{$value['name']}}</a></td>
+                        <td>{{$value['order']}}</td>
+                        <td>{{$value['number']}}</td>
+                        <td>{{$value['created_at']}}</td>
                         <td>
                             <a class='btn btn-default' href="{{ yzWebUrl('plugin.examination.admin.question.edit', ['id' => $value['id']]) }}"><i class="fa fa-edit"></i></a>
 
@@ -105,5 +42,16 @@
         {!! $pager !!}
     </div>
 </div>
+
+<script language="JavaScript">
+    $(function () {
+        $('.table tbody tr td a').on('click', function(){
+            _id = $(this).parent().prev().html();
+            if (_id <= 0) {
+                return ;
+            }
+        });
+    });
+</script>
 @endsection
 

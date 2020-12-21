@@ -145,8 +145,6 @@
     </div>
 </div>
 
-
-
     <script language="JavaScript">
         function removeAnswerItem(obj) {
             $(obj).closest('.options').remove();

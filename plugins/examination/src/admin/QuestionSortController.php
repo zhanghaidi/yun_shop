@@ -3,7 +3,9 @@
 namespace Yunshop\Examination\admin;
 
 use app\common\components\BaseController;
+use app\common\helpers\PaginationHelper;
 use Yunshop\Examination\models\QuestionSortModel;
+use Yunshop\Examination\services\ExaminationService;
 
 class QuestionSortController extends BaseController
 {
@@ -11,8 +13,8 @@ class QuestionSortController extends BaseController
 
     public function index()
     {
-        $id = \YunShop::request()->id;
-        $isAjax = \YunShop::request()->is_ajax;
+        $id = (int) \YunShop::request()->id;
+        $isAjax = (int) \YunShop::request()->is_ajax;
 
         $listRs = QuestionSortModel::where('uniacid', \YunShop::app()->uniacid)
             ->where('pid', $id)
@@ -24,11 +26,11 @@ class QuestionSortController extends BaseController
             return $this->successJson('成功', $listRs['data']);
         }
 
-        $pager = PaginationHelper::show($list['total'], $list['current_page'], $this->pageSize);
+        $pager = PaginationHelper::show($listRs['total'], $listRs['current_page'], $this->pageSize);
 
         return view('Yunshop\Examination::admin.sort.index', [
             'pluginName' => ExaminationService::get('name'),
-            'data' => $list['data'],
+            'data' => $listRs['data'],
             'pager' => $pager,
         ]);
     }
