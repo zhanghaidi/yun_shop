@@ -39,7 +39,12 @@
 
                         <div class="form-group shopappSelect">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">商城小程序页面路径</label>
-                            <div class="col-sm-9 col-xs-12"><input type="text" name="page[shopapp][path]" class="form-control" value="" placeholder="请输入页面的路径" /></div>
+                            <div class="col-sm-9 col-xs-12">
+                                <select class="form-control" name="page[shopapp][path]">
+                                    <option value="">请选择页面</option>
+                                </select>
+                                <span class="help-block"></span>
+                            </div>
                         </div>
 
                         <div class="form-group shopappSelect">
@@ -75,13 +80,13 @@ $(function(){
     $('.mainappSelect').hide();
     $('.shopappSelect').hide();
 
-    $.get('/static/pages/share.json', function(data) {
-        if (!('options' in data)) {
+    $.get('/static/pages/mainShare.json', function(data) {
+        if (!('mainOptions' in data)) {
             return false;
         }
         _pageOpt = '<option value="">请选择页面</option>';
-        for (var i = 0; i < data.options.length; i++) {
-            _list = data.options[i];
+        for (var i = 0; i < data.mainOptions.length; i++) {
+            _list = data.mainOptions[i];
             if (!('value' in _list) || !('name' in _list)) {
                 continue;
             }
@@ -94,7 +99,32 @@ $(function(){
         $('select[name="page[mainapp][path]"]').html(_pageOpt);
     });
 
+    $.get('/static/pages/shopShare.json', function(data) {
+        if (!('shopOptions' in data)) {
+            return false;
+        }
+        _pageOpt = '<option value="">请选择页面</option>';
+        for (var i = 0; i < data.shopOptions.length; i++) {
+            _list = data.shopOptions[i];
+            if (!('value' in _list) || !('name' in _list)) {
+                continue;
+            }
+            if (_list.value == '') {
+                _pageOpt += '<option value="' + _list.value + '" selected>' + _list.name + '</option>'
+            } else {
+                _pageOpt += '<option value="' + _list.value + '">' + _list.name + '</option>'
+            }
+        }
+        $('select[name="page[shopapp][path]"]').html(_pageOpt);
+    });
+
     $('select[name="page[mainapp][path]"]').on('change', function(){
+        _desc = '页面路径: ';
+        _desc += $(this).val();
+        $(this).next('span').html(_desc);
+    });
+
+    $('select[name="page[shopapp][path]"]').on('change', function(){
         _desc = '页面路径: ';
         _desc += $(this).val();
         $(this).next('span').html(_desc);
