@@ -68,12 +68,12 @@
                     <table class="table table-hover" style="overflow:visible;">
                         <thead class="navbar-inner">
                         <tr>
-                            <th style='width:6%; text-align: center;'>消息ID</th>
-                            <th style='width:6%; text-align: center;'>群组ID</th>
-                            <th style='width:6%; text-align: center;'>发送用户</th>
-                            <th style='width:6%; text-align: center;'>消息内容</th>
-                            <th style='width:12%; text-align: center;'>发送时间</th>
-                            <th style='width:12%; text-align: center;'>客户端IP</th>
+                            <th style='text-align: center;'>消息ID</th>
+                            <th style='text-align: center;'>群组ID</th>
+                            <th style='text-align: center;'>发送用户</th>
+                            <th style='text-align: center;'>消息内容</th>
+                            <th style='text-align: center;'>发送时间</th>
+                            <th style='text-align: center;'>客户端IP</th>
                             <th>操作</th>
                         </tr>
                         </thead>
