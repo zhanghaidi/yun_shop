@@ -68,6 +68,7 @@
             <table class="table">
                 <thead>
                     <tr>
+                        <th width="5%">ID</th>
                         <th width="20%">题目</th>
                         <th width="10%">题型</th>
                         <th width="10%">分类</th>
@@ -79,6 +80,7 @@
                 <tbody>
                     @foreach($data as $value)
                     <tr>
+                        <td>{{$value['id']}}</td>
                         <td>{{$value['problem']}}</td>
                         <td>
                             @if($value['type'] == 1) 单选 
@@ -95,7 +97,7 @@
                         <td>
                             <a class='btn btn-default' href="{{ yzWebUrl('plugin.examination.admin.question.edit', ['id' => $value['id']]) }}"><i class="fa fa-edit"></i></a>
 
-                            <a class='btn btn-default' href="{{ yzWebUrl('plugin.face-analysis.admin.face-analysis-log-manage.del', ['id' => $value['id']]) }}" onclick="return confirm('确认删除该记录吗？');return false;"><i class="fa fa-remove"></i></a>
+                            <a class='btn btn-default' href="{{ yzWebUrl('plugin.examination.admin.question.del', ['id' => $value['id']]) }}" onclick="return confirm('确认删除该记录吗？');return false;"><i class="fa fa-remove"></i></a>
                         </td>
                     </tr>
                     @endforeach

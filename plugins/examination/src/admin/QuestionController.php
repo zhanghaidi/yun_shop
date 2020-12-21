@@ -158,7 +158,11 @@ class QuestionController extends BaseController
         }
 
         $questionSortOrderRs = (new QuestionSortModel)->getOrderList(\YunShop::app()->uniacid);
-        $questionSortTreeRs = (new QuestionSortModel)->paintTree($questionSortOrderRs);
+        if (!empty($questionSortOrderRs)) {
+            $questionSortTreeRs = (new QuestionSortModel)->paintTree($questionSortOrderRs);
+        } else {
+            $questionSortTreeRs = [];
+        }
 
         $typeDesc = QuestionModel::getTypeDesc($type);
         return view('Yunshop\Examination::admin.' . $typeDesc, [

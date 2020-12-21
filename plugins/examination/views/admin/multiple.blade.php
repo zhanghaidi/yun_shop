@@ -8,6 +8,7 @@
         <div class="panel-body">
         
             <form id="form" action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+            <input type="hidden" name="data[id]" value="{{$data['id']}}">
             <input type="hidden" name="data[type]" value="2">
 
             <div class="form-group">
