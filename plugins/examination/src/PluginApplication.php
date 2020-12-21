@@ -15,7 +15,7 @@ class PluginApplication extends \app\common\services\PluginApplication
         \app\backend\modules\menu\Menu::current()->setPluginMenu(ExaminationService::get(), [
             'name' => ExaminationService::get('name'),
             'type' => 'marketing',
-            'url' => 'plugin.examination.admin.examination-set.index', // url 可以填写http 也可以直接写路由
+            'url' => 'plugin.examination.admin.question.index', // url 可以填写http 也可以直接写路由
             'url_params' => '', //如果是url填写的是路由则启用参数否则不启用
             'permit' => 1, //如果不设置则不会做权限检测
             'menu' => 1, //如果不设置则不显示菜单，子菜单也将不显示
@@ -71,24 +71,24 @@ class PluginApplication extends \app\common\services\PluginApplication
                     ],
                 ],
 
-                'examination_set' => [
-                    'name' => '插件设置',
-                    'permit' => 1,
-                    'menu' => 1,
-                    'icon' => '',
-                    'url' => 'plugin.examination.admin.examination-set.index',
-                    'url_params' => '',
-                    'parents' => ['examination'],
-                    'child' => [
-                        // 'examination_share_set' => [
-                        //     'name' => '分享设置',
-                        //     'permit' => 1,
-                        //     'menu' => 0,
-                        //     'url' => 'plugin.face-analysis.admin.face-analysis-set.share',
-                        //     'parents' => ['examination', 'examination_set'],
-                        // ],
-                    ],
-                ],
+                // 'examination_set' => [
+                //     'name' => '插件设置',
+                //     'permit' => 1,
+                //     'menu' => 1,
+                //     'icon' => '',
+                //     'url' => 'plugin.examination.admin.examination-set.index',
+                //     'url_params' => '',
+                //     'parents' => ['examination'],
+                //     'child' => [
+                //         'examination_share_set' => [
+                //             'name' => '分享设置',
+                //             'permit' => 1,
+                //             'menu' => 0,
+                //             'url' => 'plugin.face-analysis.admin.face-analysis-set.share',
+                //             'parents' => ['examination', 'examination_set'],
+                //         ],
+                //     ],
+                // ],
 
             ],
         ]);
