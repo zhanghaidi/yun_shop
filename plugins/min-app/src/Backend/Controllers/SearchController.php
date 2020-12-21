@@ -176,7 +176,18 @@ class SearchController extends BaseController
             }
         }
 
+        $search = \YunShop::request()->search;
+        if ($search) {
+            $res = Setting::set('plugin.min_app_push', ['search' => $search]);
+            if ($res == true) {
+                return $this->successJson('成功');
+            } else {
+                return $this->errorJson('设置出错了');
+            }
+        }
+
         return view('Yunshop\MinApp::search.one-key', [
+            'set' => Setting::get('plugin.min_app_push'),
             'type' => $type,
             'post' => isset($postRs) ? $postRs : [],
             'article' => isset($articleRs) ? $articleRs : [],
