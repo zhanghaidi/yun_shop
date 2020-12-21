@@ -20,7 +20,11 @@ class QuestionController extends BaseController
     {
         $questionSortRs = (new QuestionSortModel)->getList(\YunShop::app()->uniacid);
         $questionSortOrderRs = (new QuestionSortModel)->getOrderList(\YunShop::app()->uniacid);
-        $questionSortTreeRs = (new QuestionSortModel)->paintTree($questionSortOrderRs);
+        if (!empty($questionSortOrderRs)) {
+            $questionSortTreeRs = (new QuestionSortModel)->paintTree($questionSortOrderRs);
+        } else {
+            $questionSortTreeRs = [];
+        }
 
         $searchData = \YunShop::request()->search;
         $list = QuestionModel::getList();

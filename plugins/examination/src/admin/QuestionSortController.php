@@ -4,10 +4,10 @@ namespace Yunshop\Examination\admin;
 
 use app\common\components\BaseController;
 use app\common\helpers\PaginationHelper;
+use app\common\helpers\Url;
 use Yunshop\Examination\models\QuestionModel;
 use Yunshop\Examination\models\QuestionSortModel;
 use Yunshop\Examination\services\ExaminationService;
-use app\common\helpers\Url;
 
 class QuestionSortController extends BaseController
 {
@@ -63,7 +63,7 @@ class QuestionSortController extends BaseController
                     'id' => $data['id'],
                     'uniacid' => \YunShop::app()->uniacid,
                 ])->first();
-                if (!isset($sort->id)){
+                if (!isset($sort->id)) {
                     return $this->message('参数错误', '', 'error');
                 }
             } else {
@@ -81,7 +81,11 @@ class QuestionSortController extends BaseController
         $id = (int) \YunShop::request()->id;
 
         $questionSortOrderRs = (new QuestionSortModel)->getOrderList(\YunShop::app()->uniacid);
-        $questionSortTreeRs = (new QuestionSortModel)->paintTree($questionSortOrderRs);
+        if (!empty($questionSortOrderRs)) {
+            $questionSortTreeRs = (new QuestionSortModel)->paintTree($questionSortOrderRs);
+        } else {
+            $questionSortTreeRs = [];
+        }
 
         if ($id > 0) {
             $infoRs = QuestionSortModel::where([
