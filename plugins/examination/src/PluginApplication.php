@@ -71,6 +71,25 @@ class PluginApplication extends \app\common\services\PluginApplication
                     ],
                 ],
 
+                'paper_manage' => [
+                    'name' => '试卷管理',
+                    'permit' => 1,
+                    'menu' => 1,
+                    'icon' => '',
+                    'url' => 'plugin.examination.admin.paper.index',
+                    'url_params' => '',
+                    'parents' => ['examination'],
+                    'child' => [
+                        'paper_edit' => [
+                            'name' => '编辑试卷',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.examination.admin.paper.edit',
+                            'parents' => ['examination', 'paper_manage'],
+                        ],
+                    ],
+                ],
+
                 // 'examination_set' => [
                 //     'name' => '插件设置',
                 //     'permit' => 1,

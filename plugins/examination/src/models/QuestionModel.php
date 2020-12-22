@@ -13,10 +13,10 @@ class QuestionModel extends BaseModel
     const TYPE2 = 'multiple';
     // 判断
     const TYPE3 = 'judgment';
-    // 填空
-    const TYPE4 = 'blank';
-    // 问答
-    const TYPE5 = 'qa';
+    // // 填空
+    // const TYPE4 = 'blank';
+    // // 问答
+    // const TYPE5 = 'qa';
 
     use SoftDeletes;
     public $table = 'yz_exam_question';

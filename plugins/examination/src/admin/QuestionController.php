@@ -75,9 +75,6 @@ class QuestionController extends BaseController
 
     public function edit()
     {
-        $id = (int) \YunShop::request()->id;
-        $type = (int) \YunShop::request()->type;
-
         $data = \YunShop::request()->data;
         if ($data) {
             $id = isset($data['id']) ? $data['id'] : 0;
@@ -133,6 +130,9 @@ class QuestionController extends BaseController
 
             return $this->message('保存成功', Url::absoluteWeb('plugin.examination.admin.question.edit', ['id' => $question->id]));
         }
+
+        $id = (int) \YunShop::request()->id;
+        $type = (int) \YunShop::request()->type;
 
         $question = [];
         if ($id >= 0) {

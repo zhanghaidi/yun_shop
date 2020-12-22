@@ -104,13 +104,20 @@ class QuestionLogModel extends BaseModel
     }
 
     private static function judgmentSaveDataProcess($data)
-    {}
+    {
+        $return = [];
+        if (!isset($data['answer']) || !in_array($data['answer'], [0, 1])) {
+            throw new Exception('参数answer缺失');
+        }
 
-    private static function blankSaveDataProcess($data)
-    {}
-
-    private static function qaSaveDataProcess($data)
-    {}
+        if ($data['answer'] == 1) {
+            $return['answer'] = true;
+        } else {
+            $return['answer'] = false;
+        }
+        $return['explain'] = isset($data['explain']) ? $data['explain'] : '';
+        return ['answer' => json_encode($return)];
+    }
 
     public static function getAdminManageInfo($question, $log)
     {
@@ -181,6 +188,16 @@ class QuestionLogModel extends BaseModel
             }
         }
         $return['answer'] = $option;
+        isset($data['explain']) && $return['explain'] = $data['explain'];
+        return $return;
+    }
+
+    private static function judgmentGetAdminManageInfo($data)
+    {
+        $return = ['answer' => false];
+        if (isset($data['answer']) && is_bool($data['answer'])) {
+            $return['answer'] = $data['answer'];
+        }
         isset($data['explain']) && $return['explain'] = $data['explain'];
         return $return;
     }
