@@ -13,7 +13,7 @@ class CreateImsYzExamQuestionSortTable extends Migration
                 $table->mediumIncrements('id');
                 $table->integer('uniacid', false, true)->default(0)->comment('公众号ID');
                 $table->mediumInteger('pid', false, true)->default(0)->comment('父类ID');
-                $table->string('name', 100)->nullable()->comment('名称');
+                $table->string('name', 100)->default('')->comment('名称');
                 $table->smallInteger('order', false, true)->default(0)->comment('排序');
                 $table->integer('created_at')->nullable();
                 $table->integer('updated_at')->nullable();
