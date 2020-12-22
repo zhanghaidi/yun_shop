@@ -184,8 +184,8 @@ class SignReminder extends Command
 
         } elseif ($type == 'wxapp') {
 
-            $thing1_value = $users['wxapp_nickname'].'您好,您签到领取的健康金到账啦，今天的健康金还没领取哦，赶快来签到~';
-            $thing2_value = '每天签到领取健康金啦，点击领取守护家人健康~';
+            $thing1_value = '签到领取健康金';
+            $thing2_value = '点击领取守护家人健康';
 
             $param['options'] = $this->options['wxapp'];
             $param['page'] = $jump_page;
@@ -193,7 +193,7 @@ class SignReminder extends Command
             $param['notice_data'] = [
                 'thing1' => ['value' => $thing1_value, 'color' => '#173177'],
                 'thing2' => ['value' => $thing2_value, 'color' => '#173177'],
-                'name3' => ['value' => '坚持签到即可奖励健康金，更多惊喜等着你~', 'color' => '#173177'],
+                'thing8' => ['value' => '坚持签到,有更多惊喜', 'color' => '#173177'],
             ];
         }
 

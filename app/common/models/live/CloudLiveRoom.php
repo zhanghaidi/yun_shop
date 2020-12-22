@@ -10,6 +10,7 @@ use app\common\models\Goods;
 use app\common\models\live\CloudLiveRoomLike;
 use app\common\models\live\CloudLiveRoomSubscription;
 use app\backend\modules\tracking\models\DiagnosticServiceUser;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class CloudLiveRoom
@@ -165,7 +166,17 @@ class CloudLiveRoom extends BaseModel
             if($need_all){
                 return Goods::uniacid()->whereIn('id',explode(',',$this->goods_ids))->get()->toArray();
             }else{
-                return Goods::uniacid()->whereIn('id',explode(',',$this->goods_ids))->where('status',1)->orderby('display_order','desc')->get()->toArray();
+//                fixBy-wk-20201217 直播间关联商品，照自定义排序
+                $goods_list = DB::table('yz_cloud_live_room_goods as room_goods')
+                    ->join('yz_goods as goods', 'goods.id', '=', 'room_goods.goods_ids')
+                    ->select('goods.id', 'goods.title', 'goods.thumb','goods.market_price','goods.price','goods.sales_one_name','goods.sales_two_name','room_goods.sort')
+                    ->whereIn('goods.id',explode(',',$this->goods_ids))
+                    ->where('goods.status',1)
+                    ->where('room_goods.room_id',$this->id)
+                    ->orderby('room_goods.sort','desc')
+                    ->get()->toArray();
+
+                return $goods_list;
             }
         }
         return [];
