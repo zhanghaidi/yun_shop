@@ -57,12 +57,19 @@ class QuestionController extends BaseController
 
         $pager = PaginationHelper::show($list['total'], $list['current_page'], $this->pageSize);
 
-        return view('Yunshop\Examination::admin.question', [
+        $view = 'question';
+        if (\YunShop::request()->source == 'manual') {
+            $paperId = (int) \YunShop::request()->paper_id;
+            $view = 'paper.question';
+        }
+
+        return view('Yunshop\Examination::admin.' . $view, [
             'pluginName' => ExaminationService::get('name'),
             'sort' => $questionSortTreeRs,
             'data' => $list['data'],
             'search' => $searchData,
             'pager' => $pager,
+            'paper_id' => isset($paperId) ? $paperId : 0,
         ]);
     }
 
