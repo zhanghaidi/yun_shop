@@ -71,8 +71,8 @@ class LiveReminder extends Command
         $wait_seconds = 60 * 2;
         $check_time_range = [$time_now, $time_now + $wait_seconds];
 
-        // 1、查询开始时间距离当前时间2分钟之内开播的直播
-        $startLiveRoom = CloudLiveRoom::where('live_status', 101)->where('start_time', $check_time_range)->select('id','name','live_status','start_time','anchor_name')->with('hasManySubscription')->get()->toArray();
+        // 1、查询开始时间距离当前时间2分钟之内开播的直播 where('live_status', 101)暂时不卡播放状态
+        $startLiveRoom = CloudLiveRoom::where('start_time', $check_time_range)->select('id','name','live_status','start_time','anchor_name')->with('hasManySubscription')->get()->toArray();
 
         //查询订阅开播直播间的用户
         foreach ($startLiveRoom as $room) {
@@ -90,7 +90,7 @@ class LiveReminder extends Command
 
                     $job_param = $this->makeJobParam($type, $room);
                     Log::info("模板消息内容:".$type,$openid." -------". $job_param);
-                    $job = new SendTemplateMsgJob($type, $job_param['options'], $job_param['template_id'], $job_param['notice_data'], $openid, '', $job_param['page']);
+                    $job = new SendTemplateMsgJob($type, $job_param['options'], $job_param['template_id'], $job_param['notice_data'], $openid, '', $job_param['page'],'shop');
                     $dispatch = dispatch($job);
 
                     Log::info("队列已添加:".$type, ['job' => $job, 'dispatch' => $dispatch]);
