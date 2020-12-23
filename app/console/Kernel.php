@@ -84,9 +84,9 @@ class Kernel extends ConsoleKernel
             ->cron('0 10,15,18,20 * * *');
 
         //每分钟执行直播间订阅开播提醒
-        /*$schedule->command('command:livereminder')
+        $schedule->command('command:livereminder')
             ->withoutOverlapping()
-            ->everyMinute();*/
+            ->everyMinute();
     }
 
     /**
