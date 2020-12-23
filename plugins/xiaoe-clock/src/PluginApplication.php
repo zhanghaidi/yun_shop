@@ -22,7 +22,6 @@ class PluginApplication extends \app\common\services\PluginApplication
     }
 
 
-
     protected function setMenuConfig()
     {
         /**
@@ -30,29 +29,40 @@ class PluginApplication extends \app\common\services\PluginApplication
          */
 
         Menu::current()->setPluginMenu('xiaoe_clock', [
-            'name'              => '打卡活动',
-            'type'              => 'marketing',
-            'url'               => 'plugin.xiaoe-clock.admin.set.index',
-            'url_params'        => '',
-            'permit'            => 1,
-            'menu'              => 1,
-            'top_show'          => 0,
-            'left_first_show'   => 0,
-            'left_second_show'  => 1,
-            'icon'              => 'fa-circle',
-            'list_icon'         => 'clock_in',
-            'parents'           => [],
-            'child'             => [
+            'name' => '打卡活动',
+            'type' => 'marketing',
+            'url' => 'plugin.xiaoe-clock.admin.set.index',
+            'url_params' => '',
+            'permit' => 1,
+            'menu' => 1,
+            'top_show' => 0,
+            'left_first_show' => 0,
+            'left_second_show' => 1,
+            'icon' => 'fa-circle',
+            'list_icon' => 'clock_in',
+            'parents' => [],
+            'child' => [
                 'circle' => [
-                    'name'      => '圈子设置',
-                    'permit'    => 1,
-                    'menu'      => 1,
-                    'icon'      => '',
-                    'url'       => 'plugin.xiaoe-clock.admin.set.index',
-                    'url_params'=> '',
-                    'parents'   => ['xiaoe_clock'],
-                    'child'     => []
+                    'name' => '打卡设置',
+                    'permit' => 1,
+                    'menu' => 1,
+                    'icon' => '',
+                    'url' => 'plugin.xiaoe-clock.admin.set.index',
+                    'url_params' => '',
+                    'parents' => ['xiaoe_clock'],
+                    'child' => []
+                ],
+                'clock' => [
+                    'name' => '打卡管理',
+                    'permit' => 1,
+                    'menu' => 1,
+                    'icon' => '',
+                    'url' => 'plugin.xiaoe-clock.admin.set.index',
+                    'url_params' => '',
+                    'parents' => ['xiaoe_clock'],
+                    'child' => []
                 ]
+
             ]
         ]);
     }
