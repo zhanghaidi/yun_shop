@@ -131,7 +131,7 @@ class TestController extends BaseController
             $remark_value = '【' . $room['name'] . '】正在进行中,观看直播互动享更多福利优惠~';
 
             $param['options'] = $this->options['wechat'];
-            $param['page'] = $jump_page . urlencode($jump_tail);
+            $param['page'] = urlencode($jump_tail);
             $param['template_id'] = 'c-tYzcbVnoqT33trwq6ckW_lquLDPmqySXvntFJEMhE'; //课程进度提醒模板
             $param['notice_data'] = [
                 'first' =>  ['value' => $first_value, 'color' => '#173177'],
@@ -153,7 +153,7 @@ class TestController extends BaseController
             $thing1_value = '直播间开播提醒';
 
             $param['options'] = $this->options['wxapp'];
-            $param['page'] = $jump_page . urlencode($jump_tail);
+            $param['page'] = urlencode($jump_tail);
             $param['template_id'] = 'ABepy-L03XH_iU0tPd03VUV9KQ_Vjii5mClL7Qp8_jc';
             $param['notice_data'] = [
                 'thing1' => ['value' => $thing1_value, 'color' => '#173177'],
