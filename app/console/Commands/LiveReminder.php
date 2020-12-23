@@ -70,8 +70,8 @@ class LiveReminder extends Command
         $wait_seconds = 60 * 2;
         $check_time_range = [$time_now, $time_now + $wait_seconds];
 
-        // 1、查询开始时间距离当前时间2分钟之内开播的直播 where('live_status', 101)暂时不卡播放状态 where('start_time', $check_time_range)->
-        $startLiveRoom = CloudLiveRoom::select('id','name','live_status','start_time','anchor_name')->with('hasManySubscription')->get()->toArray();
+        // 1、查询开始时间距离当前时间2分钟之内开播的直播 where('live_status', 101)暂时不卡播放状态
+        $startLiveRoom = CloudLiveRoom::where('start_time', $check_time_range)->select('id','name','live_status','start_time','anchor_name')->with('hasManySubscription')->get()->toArray();
 
         //查询订阅开播直播间的用户
         foreach ($startLiveRoom as $room) {
@@ -125,7 +125,7 @@ class LiveReminder extends Command
            $remark_value = '【' . $room['name'] . '】正在进行中,观看直播互动享更多福利优惠~';
 
            $param['options'] = $this->options['wechat'];
-           $param['page'] = urlencode($jump_tail);
+           $param['page'] = $jump_tail;
            $param['template_id'] = 'c-tYzcbVnoqT33trwq6ckW_lquLDPmqySXvntFJEMhE'; //课程进度提醒模板
             $param['notice_data'] = [
                 'first' =>  ['value' => $first_value, 'color' => '#173177'],
@@ -147,7 +147,7 @@ class LiveReminder extends Command
             $thing1_value = '直播间开播提醒';
 
             $param['options'] = $this->options['wxapp'];
-            $param['page'] = urlencode($jump_tail);
+            $param['page'] = $jump_tail;
             $param['template_id'] = 'ABepy-L03XH_iU0tPd03VUV9KQ_Vjii5mClL7Qp8_jc';
             $param['notice_data'] = [
                 'thing1' => ['value' => $thing1_value, 'color' => '#173177'],
