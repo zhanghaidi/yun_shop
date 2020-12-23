@@ -157,7 +157,7 @@
                         </div>
                         <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">虚拟倍数</label>
-                            <div class="col-sm-9 col-xs-12"><input type="text" name="live[virtual_num]" class="form-control" value="{{$live['virtual_num'] ? $live['virtual_num'] : 0}}" placeholder="请输入直播间虚拟倍数"/></div>
+                            <div class="col-sm-9 col-xs-12"><input type="text" name="live[virtual_num]" class="form-control" value="{{$live['virtual_num'] ? $live['virtual_num'] : 1}}" placeholder="请输入直播间虚拟倍数最低为1"/></div>
                         </div>
 
                         <div class="form-group">
