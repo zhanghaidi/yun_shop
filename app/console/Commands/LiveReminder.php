@@ -91,7 +91,7 @@ class LiveReminder extends Command
                     $job_param = $this->makeJobParam($type, $room);
                     Log::info("模板消息内容:" . $type . $openid, $job_param);
 
-                    $job = new SendTemplateMsgJob($type, $job_param['options'], $job_param['template_id'], $job_param['notice_data'], $openid, '', $job_param['page'], 'shop');
+                    $job = new SendTemplateMsgJob($type, $job_param['options'], $job_param['template_id'], $job_param['notice_data'], $openid, '', $job_param['page'], $job_param['miniprogram']);
                     $dispatch = dispatch($job);
 
                     Log::info("队列已添加:".$type, ['job' => $job, 'dispatch' => $dispatch]);
