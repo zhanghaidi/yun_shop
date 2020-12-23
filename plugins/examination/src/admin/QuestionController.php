@@ -57,7 +57,7 @@ class QuestionController extends BaseController
 
         $pager = PaginationHelper::show($list['total'], $list['current_page'], $this->pageSize);
 
-        $view = 'question';
+        $view = 'question.question';
         if (\YunShop::request()->source == 'manual') {
             $paperId = (int) \YunShop::request()->paper_id;
             $view = 'paper.question';
@@ -75,7 +75,7 @@ class QuestionController extends BaseController
 
     public function add()
     {
-        return view('Yunshop\Examination::admin.add', [
+        return view('Yunshop\Examination::admin.question.add', [
             'pluginName' => ExaminationService::get('name'),
         ]);
     }
@@ -172,7 +172,7 @@ class QuestionController extends BaseController
         }
 
         $typeDesc = QuestionModel::getTypeDesc($type);
-        return view('Yunshop\Examination::admin.' . $typeDesc, [
+        return view('Yunshop\Examination::admin.question.' . $typeDesc, [
             'pluginName' => ExaminationService::get('name'),
             'sort_tree' => $questionSortTreeRs,
             'data' => $question,

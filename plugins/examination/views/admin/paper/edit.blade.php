@@ -138,8 +138,8 @@
                     </div>
                 </div>
                 <div class="col-xs-12 col-sm-1 col-md-1 question_operate hide">
-                    <button type="button" class="btn btn-xs btn-success" name="op-up" style="margin-bottom: 5px;margin-top: -5px"><i class="fa fa-chevron-up"></i></button>
-                    <button type="button" class="btn btn-xs btn-primary" name="op-down" style="margin-bottom: 5px"><i class="fa fa-chevron-down"></i></button>
+                    <button type="button" class="btn btn-xs btn-success" name="op-up" style="margin-bottom: 5px;margin-top: -5px"><i class="fa fa-chevron-up"></i></button> <br />
+                    <button type="button" class="btn btn-xs btn-primary" name="op-down" style="margin-bottom: 5px"><i class="fa fa-chevron-down"></i></button> <br />
                     <button type="button" class="btn btn-xs btn-danger" name="op-del"><i class="fa fa-trash"></i></button>
                 </div>
             </div>
@@ -309,8 +309,8 @@ function addQuestion(question_ids) {
             _question_str += '</div>';
             _question_str += '</div>';
             _question_str += '<div class="col-xs-12 col-sm-1 col-md-1 question_operate hide">';
-            _question_str += '<button type="button" class="btn btn-xs btn-success" name="op-up" style="margin-bottom: 5px;margin-top: -5px"><i class="fa fa-chevron-up"></i></button>';
-            _question_str += '<button type="button" class="btn btn-xs btn-primary" name="op-down" style="margin-bottom: 5px"><i class="fa fa-chevron-down"></i></button>';
+            _question_str += '<button type="button" class="btn btn-xs btn-success" name="op-up" style="margin-bottom: 5px;margin-top: -5px"><i class="fa fa-chevron-up"></i></button> <br />';
+            _question_str += '<button type="button" class="btn btn-xs btn-primary" name="op-down" style="margin-bottom: 5px"><i class="fa fa-chevron-down"></i></button> <br />';
             _question_str += '<button type="button" class="btn btn-xs btn-danger" name="op-del"><i class="fa fa-trash"></i></button>';
             _question_str += '</div>';
             _question_str += '</div>';
