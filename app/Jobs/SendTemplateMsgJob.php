@@ -58,7 +58,16 @@ class SendTemplateMsgJob implements ShouldQueue
 
         if ($this->config['type'] == 'wechat') {
             Log::info("------------------------ 发送公众号模板消息 BEGIN -------------------------------");
-            $miniprogram = $this->config['miniprogram'];
+
+            if ($this->config['miniprogram']) {
+                $miniprogram = $this->config['miniprogram'];
+            }else{
+                $miniprogram = ['miniprogram' => [
+                    'appid' => 'wxcaa8acf49f845662', //小程序appid
+                    'pagepath' => $this->config['page'],
+                ]];
+            }
+
 
             try {
                 $app = new Application($this->config['options']);
