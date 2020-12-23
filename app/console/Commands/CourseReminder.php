@@ -299,8 +299,8 @@ class CourseReminder extends Command
      */
     private function makeJobParam($type, $room_name, $replay_info)
     {
-        define('COURSE_PATH', '/pages/course/CouRse/index');
-        define('LIVE_PATH', '/pages/course/liveBroadcast/liveBroadcast');
+        define('COURSE_PATH', '/pages/course/CouRse/index'); //课程详情
+        define('LIVE_PATH', '/pages/course/liveBroadcast/liveBroadcast'); //特卖直播间
 
         $param = [];
         $jump_page = '/pages/template/rumours/index?share=1&shareUrl=';
@@ -318,7 +318,7 @@ class CourseReminder extends Command
 
             $param['options'] = $this->options['wechat'];
             $param['page'] = $jump_page . urlencode($jump_tail);
-            $param['template_id'] = 'c-tYzcbVnoqT33trwq6ckW_lquLDPmqySXvntFJEMhE';
+            $param['template_id'] = 'c-tYzcbVnoqT33trwq6ckW_lquLDPmqySXvntFJEMhE'; //课程进度提醒模板
             $param['notice_data'] = [
                 'first' =>  ['value' => $first_value, 'color' => '#173177'],
                 'keyword1' => ['value' => '【' . $room_name . '】', 'color' => '#173177'],

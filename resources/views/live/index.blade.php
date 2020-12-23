@@ -72,8 +72,8 @@
                             </td>
                             <td title="{{ $list->push_url }}">{{ $list->push_url }}</td>
                             <td title="{{ $list->pull_url }}">{{ $list->pull_url }}</td>
-                            <td>{{ $list->start_time }}</td>
-                            <td>{{ $list->end_time }}</td>
+                            <td title="{{ $list->start_time }}">{{ $list->start_time }}</td>
+                            <td title="{{ $list->end_time }}">{{ $list->end_time }}</td>
                             <td><label class="label label-info">{{ $list->status_parse }}</label></td>
                             <td>{{ $list->virtual_people }}</td>
                             <td>{{ $list->virtual_num }}</td>
