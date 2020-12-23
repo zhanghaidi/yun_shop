@@ -108,7 +108,7 @@
                     <div class="input-group">
                         <div class="input-group">
                             <input type="text" name="data[interval]" class="form-control" value="{{$info['interval']}}" placeholder="请输入大于等于0的整数">
-                            <div class="input-group-addon">分钟</div>
+                            <div class="input-group-addon">小时</div>
                         </div>
                     </div>
                     <span class="help-block">0表示无限制</span>

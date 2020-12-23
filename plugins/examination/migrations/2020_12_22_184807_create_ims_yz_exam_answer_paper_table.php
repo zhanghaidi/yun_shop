@@ -14,10 +14,14 @@ class CreateImsYzExamAnswerPaperTable extends Migration
                 $table->integer('uniacid', false, true)->default(0)->comment('公众号ID');
                 $table->integer('examination_id', false, true)->default(0)->comment('考试ID');
                 $table->integer('member_id', false, true)->default(0)->comment('对应mc_member表id');
-                $table->smallInteger('score', false, true)->default(0)->comment('得分');
-				$table->text('answer')->nullable()->comment('答案:JSON格式，参考模型说明');
+                $table->smallInteger('score_total', false, true)->default(0)->comment('试卷总分');
+                $table->smallInteger('score_obtain', false, true)->default(0)->comment('得分');
+                $table->tinyInteger('question_total', false, true)->default(0)->comment('总题数');
+                $table->tinyInteger('question_correct', false, true)->default(0)->comment('正确数目');
+                $table->tinyInteger('status', false, true)->default(0)->comment('状态:1=进行中,2=结束');
                 $table->integer('created_at')->nullable();
                 $table->integer('updated_at')->nullable();
+                $table->integer('deleted_at')->nullable();
             });
         }
     }

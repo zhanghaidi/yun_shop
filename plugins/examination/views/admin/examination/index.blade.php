@@ -78,7 +78,7 @@
                             @endif
                         </td>
                         <td>
-                            @if($value['interval']) {{$value['interval']}} 分钟
+                            @if($value['interval']) {{$value['interval']}} 小时
                             @else 不限
                             @endif
                         </td>
