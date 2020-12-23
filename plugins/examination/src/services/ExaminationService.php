@@ -6,7 +6,7 @@ class ExaminationService
 {
     public $pluginLabel = 'examination';
 
-    public $pluginName = '养居益考试模块';
+    public $pluginName = '养居益考试工具';
 
     public static function get($key = '')
     {
