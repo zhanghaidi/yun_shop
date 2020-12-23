@@ -131,6 +131,9 @@ class LiveRoomController extends BaseController
         if($id){
             $this->verifyRoom($id);
             $this->room_model->live_status = 101;
+            if (is_array($this->room_model['goods_sort'])) {
+                unset($this->room_model['goods_sort']);
+            }
             if($this->room_model->save() !== $this->room_model){
                 (new LiveService())->resumeLiveStream($this->room_model->stream_name);
                 return $this->message('开始直播成功', Url::absoluteWeb('live.live-room.index'));
@@ -147,6 +150,9 @@ class LiveRoomController extends BaseController
         if($id){
             $this->verifyRoom($id);
             $this->room_model->live_status = 103;
+            if (is_array($this->room_model['goods_sort'])) {
+                unset($this->room_model['goods_sort']);
+            }
             if($this->room_model->save() !== false){
                 $live_service = new LiveService();
                 if($live_service->getDescribeLiveStreamState($this->room_model->stream_name) == 'active'){
