@@ -1,25 +1,43 @@
 <?php
 
-namespace app\frontend\controllers;
+namespace app\Console\Commands;
 
-use app\common\components\BaseController;
-use app\common\events\order\AfterOrderPaidEvent;
-use app\common\models\Option;
-use app\common\models\Order;
-use app\common\modules\goods\GoodsRepository;
-use app\common\modules\option\OptionRepository;
-use app\frontend\models\Goods;
-use app\Jobs\addGoodsCouponQueueJob;
-use app\common\models\live\CloudLiveRoom;
-use Yunshop\Love\Modules\Goods\GoodsLoveRepository;
-use app\Jobs\SendTemplateMsgJob;
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use app\framework\Support\Facades\Log;
+use Illuminate\Support\Facades\Log;
+use app\Jobs\SendTemplateMsgJob;
+use Illuminate\Support\Facades\App;
+use app\common\models\live\CloudLiveRoom;
 
-class TestController extends BaseController
+class LiveReminder extends Command
 {
+    protected $signature = 'command:livereminder';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = '云直播开播提醒命令行工具';
+
+    /**
+     * 公众号和小程序配置信息
+     * @var array
+     */
+    protected $options = [];
+
+    /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
     public function __construct()
     {
+        parent::__construct();
+
+        Log::getMonolog()->popHandler();
+        Log::useFiles(storage_path('logs/schedule.run.log'), 'info');
+
         // 公众号
         $wechat_account = DB::table('account_wechats')
             ->select('key', 'secret')
@@ -40,44 +58,20 @@ class TestController extends BaseController
             'secret' => $wxapp_account['secret'],
         ];
     }
-    public function test(){
-//        return json([1,2,3]);
-        $queueData = [
-            'uniacid' => \YunShop::app()->uniacid,
-            'goods_id' => 'laoge001',
-            'uid' => 'uid-123321',
-            'coupon_id' => 'coupon-456654',
-            'send_num' => '123',
-            'end_send_num' => 0,
-            'status' => 0,
-            'created_at' => time()
-        ];
-        $this->dispatch((new addGoodsCouponQueueJob($queueData)));
-        return json([1,2,3]);
-    }
-    public function index()
+
+    /**
+     * Execute the console command.
+     *
+     * @return mixed
+     */
+    public function handle()
     {
-        $order = Order::find(45751);
-        event(new AfterOrderPaidEvent($order));
-//        $goods = Goods::find(1175);
-//        $goods->reduceStock(1);
-        return $this->successJson();
-//        $goods->stock = max($goods->stock - 1, 0);
-//        $goods->save();
-//        $stock = file_get_contents(storage_path('app/test'));
-//        $stock = max($stock - 1, 0);
-//        file_put_contents(storage_path('app/test'), $stock . PHP_EOL);
-
-    }
-
-    public function testlive(){
         $time_now = time();
         $wait_seconds = 60 * 1;
         $check_time_range = [$time_now - $wait_seconds - 60,$time_now - $wait_seconds];
 
-        // 1、查询开始时间距离当前时间2分钟之内开播的直播 where('live_status', 101)暂时不卡播放状态 where('start_time', $check_time_range)->
+        // 1、查询开始时间距离当前时间2分钟之内开播的直播 where('live_status', 101)暂时不卡播放状态
         $startLiveRoom = CloudLiveRoom::whereBetween('start_time', $check_time_range)->select('id','name','live_status','start_time','anchor_name')->with('hasManySubscription')->get()->toArray();
-
 
         //查询订阅开播直播间的用户
         foreach ($startLiveRoom as $room) {
@@ -95,7 +89,7 @@ class TestController extends BaseController
                     $openid = $user['openid'] ? $user['openid'] : $user['shop_openid'];
 
                     $job_param = $this->makeJobParam($type, $room);
-                    Log::info("模板消息内容:".$openid.$type, $job_param);
+                    Log::info("模板消息内容:" . $type . $openid, $job_param);
 
                     $job = new SendTemplateMsgJob($type, $job_param['options'], $job_param['template_id'], $job_param['notice_data'], $openid, '', $job_param['page'], $job_param['miniprogram']);
                     $dispatch = dispatch($job);
@@ -121,18 +115,18 @@ class TestController extends BaseController
         define('CLOUD_LIVE_PATH', '/pages/cloud-live/live-player/live-player?tid='); //云直播间
 
         $param = [];
-        $jump_page = '/pages/template/shopping/index?share=1&shareUrl=';
+        //$jump_page = '/pages/template/shopping/index?share=1&shareUrl=';
 
         $jump_tail = CLOUD_LIVE_PATH . $room['id']; //直播间路径
 
         if ($type == 'wechat') {
 
-            $first_value = '尊敬的用户,您订阅的直播间开始直播啦~';
-            $remark_value = '【' . $room['name'] . '】正在进行中,观看直播互动享更多福利优惠~';
+           $first_value = '尊敬的用户,您订阅的直播间开始直播啦~';
+           $remark_value = '【' . $room['name'] . '】正在进行中,观看直播互动享更多福利优惠~';
 
-            $param['options'] = $this->options['wechat'];
-            $param['page'] = $jump_tail;
-            $param['template_id'] = 'c-tYzcbVnoqT33trwq6ckW_lquLDPmqySXvntFJEMhE'; //课程进度提醒模板
+           $param['options'] = $this->options['wechat'];
+           $param['page'] = $jump_tail;
+           $param['template_id'] = 'c-tYzcbVnoqT33trwq6ckW_lquLDPmqySXvntFJEMhE'; //课程进度提醒模板
             $param['notice_data'] = [
                 'first' =>  ['value' => $first_value, 'color' => '#173177'],
                 'keyword1' => ['value' => '【' . $room['name'] . '】', 'color' => '#173177'],

@@ -32,7 +32,7 @@ class SendTemplateMsgJob implements ShouldQueue
      * @param string $page
      * @param bool $refresh_miniprogram_access_token
      */
-    public function __construct($type, $options, $template_id, $notice_data, $openid, $url = '', $page = '', $refresh_miniprogram_access_token = false)
+    public function __construct($type, $options, $template_id, $notice_data, $openid, $url = '', $page = '', $miniprogram = array())
     {
         $this->config = [
             'type' => $type,
@@ -42,7 +42,7 @@ class SendTemplateMsgJob implements ShouldQueue
             'openid' => $openid,
             'url' => $url,
             'page' => $page,
-            'refresh_miniprogram_access_token' => $refresh_miniprogram_access_token,
+            'miniprogram' => $miniprogram
         ];
     }
 
@@ -58,13 +58,17 @@ class SendTemplateMsgJob implements ShouldQueue
 
         if ($this->config['type'] == 'wechat') {
             Log::info("------------------------ 发送公众号模板消息 BEGIN -------------------------------");
-            $miniprogram = [];
-            if ($this->config['page'] != '') {
+
+            if ($this->config['miniprogram']) {
+                $miniprogram = $this->config['miniprogram'];
+            }else{
                 $miniprogram = ['miniprogram' => [
                     'appid' => 'wxcaa8acf49f845662', //小程序appid
                     'pagepath' => $this->config['page'],
                 ]];
             }
+
+
             try {
                 $app = new Application($this->config['options']);
                 $app = $app->notice;
@@ -104,32 +108,9 @@ class SendTemplateMsgJob implements ShouldQueue
         $url = sprintf($url, $this->config['options']['app_id'], $this->config['options']['secret']);
         $response = self::curl_get($url);
         $result = @json_decode($response, true);
-        //$res = ihttp_get($url);
-        //$content = @json_decode($res['content'],true);
+
         return $result['accesstoken'];
 
-        /*$cache_key = 'miniprogram_' . $this->config['options']['app_id'] . '_token';
-        $cache_val = Cache::get($cache_key);
-        if ($this->config['refresh_miniprogram_access_token']) {
-            $cache_val = null;
-        }
-        if (!$cache_val || $cache_val['expire_at'] <= time()) {
-            $url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s';
-            $url = sprintf($url, $this->config['options']['app_id'], $this->config['options']['secret']);
-            $response = self::curl_get($url);
-            $result = json_decode($response,true);
-            if (!is_array($result) || !array_key_exists('access_token', $result)) {
-                Log::error('小程序获取access_token失败:', [
-                    'url' => $url,
-                    'config' => $this->config,
-                    'result' => $result,
-                ]);
-                return false;
-            }
-            $cache_val = ['token' => $result['access_token'], 'expire_at' => strtotime('+80 minutes')];
-            Cache::put($cache_key, $cache_val);
-        }
-        return $cache_val['token'];*/
     }
 
 

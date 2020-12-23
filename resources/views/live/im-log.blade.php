@@ -72,8 +72,7 @@
                 <th style='text-align: center;'>回调命令字</th>
                 <th style='text-align: center;'>消息类型</th>
                 <th style='text-align: center;'>消息内容</th>
-                <th style='text-align: center;'>消息发送时间</th>
-                <th style='text-align: center;'>创建时间</th>
+                <th style='text-align: center;'>回调时间</th>
                 <th style='text-align: center;'>客户端IP地址</th>
                 <th>操作</th>
             </tr>
@@ -87,8 +86,8 @@
                     <td style="text-align: center;">{{$row->from_account}}</td>
                     <td style="text-align: center;">{{$row->callback_command}}</td>
                     <td style="text-align: center;">{{$row->msg_type_parse}}</td>
-                    <td style="text-align: left;white-space: normal;word-break: break-all;">{{$row->msg_content_parse}}</td>
-                    <td style="text-align: center;">{{$row->msg_time}}</td>
+                    <td style="text-align: center;white-space: normal;word-break: break-all;">@if($row->msg_type == 1) {{$row->msg_content->text}} @elseif($row->msg_type == 4) {{$row->msg_content->Data}} @if($row->msg_content->Data == 'REMOVE_MSG')  {{$row->msg_content->Ext}}  @endif @endif</td>
+                   {{-- <td style="text-align: center;">{{$row->msg_time}}</td>--}}
                     <td style="text-align: center;">{{$row->created_at}}</td>
                     <td style="text-align: center;">{{$row->client_iP}}</td>
                     <td>

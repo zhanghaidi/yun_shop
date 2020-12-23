@@ -2929,6 +2929,7 @@ class Menu
                         'item'       => 'live_set',
                         'parents'    => ['live'],
                     ],
+
                     'live_room' => [
                         'name'       => '直播间列表',
                         'url'        => 'live.live-room.index',
@@ -2975,8 +2976,32 @@ class Menu
                             ],
                         ]
                     ],
+
+                    'live_room_message' => [
+                        'name'       => '直播聊天消息',
+                        'url'        => 'live.live-room.room-message',
+                        'url_params' => '',
+                        'permit'     => 1,
+                        'menu'       => 1,
+                        'icon'       => 'fa-cog',
+                        'sort'       => 0,
+                        'item'       => 'live_room_message',
+                        'parents'    => ['live'],
+                        'child'            => [
+                            'live_room_message_del' => [
+                                'name'       => '直播聊天消息删除',
+                                'url'        => 'live.live-room.room-message-del',
+                                'url_params' => '',
+                                'icon'       => 'fa-cog',
+                                'sort'       => 0,
+                                'item'       => 'live_room_message_del',
+                                'parents'    => ['live','live_room_message'],
+                            ],
+                        ]
+                    ],
+
                     'im_log' => [
-                        'name'       => 'IM消息日志',
+                        'name'       => 'IM回调日志',
                         'url'        => 'live.IM-log.index',
                         'url_params' => '',
                         'permit'     => 1,
@@ -2987,7 +3012,7 @@ class Menu
                         'parents'    => ['live'],
                         'child'            => [
                             'im_log_del' => [
-                                'name'       => 'IM消息日志删除',
+                                'name'       => 'IM回调日志删除',
                                 'url'        => 'live.IM-log.del',
                                 'url_params' => '',
                                 'permit'     => 1,

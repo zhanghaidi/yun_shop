@@ -30,6 +30,7 @@ class Kernel extends ConsoleKernel
         'app\console\Commands\MigrateMemberDistributor',
         'app\console\Commands\UpdateInviteCode',
         'app\console\Commands\SignReminder',
+        'app\console\Commands\LiveReminder',
         WriteFrame::class,
         CourseReminder::class,
         NotPaidOrderNotice::class,
@@ -82,6 +83,10 @@ class Kernel extends ConsoleKernel
             ->withoutOverlapping()
             ->cron('0 10,15,18,20 * * *');
 
+        //每分钟执行直播间订阅开播提醒
+        $schedule->command('command:livereminder')
+            ->withoutOverlapping()
+            ->everyMinute();
     }
 
     /**
