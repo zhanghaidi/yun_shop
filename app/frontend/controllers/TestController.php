@@ -14,6 +14,7 @@ use app\common\models\live\CloudLiveRoom;
 use Yunshop\Love\Modules\Goods\GoodsLoveRepository;
 use app\Jobs\SendTemplateMsgJob;
 use Illuminate\Support\Facades\DB;
+use app\framework\Support\Facades\Log;
 
 class TestController extends BaseController
 {
