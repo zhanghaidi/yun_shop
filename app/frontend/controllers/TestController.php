@@ -13,6 +13,7 @@ use app\Jobs\addGoodsCouponQueueJob;
 use app\common\models\live\CloudLiveRoom;
 use Yunshop\Love\Modules\Goods\GoodsLoveRepository;
 use app\Jobs\SendTemplateMsgJob;
+use Illuminate\Support\Facades\DB;
 
 class TestController extends BaseController
 {
