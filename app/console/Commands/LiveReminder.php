@@ -67,8 +67,8 @@ class LiveReminder extends Command
     public function handle()
     {
         $time_now = time();
-        $wait_seconds = 60 * 2;
-        $check_time_range = [$time_now, $time_now + $wait_seconds];
+        $wait_seconds = 60 * 1;
+        $check_time_range = [$time_now - $wait_seconds - 60,$time_now - $wait_seconds];
 
         // 1、查询开始时间距离当前时间2分钟之内开播的直播 where('live_status', 101)暂时不卡播放状态
         $startLiveRoom = CloudLiveRoom::whereBetween('start_time', $check_time_range)->select('id','name','live_status','start_time','anchor_name')->with('hasManySubscription')->get()->toArray();
