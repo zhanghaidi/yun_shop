@@ -72,21 +72,23 @@ class TestController extends BaseController
 
     public function testlive(){
         $time_now = time();
-        $wait_seconds = 60 * 2;
+        $wait_seconds = 7200 * 100;
         $check_time_range = [$time_now, $time_now + $wait_seconds];
 
-        // 1、查询开始时间距离当前时间2分钟之内开播的直播 where('live_status', 101)暂时不卡播放状态
-        $startLiveRoom = CloudLiveRoom::where('start_time', $check_time_range)->select('id','name','live_status','start_time','anchor_name')->with('hasManySubscription')->get()->toArray();
+        // 1、查询开始时间距离当前时间2分钟之内开播的直播 where('live_status', 101)暂时不卡播放状态 where('start_time', $check_time_range)->
+        $startLiveRoom = CloudLiveRoom::select('id','name','live_status','start_time','anchor_name')->with('hasManySubscription')->get()->toArray();
+
 
         //查询订阅开播直播间的用户
         foreach ($startLiveRoom as $room) {
             if(!empty($room['has_many_subscription'])) {
                 foreach ($room['has_many_subscription'] as $value){
-                    $user = DB::table('diagnostic_service_user as user')
-                        ->join('mc_mapping_fans as fans', 'user.unionid', '=', 'fans.unionid')
-                        ->select('user.ajy_uid', 'user.shop_openid', 'fans.openid')
-                        ->where(['user.ajy_uid' => $value['user_id'], 'fans.uniacid' => 45, 'fans.follow' => 1])
-                        ->first()->toArray();
+                    $user = DB::table('diagnostic_service_user')->select('ajy_uid','shop_openid','unionid')->where('ajy_uid', $value['user_id'])->first();
+                    $fans = DB::table('mc_mapping_fans')->select('uid', 'openid')->where(['uid' => $value['user_id'], 'follow' => 1])->first();
+                    $user['openid'] = '';
+                    if($fans){
+                        $user['openid'] = $fans['openid'];
+                    }
 
                     $type = $user['openid'] ? 'wechat' : 'wxapp';
 
@@ -94,8 +96,8 @@ class TestController extends BaseController
 
                     $job_param = $this->makeJobParam($type, $room);
                     Log::info("模板消息内容:".$type,$openid." -------". $job_param);
-                    var_dump($job_param);die;
-                    $job = new SendTemplateMsgJob($type, $job_param['options'], $job_param['template_id'], $job_param['notice_data'], $openid, '', $job_param['page'],'shop');
+
+                    $job = new SendTemplateMsgJob($type, $job_param['options'], $job_param['template_id'], $job_param['notice_data'], $openid, '', $job_param['page'], 'shop');
                     $dispatch = dispatch($job);
 
                     Log::info("队列已添加:".$type, ['job' => $job, 'dispatch' => $dispatch]);
@@ -137,6 +139,12 @@ class TestController extends BaseController
                 'keyword2' => ['value' => '长期有效', 'color' => '#173177'],
                 'keyword3' => ['value' => '开播中', 'color' => '#173177'],
                 'remark' => ['value' => $remark_value, 'color' => '#173177'],
+            ];
+            $param['miniprogram'] =[
+                'miniprogram' => [
+                    'appid' => $this->options['wxapp']['app_id'],
+                    'pagepath' => $param['page']
+                ]
             ];
 
 

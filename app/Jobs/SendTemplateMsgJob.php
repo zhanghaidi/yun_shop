@@ -32,7 +32,7 @@ class SendTemplateMsgJob implements ShouldQueue
      * @param string $page
      * @param bool $refresh_miniprogram_access_token
      */
-    public function __construct($type, $options, $template_id, $notice_data, $openid, $url = '', $page = '', $app_type = 'main')
+    public function __construct($type, $options, $template_id, $notice_data, $openid, $url = '', $page = '', $miniprogram = array())
     {
         if(!empty($notice_data['miniprogram'])){  //接收自定义的小程序路径
             $page = $notice_data['miniprogram']['page'];
@@ -47,9 +47,7 @@ class SendTemplateMsgJob implements ShouldQueue
             'openid' => $openid,
             'url' => $url,
             'page' => $page,
-            'app_type' => $app_type,
-            'shop_appid' => 'wx4caaf8eb7aab8f8b',
-            'main_appid' => 'wxcaa8acf49f845662'
+            'miniprogram' => $miniprogram
         ];
     }
 
@@ -65,13 +63,17 @@ class SendTemplateMsgJob implements ShouldQueue
 
         if ($this->config['type'] == 'wechat') {
             Log::info("------------------------ 发送公众号模板消息 BEGIN -------------------------------");
-            $miniprogram = [];
-            if ($this->config['page'] != '') {
+
+            if ($this->config['miniprogram']) {
+                $miniprogram = $this->config['miniprogram'];
+            }else{
                 $miniprogram = ['miniprogram' => [
-                    'appid' => $this->config['app_type'] == 'shop' ? $this->config['shop_appid'] : $this->config['main_appid'], //小程序/商城appid
+                    'appid' => 'wxcaa8acf49f845662', //小程序appid
                     'pagepath' => $this->config['page'],
                 ]];
             }
+
+
             try {
                 $app = new Application($this->config['options']);
                 $app = $app->notice;
