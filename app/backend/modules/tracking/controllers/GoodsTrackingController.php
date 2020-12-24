@@ -168,7 +168,11 @@ class GoodsTrackingController extends BaseController
                 }
             }
 
-            $recordList = GoodsTracking::orderBy('id');
+            $recordList = GoodsTracking::with(['user' => function ($user) {
+                return $user->select('ajy_uid', 'nickname', 'avatarurl');
+            },'goods' => function ($goods) {
+                return $goods->select('id','title','thumb','price');
+            }]);
 
             $export_model = new ExportService($recordList, $export_page);
 
@@ -182,10 +186,10 @@ class GoodsTrackingController extends BaseController
                         $item['app_type'],
                         $item['app_version'],
                         $item['parent_page'],
-                        $this->getTypeName($item['to_type_id']),
+                        $item['parent_page'],
                         $item['resource_id'],
-                        $this->getGoods($item['goods_id']),
-                        $this->getUser($item['user_id']),
+                        $this->getGoods($item['goods']),
+                        $this->getUser($item['user']),
                         $this->getActionName($item['action']),
                         $item['val'],
                         date('Y-m-d H:i:s', $item['create_time'])
@@ -279,19 +283,14 @@ class GoodsTrackingController extends BaseController
 
     //获取商品信息
     public function getGoods($value){
-        $goods = DB::table('yz_goods')->select('title')->where('id', $value)->first();
-        return $value." 【".$goods['title']."】";
+
+        return $value['id']." 【".$value['title']."】";
     }
 
     //获取关联用户
     public function getUser($value){
-        $user = DB::table('diagnostic_service_user')->select('nickname')->where('ajy_uid', $value)->first();
-        return $value." 【".$user['nickname']."】";
-    }
 
-    //获取资源名称
-    public function getResourceName($value){
-        return '';
+        return $value['ajy_uid']." 【".$value['nickname']."】";
     }
 
 
