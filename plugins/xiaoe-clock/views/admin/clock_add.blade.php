@@ -1,10 +1,10 @@
 @extends('layouts.base')
-@section('title', trans('添加录播课程'))
+@section('title', trans('创建日历打卡'))
 @section('content')
 
     <div class="right-titpos">
         <ul class="add-snav">
-            <li class="active"><a href="#">添加录播课程</a></li>
+            <li class="active"><a href="#">创建日历打卡</a></li>
         </ul>
     </div>
 
@@ -21,123 +21,92 @@
 
                 @if($type=='1')
                     <div class="form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">课程名称</label>
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">打卡名称</label>
                         <div class="col-sm-9 col-xs-12 col-md-11">
                             <input name="name" type="text" class="form-control" value="" required/>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">课程标签</label>
-                        <div class="col-sm-9 col-xs-12 col-md-11">
-                            <input name="tag" type="text" class="form-control" value="" required/>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">是否收费</label>
-                        <div class="col-sm-9 col-xs-12 col-md-11">
-                            <label class="radio-inline">
-                                <input type="radio" name="buy_type" value="1"/>是
-                            </label>
-                            <label class="radio-inline">
-                                <input type="radio" name="buy_type" value="0" checked="checked" />否
-                            </label>
-                        </div>
-                    </div>
-                    <div class="form-group ios_open-div" style="display: none;">
-                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">IOS显示开关</label>
-                        <div class="col-sm-9 col-xs-12 col-md-11">
-                            <label class="radio-inline">
-                                <input type="radio" name="ios_open" value="1"/>开启
-                            </label>
-                            <label class="radio-inline">
-                                <input type="radio" name="ios_open" value="0" checked="checked" />关闭
-                            </label>
-                            <span class='help-block'>关闭状态下，ios设备不显示该收费课程。</span>
-                        </div>
-                    </div>
-                    <div class="form-group expire-div" style="display: none;">
-                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">有效期</label>
-                        <div class="col-sm-9 col-xs-12 col-md-11">
-                            <span class="col-sm-3 col-xs-2 col-md-2 input-group">
-                                <input name="expire_time" type="text" class="form-control" value=""/>
-                                <span class='input-group-addon'>天</span>
-                            </span>
-                            <span class='help-block' style="color: red">设置之后，严禁修改！请谨慎操作</span>
-                            <span class='help-block'>过期时间单位为天，-1为永不过期</span>
-                        </div>
-                    </div>
-                    <div class="form-group goods-div" style="display: none;">
-                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">关联商品</label>
-                        <div class="col-sm-9 col-xs-12 col-md-11">
-                            <input name="goods_id" type="hidden" class="form-control" value="" />
-                            <input class="form-control" type="text" placeholder="请选择商品" value="" id="goods_name" style="width:400px;display:inline-block;" readonly="true">
-                            <span class="input-group-btn" style="display:inline-block;width: 100px;">
-                            <button class="btn btn-default nav-link-goods" style="display:inline-block" type="button" onclick="$('#modal-module-menus-goods').modal();">选择商品</button>
-                        </span>
-                            <a href="javascript:;" onclick="clearGoods()" style="margin-top:10px;display:inline-block;width: 20px;"  title="清除商品"><i class='fa fa-times'></i></a>
-                            <span class='help-block' style="color: red">设置之后，严禁修改！请谨慎操作</span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">课程封面</label>
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">封面图</label>
                         <div class="col-sm-9 col-xs-12 col-md-10">
                             {!! app\common\helpers\ImageHelper::tplFormFieldImage('cover_img', '') !!}
                             <span class="help-block">图片比例 5:4，请按照规定尺寸上传</span>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">在列表、搜索显示</label>
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">打卡图文介绍</label>
                         <div class="col-sm-9 col-xs-12 col-md-11">
-                            <label class="radio-inline">
-                                <input type="radio" name="is_display" value="1" checked="checked"/> 显示
-                            </label>
-                            <label class="radio-inline">
-                                <input type="radio" name="is_display" value="2" />隐藏
-                            </label>
+                            {!! yz_tpl_ueditor('text_desc', $info['text_desc']) !!}
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">分享控制</label>
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">打卡音频介绍</label>
                         <div class="col-sm-9 col-xs-12 col-md-11">
-                            <label class="radio-inline">
-                                <input type="radio" name="is_share" value="1" checked="checked"/> 可以分享
-                            </label>
-                            <label class="radio-inline">
-                                <input type="radio" name="is_share" value="2" /> 不能分享
-                            </label>
+                            {!! yz_tpl_ueditor('audio_desc', $info['audio_desc']) !!}
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">课程介绍</label>
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">打卡视频介绍</label>
                         <div class="col-sm-9 col-xs-12 col-md-11">
-                            {!! yz_tpl_ueditor('desc', $info['desc']) !!}
+                            {!! yz_tpl_ueditor('video_desc', $info['video_desc']) !!}
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">课程状态</label>
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">参与方式</label>
                         <div class="col-sm-9 col-xs-12 col-md-11">
-                            <select name="live_status" class="form-control">
-                                <option value="">请选择课程状态</option>
-                                <option value="0" selected>筹备中</option>
-                                <option value='1'>更新中</option>
-                                <option value='2'>已完结</option>
-                            </select>
+                            <label class="radio-inline">
+                                <input type="radio" name="join_type" value="1"/>购买课程
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="join_type" value="0" checked="checked"/>免费课程
+                            </label>
                         </div>
                     </div>
-                    {{--fixby-wk-课程设置精选 20201019--}}
+                    <div class="form-group goods-div" style="display: none;">
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">关联课程</label>
+                        <div class="col-sm-9 col-xs-12 col-md-11">
+                            <input name="goods_id" type="hidden" class="form-control" value=""/>
+                            <input class="form-control" type="text" placeholder="请选择课程" value="" id="goods_name"
+                                   style="width:400px;display:inline-block;" readonly="true">
+                            <span class="input-group-btn" style="display:inline-block;width: 100px;">
+                            <button class="btn btn-default nav-link-goods" style="display:inline-block" type="button"
+                                    onclick="$('#modal-module-menus-goods').modal();">选择课程</button>
+                        </span>
+                            <a href="javascript:;" onclick="clearGoods()"
+                               style="margin-top:10px;display:inline-block;width: 20px;" title="清除课程"><i
+                                        class='fa fa-times'></i></a>
+                            <span class='help-block' style="color: red">设置之后，严禁修改！请谨慎操作</span>
+                        </div>
+                    </div>
+
                     <div class="form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">是否精选</label>
+                        <label class="ol-xs-12 col-sm-3 col-md-1 control-label">开始日期</label>
                         <div class="col-sm-9 col-xs-12 col-md-11">
-                            <label class="radio-inline">
-                                <input type="radio" name="is_selected" value="1"/>
-                                是
-                            </label>
-                            <label class="radio-inline">
-                                <input type="radio" name="is_selected" value="0" checked="checked" />
-                                否
-                            </label>
+                            {!! tpl_form_field_date('start_time', date('Y-m-d'), false) !!}
+                            <span class="help-block">打卡有效日期，开始日期</span>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label class="ol-xs-12 col-sm-3 col-md-1 control-label">结束日期</label>
+                        <div class="col-sm-9 col-xs-12 col-md-11">
+                            {!! tpl_form_field_date('end_time', date('Y-m-d'), false) !!}
+                            <span class="help-block">打卡有效日期，结束日期</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">开始时间</label>
+                        <div class="col-sm-9 col-xs-12 col-md-11">
+                            {!! tpl_form_field_date_hi('valid_time_start', date('H:i'), true) !!}
+                            <span class="help-block">打卡有效时段，开始时间</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">结束时间</label>
+                        <div class="col-sm-9 col-xs-12 col-md-11">
+                            <span class="help-block">打卡有效时段，结束时间</span>
+                        </div>
+                    </div>
+
                 @endif
 
                 @if($type=='2')
@@ -192,7 +161,8 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="input-group">
-                            <input type="text" class="form-control" name="keyword" value="" id="search-kwd-goods" placeholder="请输入商品名称"/>
+                            <input type="text" class="form-control" name="keyword" value="" id="search-kwd-goods"
+                                   placeholder="请输入商品名称"/>
                             <span class='input-group-btn'>
                             <button type="button" class="btn btn-default" onclick="search_goods();">搜索</button>
                         </span>
@@ -200,7 +170,8 @@
                     </div>
                     <div id="module-menus-goods" style="padding-top:5px;"></div>
                 </div>
-                <div class="modal-footer"><a href="#" class="btn btn-default" data-dismiss="modal" aria-hidden="true">关闭</a>
+                <div class="modal-footer"><a href="#" class="btn btn-default" data-dismiss="modal"
+                                             aria-hidden="true">关闭</a>
                 </div>
             </div>
         </div>
@@ -229,6 +200,7 @@
                 }
             );
         }
+
         function select_good(o) {
             $("input[name=goods_id]").val(o.id);
             $("#goods_name").val(o.title);
@@ -240,16 +212,12 @@
             $("#goods_name").val('');
         }
 
-        $('input[name=buy_type]').change(function () {
+        $('input[name=join_type]').change(function () {
             // console.log($(this).val())
-            if($(this).val() == 1){
-                $('.expire-div').show();
+            if ($(this).val() == 1) {
                 $('.goods-div').show();
-                $('.ios_open-div').show();
-            }else{
-                $('.expire-div').hide();
+            } else {
                 $('.goods-div').hide();
-                $('.ios_open-div').hide();
             }
         })
 

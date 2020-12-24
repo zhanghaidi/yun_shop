@@ -99,7 +99,7 @@ class ClockController extends BaseController
             $pager = PaginationHelper::show($list->total(), $list->currentPage(), $list->perPage());
         }
 
-        return view('Yunshop\Appletslive::admin.room_index', [
+        return view('Yunshop\XiaoeClock::admin.clock_index', [
             'type' => $type,
             'room_list' => $list,
             'pager' => $pager,
@@ -181,14 +181,14 @@ class ClockController extends BaseController
                 Cache::forget(CacheService::$cache_keys['brandsale.albuminfo']);
             }
 
-            return $this->message('保存成功', Url::absoluteWeb('plugin.appletslive.admin.controllers.room.index', ['type' => $param['type']]));
+            return $this->message('保存成功', Url::absoluteWeb('plugin.xiaoe-clock.admin.controllers.room.index', ['type' => $param['type']]));
         }
 
         $type = request()->get('type', 0);
         if (!$type) {
             return $this->message('无效的类型', Url::absoluteWeb(''), 'danger');
         }
-        return view('Yunshop\Appletslive::admin.room_add', ['type' => $type])->render();
+        return view('Yunshop\XiaoeClock::admin.clock_add', ['type' => $type])->render();
     }
 
 //增加打卡活动任务
