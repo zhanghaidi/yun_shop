@@ -2,6 +2,7 @@
 
 namespace Yunshop\XiaoeClock\admin;
 
+use app\backend\modules\goods\models\Goods;
 use app\common\components\BaseController;
 use app\common\exceptions\AppException;
 use app\common\facades\Setting;
@@ -112,78 +113,99 @@ class ClockController extends BaseController
         if (request()->isMethod('post')) {
 
             $param = request()->all();
+
             if (!array_key_exists('type', $param) || !in_array($param['type'], [1, 2])) { // 类型
                 return $this->message('类型参数有误', Url::absoluteWeb(''), 'danger');
             }
             $ist_data = ['type' => $param['type'], 'sort' => intval($param['sort'])];
-            if (array_key_exists('name', $param)) { // 房间名
+            if (array_key_exists('name', $param)) { // 打卡名称
                 $ist_data['name'] = $param['name'] ? trim($param['name']) : '';
             }
-            if (array_key_exists('cover_img', $param)) { // 房间封面
+            if (DB::table('yz_xiaoe_clock')->where('name', $ist_data['name'])->first()) {
+                return $this->message('打卡名称已存在', Url::absoluteWeb(''), 'danger');
+            }
+            if (array_key_exists('cover_img', $param)) { // 打卡封面
                 $ist_data['cover_img'] = $param['cover_img'] ? $param['cover_img'] : '';
             }
-            if (array_key_exists('desc', $param)) { // 房间介绍
-                $ist_data['desc'] = $param['desc'] ? $param['desc'] : '';
+            if (array_key_exists('text_desc', $param)) { // 打卡图文介绍
+                $ist_data['text_desc'] = $param['text_desc'] ? $param['text_desc'] : '';
             }
-            if (DB::table('yz_appletslive_room')->where('name', $ist_data['name'])->first()) {
-                return $this->message('课程名称已存在', Url::absoluteWeb(''), 'danger');
+            if (array_key_exists('video_desc', $param)) { // 打卡视频介绍
+                $ist_data['video_desc'] = $param['video_desc'] ? $param['video_desc'] : '';
             }
-            // {{--fixby-wk-课程设置精选 20201019--}}
-            if($param['type'] == 1){//课程状态 0筹备中 1更新中 2已完结
-                //{{--fixby-wk-课程付费 20201124 一个课程只能关联一个商品--}}
-                if ($param['goods_id'] > 0) {
-                    if (DB::table('yz_appletslive_room')->where('goods_id', $param['goods_id'])->first()) {
-                        return $this->message('该商品已经关联其它课程', Url::absoluteWeb(''), 'danger');
-                    }
-                    //{{--fixby-wk-课程付费 20201125 商品必须是虚拟商品--}}
-                    $goods_info = DB::table('yz_goods')->where('id', $param['goods_id'])->first();
-                    if ($goods_info['type'] == 1) {
-                        return $this->message('关联商品必须是虚拟商品', Url::absoluteWeb(''), 'danger');
-                    }
-                }
-
-                $ist_data['live_status'] = intval($param['live_status']);
-                $ist_data['is_selected'] = intval($param['is_selected']);//是否精选 0否 1是
-                $ist_data['tag'] = $param['tag'];//课程标签
-                if ($param['buy_type'] == 1) {
-                    if (empty($param['goods_id'])) {
-                        return $this->message('请选择关联商品', Url::absoluteWeb(''), 'danger');
-                    }
-                    if (!preg_match('/^(-1)|\d+$/', $param['expire_time'])) {
-                        return $this->message('课程有效期必须为整数', Url::absoluteWeb(''), 'danger');
-                    }
-                    if ($param['expire_time'] == 0) {
-                        return $this->message('课程有效期不能为零', Url::absoluteWeb(''), 'danger');
-                    }
-                    $ist_data['buy_type'] = 1;
-                    $ist_data['expire_time'] = $param['expire_time'];
-                    $ist_data['goods_id'] = $param['goods_id'];
-                    $ist_data['ios_open'] = $param['ios_open'];
+            if (array_key_exists('audio_desc', $param)) { // 打卡音频介绍
+                $ist_data['audio_desc'] = $param['audio_desc'] ? $param['audio_desc'] : '';
+            }
+            if (array_key_exists('join_type', $param)) { // 打卡方式
+                $ist_data['join_type'] = $param['join_type'] ? $param['join_type'] : 0;
+            }
+            if (array_key_exists('course_id', $param)) { // 管理课程id
+                $ist_data['course_id'] = $param['course_id'] ? $param['course_id'] : 0;
+            }
+            if (array_key_exists('start_time', $param)) { //有效期 开始是日期
+                $start_time = $param['start_time'] ? $param['start_time'] : 0;
+                if($start_time != 0){
+                    $ist_data['start_time'] = strtotime($start_time);
                 } else {
-                    $ist_data['buy_type'] = 0;
-                    $ist_data['expire_time'] = 0;
-                    $ist_data['goods_id'] = 0;
-                    $ist_data['ios_open'] = 0;
+                    return $this->message('请选择开始日期', Url::absoluteWeb(''), 'danger');
+                }
+            }
+            if (array_key_exists('end_time', $param)) { //有效期 结束是日期
+                $end_time = $param['end_time'] ? $param['end_time'] : 0;
+                if($end_time != 0){
+                    $ist_data['end_time'] = strtotime($end_time);
+                } else {
+                    return $this->message('请选择结束日期', Url::absoluteWeb(''), 'danger');
                 }
             }
 
-            $ist_data['display_type'] = Room::setDisplayStatus($param);
-
-            DB::table('yz_appletslive_room')->insert($ist_data);
-
-            // 刷新接口数据缓存
-            if ($param['type'] == 1) {
-
-                Cache::forget(CacheService::$cache_keys['recorded.roomlist']);
-                Cache::forget(CacheService::$cache_keys['recorded.roominfo']);
-            } elseif ($param['type'] == 2) {
-                Cache::forget(CacheService::$cache_keys['brandsale.albumlist']);
-                Cache::forget(CacheService::$cache_keys['brandsale.albuminfo']);
+            if (array_key_exists('text_length', $param)) { //图文长度
+                $ist_data['text_length'] = $param['text_length'] ? $param['text_length'] : 5;
+            }
+            if (array_key_exists('image_length', $param)) { //音频长度
+                $ist_data['image_length'] = $param['image_length'] ? $param['image_length'] : 0;
+            }
+            if (array_key_exists('video_length', $param)) { //视频长度
+                $ist_data['video_length'] = $param['video_length'] ? $param['video_length'] : 0;
+            }
+            if (array_key_exists('display_status', $param)) { //显示状态
+                $ist_data['display_status'] = $param['display_status'] ? $param['display_status'] : 1;
+            }
+            if (array_key_exists('helper_nickname', $param)) { // 助手昵称
+                $ist_data['helper_nickname'] = $param['helper_nickname'] ? $param['helper_nickname'] : '';
+            }
+            if (array_key_exists('helper_avatar', $param)) { //助手头像
+                $ist_data['helper_avatar'] = $param['helper_avatar'] ? $param['helper_avatar'] : '';
+            }
+            if (array_key_exists('helper_wechat', $param)) { //助手微信
+                $ist_data['helper_wechat'] = $param['helper_wechat'] ? $param['helper_wechat'] : '';
+            }
+            if ($param['type'] == 1) {//日历打卡
+                if (array_key_exists('valid_time_start', $param)) { //有效时段
+                    $ist_data['valid_time_start'] = $param['valid_time_start'] ? $param['valid_time_start'] : 0;
+                }
+                if (array_key_exists('valid_time_end', $param)) { // 有效时段
+                    $ist_data['valid_time_end'] = $param['valid_time_end'] ? $param['valid_time_end'] : 0;
+                }
+            }
+            if ($param['type'] == 2) { //作业打卡
+                if (array_key_exists('is_cheat_mode', $param)) { //防作弊
+                    $ist_data['is_cheat_mode'] = $param['is_cheat_mode'] ? $param['is_cheat_mode'] : 0;
+                }
+                if (array_key_exists('is_resubmit', $param)) { //删除原来，重复提交新的 是否允许重新打卡
+                    $ist_data['is_resubmit'] = $param['is_resubmit'] ? $param['is_resubmit'] : 0;
+                }
             }
 
-            return $this->message('保存成功', Url::absoluteWeb('plugin.xiaoe-clock.admin.controllers.room.index', ['type' => $param['type']]));
+            DB::beginTransaction();//开启事务
+            $insert_res =DB::table('yz_xiaoe_clock')->insert($ist_data);
+            if (!$insert_res) {
+                DB::rollBack();//事务回滚
+                return $this->message('创建失败', Url::absoluteWeb('plugin.xiaoe-clock.admin.clock.clock_index', ['type' => $param['type']]));
+            }
+            DB::commit();//事务提交
+            return $this->message('创建成功', Url::absoluteWeb('plugin.xiaoe-clock.admin.clock.clock_index', ['type' => $param['type']]));
         }
-
         $type = request()->get('type', 0);
         if (!$type) {
             return $this->message('无效的类型', Url::absoluteWeb(''), 'danger');
@@ -191,22 +213,27 @@ class ClockController extends BaseController
         return view('Yunshop\XiaoeClock::admin.clock_add', ['type' => $type])->render();
     }
 
-//增加打卡活动任务
-    public function addClockTask()
+    /**
+     * 获取搜索课程
+     * @return html
+     */
+    public function get_search_course()
     {
+        $keyword = \YunShop::request()->keyword;
+        $where[] = ['type', '=', 1];
+        if (trim($keyword) !== '') {
+            $where[] = ['name', 'like', '%' . trim($keyword) . '%'];
+        }
+        $list = Room::select('id', 'name as title', 'cover_img as thumb')->where($where)->get();
 
-    }
+        if (!$list->isEmpty()) {
+            $goods = set_medias($list->toArray(), array('thumb','share_icon'));
 
-//编辑打卡活动
-    public function editClock()
-
-    {
-
-    }
-
-//编辑打卡活动
-    public function editClockTask()
-    {
+        }
+        return view('goods.query', [
+            'goods' => $goods,
+            'exchange' => \YunShop::request()->exchange,
+        ])->render();
 
     }
 }
