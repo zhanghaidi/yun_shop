@@ -262,11 +262,15 @@ class ClockController extends BaseController
                 }
 
             } elseif ($type == 2) {//作业
+
+                $start_time = $param['start_time'] ? $param['start_time'] : 0;
+                $end_time = $param['end_time'] ? $param['end_time'] : 0;
                 $ist_data = [
                     'clock_id' => $rid,
                     'type' => $type,
+                    'start_time' => strtotime($start_time),
+                    'end_time' => strtotime($end_time),
                     'name' => $param['name'] ? trim($param['name']) : '',
-                    'cover_img'  => $param['cover_img'] ? $param['cover_img'] : '',
                     'text_desc' => $param['text_desc'] ? $param['text_desc'] : '',
                     'video_desc' => $param['video_desc'] ? $param['video_desc'] : '',
                 ];
@@ -283,35 +287,22 @@ class ClockController extends BaseController
             }
         }
 
-//        $rid = request()->get('rid', 0);
-        $rid= 2;
+        $rid = request()->get('rid', 0);
         $clock = DB::table('yz_xiaoe_clock')->where('id', $rid)->first();
-
         if (!$clock) {
             return $this->message('数据不存在', Url::absoluteWeb(''), 'danger');
         }
 
-        $limit = 20;
-        $liverooms = LiveRoom::whereIn('live_status', [
-            APPLETSLIVE_ROOM_LIVESTATUS_101,
-            APPLETSLIVE_ROOM_LIVESTATUS_102,
-            APPLETSLIVE_ROOM_LIVESTATUS_105,
-        ])->paginate($limit);
-        $pager = PaginationHelper::show($liverooms->total(), $liverooms->currentPage(), $liverooms->perPage());
-
         return view('Yunshop\XiaoeClock::admin.clock_task_add', [
             'clock_id' => $rid,
             'room' => $clock,
-            'liverooms' => $liverooms,
-            'pager' => $pager,
         ])->render();
     }
     // 主题|作业列表
     public function clock_task_list()
     {
-//        $rid = request()->get('rid', 0);
-        $rid = 9;
-        $room = DB::table('yz_appletslive_room')->where('id', $rid)->first();
+        $rid = request()->get('rid', 0);
+        $room = DB::table('yz_xiaoe_clock_task')->where('clock_id', $rid)->first();
         $room_type = $room['type'];
 
         $input = \YunShop::request();
@@ -320,7 +311,7 @@ class ClockController extends BaseController
         // 日历主题
         if ($room_type == 1) {
 
-            $where[] = ['rid', '=', $rid];
+            $where[] = ['clock_id', '=', $rid];
 
             // 处理搜索条件
             if (isset($input->search)) {
@@ -343,18 +334,15 @@ class ClockController extends BaseController
                     }
                 }
             }
-            $replay_list = Replay::where($where)
-                ->with('liveroom')
-                ->orderBy('sort', 'desc')
+            $replay_list = DB::table('yz_xiaoe_clock_task')->where($where)
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
-
         }
 
         // 作业
         if ($room_type == 2) {
 
-            $where[] = ['yz_appletslive_replay.rid', '=', $rid];
+            $where[] = ['clock_id', '=', $rid];
 
             // 处理搜索条件
             if (isset($input->search)) {
@@ -378,17 +366,8 @@ class ClockController extends BaseController
                 }
             }
 
-            $replay_list = DB::table('yz_appletslive_replay')
-                ->join('yz_appletslive_liveroom', 'yz_appletslive_replay.room_id', '=', 'yz_appletslive_liveroom.id')
-                ->select('yz_appletslive_replay.id', 'yz_appletslive_liveroom.roomid', 'yz_appletslive_liveroom.name',
-                    'yz_appletslive_liveroom.cover_img', 'yz_appletslive_liveroom.anchor_name',
-                    'yz_appletslive_liveroom.anchor_name', 'yz_appletslive_liveroom.live_status',
-                    'yz_appletslive_liveroom.start_time', 'yz_appletslive_liveroom.end_time',
-                    'yz_appletslive_replay.delete_time')
-                ->where($where)
-                ->whereIn('yz_appletslive_liveroom.live_status', [101, 102, 103, 105, 107])
-                ->orderBy('yz_appletslive_liveroom.start_time', 'desc')
-                ->orderBy('yz_appletslive_replay.id', 'desc')
+            $replay_list = DB::table('yz_xiaoe_clock_task')->where($where)
+                ->orderBy('id', 'desc')
                 ->paginate($limit);
         }
 

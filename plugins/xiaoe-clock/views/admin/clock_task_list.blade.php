@@ -65,13 +65,9 @@
                     <thead>
                     <tr>
                         <th style='width:5%;'>ID</th>
-                        <th style='width:5%;'>排序</th>
-                        <th style='width:8%;'>预览图</th>
-                        <th style='width:15%;'>标题</th>
-                        <th style='width:11%;'>创建时间</th>
-                        <th style='width:11%;'>发布时间</th>
-                        <th style='width:5%;'>类型</th>
-                        <th style='width:25%;'>链接地址</th>
+                        <th style='width:8%;'>主题名称</th>
+                        <th style='width:11%;'>主题日期</th>
+                        <th style='width:11%;'>打卡人数</th>
                         <th style='width:15%;'>操作</th>
                     </tr>
                     </thead>
@@ -79,7 +75,6 @@
                     @foreach($replay_list as $row)
                         <tr>
                             <td>{{ $row['id'] }}</td>
-                            <td>{{ $row['sort'] }}</td>
                             <td style="overflow:visible;">
                                 <div class="show-cover-img-big" style="position:relative;width:50px;overflow:visible">
                                     <img src="{!! tomedia($row['cover_img']) !!}" alt=""
@@ -87,31 +82,15 @@
                                     <img class="img-big" src="{!! tomedia($row['cover_img']) !!}" alt=""
                                          style="z-index:99999;position:absolute;top:0;left:0;border:1px solid #ccc;padding:1px;display: none">
                                 </div>
+                                {{ $row['name'] }}
                             </td>
-                            <td>{{ $row['title'] }}</td>
-                            <td>{{ date('Y-m-d H:i:s', $row['create_time']) }}</td>
-                            <td>{{ date('Y-m-d H:i:s', $row['publish_time']) }}</td>
-                            <td>
-                                @if($row['type']=='1') 本地上传 @endif
-                                @if($row['type']=='2') 腾讯视频 @endif
-                            </td>
-                            <td>{{ $row['media_url'] }}</td>
+                            <td>{{ date('Y-m-d', $row['theme_time']) }}</td>
+                            <td>{{ $row['join_num'] }}</td>
                             <td style="overflow:visible;">
                                 <a class='btn btn-default'
                                    href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.replayedit', ['id' => $row['id']])}}"
-                                   title='视频设置'><i class='fa fa-edit'></i>设置
+                                   title='主题编辑'><i class='fa fa-edit'></i>编辑
                                 </a>
-                                @if ($row['delete_time'] > 0)
-                                    <a class='btn btn-default btn-success'
-                                       href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.replayshowhide', ['id' => $row['id']])}}"
-                                       title='显示'>显示
-                                    </a>
-                                @else
-                                    <a class='btn btn-default btn-danger'
-                                       href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.replayshowhide', ['id' => $row['id']])}}"
-                                       title='隐藏'>隐藏
-                                    </a>
-                                @endif
                             </td>
                         </tr>
                     @endforeach
@@ -176,13 +155,11 @@
                     <thead>
                     <tr>
                         <th style='width:5%;'>ID</th>
-                        <th style='width:5%;'>房间号</th>
-                        <th style='width:10%;'>预览图</th>
-                        <th style='width:15%;'>标题</th>
-                        <th style='width:10%;'>主播</th>
-                        <th style='width:5%;'>状态</th>
-                        <th style='width:15%;'>开播时间</th>
-                        <th style='width:15%;'>结束时间</th>
+                        <th style='width:5%;'>作业名称</th>
+                        <th style='width:10%;'>作业有效期</th>
+                        <th style='width:15%;'>打卡次数</th>
+                        <th style='width:10%;'>点赞数</th>
+                        <th style='width:5%;'>评论数</th>
                         <th style='width:15%;'>操作</th>
                     </tr>
                     </thead>
@@ -190,40 +167,11 @@
                     @foreach($replay_list as $row)
                         <tr>
                             <td>{{ $row['id'] }}</td>
-                            <td>{{ $row['roomid'] }}</td>
-                            <td style="overflow:visible;">
-                                <div class="show-cover-img-big" style="position:relative;width:50px;overflow:visible">
-                                    <img src="{!! tomedia($row['cover_img']) !!}" alt=""
-                                         style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
-                                    <img class="img-big" src="{!! tomedia($row['cover_img']) !!}" alt=""
-                                         style="z-index:99999;position:absolute;top:0;left:0;border:1px solid #ccc;padding:1px;display: none">
-                                </div>
-                            </td>
                             <td>{{ $row['name'] }}</td>
-                            <td>{{ $row['anchor_name'] }}</td>
-                            <td>
-                                @if($row['live_status']==101)
-                                    直播中
-                                @elseif($row['live_status']==102)
-                                    待开播
-                                @elseif($row['live_status']==103)
-                                    已结束
-                                @elseif($row['live_status']==104)
-                                    禁播
-                                @elseif($row['live_status']==105)
-                                    暂停
-                                @elseif($row['live_status']==106)
-                                    异常
-                                @elseif($row['live_status']==107)
-                                    已过期
-                                @elseif($row['live_status']==108)
-                                    已删除
-                                @else
-                                    未知
-                                @endif
-                            </td>
-                            <td>{{ date('Y-m-d H:i:s', $row['start_time']) }}</td>
-                            <td>{{ date('Y-m-d H:i:s', $row['end_time']) }}</td>
+                            <td>{{ date('Y-m-d',$row['start_time'])}} 致 {{ date('Y-m-d',$row['end_time'])}}</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
                             <td style="overflow:visible;">
                                 <a class='btn btn-default'
                                    href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.replayedit', ['id' => $row['id']])}}"
