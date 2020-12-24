@@ -5,9 +5,9 @@
     <div class="right-titpos">
         <ul class="add-snav">
             @if($room['type']=='1')
-                <li class="active"><a href="#">添加录播视频</a></li>
+                <li class="active"><a href="#">创建主题</a></li>
             @else
-                <li class="active"><a href="#">添加特卖直播</a></li>
+                <li class="active"><a href="#">添加作业</a></li>
             @endif
         </ul>
     </div>
@@ -66,7 +66,8 @@
                     <div class="form-group">
                         <label class="col-md-2 col-sm-3 col-xs-12 control-label"></label>
                         <div class="col-md-10 col-sm-9 col-xs-12">
-                            <input type="hidden" name="clock_id" value="{{ $clock_id }}" />
+                            <input type="hidden" name="rid" value="{{ $clock_id }}" />
+                            <input type="hidden" name="type" value="{{ $room['type'] }}" />
                             <input type="submit" name="submit" value="提交" class="btn btn-success"/>
                         </div>
                     </div>

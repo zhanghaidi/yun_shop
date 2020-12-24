@@ -121,11 +121,11 @@
                             <td style="overflow:visible;">
                                 <a class='btn btn-default'
                                    href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_task_list', ['rid' => $row['id']])}}"
-                                   title='录播列表'><i class='fa fa-list'></i>主题列表
+                                   title='主题列表'><i class='fa fa-list'></i>主题列表
                                 </a>
                                 <a class='btn btn-default'
                                    href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_task_edit', ['id' => $row['id']])}}"
-                                   title='课程设置'><i class='fa fa-edit'></i>打卡设置
+                                   title='打卡设置'><i class='fa fa-edit'></i>打卡设置
                                 </a>
                                 @if ($row['delete_time'] > 0)
                                     <a class='btn btn-default btn-success'
@@ -238,12 +238,12 @@
                             </td>
                             <td style="overflow:visible;">
                                 <a class='btn btn-default'
-                                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.edit', ['id' => $row['id']])}}"
-                                   title='课程设置'><i class='fa fa-edit'></i>专辑设置
+                                   href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_task_list', ['rid' => $row['id']])}}"
+                                   title='作业列表'><i class='fa fa-list'></i>作业列表
                                 </a>
                                 <a class='btn btn-default'
-                                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.replaylist', ['rid' => $row['id']])}}"
-                                   title='录播列表'><i class='fa fa-list'></i>直播列表
+                                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.edit', ['id' => $row['id']])}}"
+                                   title='课程设置'><i class='fa fa-edit'></i>专辑设置
                                 </a>
                                 @if ($row['delete_time'] > 0)
                                     <a class='btn btn-default btn-success'

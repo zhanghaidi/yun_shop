@@ -241,50 +241,45 @@ class ClockController extends BaseController
         if (request()->isMethod('post')) {
             $param = request()->all();
             $rid = $param['rid'] ? intval($param['rid']) : 0;
-            $room = DB::table('yz_appletslive_room')->where('id', $rid)->first();
+            $room = DB::table('yz_xiaoe_clock')->where('id', $rid)->first();
             if (!$room) {
-                return $this->message('房间不存在', Url::absoluteWeb(''), 'danger');
+                return $this->message('打卡不存在', Url::absoluteWeb(''), 'danger');
             }
-            $type = array_key_exists('type', $param) ? intval($param['type']) :  0;
-            $ist_data = [
-                'rid' => $rid,
-                'type' => $type,
-                'room_id' => array_key_exists('room_id', $param) ? intval($param['room_id']) : 0,
-                'title' => $param['title'] ? trim($param['title']) : '',
-                'cover_img' => $param['cover_img'] ? $param['cover_img'] : '',
-                'media_url' => $param['media_url'] ? $param['media_url'] : '',
-                'intro' => $param['intro'] ? $param['intro'] : '',
-                'doctor' => $param['doctor'] ? $param['doctor'] : '',
-                'sort' => intval($param['sort']),
-                'time_long' => ((intval($param['minute']) * 60) + intval($param['second'])),
-            ];
+            $type = array_key_exists('type', $param) ? intval($param['type']) : 1;
+            if ($type == 1) {//日历主题
+                $theme_time = $param['theme_time'] ? $param['theme_time'] : 0;
+                $ist_data = [
+                    'clock_id' => $rid,
+                    'type' => $type,
+                    'name' => $param['name'] ? trim($param['name']) : '',
+                    'theme_time' => strtotime($theme_time),
+                    'cover_img'  => $param['cover_img'] ? $param['cover_img'] : '',
+                    'text_desc' => $param['text_desc'] ? $param['text_desc'] : '',
+                    'video_desc' => $param['video_desc'] ? $param['video_desc'] : '',
+                ];
+                if ($type > 0 && DB::table('yz_xiaoe_clock_task')->where('theme_time', $ist_data['theme_time'])->where('id', $rid)->first()) {
+                    return $this->message('该日期已经添加主体了', Url::absoluteWeb(''), 'danger');
+                }
 
-            if ($type > 0) {
-                $ist_data['create_time'] = time();
-                $ist_data['expire_time'] = strtotime('2099-12-31 23:59:59');
-                $ist_data['publish_time'] = strtotime($param['publish_time']) <= time() ? time() : strtotime($param['publish_time']);
+            } elseif ($type == 2) {//作业
+                $ist_data = [
+                    'clock_id' => $rid,
+                    'type' => $type,
+                    'name' => $param['name'] ? trim($param['name']) : '',
+                    'cover_img'  => $param['cover_img'] ? $param['cover_img'] : '',
+                    'text_desc' => $param['text_desc'] ? $param['text_desc'] : '',
+                    'video_desc' => $param['video_desc'] ? $param['video_desc'] : '',
+                ];
             }
 
-            if ($type > 0 && DB::table('yz_appletslive_replay')->where('title', $ist_data['title'])->where('rid', $rid)->first()) {
+            if ($type > 0 && DB::table('yz_xiaoe_clock_task')->where('name', $ist_data['name'])->where('id', $rid)->first()) {
                 return $this->message('名称已存在', Url::absoluteWeb(''), 'danger');
             }
-            DB::table('yz_appletslive_replay')->insert($ist_data);
-
-            // 刷新接口数据缓存
-            if ($type == 0) {
-                Cache::forget(CacheService::$cache_keys['brandsale.albumlist']);
-                Cache::forget(CacheService::$cache_keys['brandsale.albuminfo']);
-                Cache::forget(CacheService::$cache_keys['brandsale.albumliverooms']);
+            $insert_res = DB::table('yz_xiaoe_clock_task')->insert($ist_data);
+            if ($insert_res) {
+                return $this->message('添加成功', Url::absoluteWeb('plugin.xiaoe-clock.admin.clock.clock_task_list', ['rid' => $rid]));
             } else {
-                Cache::forget(CacheService::$cache_keys['recorded.roomlist']);
-                Cache::forget(CacheService::$cache_keys['recorded.roominfo']);
-                Cache::forget(CacheService::$cache_keys['recorded.roomreplays']);
-            }
-
-            if (request()->ajax()) {
-                return $this->successJson('添加成功');
-            } else {
-                return $this->message('添加成功', Url::absoluteWeb('plugin.XiaoeClock.admin.controllers.room.clock_task_list', ['rid' => $rid]));
+                return $this->message('添加失败', Url::absoluteWeb(''), 'danger');
             }
         }
 
@@ -314,7 +309,7 @@ class ClockController extends BaseController
     public function clock_task_list()
     {
 //        $rid = request()->get('rid', 0);
-        $rid = 10;
+        $rid = 9;
         $room = DB::table('yz_appletslive_room')->where('id', $rid)->first();
         $room_type = $room['type'];
 
