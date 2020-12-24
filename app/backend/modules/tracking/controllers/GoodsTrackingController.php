@@ -6,6 +6,7 @@ use app\backend\modules\tracking\models\GoodsTrackingModel;
 use app\common\helpers\PaginationHelper;
 use app\backend\modules\tracking\models\ChartChartuser;
 use app\backend\modules\tracking\models\GoodsTrackingStatistics;
+use app\common\helpers\Url;
 use Illuminate\Support\Facades\DB;
 use app\backend\modules\tracking\models\MemberCart;
 use app\common\services\ExportService;
@@ -35,7 +36,7 @@ class GoodsTrackingController extends BaseController
 
         $pager = PaginationHelper::show($recordList->total(), $recordList->currentPage(), $recordList->perPage());
 
-        $this->export($records->orderBy('create_time', 'desc')->get());
+        $this->export();
 
         return view('tracking.goodsTracking.index', [
             'pageList'    => $recordList,
@@ -96,11 +97,11 @@ class GoodsTrackingController extends BaseController
 
     private function getColumns()
     {
-        return ["id","小程序主体", "小程序版本", "上级页面", "来源类型", "所属资源", "商品信息", '操作用户', '操作动作', '动作变量', "订单号", "时间"];
+        return ["id","小程序主体", "小程序版本", "上级页面", "来源类型", "所属资源", "商品信息", '操作用户', '操作动作', '动作变量', "时间"];
     }
 
     //导出埋点excel数据 20201031
-    public function export($recordList)
+    public function export()
     {
 
         if (\YunShop::request()->export == 1) {
@@ -114,24 +115,40 @@ class GoodsTrackingController extends BaseController
                     }
                 }
             }
+            $recordList = DB::table('diagnostic_service_goods_tracking')->get();
 
-            var_dump($recordList);die;
-
-            $export_model = new ExportService($recordList, $export_page);
-
-            if (!$export_model->builder_model->isEmpty()) {
-                $file_name = date('Ymdhis', time()) . '埋点数据导出';//返现记录导出
-                $export_data[0] = $this->getColumns();
-                foreach ($export_model->builder_model->toArray() as $key => $item) {
-
-                    array_push($export_data[$key + 1],
-                        $item['id'],
-                        $item['to_type_id']
-                    );
-                }
-
-                $export_model->export($file_name, $export_data, 'order.list.index');
+            $file_name = date('Ymdhis', time()) . '埋点数据导出';//返现记录导出
+            $export_data[0] = $this->getColumns();
+            foreach ($recordList as $key => $item) {
+                $export_data[$key+1] = [
+                    $item['id'],
+                    $item['app_type'],
+                    $item['app_version'],
+                    $item['parent_page'],
+                    $item['to_type_id'],
+                    $item['resource_id'],
+                    $item['goods_id'],
+                    $item['user_id'],
+                    $item['action'],
+                    $item['val'],
+                    date('Y-m-d H:i:s', $item['create_time'])
+                ];
             }
+
+            \Excel::create($file_name, function ($excel) use ($export_data) {
+                $excel->setTitle('Office 2005 XLSX Document');
+                $excel->setCreator('芸众商城商品编号');
+                $excel->setLastModifiedBy("芸众商城商品编号");
+                $excel->setSubject("Office 2005 XLSX Test Document");
+                $excel->setDescription("Test document for Office 2005 XLSX, generated using PHP classes.");
+                $excel->setKeywords("office 2005 openxml php");
+                $excel->setCategory("report file");
+                $excel->sheet('info', function ($sheet) use ($export_data) {
+                    $sheet->rows($export_data);
+                });
+            })->export('xls');
+
+            return $this->message('退货地址修改成功', Url::absoluteWeb('tracking.goodsTracking.index'));
         }
     }
 
