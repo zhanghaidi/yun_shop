@@ -125,11 +125,11 @@ class GoodsTrackingController extends BaseController
                     $item['app_type'],
                     $item['app_version'],
                     $item['parent_page'],
-                    $this->getTrackInfo($item['to_type_id']),
+                    $this->getTypeName($item['to_type_id']),
                     $item['resource_id'],
-                    $item['goods_id'],
-                    $item['user_id'],
-                    $item['action'],
+                    $this->getGoods($item['goods_id']),
+                    $this->getUser($item['user_id']),
+                    $this->getActionName($item['action']),
                     $item['val'],
                     date('Y-m-d H:i:s', $item['create_time'])
                 ];
@@ -152,7 +152,8 @@ class GoodsTrackingController extends BaseController
         }
     }
 
-    public function getTrackInfo($value){
+    //转换来源类型
+    public function getTypeName($value){
         if($value == 1){
             //商品推荐来源类型1:穴位 2：病例 3：文章 4：社区话题 5：体质测试 6：灸师推荐
             return '穴位';
@@ -210,6 +211,44 @@ class GoodsTrackingController extends BaseController
         }
 
     }
+
+    //转换操作类型
+    public function getActionName($value){
+        if($value == 1){
+            //动作类型 1：查看 2、收藏 3、加购 4：下单 5：支付
+            return '查看';
+        }
+        if($value == 2){
+            return '收藏';
+        }
+        if($value == 3){
+            return '加购';
+        }
+        if($value == 4){
+            return '下单';
+        }
+        if($value == 5){
+            return '付款';
+        }
+    }
+
+    //获取商品信息
+    public function getGoods($value){
+        $goods = DB::table('yz_goods')->select('title')->where('id', $value)->first();
+        return $value." 【".$goods['title']."】";
+    }
+
+    //获取关联用户
+    public function getUser($value){
+        $user = DB::table('diagnostic_service_user')->select('nickname')->where('ajy_uid', $value)->first();
+        return $value." 【".$user['nickname']."】";
+    }
+
+    //获取资源名称
+    public function getResourceName($value){
+        return '';
+    }
+
 
 
 }
