@@ -7,8 +7,8 @@ use app\common\facades\Setting;
 use app\common\helpers\Url;
 
 /**
-* 打卡任务管理控制器
-*/
+ * 打卡任务管理控制器
+ */
 class ClockController extends BaseController
 {
 
@@ -32,4 +32,28 @@ class ClockController extends BaseController
         )->render();
     }
 
+//增加打卡活动
+    public function addClock()
+    {
+
+    }
+
+//增加打卡活动任务
+    public function addClockTask()
+    {
+
+    }
+
+//编辑打卡活动
+    public function editClock()
+
+    {
+
+    }
+
+//编辑打卡活动
+    public function editClockTask()
+    {
+
+    }
 }
