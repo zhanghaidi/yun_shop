@@ -5,6 +5,7 @@
 
 <div class="rightlist">
     <div class="panel panel-default">
+        <div class="panel-heading">题库分类编辑</div>
         <div class="panel-body">
         
             <form id="form" action="" method="post" class="form-horizontal form" enctype="multipart/form-data">

@@ -23,7 +23,7 @@ class PluginApplication extends \app\common\services\PluginApplication
             'left_first_show' => 0,
             'left_second_show' => 1,
             'icon' => '', //菜单图标
-            'list_icon' => 'face_payment',
+            'list_icon' => 'fdd_contract',
             'parents' => [],
             'child' => [
                 'question_manage' => [
@@ -71,24 +71,43 @@ class PluginApplication extends \app\common\services\PluginApplication
                     ],
                 ],
 
-                // 'examination_set' => [
-                //     'name' => '插件设置',
-                //     'permit' => 1,
-                //     'menu' => 1,
-                //     'icon' => '',
-                //     'url' => 'plugin.examination.admin.examination-set.index',
-                //     'url_params' => '',
-                //     'parents' => ['examination'],
-                //     'child' => [
-                //         'examination_share_set' => [
-                //             'name' => '分享设置',
-                //             'permit' => 1,
-                //             'menu' => 0,
-                //             'url' => 'plugin.face-analysis.admin.face-analysis-set.share',
-                //             'parents' => ['examination', 'examination_set'],
-                //         ],
-                //     ],
-                // ],
+                'paper_manage' => [
+                    'name' => '试卷管理',
+                    'permit' => 1,
+                    'menu' => 1,
+                    'icon' => '',
+                    'url' => 'plugin.examination.admin.paper.index',
+                    'url_params' => '',
+                    'parents' => ['examination'],
+                    'child' => [
+                        'paper_edit' => [
+                            'name' => '编辑试卷',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.examination.admin.paper.edit',
+                            'parents' => ['examination', 'paper_manage'],
+                        ],
+                    ],
+                ],
+
+                'examination_manage' => [
+                    'name' => '考试管理',
+                    'permit' => 1,
+                    'menu' => 1,
+                    'icon' => '',
+                    'url' => 'plugin.examination.admin.examination.index',
+                    'url_params' => '',
+                    'parents' => ['examination'],
+                    'child' => [
+                        'examination_edit' => [
+                            'name' => '编辑考试',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.examination.admin.examination.edit',
+                            'parents' => ['examination', 'examination_manage'],
+                        ],
+                    ],
+                ],
 
             ],
         ]);

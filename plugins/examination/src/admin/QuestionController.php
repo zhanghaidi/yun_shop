@@ -57,27 +57,31 @@ class QuestionController extends BaseController
 
         $pager = PaginationHelper::show($list['total'], $list['current_page'], $this->pageSize);
 
-        return view('Yunshop\Examination::admin.question', [
+        $view = 'question.question';
+        if (\YunShop::request()->source == 'manual') {
+            $paperId = (int) \YunShop::request()->paper_id;
+            $view = 'paper.question';
+        }
+
+        return view('Yunshop\Examination::admin.' . $view, [
             'pluginName' => ExaminationService::get('name'),
             'sort' => $questionSortTreeRs,
             'data' => $list['data'],
             'search' => $searchData,
             'pager' => $pager,
+            'paper_id' => isset($paperId) ? $paperId : 0,
         ]);
     }
 
     public function add()
     {
-        return view('Yunshop\Examination::admin.add', [
+        return view('Yunshop\Examination::admin.question.add', [
             'pluginName' => ExaminationService::get('name'),
         ]);
     }
 
     public function edit()
     {
-        $id = (int) \YunShop::request()->id;
-        $type = (int) \YunShop::request()->type;
-
         $data = \YunShop::request()->data;
         if ($data) {
             $id = isset($data['id']) ? $data['id'] : 0;
@@ -134,6 +138,9 @@ class QuestionController extends BaseController
             return $this->message('保存成功', Url::absoluteWeb('plugin.examination.admin.question.edit', ['id' => $question->id]));
         }
 
+        $id = (int) \YunShop::request()->id;
+        $type = (int) \YunShop::request()->type;
+
         $question = [];
         if ($id >= 0) {
             $questionRs = QuestionModel::where([
@@ -165,7 +172,7 @@ class QuestionController extends BaseController
         }
 
         $typeDesc = QuestionModel::getTypeDesc($type);
-        return view('Yunshop\Examination::admin.' . $typeDesc, [
+        return view('Yunshop\Examination::admin.question.' . $typeDesc, [
             'pluginName' => ExaminationService::get('name'),
             'sort_tree' => $questionSortTreeRs,
             'data' => $question,

@@ -17,12 +17,12 @@
             <div class="col-lg-3 col-md-4" style="display:flex; align-items:center; margin-top: 50px">
                 <a href="{{ yzWebUrl('plugin.examination.admin.question.edit', ['type' => 3]) }}">判断题</a>
             </div>
-            <div class="col-lg-3 col-md-4" style="display:flex; align-items:center; margin-top: 50px">
+            <!-- <div class="col-lg-3 col-md-4" style="display:flex; align-items:center; margin-top: 50px">
                 <a href="{{ yzWebUrl('plugin.examination.admin.question.edit', ['type' => 4]) }}">填空题</a>
             </div>
             <div class="col-lg-3 col-md-4" style="display:flex; align-items:center; margin-top: 50px">
                 <a href="{{ yzWebUrl('plugin.examination.admin.question.edit', ['type' => 5]) }}">问答题</a>
-            </div>
+            </div> -->
         </div>
     </div>
 </div>
