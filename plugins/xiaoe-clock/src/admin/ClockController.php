@@ -256,6 +256,7 @@ class ClockController extends BaseController
                     'cover_img'  => $param['cover_img'] ? $param['cover_img'] : '',
                     'text_desc' => $param['text_desc'] ? $param['text_desc'] : '',
                     'video_desc' => $param['video_desc'] ? $param['video_desc'] : '',
+                    'sort' => $param['sort'] ? $param['sort'] : 0,
                 ];
                 if ($type > 0 && DB::table('yz_xiaoe_clock_task')->where('theme_time', $ist_data['theme_time'])->where('id', $rid)->first()) {
                     return $this->message('该日期已经添加主体了', Url::absoluteWeb(''), 'danger');
@@ -273,6 +274,7 @@ class ClockController extends BaseController
                     'name' => $param['name'] ? trim($param['name']) : '',
                     'text_desc' => $param['text_desc'] ? $param['text_desc'] : '',
                     'video_desc' => $param['video_desc'] ? $param['video_desc'] : '',
+                    'sort' => $param['sort'] ? $param['sort'] : 0,
                 ];
             }
 
@@ -382,7 +384,7 @@ class ClockController extends BaseController
         ])->render();
     }
 
-    // 视频|直播设置
+    // 主题|作业编辑
     public function clock_task_edit()
     {
         if (request()->isMethod('post')) {
@@ -390,73 +392,57 @@ class ClockController extends BaseController
             $param = request()->all();
             $id = $param['id'] ? $param['id'] : 0;
 
-            $upd_data['room_id'] = array_key_exists('room_id', $param) ? intval($param['room_id']) : 0;
-            $upd_data['type'] = intval($param['type']);
-            $upd_data['title'] = $param['title'] ? trim($param['title']) : '';
-            $upd_data['cover_img'] = $param['cover_img'] ? $param['cover_img'] : '';
-            $upd_data['media_url'] = $param['media_url'] ? $param['media_url'] : '';
-            $upd_data['intro'] = $param['intro'] ? $param['intro'] : '';
-            $upd_data['doctor'] = $param['doctor'] ? $param['doctor'] : '';
-            $upd_data['sort'] = intval($param['sort']);
-            $upd_data['time_long'] = ((intval($param['minute']) * 60) + intval($param['second']));
-
-            if ($upd_data['type'] != 0) {
-                //$upd_data['publish_time'] = strtotime($param['publish_time']) <= time() ? time() : strtotime($param['publish_time']);
-                $upd_data['publish_time'] = strtotime($param['publish_time']);
-            }
-
-            $replay = DB::table('yz_appletslive_replay')->where('id', $id)->first();
+            $replay = DB::table('yz_xiaoe_clock_task')->where('id', $id)->first();
             if (!$replay) {
-                if (request()->ajax()) {
-                    return $this->errorJson('无效的视频或直播ID');
-                } else {
-                    return $this->message('无效的视频或直播ID', Url::absoluteWeb(''), 'danger');
-                }
+                return $this->message('无效的数据ID', Url::absoluteWeb(''), 'danger');
             }
-            if (DB::table('yz_appletslive_replay')->where('title', $upd_data['title'])->where('rid', $replay->rid)->where('id', '<>', $id)->first()) {
-                return $this->message('视频名称已存在', Url::absoluteWeb(''), 'danger');
-            }
-            DB::table('yz_appletslive_replay')->where('id', $id)->update($upd_data);
-
-            // 刷新接口数据缓存
-            if ($replay['type'] == 0) {
-                Cache::forget(CacheService::$cache_keys['brandsale.albumlist']);
-                Cache::forget(CacheService::$cache_keys['brandsale.albuminfo']);
-                Cache::forget(CacheService::$cache_keys['brandsale.albumliverooms']);
-            } else {
-                Cache::forget(CacheService::$cache_keys['recorded.roomlist']);
-                Cache::forget(CacheService::$cache_keys['recorded.roominfo']);
-                Cache::forget(CacheService::$cache_keys['recorded.roomreplays']);
+            if (DB::table('yz_xiaoe_clock_task')->where('name', $upd_data['name'])->where('clock_id', $replay['clock_id'])->where('id', '<>', $id)->first()) {
+                return $this->message('名称已存在', Url::absoluteWeb(''), 'danger');
             }
 
-            if (request()->ajax()) {
-                return $this->successJson('保存成功');
+            $type = $replay['type'];
+            if ($type == 1) {//日历主题
+                $theme_time = $param['theme_time'] ? $param['theme_time'] : 0;
+                $upd_data = [
+                    'name' => $param['name'] ? trim($param['name']) : '',
+                    'theme_time' => strtotime($theme_time),
+                    'cover_img'  => $param['cover_img'] ? $param['cover_img'] : '',
+                    'text_desc' => $param['text_desc'] ? $param['text_desc'] : '',
+                    'video_desc' => $param['video_desc'] ? $param['video_desc'] : '',
+                    'sort' => $param['sort'] ? $param['sort'] : 0,
+                ];
+
+            } elseif ($type == 2) {//作业
+
+                $start_time = $param['start_time'] ? $param['start_time'] : 0;
+                $end_time = $param['end_time'] ? $param['end_time'] : 0;
+                $upd_data = [
+                    'start_time' => strtotime($start_time),
+                    'end_time' => strtotime($end_time),
+                    'name' => $param['name'] ? trim($param['name']) : '',
+                    'text_desc' => $param['text_desc'] ? $param['text_desc'] : '',
+                    'video_desc' => $param['video_desc'] ? $param['video_desc'] : '',
+                    'sort' => $param['sort'] ? $param['sort'] : 0,
+                ];
+            }
+
+            $updata_res = DB::table('yz_xiaoe_clock_task')->where('id', $id)->update($upd_data);
+            if ($updata_res) {
+                return $this->message('保存成功', Url::absoluteWeb('plugin.xiaoe-clock.admin.clock.clock_task_list', ['rid' => $replay['clock_id']]));
             } else {
-                return $this->message('保存成功', Url::absoluteWeb('plugin.xiaoe-clock.admin.clock.clock_task_list', ['rid' => $replay['rid']]));
+                return $this->message('保存失败', Url::absoluteWeb(''), 'danger');
             }
         }
 
         $id = request()->get('id', 0);
-        $info = DB::table('yz_appletslive_replay')->where('id', $id)->first();
+        $info = DB::table('yz_xiaoe_clock_task')->where('id', $id)->first();
         if (!$info) {
-            return $this->message('视频或直播不存在', Url::absoluteWeb(''), 'danger');
+            return $this->message('数据不存在', Url::absoluteWeb(''), 'danger');
         }
-        $info['minute'] = floor($info['time_long'] / 60);
-        $info['second'] = $info['time_long'] % 60;
 
-        $limit = 20;
-        $liverooms = LiveRoom::whereIn('live_status', [
-            APPLETSLIVE_ROOM_LIVESTATUS_101,
-            APPLETSLIVE_ROOM_LIVESTATUS_102,
-            APPLETSLIVE_ROOM_LIVESTATUS_105,
-        ])->paginate($limit);
-        $pager = PaginationHelper::show($liverooms->total(), $liverooms->currentPage(), $liverooms->perPage());
-
-        return view('Yunshop\XiaoeClock::admin.clock_task__edit', [
+        return view('Yunshop\XiaoeClock::admin.clock_task_edit', [
             'id' => $id,
             'info' => $info,
-            'liverooms' => $liverooms,
-            'pager' => $pager,
         ])->render();
     }
 

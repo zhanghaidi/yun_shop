@@ -88,7 +88,7 @@
                             <td>{{ $row['join_num'] }}</td>
                             <td style="overflow:visible;">
                                 <a class='btn btn-default'
-                                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.replayedit', ['id' => $row['id']])}}"
+                                   href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_task_edit', ['id' => $row['id']])}}"
                                    title='主题编辑'><i class='fa fa-edit'></i>编辑
                                 </a>
                             </td>
@@ -174,7 +174,7 @@
                             <td>0</td>
                             <td style="overflow:visible;">
                                 <a class='btn btn-default'
-                                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.replayedit', ['id' => $row['id']])}}"
+                                   href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_task_edit', ['id' => $row['id']])}}"
                                    title='设置'><i class='fa fa-edit'></i>设置
                                 </a>
                                 @if ($row['delete_time'] > 0)

@@ -5,15 +5,15 @@
     <div class="right-titpos">
         <ul class="add-snav">
             @if($room['type']=='1')
-                <li class="active"><a href="#">录播视频设置</a></li>
+                <li class="active"><a href="#">主题编辑</a></li>
             @else
-                <li class="active"><a href="#">特卖直播设置</a></li>
+                <li class="active"><a href="#">作业编辑</a></li>
             @endif
         </ul>
     </div>
 
-    <!-- 特卖直播 -->
-    @if($info['type']==0)
+    <!-- 作业 -->
+    @if($info['type']==2)
 
         <div class='panel panel-default'>
             <div class='panel-body'>
@@ -22,83 +22,65 @@
                        href="javascript:history.go(-1);">返回</a>
                 </div>
 
-                <table class="table table-hover" style="overflow:visible;">
-                    <thead>
-                    <tr>
-                        <th style='width:10%;'>ID</th>
-                        <th style='width:10%;'>房间号</th>
-                        <th style='width:10%;'>封面</th>
-                        <th style='width:15%;'>房间名称</th>
-                        <th style='width:10%;'>主播名称</th>
-                        <th style='width:15%;'>开始时间</th>
-                        <th style='width:15%;'>结束时间</th>
-                        <th style='width:10%;'>直播状态</th>
-                        <th style='width:10%;text-align:center;'>操作</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @foreach($liverooms as $row)
-                        <tr style="">
-                            <td>{{ $row['id'] }}</td>
-                            <td>{{ $row['roomid'] }}</td>
-                            <td style="overflow:visible;">
-                                <div class="show-cover-img-big" style="position:relative;width:50px;overflow:visible">
-                                    <img src="{!! tomedia($row['cover_img']) !!}" alt=""
-                                         style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
-                                    <img class="img-big" src="{!! tomedia($row['cover_img']) !!}" alt=""
-                                         style="z-index:99999;position:absolute;top:0;left:0;border:1px solid #ccc;padding:1px;display: none">
+                <div class="w1200 m0a">
+                    <div class="rightlist">
+                        <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+
+                            <div class="form-group">
+                                <label class="col-md-2 col-sm-3 col-xs-12 control-label">作业名称</label>
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    <input name="name" type="text" class="form-control" value="{{ $info['name'] }}" required />
                                 </div>
-                            </td>
-                            <td>{{ $row['name'] }}</td>
-                            <td>{{ $row['anchor_name'] }}</td>
-                            <td>{{ date('Y-m-d H:i:s', $row['start_time']) }}</td>
-                            <td>{{ date('Y-m-d H:i:s', $row['end_time']) }}</td>
-                            <td>
-                                @if ($row['live_status'] == APPLETSLIVE_ROOM_LIVESTATUS_101)
-                                    {{ APPLETSLIVE_ROOM_LIVESTATUS_101_TEXT }}
-                                @elseif ($row['live_status'] == APPLETSLIVE_ROOM_LIVESTATUS_102)
-                                    {{ APPLETSLIVE_ROOM_LIVESTATUS_102_TEXT }}
-                                @elseif ($row['live_status'] == APPLETSLIVE_ROOM_LIVESTATUS_103)
-                                    {{ APPLETSLIVE_ROOM_LIVESTATUS_103_TEXT }}
-                                @elseif ($row['live_status'] == APPLETSLIVE_ROOM_LIVESTATUS_104)
-                                    {{ APPLETSLIVE_ROOM_LIVESTATUS_104_TEXT }}
-                                @elseif ($row['live_status'] == APPLETSLIVE_ROOM_LIVESTATUS_105)
-                                    {{ APPLETSLIVE_ROOM_LIVESTATUS_105_TEXT }}
-                                @elseif ($row['live_status'] == APPLETSLIVE_ROOM_LIVESTATUS_106)
-                                    {{ APPLETSLIVE_ROOM_LIVESTATUS_106_TEXT }}
-                                @elseif ($row['live_status'] == APPLETSLIVE_ROOM_LIVESTATUS_107)
-                                    {{ APPLETSLIVE_ROOM_LIVESTATUS_107_TEXT }}
-                                @elseif ($row['live_status'] == APPLETSLIVE_ROOM_LIVESTATUS_108)
-                                    {{ APPLETSLIVE_ROOM_LIVESTATUS_108_TEXT }}
-                                @else
-                                    未知
-                                @endif
-                            </td>
-                            <td style="text-align:center;">
-                                @if($info['room_id']==$row['id'])
-                                    <a class='btn btn-default disabled' href="javascript:;;" disabled>使用
-                                    </a>
-                                @else
-                                    <a class='btn btn-primary btn-use-liveroom' href="javascript:;;"
-                                       data-id="{{ $info['id'] }}" data-room_id="{{ $row['id'] }}"
-                                       data-toggle="modal" data-target="#modal-use-liveroom">使用
-                                    </a>
-                                @endif
-                            </td>
-                        </tr>
-                    @endforeach
-                    </tbody>
-                </table>
-                {!! $pager !!}
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 col-sm-3 col-xs-12 control-label">有效期：开始日期</label>
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    {!! tpl_form_field_date('start_time', date('Y-m-d', ($info['start_time'] ? $info['start_time'] : time())), false) !!}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 col-sm-3 col-xs-12 control-label">有效期：结束日期</label>
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    {!! tpl_form_field_date('end_time', date('Y-m-d', ($info['end_time'] ? $info['end_time'] : time())), false) !!}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 col-sm-3 col-xs-12 control-label">主题正文：图文</label>
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    {!! yz_tpl_ueditor('text_desc', $info['text_desc']) !!}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 col-sm-3 col-xs-12 control-label">主题正文：视频</label>
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    {!! app\common\helpers\ImageHelper::tplFormFieldVideo('video_desc',$info['video_desc']) !!}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 col-sm-3 col-xs-12 control-label">排序</label>
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    <input name="sort" type="number" class="form-control" value="{{ $info['sort'] }}" placeholder="" required />
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-md-2 col-sm-3 col-xs-12 control-label"></label>
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    <input type="hidden" name="id" value="{{ $info['id'] }}" />
+                                    <input type="submit" name="submit" value="提交" class="btn btn-success"/>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
 
-        @include('Yunshop\Appletslive::admin.modals')
-
     @endif
 
-    <!-- 录播视频 -->
-    @if($info['type']>0)
+    <!-- 主题 -->
+    @if($info['type'] == 1)
 
         <div class='panel panel-default'>
             <div class="clearfix panel-heading">
@@ -112,69 +94,36 @@
                 <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
 
                     <div class="form-group">
-                        <label class="col-md-2 col-sm-3 col-xs-12 control-label">标题</label>
-                        <div class="col-md-10 col-sm-9 col-xs-12">
-                            <input name="title" type="text" class="form-control" value="{{ $info['title'] }}" required />
+                        <label class="col-md-2 col-sm-3 col-xs-12 control-label">主题名称</label>
+                        <div class="col-md-10 col-sm-9 col-xs-8">
+                            <input name="name" type="text" class="form-control" value="{{ $info['name'] }}" required />
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-md-2 col-sm-3 col-xs-12 control-label">类型</label>
-                        <div class="col-md-10 col-sm-9 col-xs-12">
-                            <select name="type" class="form-control">
-                                <option value="1" @if($info['type']=='1') selected="selected" @endif>本地上传</option>
-                                <option value="2" @if($info['type']=='2') selected="selected" @endif>腾讯视频</option>
-                            </select>
+                        <label class="col-md-2 col-sm-3 col-xs-12 control-label">主题日期</label>
+                        <div class="col-md-10 col-sm-9 col-xs-6">
+                            {!! tpl_form_field_date('theme_time', date('Y-m-d', ($info['theme_time'] ? $info['theme_time'] : time())), false) !!}
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-md-2 col-sm-3 col-xs-12 control-label">链接地址</label>
-                        <div class="col-md-9 col-sm-9 col-xs-12">
-                            @if($room['type']=='0')
-                                <span class="form-control">{{ $info['media_url'] }}</span>
-                            @else
-                                {!! app\common\helpers\ImageHelper::tplFormFieldVideo('media_url', $info['media_url']) !!}
-                            @endif
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-md-2 col-sm-3 col-xs-12 control-label">主讲人</label>
-                        <div class="col-md-10 col-sm-9 col-xs-12">
-                            <input name="doctor" type="text" class="form-control" value="{{ $info['doctor'] }}" placeholder="艾居益" required />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-md-2 col-sm-3 col-xs-12 control-label">视频时长</label>
-                        <div class="col-md-10 col-sm-9 col-xs-12 form-inline">
-                            <div class="input-group form-group col-sm-3" style="padding: 0">
-                                <input type="number" name="minute" class="form-control" value="{{ $info['minute'] }}" required />
-                                <span class="input-group-addon">分钟</span>
-                            </div>
-                            <div class="input-group form-group col-sm-3" style="padding: 0">
-                                <input type="number" name="second" class="form-control" value="{{ $info['second'] }}" required />
-                                <span class="input-group-addon">秒</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-md-2 col-sm-3 col-xs-12 control-label">发布时间</label>
-                        <div class="col-md-10 col-sm-9 col-xs-12">
-                            {!! tpl_form_field_date('publish_time', date('Y-m-d H:i', ($info['publish_time'] ? $info['publish_time'] : time())), true) !!}
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-md-2 col-sm-3 col-xs-12 control-label">预览图片</label>
-                        <div class="col-md-9 col-sm-9 col-xs-12 detail-logo">
+                        <label class="col-md-2 col-sm-3 col-xs-12 control-label">主题封面图</label>
+                        <div class="col-md-9 col-sm-9 col-xs-8 detail-logo">
                             {!! app\common\helpers\ImageHelper::tplFormFieldImage('cover_img', $info['cover_img']) !!}
                             <span class="help-block">图片比例 5:4，请按照规定尺寸上传</span>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-md-2 col-sm-3 col-xs-12 control-label">内容提示</label>
+                        <label class="col-md-2 col-sm-3 col-xs-12 control-label">主题正文：图文</label>
                         <div class="col-md-10 col-sm-9 col-xs-12">
-                            <textarea name="intro" rows="5" class="form-control">{{ $info['intro'] }}</textarea>
+                            {!! yz_tpl_ueditor('text_desc', $info['text_desc']) !!}
                         </div>
                     </div>
-
+                    <div class="form-group">
+                        <label class="col-md-2 col-sm-3 col-xs-12 control-label">主题正文：视频</label>
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            {!! app\common\helpers\ImageHelper::tplFormFieldVideo('video_desc',$info['video_desc']) !!}
+                        </div>
+                    </div>
                     <div class="form-group">
                         <label class="col-md-2 col-sm-3 col-xs-12 control-label">排序</label>
                         <div class="col-md-10 col-sm-9 col-xs-12">
