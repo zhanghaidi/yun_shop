@@ -25,7 +25,7 @@ class GoodsTracking extends Model
      */
     public function goods()
     {
-        return $this->belongsTo('App\backend\modules\goods\models\Goods')->select('title','thumb');
+        return $this->belongsTo('App\backend\modules\goods\models\Goods');
     }
 
     /**
@@ -34,7 +34,7 @@ class GoodsTracking extends Model
      */
     public function user()
     {
-        return $this->belongsTo('App\backend\modules\tracking\models\DiagnosticServiceUser','user_id','ajy_uid')->select('nickname','avatarurl');
+        return $this->belongsTo('App\backend\modules\tracking\models\DiagnosticServiceUser','user_id','ajy_uid');
     }
 
 
