@@ -125,7 +125,7 @@ class GoodsTrackingController extends BaseController
                     $item['app_type'],
                     $item['app_version'],
                     $item['parent_page'],
-                    $item['to_type_id'],
+                    $this->getTrackInfo($item['to_type_id']),
                     $item['resource_id'],
                     $item['goods_id'],
                     $item['user_id'],
@@ -152,61 +152,61 @@ class GoodsTrackingController extends BaseController
         }
     }
 
-    public function getTrackInfo($key,$item){
-        if($item['to_type_id'] == 1){
+    public function getTrackInfo($value){
+        if($value == 1){
             //商品推荐来源类型1:穴位 2：病例 3：文章 4：社区话题 5：体质测试 6：灸师推荐
-            $item['to_type_id'] == '穴位';
+            return '穴位';
         }
-        if($item['to_type_id'] == 3){
-            $item['to_type_id'] == '文章';
+        if($value == 3){
+            return '文章';
         }
-        if($item['to_type_id'] == 4){
-            $item['to_type_id'] == '社区话题';
+        if($value == 4){
+            return '社区话题';
         }
-        if($item['to_type_id'] == 5){
-            $item['to_type_id'] == '体质测试';
+        if($value == 5){
+            return '体质测试';
         }
-        if($item['to_type_id'] == 6){
-            $item['to_type_id'] == '灸师';
+        if($value == 6){
+            return '灸师';
         }
-        if($item['to_type_id'] == 7){
-            $item['to_type_id'] == '课时';
+        if($value == 7){
+            return '课时';
         }
-        if($item['to_type_id'] == 8){
-            $item['to_type_id'] == '直播商品';
+        if($value == 8){
+            return '直播商品';
         }
-        if($item['to_type_id'] == 9){
-            $item['to_type_id'] == '商城首页';
+        if($value == 9){
+            return '商城首页';
         }
-        if($item['to_type_id'] == 10){
-            $item['to_type_id'] == '活动海报';
+        if($value == 10){
+            return '活动海报';
         }
-        if($item['to_type_id'] == 11){
-            $item['to_type_id'] == '分享';
+        if($value == 11){
+            return '分享';
         }
-        if($item['to_type_id'] == 12){
-            $item['to_type_id'] == '搜索';
+        if($value == 12){
+            return '搜索';
         }
-        if($item['to_type_id'] == 13){
-            $item['to_type_id'] == '购物车';
+        if($value == 13){
+            return '购物车';
         }
-        if($item['to_type_id'] == 14){
-            $item['to_type_id'] == '我的订单';
+        if($value == 14){
+            return '我的订单';
         }
-        if($item['to_type_id'] == 15){
-            $item['to_type_id'] == '优惠券';
+        if($value == 15){
+            return '优惠券';
         }
-        if($item['to_type_id'] == 16){
-            $item['to_type_id'] == '我的收藏';
+        if($value == 16){
+            return '我的收藏';
         }
-        if($item['to_type_id'] == 17){
-            $item['to_type_id'] == '用户足迹';
+        if($value == 17){
+            return '用户足迹';
         }
-        if($item['to_type_id'] == 18){
-            $item['to_type_id'] == '装修页面';
+        if($value == 18){
+            return '装修页面';
         }
-        if($item['to_type_id'] == 404){
-            $item['to_type_id'] == '未知';
+        if($value == 404){
+             return '未知';
         }
 
     }
