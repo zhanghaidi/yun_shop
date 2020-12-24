@@ -5,10 +5,10 @@
     <div class="right-titpos">
         <ul class="add-snav">
             @if($room_type=='1')
-                <li class="active"><a href="#">视频列表</a></li>
+                <li class="active"><a href="#">主题列表</a></li>
             @endif
             @if($room_type=='2')
-                <li class="active"><a href="#">直播列表</a></li>
+                <li class="active"><a href="#">作业列表</a></li>
             @endif
         </ul>
     </div>
@@ -58,7 +58,7 @@
                 <a id="" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;"
                    href="javascript:history.go(-1);">返回</a>
                 <a id="btn-add-replay" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;"
-                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.replayadd', ['rid' => $rid])}}">添加录播视频</a>
+                   href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_task_add', ['rid' => $rid])}}">创建主题</a>
             </div>
             <div class='panel-body'>
                 <table class="table table-hover" style="overflow:visible;">
@@ -169,7 +169,7 @@
                 <a id="" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;"
                    href="javascript:history.go(-1);">返回</a>
                 <a id="btn-add-replay" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;"
-                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.replayadd', ['rid' => $rid])}}">添加直播</a>
+                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.replayadd', ['rid' => $rid])}}">添加作业</a>
             </div>
             <div class='panel-body'>
                 <table class="table table-hover" style="overflow:visible;">

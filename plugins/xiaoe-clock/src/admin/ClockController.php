@@ -289,8 +289,9 @@ class ClockController extends BaseController
         }
 
         $rid = request()->get('rid', 0);
-        $room = DB::table('yz_appletslive_room')->where('id', $rid)->first();
-        if (!$room) {
+        $clock = DB::table('yz_xiaoe_clock')->where('id', $rid)->first();
+
+        if (!$clock) {
             return $this->message('数据不存在', Url::absoluteWeb(''), 'danger');
         }
 
@@ -302,9 +303,9 @@ class ClockController extends BaseController
         ])->paginate($limit);
         $pager = PaginationHelper::show($liverooms->total(), $liverooms->currentPage(), $liverooms->perPage());
 
-        return view('Yunshop\XiaoeClock::admin.replay_add', [
-            'rid' => $rid,
-            'room' => $room,
+        return view('Yunshop\XiaoeClock::admin.clock_task_add', [
+            'clock_id' => $rid,
+            'room' => $clock,
             'liverooms' => $liverooms,
             'pager' => $pager,
         ])->render();
@@ -312,14 +313,15 @@ class ClockController extends BaseController
     // 主题|作业列表
     public function clock_task_list()
     {
-        $rid = request()->get('rid', 0);
+//        $rid = request()->get('rid', 0);
+        $rid = 10;
         $room = DB::table('yz_appletslive_room')->where('id', $rid)->first();
         $room_type = $room['type'];
 
         $input = \YunShop::request();
         $limit = 20;
 
-        // 录播视频
+        // 日历主题
         if ($room_type == 1) {
 
             $where[] = ['rid', '=', $rid];
@@ -350,9 +352,10 @@ class ClockController extends BaseController
                 ->orderBy('sort', 'desc')
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
+
         }
 
-        // 特卖直播
+        // 作业
         if ($room_type == 2) {
 
             $where[] = ['yz_appletslive_replay.rid', '=', $rid];
@@ -395,7 +398,7 @@ class ClockController extends BaseController
 
         $pager = PaginationHelper::show($replay_list->total(), $replay_list->currentPage(), $replay_list->perPage());
 
-        return view('Yunshop\XiaoeClock::admin.clock_task__list', [
+        return view('Yunshop\XiaoeClock::admin.clock_task_list', [
             'rid' => $rid,
             'room_type' => $room_type,
             'replay_list' => $replay_list,
