@@ -3,6 +3,7 @@ namespace app\backend\modules\tracking\controllers;
 
 use app\common\components\BaseController;
 use app\backend\modules\tracking\models\GoodsTrackingModel;
+use app\backend\modules\tracking\models\GoodsTracking;
 use app\common\helpers\PaginationHelper;
 use app\backend\modules\tracking\models\ChartChartuser;
 use app\backend\modules\tracking\models\GoodsTrackingStatistics;
@@ -153,7 +154,7 @@ class GoodsTrackingController extends BaseController
     }*/
 
 
-    public function export($search)
+    public function export()
     {
         if (\YunShop::request()->export == 1) {
             $export_page = request()->export_page ? request()->export_page : 1;
@@ -167,7 +168,7 @@ class GoodsTrackingController extends BaseController
                 }
             }
 
-            $recordList = collect(DB::table('diagnostic_service_goods_tracking')->get());
+            $recordList = GoodsTracking::get();
 
             $export_model = new ExportService($recordList, $export_page);
 
