@@ -23,13 +23,30 @@ use app\common\services\tencentlive\LiveService;
 use app\common\services\tencentlive\IMService;
 use app\common\models\live\ImCallbackLog;
 use app\common\models\Goods;
+use app\common\models\live\CloudLiveRoomLike;
+use app\common\models\live\CloudLiveRoomSubscription;
+use app\common\models\live\CloudLiveRoomMessage;
 
 class LiveRoomController extends ApiController
 {
 
     const PAGE_SIZE = 10;
 
-    protected $ignoreAction = ['index','detail','getMsgList','sendMsg','getLiveList'];
+    protected $ignoreAction = ['index','detail','getMsgList','sendMsg','getLiveList','likeLiveRoom','subscriptionLiveRoom','unsubscriptionLiveRoom'];
+
+    public function __construct()
+    {
+        $member_id = \YunShop::app()->getMemberId();
+        if(!$member_id){
+            response()->json([
+                'result' => 41009,
+                'msg' => '请登录',
+                'data' => '',
+            ], 200, ['charset' => 'utf-8'])->send();
+            exit;
+        }
+
+    }
 
     public function index()
     {
@@ -85,16 +102,35 @@ class LiveRoomController extends ApiController
         if (!$id) {
             return  $this->errorJson('直播间ID为空');
         }
+        $member_id = \YunShop::app()->getMemberId();
 
-        $_model = CloudLiveRoom::where('id',$id)->first();
+        if(!$member_id){
+            return  $this->errorJson('用户ID为空');
+        }
+
+        $_model = CloudLiveRoom::where('id', $id)
+            ->withCount('hasManyLike','hasManySubscription')
+            ->first();
+
         if (!$_model) {
             return $this->errorJson('未获取到直播间');
         }
-        $_model->push_url = '';
 
+        $_model->push_url = '';
         $im_service = new IMService();
         $_model->online_num = $im_service->getOnlineMemberNum($_model->group_id);
-//        $_model->online_num = 0;
+        //获取用户订阅状态
+        $_model->is_subscription = 0;
+        $_model->is_like = 0;
+        $userSubscription = CloudLiveRoomSubscription::where(['room_id'=>$_model->id,'user_id'=>$member_id])->first();
+        $userLike = CloudLiveRoomLike::where(['room_id'=>$_model->id,'user_id'=>$member_id])->first();
+        if(!empty($userSubscription)){
+            $_model->is_subscription = 1;
+        }
+        if(!empty($userLike)){
+            $_model->is_like = 1;
+        }
+        $_model->now_time = time();
         $_model->goods = $_model->goods(false);
         $_model->quick_comment = array_column(DB::table('diagnostic_service_quick_comment')->select('content')->where([['type','=',7],['status','=',1]])->orderby('id','desc')->get()->toArray(),'content');
 
@@ -132,12 +168,91 @@ class LiveRoomController extends ApiController
         $pageSize = \YunShop::request()->get('pagesize');
         $pageSize = $pageSize ? $pageSize : self::PAGE_SIZE;
 
-        $list = ImCallbackLog::uniacid()->where([['callback_command','=','Group.CallbackAfterSendMsg'],['group_id','=',$_model->group_id],['sdk_appid','=',LiveSetService::getIMSetting('sdk_appid')]])->orderby('id','desc')->paginate($pageSize)->toArray();
+        $list = CloudLiveRoomMessage::uniacid()->where([['group_id','=',$_model->group_id],['sdk_appid','=',LiveSetService::getIMSetting('sdk_appid')]])->orderby('id','desc')->paginate($pageSize)->toArray();
         if (empty($list['data'])) {
             return $this->errorJson('没有找到消息记录');
         }else{
             return $this->successJson('获取消息记录成功', $list);
         }
+    }
+
+    //直播间点赞
+
+    public function likeLiveRoom(){
+        $room_id = intval(request()->room_id);
+        if (!$room_id) {
+            return $this->errorJson('直播间ID为空');
+        }
+
+        $member_id = \YunShop::app()->getMemberId();
+
+        if(!$member_id){
+            return  $this->errorJson('用户ID为空');
+        }
+
+        $data = array(
+            'uniacid' => \YunShop::app()->uniacid,
+            'user_id' => $member_id,
+            'room_id' => $room_id,
+
+        );
+
+        CloudLiveRoomLike::create($data);
+
+        return $this->successJson('点赞成功');
+
+    }
+
+    //直播间订阅
+    public function subscriptionLiveRoom()
+    {
+        $room_id = intval(request()->room_id);
+
+        if (!$room_id) {
+            return $this->errorJson('直播间ID为空');
+        }
+
+        $member_id = \YunShop::app()->getMemberId();
+
+        if(!$member_id){
+            return  $this->errorJson('用户ID为空');
+        }
+
+        $params = array(
+            'uniacid' => \YunShop::app()->uniacid,
+            'user_id' => $member_id,
+            'room_id' => $room_id,
+        );
+
+        CloudLiveRoomSubscription::firstOrCreate($params);
+
+        return $this->successJson('直播间关注成功',['is_subscription' => 1]);
+    }
+
+    //取消订阅
+    public function unSubscriptionLiveRoom()
+    {
+        $room_id = intval(request()->room_id);
+
+        if (!$room_id) {
+            return $this->errorJson('直播间ID为空');
+        }
+
+        $member_id = \YunShop::app()->getMemberId();
+
+        if(!$member_id){
+            return  $this->errorJson('用户ID为空');
+        }
+
+        $params = array(
+            'uniacid' => \YunShop::app()->uniacid,
+            'user_id' => $member_id,
+            'room_id' => $room_id,
+        );
+
+        CloudLiveRoomSubscription::where($params)->delete();
+
+        return $this->successJson('直播间取消关注成功',['is_subscription' => 0]);
     }
 
 }

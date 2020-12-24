@@ -14,6 +14,7 @@ use app\common\helpers\Url;
 use app\common\helpers\PaginationHelper;
 use app\common\models\live\ImCallbackLog;
 
+
 class IMLogController extends BaseController
 {
     public function index()
@@ -71,5 +72,7 @@ class IMLogController extends BaseController
 
         return $this->message('删除成功', Url::absoluteWeb('live.IM-log.index'));
     }
+
+
 
 }
