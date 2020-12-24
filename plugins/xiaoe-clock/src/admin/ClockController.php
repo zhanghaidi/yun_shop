@@ -10,6 +10,8 @@ use app\common\helpers\PaginationHelper;
 use app\common\helpers\Url;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Yunshop\Appletslive\common\models\LiveRoom;
+use Yunshop\Appletslive\common\models\Replay;
 use Yunshop\Appletslive\common\models\Room;
 use Yunshop\Appletslive\common\models\RoomComment;
 use Yunshop\Appletslive\common\services\CacheService;
@@ -20,7 +22,7 @@ use Yunshop\Appletslive\common\services\CacheService;
 class ClockController extends BaseController
 {
 
-    //增加打卡活动
+    //创建打卡
     public function clock_index()
     {
         $type = request()->get('type', 1);
@@ -105,7 +107,7 @@ class ClockController extends BaseController
             'request' => $input,
         ])->render();
     }
-//增加打卡
+    //增加打卡
     public function clock_add()
     {
         if (request()->isMethod('post')) {
@@ -232,5 +234,283 @@ class ClockController extends BaseController
             'exchange' => \YunShop::request()->exchange,
         ])->render();
 
+    }
+    // 主题|作业添加
+    public function clock_task_add()
+    {
+        if (request()->isMethod('post')) {
+            $param = request()->all();
+            $rid = $param['rid'] ? intval($param['rid']) : 0;
+            $room = DB::table('yz_appletslive_room')->where('id', $rid)->first();
+            if (!$room) {
+                return $this->message('房间不存在', Url::absoluteWeb(''), 'danger');
+            }
+            $type = array_key_exists('type', $param) ? intval($param['type']) :  0;
+            $ist_data = [
+                'rid' => $rid,
+                'type' => $type,
+                'room_id' => array_key_exists('room_id', $param) ? intval($param['room_id']) : 0,
+                'title' => $param['title'] ? trim($param['title']) : '',
+                'cover_img' => $param['cover_img'] ? $param['cover_img'] : '',
+                'media_url' => $param['media_url'] ? $param['media_url'] : '',
+                'intro' => $param['intro'] ? $param['intro'] : '',
+                'doctor' => $param['doctor'] ? $param['doctor'] : '',
+                'sort' => intval($param['sort']),
+                'time_long' => ((intval($param['minute']) * 60) + intval($param['second'])),
+            ];
+
+            if ($type > 0) {
+                $ist_data['create_time'] = time();
+                $ist_data['expire_time'] = strtotime('2099-12-31 23:59:59');
+                $ist_data['publish_time'] = strtotime($param['publish_time']) <= time() ? time() : strtotime($param['publish_time']);
+            }
+
+            if ($type > 0 && DB::table('yz_appletslive_replay')->where('title', $ist_data['title'])->where('rid', $rid)->first()) {
+                return $this->message('名称已存在', Url::absoluteWeb(''), 'danger');
+            }
+            DB::table('yz_appletslive_replay')->insert($ist_data);
+
+            // 刷新接口数据缓存
+            if ($type == 0) {
+                Cache::forget(CacheService::$cache_keys['brandsale.albumlist']);
+                Cache::forget(CacheService::$cache_keys['brandsale.albuminfo']);
+                Cache::forget(CacheService::$cache_keys['brandsale.albumliverooms']);
+            } else {
+                Cache::forget(CacheService::$cache_keys['recorded.roomlist']);
+                Cache::forget(CacheService::$cache_keys['recorded.roominfo']);
+                Cache::forget(CacheService::$cache_keys['recorded.roomreplays']);
+            }
+
+            if (request()->ajax()) {
+                return $this->successJson('添加成功');
+            } else {
+                return $this->message('添加成功', Url::absoluteWeb('plugin.XiaoeClock.admin.controllers.room.clock_task_list', ['rid' => $rid]));
+            }
+        }
+
+        $rid = request()->get('rid', 0);
+        $room = DB::table('yz_appletslive_room')->where('id', $rid)->first();
+        if (!$room) {
+            return $this->message('数据不存在', Url::absoluteWeb(''), 'danger');
+        }
+
+        $limit = 20;
+        $liverooms = LiveRoom::whereIn('live_status', [
+            APPLETSLIVE_ROOM_LIVESTATUS_101,
+            APPLETSLIVE_ROOM_LIVESTATUS_102,
+            APPLETSLIVE_ROOM_LIVESTATUS_105,
+        ])->paginate($limit);
+        $pager = PaginationHelper::show($liverooms->total(), $liverooms->currentPage(), $liverooms->perPage());
+
+        return view('Yunshop\XiaoeClock::admin.replay_add', [
+            'rid' => $rid,
+            'room' => $room,
+            'liverooms' => $liverooms,
+            'pager' => $pager,
+        ])->render();
+    }
+    // 主题|作业列表
+    public function clock_task_list()
+    {
+        $rid = request()->get('rid', 0);
+        $room = DB::table('yz_appletslive_room')->where('id', $rid)->first();
+        $room_type = $room['type'];
+
+        $input = \YunShop::request();
+        $limit = 20;
+
+        // 录播视频
+        if ($room_type == 1) {
+
+            $where[] = ['rid', '=', $rid];
+
+            // 处理搜索条件
+            if (isset($input->search)) {
+
+                $search = $input->search;
+                if (intval($search['id']) > 0) {
+                    $where[] = ['id', '=', intval($search['id'])];
+                }
+                if (trim($search['title']) !== '') {
+                    $where[] = ['title', 'like', '%' . trim($search['title']) . '%'];
+                }
+                if (trim($search['type']) !== '') {
+                    $where[] = ['type', '=', $search['type']];
+                }
+                if (trim($search['status']) !== '') {
+                    if ($search['status'] === '0') {
+                        $where[] = ['delete_time', '>', 0];
+                    } else {
+                        $where[] = ['delete_time', '=', 0];
+                    }
+                }
+            }
+            $replay_list = Replay::where($where)
+                ->with('liveroom')
+                ->orderBy('sort', 'desc')
+                ->orderBy('id', 'desc')
+                ->paginate($limit);
+        }
+
+        // 特卖直播
+        if ($room_type == 2) {
+
+            $where[] = ['yz_appletslive_replay.rid', '=', $rid];
+
+            // 处理搜索条件
+            if (isset($input->search)) {
+
+                $search = $input->search;
+                if (intval($search['roomid']) > 0) {
+                    $where[] = ['yz_appletslive_liveroom.roomid', '=', intval($search['roomid'])];
+                }
+                if (trim($search['name']) !== '') {
+                    $where[] = ['yz_appletslive_liveroom.name', 'like', '%' . trim($search['name']) . '%'];
+                }
+                if (trim($search['live_status']) !== '') {
+                    $where[] = ['yz_appletslive_liveroom.live_status', '=', $search['live_status']];
+                }
+                if (trim($search['status']) !== '') {
+                    if ($search['status'] === '0') {
+                        $where[] = ['yz_appletslive_replay.delete_time', '>', 0];
+                    } else {
+                        $where[] = ['yz_appletslive_replay.delete_time', '=', 0];
+                    }
+                }
+            }
+
+            $replay_list = DB::table('yz_appletslive_replay')
+                ->join('yz_appletslive_liveroom', 'yz_appletslive_replay.room_id', '=', 'yz_appletslive_liveroom.id')
+                ->select('yz_appletslive_replay.id', 'yz_appletslive_liveroom.roomid', 'yz_appletslive_liveroom.name',
+                    'yz_appletslive_liveroom.cover_img', 'yz_appletslive_liveroom.anchor_name',
+                    'yz_appletslive_liveroom.anchor_name', 'yz_appletslive_liveroom.live_status',
+                    'yz_appletslive_liveroom.start_time', 'yz_appletslive_liveroom.end_time',
+                    'yz_appletslive_replay.delete_time')
+                ->where($where)
+                ->whereIn('yz_appletslive_liveroom.live_status', [101, 102, 103, 105, 107])
+                ->orderBy('yz_appletslive_liveroom.start_time', 'desc')
+                ->orderBy('yz_appletslive_replay.id', 'desc')
+                ->paginate($limit);
+        }
+
+        $pager = PaginationHelper::show($replay_list->total(), $replay_list->currentPage(), $replay_list->perPage());
+
+        return view('Yunshop\XiaoeClock::admin.clock_task__list', [
+            'rid' => $rid,
+            'room_type' => $room_type,
+            'replay_list' => $replay_list,
+            'pager' => $pager,
+            'request' => $input,
+        ])->render();
+    }
+
+    // 视频|直播设置
+    public function clock_task_edit()
+    {
+        if (request()->isMethod('post')) {
+            $upd_data = [];
+            $param = request()->all();
+            $id = $param['id'] ? $param['id'] : 0;
+
+            $upd_data['room_id'] = array_key_exists('room_id', $param) ? intval($param['room_id']) : 0;
+            $upd_data['type'] = intval($param['type']);
+            $upd_data['title'] = $param['title'] ? trim($param['title']) : '';
+            $upd_data['cover_img'] = $param['cover_img'] ? $param['cover_img'] : '';
+            $upd_data['media_url'] = $param['media_url'] ? $param['media_url'] : '';
+            $upd_data['intro'] = $param['intro'] ? $param['intro'] : '';
+            $upd_data['doctor'] = $param['doctor'] ? $param['doctor'] : '';
+            $upd_data['sort'] = intval($param['sort']);
+            $upd_data['time_long'] = ((intval($param['minute']) * 60) + intval($param['second']));
+
+            if ($upd_data['type'] != 0) {
+                //$upd_data['publish_time'] = strtotime($param['publish_time']) <= time() ? time() : strtotime($param['publish_time']);
+                $upd_data['publish_time'] = strtotime($param['publish_time']);
+            }
+
+            $replay = DB::table('yz_appletslive_replay')->where('id', $id)->first();
+            if (!$replay) {
+                if (request()->ajax()) {
+                    return $this->errorJson('无效的视频或直播ID');
+                } else {
+                    return $this->message('无效的视频或直播ID', Url::absoluteWeb(''), 'danger');
+                }
+            }
+            if (DB::table('yz_appletslive_replay')->where('title', $upd_data['title'])->where('rid', $replay->rid)->where('id', '<>', $id)->first()) {
+                return $this->message('视频名称已存在', Url::absoluteWeb(''), 'danger');
+            }
+            DB::table('yz_appletslive_replay')->where('id', $id)->update($upd_data);
+
+            // 刷新接口数据缓存
+            if ($replay['type'] == 0) {
+                Cache::forget(CacheService::$cache_keys['brandsale.albumlist']);
+                Cache::forget(CacheService::$cache_keys['brandsale.albuminfo']);
+                Cache::forget(CacheService::$cache_keys['brandsale.albumliverooms']);
+            } else {
+                Cache::forget(CacheService::$cache_keys['recorded.roomlist']);
+                Cache::forget(CacheService::$cache_keys['recorded.roominfo']);
+                Cache::forget(CacheService::$cache_keys['recorded.roomreplays']);
+            }
+
+            if (request()->ajax()) {
+                return $this->successJson('保存成功');
+            } else {
+                return $this->message('保存成功', Url::absoluteWeb('plugin.xiaoe-clock.admin.clock.clock_task_list', ['rid' => $replay['rid']]));
+            }
+        }
+
+        $id = request()->get('id', 0);
+        $info = DB::table('yz_appletslive_replay')->where('id', $id)->first();
+        if (!$info) {
+            return $this->message('视频或直播不存在', Url::absoluteWeb(''), 'danger');
+        }
+        $info['minute'] = floor($info['time_long'] / 60);
+        $info['second'] = $info['time_long'] % 60;
+
+        $limit = 20;
+        $liverooms = LiveRoom::whereIn('live_status', [
+            APPLETSLIVE_ROOM_LIVESTATUS_101,
+            APPLETSLIVE_ROOM_LIVESTATUS_102,
+            APPLETSLIVE_ROOM_LIVESTATUS_105,
+        ])->paginate($limit);
+        $pager = PaginationHelper::show($liverooms->total(), $liverooms->currentPage(), $liverooms->perPage());
+
+        return view('Yunshop\XiaoeClock::admin.clock_task__edit', [
+            'id' => $id,
+            'info' => $info,
+            'liverooms' => $liverooms,
+            'pager' => $pager,
+        ])->render();
+    }
+
+    // 视频显示/隐藏
+    public function clock_task_showhide()
+    {
+        $input = request()->all();
+        $id_invalid = false;
+        if (!array_key_exists('id', $input)) { // 房间id
+            $id_invalid = true;
+        }
+        $replay = Replay::where('id', intval($input['id']))->first();
+        if (empty($replay)) {
+            $id_invalid = true;
+        }
+        if ($id_invalid) {
+            return $this->message('数据不存在', Url::absoluteWeb(''), 'danger');
+        }
+        $delete_time = ($replay->delete_time > 0) ? 0 : time();
+        Replay::where('id', $replay->id)->update(['delete_time' => $delete_time]);
+
+        // 刷新接口数据缓存
+        if ($replay->type == 0) {
+            Cache::forget(CacheService::$cache_keys['brandsale.albumlist']);
+            Cache::forget(CacheService::$cache_keys['brandsale.albuminfo']);
+            Cache::forget(CacheService::$cache_keys['brandsale.albumliverooms']);
+        } else {
+            Cache::forget(CacheService::$cache_keys['recorded.roomlist']);
+            Cache::forget(CacheService::$cache_keys['recorded.roominfo']);
+            Cache::forget(CacheService::$cache_keys['recorded.roomreplays']);
+        }
+
+        return $this->message('修改成功', Url::absoluteWeb('plugin.xiaoe-clock.admin.clock.clock_task_list', ['rid' => $replay->rid]));
     }
 }

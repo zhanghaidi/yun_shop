@@ -91,9 +91,9 @@
                                     <img class="img-big" src="{!! tomedia($row['cover_img']) !!}" alt=""
                                          style="z-index:99999;position:absolute;top:0;left:0;border:1px solid #ccc;padding:1px;display: none">
                                 </div>
-                                @if ($row['join_type'] == 1)
+                                @if ($row['join_type'] == 0)
                                     免费
-                                @elseif ($row['join_type'] == 2)
+                                @elseif ($row['join_type'] == 1)
                                     购买课程
                                 @else
                                     付费
@@ -120,21 +120,21 @@
                             </td>
                             <td style="overflow:visible;">
                                 <a class='btn btn-default'
-                                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.edit', ['id' => $row['id']])}}"
-                                   title='课程设置'><i class='fa fa-edit'></i>课程设置
+                                   href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_task_list', ['rid' => $row['id']])}}"
+                                   title='录播列表'><i class='fa fa-list'></i>主题列表
                                 </a>
                                 <a class='btn btn-default'
-                                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.replaylist', ['rid' => $row['id']])}}"
-                                   title='录播列表'><i class='fa fa-list'></i>录播列表
+                                   href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_task_edit', ['id' => $row['id']])}}"
+                                   title='课程设置'><i class='fa fa-edit'></i>打卡设置
                                 </a>
                                 @if ($row['delete_time'] > 0)
                                     <a class='btn btn-default btn-success'
-                                       href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.showhide', ['id' => $row['id']])}}"
+                                       href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_task_showhide', ['id' => $row['id']])}}"
                                        title='显示'>显示
                                     </a>
                                 @else
                                     <a class='btn btn-default btn-danger'
-                                       href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.showhide', ['id' => $row['id']])}}"
+                                       href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_task_showhide', ['id' => $row['id']])}}"
                                        title='隐藏'>隐藏
                                     </a>
                                 @endif
@@ -196,6 +196,7 @@
                         <th style='width:15%;'>作业数</th>
                         <th style='width:15%;'>打卡人数/次数</th>
                         <th style='width:15%;'>关联课程</th>
+                        <th style='width:15%;'>展示状态</th>
                         <th style='width:30%;'>操作</th>
                     </tr>
                     </thead>
@@ -211,14 +212,15 @@
                                     <img class="img-big" src="{!! tomedia($row['cover_img']) !!}" alt=""
                                          style="z-index:99999;position:absolute;top:0;left:0;border:1px solid #ccc;padding:1px;display: none">
                                 </div>
-                                @if ($row['join_type'] == 1)
+                                @if ($row['join_type'] == 0)
                                     免费
-                                @elseif ($row['join_type'] == 2)
+                                @elseif ($row['join_type'] == 1)
                                     购买课程
                                 @else
                                     付费
                                 @endif
                             </td>
+                            <td>0</td>
                             <td>0/0</td>
                             <td>
                                 @if ($row['course_id'] > 0)
