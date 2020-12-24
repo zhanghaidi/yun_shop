@@ -283,7 +283,8 @@ class ClockController extends BaseController
             }
         }
 
-        $rid = request()->get('rid', 0);
+//        $rid = request()->get('rid', 0);
+        $rid= 2;
         $clock = DB::table('yz_xiaoe_clock')->where('id', $rid)->first();
 
         if (!$clock) {

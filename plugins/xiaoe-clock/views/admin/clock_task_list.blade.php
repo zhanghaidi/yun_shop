@@ -169,7 +169,7 @@
                 <a id="" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;"
                    href="javascript:history.go(-1);">返回</a>
                 <a id="btn-add-replay" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;"
-                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.replayadd', ['rid' => $rid])}}">添加作业</a>
+                   href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_task_add', ['rid' => $rid])}}">添加作业</a>
             </div>
             <div class='panel-body'>
                 <table class="table table-hover" style="overflow:visible;">
