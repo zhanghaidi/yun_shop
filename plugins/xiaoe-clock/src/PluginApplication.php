@@ -57,10 +57,21 @@ class PluginApplication extends \app\common\services\PluginApplication
                     'permit' => 1,
                     'menu' => 1,
                     'icon' => '',
-                    'url' => 'plugin.xiaoe-clock.admin.set.index',
+                    'url' => 'plugin.xiaoe-clock.admin.clock.clock_index',
                     'url_params' => '',
                     'parents' => ['xiaoe_clock'],
-                    'child' => []
+                    'child' => [
+                        'clock_add' => [
+                            'name' => '添加打卡活动',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'icon' => '',
+                            'url' => 'plugin.xiaoe-clock.admin.clock.clock_add',
+                            'url_params' => '',
+                            'parents' => ['xiaoe_clock', 'clock'],
+                        ],
+
+                    ]
                 ]
 
             ]
