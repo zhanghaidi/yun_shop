@@ -192,6 +192,7 @@ class GoodsTrackingController extends BaseController
                     ];
                 }
                 $export_model->export($file_name, $export_data, 'tracking.goodsTracking.index');
+
             }
         }
     }
