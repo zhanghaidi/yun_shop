@@ -3306,7 +3306,9 @@ if (!function_exists('_tpl_form_field_audio')) {
         }
         $options['direct'] = true;
         $options['multiple'] = false;
-        $options['fileSizeLimit'] = intval($GLOBALS['_W']['setting']['upload']['audio']['limit']) * 1024;
+        $param = uploadParam();
+        $options['fileSizeLimit'] = $param['fileSizeLimitAudio'];
+//        $options['fileSizeLimit'] = intval($GLOBALS['_W']['setting']['upload']['audio']['limit']) * 1024;
         $s = '';
         if (!defined('TPL_INIT_AUDIO')) {
             $s = '

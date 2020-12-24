@@ -28,7 +28,7 @@
                     </div>
                     <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-1 control-label">封面图</label>
-                        <div class="col-sm-9 col-xs-12 col-md-10">
+                        <div class="col-sm-9 col-xs-12 col-md-6">
                             {!! app\common\helpers\ImageHelper::tplFormFieldImage('cover_img', '') !!}
                             <span class="help-block">图片比例 5:4，请按照规定尺寸上传</span>
                         </div>
@@ -39,13 +39,13 @@
                             {!! yz_tpl_ueditor('text_desc', $info['text_desc']) !!}
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">打卡音频介绍</label>
-                        <div class="col-sm-9 col-xs-12 col-md-6">
-                            {!! yz_tpl_form_field_audio('audio_desc') !!}
+{{--                    <div class="form-group">--}}
+{{--                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">打卡音频介绍</label>--}}
+{{--                        <div class="col-sm-9 col-xs-12 col-md-6">--}}
+{{--                            {!! yz_tpl_form_field_audio('audio_desc') !!}--}}
 
-                        </div>
-                    </div>
+{{--                        </div>--}}
+{{--                    </div>--}}
                     <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-1 control-label">打卡视频介绍</label>
                         <div class="col-sm-9 col-xs-12 col-md-6">
@@ -66,8 +66,8 @@
                     <div class="form-group goods-div" style="display: none;">
                         <label class="col-xs-12 col-sm-3 col-md-1 control-label">关联课程</label>
                         <div class="col-sm-9 col-xs-12 col-md-11">
-                            <input name="goods_id" type="hidden" class="form-control" value=""/>
-                            <input class="form-control" type="text" placeholder="请选择课程" value="" id="goods_name"
+                            <input name="course_id" type="hidden" class="form-control" value=""/>
+                            <input class="form-control" type="text" placeholder="请选择课程" value="" id="course_name"
                                    style="width:400px;display:inline-block;" readonly="true">
                             <span class="input-group-btn" style="display:inline-block;width: 100px;">
                             <button class="btn btn-default nav-link-goods" style="display:inline-block" type="button"
@@ -142,7 +142,7 @@
                     </div>
                     <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-1 control-label">助手头像</label>
-                        <div class="col-sm-9 col-xs-12 col-md-10">
+                        <div class="col-sm-9 col-xs-12 col-md-6">
                             {!! app\common\helpers\ImageHelper::tplFormFieldImage('helper_avatar', '') !!}
                             <span class="help-block">助手设置，助手头像</span>
                         </div>
@@ -197,19 +197,19 @@
         </div>
     </div>
 
-    {{--搜索商品的弹窗--}}
+    {{--搜索课程的弹窗--}}
     <div id="modal-module-menus-goods" class="modal fade" tabindex="-1">
         <div class="modal-dialog" style='width: 920px;'>
             <div class="modal-content">
                 <div class="modal-header">
                     <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
-                    <h3>选择商品</h3>
+                    <h3>选择课程</h3>
                 </div>
                 <div class="modal-body">
                     <div class="row">
                         <div class="input-group">
                             <input type="text" class="form-control" name="keyword" value="" id="search-kwd-goods"
-                                   placeholder="请输入商品名称"/>
+                                   placeholder="请输入课程名称"/>
                             <span class='input-group-btn'>
                             <button type="button" class="btn btn-default" onclick="search_goods();">搜索</button>
                         </span>
@@ -240,7 +240,7 @@
                 return;
             }
             $("#module-menus-goods").html("正在搜索....");
-            $.get('{!! yzWebUrl('goods.goods.get-search-goods') !!}', {
+            $.get('{!! yzWebUrl('plugin.xiaoe-clock.admin.clock.get_search_course') !!}', {
                     keyword: $.trim($('#search-kwd-goods').val())
                 }, function (dat) {
                     $('#module-menus-goods').html(dat);
@@ -249,14 +249,14 @@
         }
 
         function select_good(o) {
-            $("input[name=goods_id]").val(o.id);
-            $("#goods_name").val(o.title);
+            $("input[name=course_id]").val(o.id);
+            $("#course_name").val(o.title);
             $("#modal-module-menus-goods .close").click();
         }
 
         function clearGoods() {
-            $("input[name=goods_id]").val('');
-            $("#goods_name").val('');
+            $("input[name=course_id]").val('');
+            $("#course_name").val('');
         }
 
         $('input[name=join_type]').change(function () {

@@ -70,6 +70,15 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'url_params' => '',
                             'parents' => ['xiaoe_clock', 'clock'],
                         ],
+                        'clock_add' => [
+                            'name' => '搜索课程',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'icon' => '',
+                            'url' => 'plugin.xiaoe-clock.admin.clock.get_search_course',
+                            'url_params' => '',
+                            'parents' => ['xiaoe_clock', 'clock'],
+                        ],
 
                     ]
                 ]
