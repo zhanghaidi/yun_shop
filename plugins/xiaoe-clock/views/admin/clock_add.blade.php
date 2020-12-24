@@ -41,14 +41,15 @@
                     </div>
                     <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-1 control-label">打卡音频介绍</label>
-                        <div class="col-sm-9 col-xs-12 col-md-11">
-                            {!! yz_tpl_ueditor('audio_desc', $info['audio_desc']) !!}
+                        <div class="col-sm-9 col-xs-12 col-md-6">
+                            {!! yz_tpl_form_field_audio('audio_desc') !!}
+
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-1 control-label">打卡视频介绍</label>
-                        <div class="col-sm-9 col-xs-12 col-md-11">
-                            {!! yz_tpl_ueditor('video_desc', $info['video_desc']) !!}
+                        <div class="col-sm-9 col-xs-12 col-md-6">
+                            {!! app\common\helpers\ImageHelper::tplFormFieldVideo('video_desc') !!}
                         </div>
                     </div>
                     <div class="form-group">
@@ -94,19 +95,65 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">开始时间</label>
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">打卡有效时段</label>
                         <div class="col-sm-9 col-xs-12 col-md-11">
-                            {!! tpl_form_field_date_hi('valid_time_start', date('H:i'), true) !!}
-                            <span class="help-block">打卡有效时段，开始时间</span>
+                            开始时间：<input name="valid_time_start" type="text" value="" required/>&nbsp;&nbsp;&nbsp;&nbsp;结束时间：<input name="valid_time_end" type="text" value="" required/>
+                            <span class="help-block">打卡有效时段，开始时间，结束时间，如果每天早上九点才能打开就想写数字9,如果下午3点打卡结束就填写数字15，不要用空格等特殊字符</span>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">结束时间</label>
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">文字字数限制</label>
                         <div class="col-sm-9 col-xs-12 col-md-11">
-                            <span class="help-block">打卡有效时段，结束时间</span>
+                            <input name="text_length" type="text" class="form-control" value="" required/>
+                            <span class="help-block">用户打卡要求，文字字数限制</span>
                         </div>
                     </div>
-
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">图片张数限制</label>
+                        <div class="col-sm-9 col-xs-12 col-md-11">
+                            <input name="image_length" type="text" class="form-control" value="" required/>
+                            <span class="help-block">用户打卡要求，图片张数限制</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">音频时间限制</label>
+                        <div class="col-sm-9 col-xs-12 col-md-11">
+                            <input name="video_length" type="text" class="form-control" value="" required/>
+                            <span class="help-block">用户打卡要求，音频时间限制</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">显示设置</label>
+                        <div class="col-sm-9 col-xs-12 col-md-11">
+                            <label class="radio-inline">
+                                <input type="radio" name="display_status" value="1" checked="checked"/> 显示
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="display_status" value="2" />隐藏
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">助手名称</label>
+                        <div class="col-sm-9 col-xs-12 col-md-11">
+                            <input name="helper_nickname" type="text" class="form-control" value="" required/>
+                            <span class="help-block">助手设置，助手名称</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">助手头像</label>
+                        <div class="col-sm-9 col-xs-12 col-md-10">
+                            {!! app\common\helpers\ImageHelper::tplFormFieldImage('helper_avatar', '') !!}
+                            <span class="help-block">助手设置，助手头像</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">助手微信</label>
+                        <div class="col-sm-9 col-xs-12 col-md-11">
+                            <input name="helper_wechat" type="text" class="form-control" value="" required/>
+                            <span class="help-block">助手设置，助手微信</span>
+                        </div>
+                    </div>
                 @endif
 
                 @if($type=='2')

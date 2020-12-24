@@ -3276,3 +3276,108 @@ if (!function_exists('setSystemVersion')) {
         file_put_contents(base_path('config/') . $file, $str);
     }
 }
+//fixBy-wk-20201224 音频上传兼容微擎
+if (!function_exists('yz_tpl_form_field_audio')) {
+    /**
+     * 为了兼容微擎使用此方法
+     * @param $name
+     * @param string $value
+     * @param bool $withtime
+     * @return string
+     */
+    function yz_tpl_form_field_audio($name, $value = '', $withtime = false)
+    {
+        return _tpl_form_field_audio($name, $value, $withtime);
+    }
+}
+
+if (!function_exists('_tpl_form_field_audio')) {
+    /**
+     * 为了兼容微擎使用此方法
+     * @param $name
+     * @param string $value
+     * @param bool $withtime
+     * @return string
+     */
+    function _tpl_form_field_audio($name, $value = '', $options = array())
+    {
+        if (!is_array($options)) {
+            $options = array();
+        }
+        $options['direct'] = true;
+        $options['multiple'] = false;
+        $options['fileSizeLimit'] = intval($GLOBALS['_W']['setting']['upload']['audio']['limit']) * 1024;
+        $s = '';
+        if (!defined('TPL_INIT_AUDIO')) {
+            $s = '
+<script type="text/javascript">
+	function showAudioDialog(elm, base64options, options) {
+		require(["util"], function(util){
+			var btn = $(elm);
+			var ipt = btn.parent().prev();
+			var val = ipt.val();
+			util.audio(val, function(url){
+				if(url && url.attachment && url.url){
+					btn.prev().show();
+					ipt.val(url.attachment);
+					ipt.attr("filename",url.filename);
+					ipt.attr("url",url.url);
+					setAudioPlayer();
+				}
+				if(url && url.media_id){
+					ipt.val(url.media_id);
+				}
+			}, "" , ' . json_encode($options) . ');
+		});
+	}
+
+	function setAudioPlayer(){
+		require(["jquery.jplayer"], function(){
+			$(function(){
+				$(".audio-player").each(function(){
+					$(this).prev().find("button").eq(0).click(function(){
+						var src = $(this).parent().prev().val();
+						if($(this).find("i").hasClass("fa-stop")) {
+							$(this).parent().parent().next().jPlayer("stop");
+						} else {
+							if(src) {
+								$(this).parent().parent().next().jPlayer("setMedia", {mp3: util.tomedia(src)}).jPlayer("play");
+							}
+						}
+					});
+				});
+
+				$(".audio-player").jPlayer({
+					playing: function() {
+						$(this).prev().find("i").removeClass("fa-play").addClass("fa-stop");
+					},
+					pause: function (event) {
+						$(this).prev().find("i").removeClass("fa-stop").addClass("fa-play");
+					},
+					swfPath: "resource/components/jplayer",
+					supplied: "mp3"
+				});
+				$(".audio-player-media").each(function(){
+					$(this).next().find(".audio-player-play").css("display", $(this).val() == "" ? "none" : "");
+				});
+			});
+		});
+	}
+	setAudioPlayer();
+</script>';
+            echo $s;
+            define('TPL_INIT_AUDIO', true);
+        }
+        $s .= '
+	<div class="input-group">
+		<input type="text" value="' . $value . '" name="' . $name . '" class="form-control audio-player-media" autocomplete="off" ' . ($options['extras']['text'] ? $options['extras']['text'] : '') . '>
+		<span class="input-group-btn">
+			<button class="btn btn-default audio-player-play" type="button" style="display:none;"><i class="fa fa-play"></i></button>
+			<button class="btn btn-default" type="button" onclick="showAudioDialog(this, \'' . base64_encode(iserializer($options)) . '\',' . str_replace('"', '\'', json_encode($options)) . ');">选择媒体文件</button>
+		</span>
+	</div>
+	<div class="input-group audio-player"></div>';
+
+        return $s;
+    }
+}
