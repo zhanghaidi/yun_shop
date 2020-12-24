@@ -92,21 +92,28 @@ class PaperQuestionModel extends BaseModel
                 continue;
             }
 
-            $type = QuestionModel::getTypeDesc($temp['type']);
-            if ($type == '') {
-                continue;
-            }
-            if ($type == 'multiple') {
-                $temp['option'] = json_decode($temp['option'], true);
-            }
-
             $temp['answer'] = json_decode($temp['answer'], true);
             foreach ($temp['answer'] as $k => $v) {
                 if (strpos($k, 'option') === 0) {
                     $tempKey = substr($k, 6);
                     $temp['answer'][$tempKey] = $v;
                     unset($temp['answer'][$k]);
+                } elseif ($k == 'answer') {
+                    $temp['solution'] = $v;
+                    unset($temp['answer']['answer']);
+                } elseif ($k == 'explain') {
+                    $temp['explain'] = $v;
+                    unset($temp['answer']['explain']);
                 }
+            }
+
+            $type = QuestionModel::getTypeDesc($temp['type']);
+            if ($type == '') {
+                continue;
+            }
+            if ($type == QuestionModel::TYPE2) {
+                $temp['option'] = json_decode($temp['option'], true);
+                $temp['solution'] = explode(',', $temp['solution']);
             }
 
             $return[] = $temp;
@@ -117,5 +124,94 @@ class PaperQuestionModel extends BaseModel
         $return = ['code' => 0, 'data' => $return];
         Redis::setex($cacheKey, mt_rand(300, 600), json_encode($return));
         return $return;
+    }
+
+    /**
+     * 获取试卷中任一个题目的得分、是否正确
+     * @param $questionRs 题目信息，包含答卷中content的全部信息
+     * @param $answer 用户的回答
+     */
+    public static function getScore(array $questionRs, $answer)
+    {
+        if (!isset($questionRs['question_log_id']) || !isset($questionRs['score']) ||
+            !isset($questionRs['type']) || !isset($questionRs['solution'])
+        ) {
+            return [];
+        }
+
+        $type = QuestionModel::getTypeDesc($questionRs['type']);
+
+        $reply = '';
+        $obtain = 0;
+        $correct = false;
+        if ($type == QuestionModel::TYPE1) {
+            $reply = strtoupper($answer);
+            if ($reply == $questionRs['solution']) {
+                $obtain = $questionRs['score'];
+                $correct = true;
+            }
+        } elseif ($type == QuestionModel::TYPE2) {
+            if (!isset($questionRs['option']['option']) || !isset($questionRs['option']['score'])) {
+                return [];
+            }
+            $reply = strtoupper($answer);
+            $reply = explode(',', $reply);
+
+            $obtain = $questionRs['score'];
+
+            if ($questionRs['option']['option'] == 1) {
+                // 漏选时则扣X分
+                foreach ($questionRs['solution'] as $v) {
+                    if (!in_array($v, $reply)) {
+                        $obtain -= $questionRs['option']['score'];
+                        break;
+                    }
+                }
+
+                foreach ($reply as $v) {
+                    if (!in_array($v, $questionRs['solution'])) {
+                        $obtain -= $questionRs['option']['score'];
+                        break;
+                    }
+                }
+            } elseif ($questionRs['option']['option'] == 2) {
+                // 漏选时每个选项扣X分
+                foreach ($questionRs['solution'] as $v) {
+                    if (!in_array($v, $reply)) {
+                        $obtain -= $questionRs['option']['score'];
+                    }
+                }
+
+                foreach ($reply as $v) {
+                    if (!in_array($v, $questionRs['solution'])) {
+                        $obtain -= $questionRs['option']['score'];
+                    }
+                }
+            } else {
+                $obtain = 0;
+            }
+
+            if ($obtain < 0) {
+                $obtain = 0;
+            }
+
+            if ($obtain == $questionRs['score']) {
+                $correct = true;
+            }
+        } elseif ($type == QuestionModel::TYPE3) {
+            $reply = (bool) $answer;
+
+            if ($reply === $questionRs['solution']) {
+                $obtain = $questionRs['score'];
+                $correct = true;
+            }
+        } else {
+        }
+
+        return [
+            'reply' => $reply,
+            'obtain' => $obtain,
+            'correct' => $correct,
+        ];
     }
 }
