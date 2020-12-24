@@ -91,4 +91,10 @@ class GoodsTrackingController extends BaseController
         ])->render();
     }
 
+    //埋点数据导出
+    public function export()
+    {
+
+    }
+
 }

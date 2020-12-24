@@ -220,9 +220,9 @@
                         <!--<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label"></label>-->
                         <div class="">
                             <button class="btn btn-success "><i class="fa fa-search"></i> 搜索</button>
-                            {{--<button type="button" name="export" value="1" id="export" class="btn btn-default">导出
+                            <button type="button" name="export" value="1" id="export" class="btn btn-default">导出
                                 Excel
-                            </button>--}}
+                            </button>
 
                         </div>
                     </div>
