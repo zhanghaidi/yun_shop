@@ -11,10 +11,10 @@
     <div class="panel panel-info">
         <ul class="add-shopnav">
             <li @if($type=='1') class="active" @endif>
-                <a href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.index', ['type' => 1])}}">录播课程</a>
+                <a href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_index', ['type' => 1])}}">日历打卡</a>
             </li>
             <li @if($type=='2') class="active" @endif>
-                <a href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.index', ['type' => 2])}}">品牌特卖</a>
+                <a href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_index', ['type' => 2])}}">作业打卡</a>
             </li>
         </ul>
     </div>
@@ -63,7 +63,7 @@
             <div class='panel-body'>
                 <div class="clearfix panel-heading">
                     <a id="" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;"
-                       href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.add', ['type'=>1])}}">添加录播课程</a>
+                       href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_add', ['type'=>1])}}">创建日历打卡</a>
                 </div>
 
                 <table class="table table-hover" style="overflow:visible;">
