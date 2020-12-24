@@ -6,7 +6,7 @@
 <div class="rightlist">
     <div class="panel panel-default">
         <div class="panel-heading">
-            题库分类管理
+            题库分类管理 <small class="text-primary">点击下面列表中分类的名称，可以查看其子分类</small>
             <a href="{{ yzWebUrl('plugin.examination.admin.question-sort.edit') }}" class="pull-right btn btn-sm btn-success">添加分类</a>
         </div>
         <div class="panel-body">

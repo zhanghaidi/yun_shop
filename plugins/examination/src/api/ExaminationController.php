@@ -14,6 +14,8 @@ use Yunshop\Examination\models\PaperQuestionModel;
 
 class ExaminationController extends ApiController
 {
+    protected $publicAction = ['detail', 'submit'];
+
     public function detail()
     {
         $memberId = (int) \YunShop::app()->getMemberId();
