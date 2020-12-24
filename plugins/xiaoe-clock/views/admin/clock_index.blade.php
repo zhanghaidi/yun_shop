@@ -70,13 +70,12 @@
                     <thead>
                     <tr>
                         <th style='width:10%;'>ID</th>
-                        <th style='width:15%;'>排序</th>
-                        <th style='width:15%;'>封面</th>
-                        <th style='width:25%;'>名称</th>
-                        <th style='width:25%;'>状态</th>
-                        <th style='width:15%;'>订阅人数</th>
-                        <th style='width:15%;'>是否精选</th>
-                        <th style='width:15%;'>评论量</th>
+                        <th style='width:15%;'>打卡名称</th>
+                        <th style='width:15%;'>有效期</th>
+                        <th style='width:25%;'>已进行/总天数</th>
+                        <th style='width:15%;'>打卡人数/次数</th>
+                        <th style='width:15%;'>关联课程</th>
+                        <th style='width:15%;'>展示状态</th>
                         <th style='width:30%;'>操作</th>
                     </tr>
                     </thead>
@@ -84,38 +83,40 @@
                     @foreach($room_list as $row)
                         <tr>
                             <td>{{ $row['id'] }}</td>
-                            <td>{{ $row['sort'] }}</td>
                             <td style="overflow:visible;">
+                                {{ $row['name'] }}
                                 <div class="show-cover-img-big" style="position:relative;width:50px;overflow:visible">
                                     <img src="{!! tomedia($row['cover_img']) !!}" alt=""
                                          style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
                                     <img class="img-big" src="{!! tomedia($row['cover_img']) !!}" alt=""
                                          style="z-index:99999;position:absolute;top:0;left:0;border:1px solid #ccc;padding:1px;display: none">
                                 </div>
-                            </td>
-                            <td>{{ $row['name'] }}</td>
-                            <td>
-                                @if ($row['live_status'] == 1)
-                                    更新中
-                                @elseif ($row['live_status'] == 2)
-                                    已完结
+                                @if ($row['join_type'] == 1)
+                                    免费
+                                @elseif ($row['join_type'] == 2)
+                                    购买课程
                                 @else
-                                    筹备中
+                                    付费
                                 @endif
                             </td>
-                            <td>{{ $row['subscription_num'] }}</td>
+                            <td style="overflow:visible;">
+                                {{ date('Y-m-d',$row['start_time'])}} 致 {{ date('Y-m-d',$row['end_time'])}}
+                            </td>
+                            <td>0/0</td>
+                            <td>0/0</td>
                             <td>
-                                @if ($row['is_selected'] == 1)
-                                    <span style="color: green">是</span>
+                                @if ($row['course_id'] > 0)
+                                   课程id {{ $row['course_id'] }}
                                 @else
-                                    <span style="color: red">否</span>
+                                    --
                                 @endif
                             </td>
                             <td>
-                                <a class='btn btn-default'
-                                    href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.commentlist', ['rid' => $row['id']])}}"
-                                    title='评论列表'><i class='fa fa-list'></i>评论量（{{ $row['comment_num'] }}）
-                                </a>
+                                @if ($row['display_status'] == 1)
+                                    <span style="color: green">显示</span>
+                                @else
+                                    <span style="color: red">隐藏</span>
+                                @endif
                             </td>
                             <td style="overflow:visible;">
                                 <a class='btn btn-default'
@@ -191,11 +192,10 @@
                     <thead>
                     <tr>
                         <th style='width:10%;'>ID</th>
-                        <th style='width:15%;'>排序</th>
-                        <th style='width:15%;'>封面</th>
-                        <th style='width:25%;'>名称</th>
-                        <th style='width:15%;'>订阅人数</th>
-                        <th style='width:15%;'>评论量</th>
+                        <th style='width:15%;'>打卡名称</th>
+                        <th style='width:15%;'>作业数</th>
+                        <th style='width:15%;'>打卡人数/次数</th>
+                        <th style='width:15%;'>关联课程</th>
                         <th style='width:30%;'>操作</th>
                     </tr>
                     </thead>
@@ -203,22 +203,36 @@
                     @foreach($room_list as $row)
                         <tr>
                             <td>{{ $row['id'] }}</td>
-                            <td>{{ $row['sort'] }}</td>
                             <td style="overflow:visible;">
+                                {{ $row['name'] }}
                                 <div class="show-cover-img-big" style="position:relative;width:50px;overflow:visible">
                                     <img src="{!! tomedia($row['cover_img']) !!}" alt=""
                                          style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
                                     <img class="img-big" src="{!! tomedia($row['cover_img']) !!}" alt=""
                                          style="z-index:99999;position:absolute;top:0;left:0;border:1px solid #ccc;padding:1px;display: none">
                                 </div>
+                                @if ($row['join_type'] == 1)
+                                    免费
+                                @elseif ($row['join_type'] == 2)
+                                    购买课程
+                                @else
+                                    付费
+                                @endif
                             </td>
-                            <td>{{ $row['name'] }}</td>
-                            <td>{{ $row['subscription_num'] }}</td>
+                            <td>0/0</td>
                             <td>
-                                <a class='btn btn-default'
-                                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.commentlist', ['rid' => $row['id']])}}"
-                                   title='评论列表'><i class='fa fa-list'></i>评论量（{{ $row['comment_num'] }}）
-                                </a>
+                                @if ($row['course_id'] > 0)
+                                    课程id {{ $row['course_id'] }}
+                                @else
+                                    --
+                                @endif
+                            </td>
+                            <td>
+                                @if ($row['display_status'] == 1)
+                                    <span style="color: green">显示</span>
+                                @else
+                                    <span style="color: red">隐藏</span>
+                                @endif
                             </td>
                             <td style="overflow:visible;">
                                 <a class='btn btn-default'

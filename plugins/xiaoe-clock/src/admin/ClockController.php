@@ -25,7 +25,7 @@ class ClockController extends BaseController
     {
         $type = request()->get('type', 1);
         if (!in_array($type, [1, 2])) {
-            throw new AppException('房间类型有误');
+            throw new AppException('打卡类型有误');
         }
 
         $input = \YunShop::request();
@@ -57,8 +57,7 @@ class ClockController extends BaseController
                     }
                 }
             }
-            $list = Room::where($where)
-                ->orderBy('sort', 'desc')
+            $list = DB::table('yz_xiaoe_clock')->where($where)
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
             if ($list->total() > 0) {
@@ -88,8 +87,7 @@ class ClockController extends BaseController
                     }
                 }
             }
-            $list = Room::where($where)
-                ->orderBy('sort', 'desc')
+            $list = DB::table('yz_xiaoe_clock')->where($where)
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
             if ($list->total() > 0) {
@@ -107,7 +105,7 @@ class ClockController extends BaseController
             'request' => $input,
         ])->render();
     }
-//增加打卡活动
+//增加打卡
     public function clock_add()
     {
         if (request()->isMethod('post')) {
@@ -196,9 +194,8 @@ class ClockController extends BaseController
                     $ist_data['is_resubmit'] = $param['is_resubmit'] ? $param['is_resubmit'] : 0;
                 }
             }
-
             DB::beginTransaction();//开启事务
-            $insert_res =DB::table('yz_xiaoe_clock')->insert($ist_data);
+            $insert_res = DB::table('yz_xiaoe_clock')->insert($ist_data);
             if (!$insert_res) {
                 DB::rollBack();//事务回滚
                 return $this->message('创建失败', Url::absoluteWeb('plugin.xiaoe-clock.admin.clock.clock_index', ['type' => $param['type']]));
