@@ -86,70 +86,61 @@
                     <a id="" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;"
                        href="javascript:history.go(-1);">返回</a>
                 </div>
+                <div class="w1200 m0a">
+                    <div class="rightlist">
+                        <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
 
-                <table class="table table-hover" style="overflow:visible;">
-                    <thead>
-                    <tr>
-                        <th style='width:10%;'>ID</th>
-                        <th style='width:10%;'>房间号</th>
-                        <th style='width:10%;'>封面</th>
-                        <th style='width:15%;'>房间名称</th>
-                        <th style='width:10%;'>主播名称</th>
-                        <th style='width:15%;'>开始时间</th>
-                        <th style='width:15%;'>结束时间</th>
-                        <th style='width:10%;'>直播状态</th>
-                        <th style='width:10%;text-align:center;'>操作</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @foreach($liverooms as $row)
-                        <tr style="">
-                            <td>{{ $row['id'] }}</td>
-                            <td>{{ $row['roomid'] }}</td>
-                            <td style="overflow:visible;">
-                                <div class="show-cover-img-big" style="position:relative;width:50px;overflow:visible">
-                                    <img src="{!! tomedia($row['cover_img']) !!}" alt=""
-                                         style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
-                                    <img class="img-big" src="{!! tomedia($row['cover_img']) !!}" alt=""
-                                         style="z-index:99999;position:absolute;top:0;left:0;border:1px solid #ccc;padding:1px;display: none">
+                            <div class="form-group">
+                                <label class="col-md-2 col-sm-3 col-xs-12 control-label">作业名称</label>
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    <input name="name" type="text" class="form-control" value="" required />
                                 </div>
-                            </td>
-                            <td>{{ $row['name'] }}</td>
-                            <td>{{ $row['anchor_name'] }}</td>
-                            <td>{{ date('Y-m-d H:i:s', $row['start_time']) }}</td>
-                            <td>{{ date('Y-m-d H:i:s', $row['end_time']) }}</td>
-                            <td>
-                                @if ($row['live_status'] == APPLETSLIVE_ROOM_LIVESTATUS_101)
-                                    {{ APPLETSLIVE_ROOM_LIVESTATUS_101_TEXT }}
-                                @elseif ($row['live_status'] == APPLETSLIVE_ROOM_LIVESTATUS_102)
-                                    {{ APPLETSLIVE_ROOM_LIVESTATUS_102_TEXT }}
-                                @elseif ($row['live_status'] == APPLETSLIVE_ROOM_LIVESTATUS_103)
-                                    {{ APPLETSLIVE_ROOM_LIVESTATUS_103_TEXT }}
-                                @elseif ($row['live_status'] == APPLETSLIVE_ROOM_LIVESTATUS_104)
-                                    {{ APPLETSLIVE_ROOM_LIVESTATUS_104_TEXT }}
-                                @elseif ($row['live_status'] == APPLETSLIVE_ROOM_LIVESTATUS_105)
-                                    {{ APPLETSLIVE_ROOM_LIVESTATUS_105_TEXT }}
-                                @elseif ($row['live_status'] == APPLETSLIVE_ROOM_LIVESTATUS_106)
-                                    {{ APPLETSLIVE_ROOM_LIVESTATUS_106_TEXT }}
-                                @elseif ($row['live_status'] == APPLETSLIVE_ROOM_LIVESTATUS_107)
-                                    {{ APPLETSLIVE_ROOM_LIVESTATUS_107_TEXT }}
-                                @elseif ($row['live_status'] == APPLETSLIVE_ROOM_LIVESTATUS_108)
-                                    {{ APPLETSLIVE_ROOM_LIVESTATUS_108_TEXT }}
-                                @else
-                                    未知
-                                @endif
-                            </td>
-                            <td style="text-align:center;">
-                                <a class='btn btn-primary btn-use-liveroom' href="javascript:;;"
-                                   data-rid="{{ $room['id'] }}" data-room_id="{{ $row['id'] }}"
-                                   data-toggle="modal" data-target="#modal-use-liveroom">使用
-                                </a>
-                            </td>
-                        </tr>
-                    @endforeach
-                    </tbody>
-                </table>
-                {!! $pager !!}
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 col-sm-3 col-xs-12 control-label">有效期：开始日期</label>
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    {!! tpl_form_field_date('start_time', date('Y-m-d'), false) !!}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 col-sm-3 col-xs-12 control-label">有效期：结束日期</label>
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    {!! tpl_form_field_date('end_time', date('Y-m-d'), false) !!}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 col-sm-3 col-xs-12 control-label">主题正文：图文</label>
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    {!! yz_tpl_ueditor('text_desc', $info['text_desc']) !!}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 col-sm-3 col-xs-12 control-label">主题正文：视频</label>
+                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                    {!! app\common\helpers\ImageHelper::tplFormFieldVideo('video_desc') !!}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 col-sm-3 col-xs-12 control-label">排序</label>
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    <input name="sort" type="number" class="form-control" value="0" placeholder="" required />
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-md-2 col-sm-3 col-xs-12 control-label"></label>
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    <input type="hidden" name="rid" value="{{ $clock_id }}" />
+                                    <input type="hidden" name="type" value="{{ $room['type'] }}" />
+                                    <input type="submit" name="submit" value="提交" class="btn btn-success"/>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
+
             </div>
         </div>
 
