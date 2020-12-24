@@ -3,6 +3,7 @@ namespace app\backend\modules\tracking\controllers;
 
 use app\common\components\BaseController;
 use app\backend\modules\tracking\models\GoodsTrackingModel;
+use app\backend\modules\tracking\models\GoodsTracking;
 use app\common\helpers\PaginationHelper;
 use app\backend\modules\tracking\models\ChartChartuser;
 use app\backend\modules\tracking\models\GoodsTrackingStatistics;
@@ -101,7 +102,7 @@ class GoodsTrackingController extends BaseController
     }
 
     //导出埋点excel数据 20201031
-    public function export()
+    /*public function export()
     {
 
         if (\YunShop::request()->export == 1) {
@@ -149,6 +150,50 @@ class GoodsTrackingController extends BaseController
             })->export('xls');
 
             return $this->message('退货地址修改成功', Url::absoluteWeb('tracking.goodsTracking.index'));
+        }
+    }*/
+
+
+    public function export()
+    {
+        if (\YunShop::request()->export == 1) {
+            $export_page = request()->export_page ? request()->export_page : 1;
+            //清除之前没有导出的文件
+            if ($export_page == 1){
+                $fileNameArr = file_tree(storage_path('exports'));
+                foreach ($fileNameArr as $val ) {
+                    if(file_exists(storage_path('exports/' . basename($val)))){
+                        unlink(storage_path('exports/') . basename($val)); // 路径+文件名称
+                    }
+                }
+            }
+
+            $recordList = GoodsTracking::orderBy('id');
+
+            $export_model = new ExportService($recordList, $export_page);
+
+            if (!$export_model->builder_model->isEmpty()) {
+                $file_name = date('Ymdhis', time()) . '商品埋点数据';//返现记录导出
+                $export_data[0] = $this->getColumns();
+
+                foreach ($export_model->builder_model->toArray() as $key => $item) {
+                    $export_data[$key+1] = [
+                        $item['id'],
+                        $item['app_type'],
+                        $item['app_version'],
+                        $item['parent_page'],
+                        $this->getTypeName($item['to_type_id']),
+                        $item['resource_id'],
+                        $this->getGoods($item['goods_id']),
+                        $this->getUser($item['user_id']),
+                        $this->getActionName($item['action']),
+                        $item['val'],
+                        date('Y-m-d H:i:s', $item['create_time'])
+                    ];
+                }
+                $export_model->export($file_name, $export_data, 'tracking.goodsTracking.index');
+
+            }
         }
     }
 
