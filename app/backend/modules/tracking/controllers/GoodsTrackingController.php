@@ -168,7 +168,7 @@ class GoodsTrackingController extends BaseController
                 }
             }
 
-            $recordList = GoodsTracking::get();
+            $recordList = GoodsTracking::orderBy('id');
 
             $export_model = new ExportService($recordList, $export_page);
 
