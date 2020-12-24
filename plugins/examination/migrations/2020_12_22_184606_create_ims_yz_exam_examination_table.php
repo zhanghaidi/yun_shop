@@ -18,7 +18,7 @@ class CreateImsYzExamExaminationTable extends Migration
                 $table->timestamp('end')->nullable()->comment('考试结束时间');
                 $table->smallInteger('duration', false, true)->default(0)->comment('考试时长:单位分,0=不限');
                 $table->tinyInteger('frequency', false, true)->default(0)->comment('参与次数:0=不限');
-                $table->tinyInteger('interval', false, true)->default(0)->comment('重考间隔:单位分,0=不限');
+                $table->tinyInteger('interval', false, true)->default(0)->comment('重考间隔:单位时,0=不限');
                 $table->tinyInteger('is_question_score', false, true)->default(0)->comment('题目分值是否显示');
                 $table->tinyInteger('is_score', false, true)->default(0)->comment('结束是否显示成绩');
                 $table->tinyInteger('is_question', false, true)->default(0)->comment('题目展示');
