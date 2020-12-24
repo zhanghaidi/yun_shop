@@ -1,10 +1,10 @@
 @extends('layouts.base')
-@section('title', trans('创建日历打卡'))
+@section('title', trans('创建打卡'))
 @section('content')
 
     <div class="right-titpos">
         <ul class="add-snav">
-            <li class="active"><a href="#">创建日历打卡</a></li>
+            <li class="active"><a href="#">创建打卡</a></li>
         </ul>
     </div>
 
@@ -157,25 +157,143 @@
                 @endif
 
                 @if($type=='2')
-                    <div class="form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">专辑名称</label>
-                        <div class="col-sm-9 col-xs-12 col-md-11">
-                            <input name="name" type="text" class="form-control" value="" required/>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-1 control-label">打卡名称</label>
+                            <div class="col-sm-9 col-xs-12 col-md-11">
+                                <input name="name" type="text" class="form-control" value="" required/>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">专辑封面</label>
-                        <div class="col-sm-9 col-xs-12 col-md-10">
-                            {!! app\common\helpers\ImageHelper::tplFormFieldImage('cover_img', '') !!}
-                            <span class="help-block">图片比例 5:4，请按照规定尺寸上传</span>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-1 control-label">封面图</label>
+                            <div class="col-sm-9 col-xs-12 col-md-6">
+                                {!! app\common\helpers\ImageHelper::tplFormFieldImage('cover_img', '') !!}
+                                <span class="help-block">图片比例 5:4，请按照规定尺寸上传</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">专辑介绍</label>
-                        <div class="col-sm-9 col-xs-12 col-md-11">
-                            {!! yz_tpl_ueditor('desc', $info['desc']) !!}
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-1 control-label">打卡图文介绍</label>
+                            <div class="col-sm-9 col-xs-12 col-md-11">
+                                {!! yz_tpl_ueditor('text_desc', $info['text_desc']) !!}
+                            </div>
                         </div>
-                    </div>
+                        {{--                    <div class="form-group">--}}
+                        {{--                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">打卡音频介绍</label>--}}
+                        {{--                        <div class="col-sm-9 col-xs-12 col-md-6">--}}
+                        {{--                            {!! yz_tpl_form_field_audio('audio_desc') !!}--}}
+
+                        {{--                        </div>--}}
+                        {{--                    </div>--}}
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-1 control-label">打卡视频介绍</label>
+                            <div class="col-sm-9 col-xs-12 col-md-6">
+                                {!! app\common\helpers\ImageHelper::tplFormFieldVideo('video_desc') !!}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-1 control-label">参与方式</label>
+                            <div class="col-sm-9 col-xs-12 col-md-11">
+                                <label class="radio-inline">
+                                    <input type="radio" name="join_type" value="1"/>购买课程
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="join_type" value="0" checked="checked"/>免费课程
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group goods-div" style="display: none;">
+                            <label class="col-xs-12 col-sm-3 col-md-1 control-label">关联课程</label>
+                            <div class="col-sm-9 col-xs-12 col-md-11">
+                                <input name="course_id" type="hidden" class="form-control" value=""/>
+                                <input class="form-control" type="text" placeholder="请选择课程" value="" id="course_name"
+                                       style="width:400px;display:inline-block;" readonly="true">
+                                <span class="input-group-btn" style="display:inline-block;width: 100px;">
+                            <button class="btn btn-default nav-link-goods" style="display:inline-block" type="button"
+                                    onclick="$('#modal-module-menus-goods').modal();">选择课程</button>
+                        </span>
+                                <a href="javascript:;" onclick="clearGoods()"
+                                   style="margin-top:10px;display:inline-block;width: 20px;" title="清除课程"><i
+                                            class='fa fa-times'></i></a>
+                                <span class='help-block' style="color: red">设置之后，严禁修改！请谨慎操作</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-1 control-label">防作弊模式</label>
+                            <div class="col-sm-9 col-xs-12 col-md-11">
+                                <label class="radio-inline">
+                                    <input type="radio" name="is_cheat_mode" value="0" checked="checked"/> 关闭
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="is_cheat_mode" value="1" /> 开启
+                                </label>
+                                <span class="help-block">开启，则打卡后才可查看其它学员内容</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-1 control-label">重新打卡</label>
+                            <div class="col-sm-9 col-xs-12 col-md-11">
+                                <label class="radio-inline">
+                                    <input type="radio" name="is_resubmit" value="0" checked="checked"/> 关闭
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="is_resubmit" value="1" /> 开启
+                                </label>
+                                <span class="help-block">开启后，用户不允许删除打卡，重新提交</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-1 control-label">文字字数限制</label>
+                            <div class="col-sm-9 col-xs-12 col-md-11">
+                                <input name="text_length" type="text" class="form-control" value="" required/>
+                                <span class="help-block">用户打卡要求，文字字数限制</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-1 control-label">图片张数限制</label>
+                            <div class="col-sm-9 col-xs-12 col-md-11">
+                                <input name="image_length" type="text" class="form-control" value="" required/>
+                                <span class="help-block">用户打卡要求，图片张数限制</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-1 control-label">音频时间限制</label>
+                            <div class="col-sm-9 col-xs-12 col-md-11">
+                                <input name="video_length" type="text" class="form-control" value="" required/>
+                                <span class="help-block">用户打卡要求，音频时间限制</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-1 control-label">显示设置</label>
+                            <div class="col-sm-9 col-xs-12 col-md-11">
+                                <label class="radio-inline">
+                                    <input type="radio" name="display_status" value="1" checked="checked"/> 显示
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="display_status" value="2" />隐藏
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-1 control-label">助手名称</label>
+                            <div class="col-sm-9 col-xs-12 col-md-11">
+                                <input name="helper_nickname" type="text" class="form-control" value="" required/>
+                                <span class="help-block">助手设置，助手名称</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-1 control-label">助手头像</label>
+                            <div class="col-sm-9 col-xs-12 col-md-6">
+                                {!! app\common\helpers\ImageHelper::tplFormFieldImage('helper_avatar', '') !!}
+                                <span class="help-block">助手设置，助手头像</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-1 control-label">助手微信</label>
+                            <div class="col-sm-9 col-xs-12 col-md-11">
+                                <input name="helper_wechat" type="text" class="form-control" value="" required/>
+                                <span class="help-block">助手设置，助手微信</span>
+                            </div>
+                        </div>
                 @endif
 
                 <div class="form-group">

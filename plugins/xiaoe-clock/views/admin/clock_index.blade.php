@@ -184,7 +184,7 @@
             <div class='panel-body'>
                 <div class="clearfix panel-heading">
                     <a id="" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;"
-                       href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.add', ['type'=>2])}}">添加特卖专辑</a>
+                       href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_add', ['type'=>2])}}">创建作业打卡</a>
                 </div>
 
                 <table class="table table-hover" style="overflow:visible;">
