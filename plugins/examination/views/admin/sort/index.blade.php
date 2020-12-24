@@ -6,7 +6,7 @@
 <div class="rightlist">
     <div class="panel panel-default">
         <div class="panel-heading">
-            题库分类管理 <small class="text-primary">点击下面列表中分类的名称，可以查看其子分类</small>
+            题库分类管理 <small class="text-success">点击下面列表中分类的名称，可以查看其子分类</small>
             <a href="{{ yzWebUrl('plugin.examination.admin.question-sort.edit') }}" class="pull-right btn btn-sm btn-success">添加分类</a>
         </div>
         <div class="panel-body">
@@ -30,9 +30,9 @@
                         <td>{{$value['number']}}</td>
                         <td>{{$value['created_at']}}</td>
                         <td>
-                            <a class='btn btn-default' href="{{ yzWebUrl('plugin.examination.admin.question-sort.edit', ['id' => $value['id']]) }}"><i class="fa fa-edit"></i></a>
+                            <a class='btn btn-success' href="{{ yzWebUrl('plugin.examination.admin.question-sort.edit', ['id' => $value['id']]) }}"><i class="fa fa-edit"></i></a>
 
-                            <a class='btn btn-default' href="{{ yzWebUrl('plugin.examination.admin.question-sort.del', ['id' => $value['id']]) }}" onclick="return confirm('确认删除该记录吗？');return false;"><i class="fa fa-remove"></i></a>
+                            <a class='btn btn-danger' href="{{ yzWebUrl('plugin.examination.admin.question-sort.del', ['id' => $value['id']]) }}" onclick="return confirm('确认删除该记录吗？');return false;"><i class="fa fa-remove"></i></a>
                         </td>
                     </tr>
                     @endforeach
@@ -86,7 +86,7 @@
                     _childStr += '<td>' + res.data[i].order + '</td>';
                     _childStr += '<td>' + res.data[i].number + '</td>';
                     _childStr += '<td>' + res.data[i].created_at + '</td>';
-                    _childStr += '<td><a class="btn btn-default" href="' + _editUrl +'&id=' + res.data[i].id + '"><i class="fa fa-edit"></i></a><a class="btn btn-default" href="' + _delUrl +'&id=' + res.data[i].id + '"  onclick="return confirm(\'确认删除该记录吗？\');return false;"><i class="fa fa-remove"></i></a></td>';
+                    _childStr += '<td><a class="btn btn-success" href="' + _editUrl +'&id=' + res.data[i].id + '"><i class="fa fa-edit"></i></a><a class="btn btn-danger" href="' + _delUrl +'&id=' + res.data[i].id + '"  onclick="return confirm(\'确认删除该记录吗？\');return false;"><i class="fa fa-remove"></i></a></td>';
                     _childStr += '</tr>';
                 }
                 $('.sort' + _id).after(_childStr);

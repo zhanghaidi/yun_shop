@@ -64,7 +64,7 @@ class QuestionSortController extends BaseController
                     'uniacid' => \YunShop::app()->uniacid,
                 ])->first();
                 if (!isset($sort->id)) {
-                    return $this->message('参数错误', '', 'error');
+                    return $this->message('参数错误', '', 'danger');
                 }
             } else {
                 $sort = new QuestionSortModel;
@@ -93,7 +93,7 @@ class QuestionSortController extends BaseController
                 'uniacid' => \YunShop::app()->uniacid,
             ])->first();
             if (!isset($infoRs->id)) {
-                return $this->message('题目分类数据错误，请联系开发或删除分类', '', 'error');
+                return $this->message('题目分类数据错误，请联系开发或删除分类', '', 'danger');
             }
         } else {
             $infoRs = null;
@@ -104,5 +104,36 @@ class QuestionSortController extends BaseController
             'info' => $infoRs,
             'sort' => $questionSortTreeRs,
         ]);
+    }
+
+    public function del()
+    {
+        $id = (int) \YunShop::request()->id;
+        $sortRs = QuestionSortModel::select('id')
+            ->where([
+                'id' => $id,
+                'uniacid' => \YunShop::app()->uniacid,
+            ])->first();
+        if (!isset($sortRs->id)) {
+            return $this->message('分类未找到', '', 'danger');
+        }
+
+        $childRs = QuestionSortModel::select('id')
+            ->where([
+                'pid' => $sortRs->id,
+                'uniacid' => \YunShop::app()->uniacid,
+            ])->first();
+        if (isset($childRs->id)) {
+            return $this->message('不能删除存在子分类的父分类节点', '', 'danger');
+        }
+
+        $questionRs = QuestionModel::select('id')
+            ->where('sort_id', $sortRs->id)->first();
+        if (isset($questionRs->id)) {
+            return $this->message('当前分类下，有题库中的题目存在，不能删除', '', 'danger');
+        }
+
+        QuestionSortModel::where('id', $id)->delete();
+        return $this->message('删除成功');
     }
 }

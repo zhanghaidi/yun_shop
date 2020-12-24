@@ -38,8 +38,8 @@
                             <option value="1" @if($search['type'] == 1) selected="selected" @endif>单选题</option>
                             <option value="2" @if($search['type'] == 2) selected="selected" @endif>多选题</option>
                             <option value="3" @if($search['type'] == 3) selected="selected" @endif>判断题</option>
-                            <option value="4" @if($search['type'] == 4) selected="selected" @endif>填空题</option>
-                            <option value="5" @if($search['type'] == 5) selected="selected" @endif>问答题</option>
+                            <!-- <option value="4" @if($search['type'] == 4) selected="selected" @endif>填空题</option>
+                            <option value="5" @if($search['type'] == 5) selected="selected" @endif>问答题</option> -->
                         </select>
                     </div>
                 </div>
@@ -71,9 +71,9 @@
                         <th width="5%">ID</th>
                         <th width="20%">题目</th>
                         <th width="10%">题型</th>
+                        <th width="10%">被引用次数</th>
                         <th width="10%">分类</th>
                         <th width="10%">最后更新时间</th>
-                        <th width="10%">状态</th>
                         <th width="10%">操作</th>
                     </tr>
                 </thead>
@@ -91,13 +91,13 @@
                             @else 未知
                             @endif
                         </td>
+                        <td>{{$value['use_number']}}</td>
                         <td>{{$value['sort_name']}}</td>
                         <td>{{$value['updated_at']}}</td>
-                        <td>@if($value['deleted_at']) 删除 @else 有效 @endif</td>
                         <td>
-                            <a class='btn btn-default' href="{{ yzWebUrl('plugin.examination.admin.question.edit', ['id' => $value['id']]) }}"><i class="fa fa-edit"></i></a>
+                            <a class='btn btn-success' href="{{ yzWebUrl('plugin.examination.admin.question.edit', ['id' => $value['id']]) }}"><i class="fa fa-edit"></i></a>
 
-                            <a class='btn btn-default' href="{{ yzWebUrl('plugin.examination.admin.question.del', ['id' => $value['id']]) }}" onclick="return confirm('确认删除该记录吗？');return false;"><i class="fa fa-remove"></i></a>
+                            <a class='btn btn-danger' href="{{ yzWebUrl('plugin.examination.admin.question.del', ['id' => $value['id']]) }}" onclick="return confirm('确认删除该记录吗？');return false;"><i class="fa fa-remove"></i></a>
                         </td>
                     </tr>
                     @endforeach

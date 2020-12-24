@@ -3,6 +3,17 @@
 @section('content')
 @section('title', trans($pluginName))
 
+<style>
+.mt-5 {
+  margin-top: 3rem !important;
+}
+.pt-5 {
+  padding-top: 3rem !important;
+}
+.fs-6 {
+  font-size: 20px !important;
+}
+</style>
 <div class="rightlist">
     <div class="panel panel-default">
         <div class="panel-body">
@@ -34,7 +45,7 @@
 
             <hr>
             <div class="form-group">
-                <label class="col-xs-12 col-sm-3 col-md-2 control-label">题目(*)</label>
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label mt-5 pt-5 fs-6">题目(*)</label>
                 <div class="col-xs-12 col-sm-8 col-md-9">
                 {!! yz_tpl_ueditor('data[problem]', $data['problem']) !!}
                 </div>
@@ -43,7 +54,7 @@
 @if($data['id'] > 0)
             @foreach($data['answer'] as $k => $v)
             <div class="form-group options">
-                <label class="col-xs-12 col-sm-3 col-md-2 control-label">选项<span>{{$v['name']}}</span>(*)</label>
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label mt-5 pt-5 fs-6">选项<span>{{$v['name']}}</span>(*)</label>
                 <div class="col-xs-12 col-sm-8 col-md-9">
                 {!! yz_tpl_ueditor("data[option$k]", $v['content']) !!}
                 </div>
@@ -59,7 +70,7 @@
             @endforeach
 @else
             <div class="form-group options">
-                <label class="col-xs-12 col-sm-3 col-md-2 control-label">选项<span>A</span>(*)</label>
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label mt-5 pt-5 fs-6">选项<span>A</span>(*)</label>
                 <div class="col-xs-12 col-sm-8 col-md-9">
                 {!! yz_tpl_ueditor('data[optionA]') !!}
                 </div>
@@ -73,7 +84,7 @@
                 </div>
             </div>
             <div class="form-group options">
-                <label class="col-xs-12 col-sm-3 col-md-2 control-label">选项<span>B</span>(*)</label>
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label mt-5 pt-5 fs-6">选项<span>B</span>(*)</label>
                 <div class="col-xs-12 col-sm-8 col-md-9">
                 {!! yz_tpl_ueditor('data[optionB]') !!}
                 </div>
@@ -87,7 +98,7 @@
                 </div>
             </div>
             <div class="form-group options">
-                <label class="col-xs-12 col-sm-3 col-md-2 control-label">选项<span>C</span>(*)</label>
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label mt-5 pt-5 fs-6">选项<span>C</span>(*)</label>
                 <div class="col-xs-12 col-sm-8 col-md-9">
                 {!! yz_tpl_ueditor('data[optionC]') !!}
                 </div>
@@ -101,7 +112,7 @@
                 </div>
             </div>
             <div class="form-group options">
-                <label class="col-xs-12 col-sm-3 col-md-2 control-label">选项<span>D</span>(*)</label>
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label mt-5 pt-5 fs-6">选项<span>D</span>(*)</label>
                 <div class="col-xs-12 col-sm-8 col-md-9">
                 {!! yz_tpl_ueditor('data[optionD]', $data['optionD']) !!}
                 </div>
@@ -120,7 +131,7 @@
             <div class="form-group addOptions">
                 <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
                 <div class="col-sm-9 col-xs-12">
-                    <button type="button" class="btn btn-default" onclick="addAnswerItem()" style="margin-bottom: 5px">
+                    <button type="button" class="btn btn-warning" onclick="addAnswerItem()" style="margin-bottom: 5px">
                         <i class="fa fa-plus"></i> 新增选项
                     </button>
                 </div>
@@ -128,7 +139,7 @@
 
             <hr>
             <div class="form-group">
-                <label class="col-xs-12 col-sm-3 col-md-2 control-label">解析</label>
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label mt-5 pt-5 fs-6">解析</label>
                 <div class="col-xs-12 col-sm-8 col-md-9">
                 {!! yz_tpl_ueditor('data[explain]', $data['explain']) !!}
                 </div>
@@ -154,7 +165,7 @@
 
         function addAnswerItem() {
             _html = '<div class="form-group options">';
-            _html += '<label class="col-xs-12 col-sm-3 col-md-2 control-label">选项<span>X</span>(*)</label>';
+            _html += '<label class="col-xs-12 col-sm-3 col-md-2 control-label mt-5 fs-6">选项<span>X</span>(*)</label>';
             _html += '<div class="col-xs-12 col-sm-8 col-md-9">';
             _html += '<textarea name="data[optionX]" class="form-control" rows="5"></textarea>';
             _html += '</div>';
