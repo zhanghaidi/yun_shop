@@ -72,7 +72,7 @@ class LiveReminder extends Command
 
         // 1、查询开始时间距离当前时间2分钟之内开播的直播 where('live_status', 101)暂时不卡播放状态
         $startLiveRoom = CloudLiveRoom::whereBetween('start_time', $check_time_range)->select('id','name','live_status','start_time','anchor_name')->with('hasManySubscription')->get()->toArray();
-
+        Log::info("获取的待开播直播间:", $startLiveRoom);
         //查询订阅开播直播间的用户
         foreach ($startLiveRoom as $room) {
             if(!empty($room['has_many_subscription'])) {
@@ -89,6 +89,7 @@ class LiveReminder extends Command
                     $openid = $user['openid'] ? $user['openid'] : $user['shop_openid'];
 
                     $job_param = $this->makeJobParam($type, $room);
+                    Log::info("订阅用户:", $user);
                     Log::info("模板消息内容:" . $type . $openid, $job_param);
 
                     $job = new SendTemplateMsgJob($type, $job_param['options'], $job_param['template_id'], $job_param['notice_data'], $openid, '', $job_param['page'], $job_param['miniprogram']);
