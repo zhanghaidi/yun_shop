@@ -1,13 +1,13 @@
 @extends('layouts.base')
-@section('title', trans('主题|作业编辑'))
+@section('title', trans('日记详情'))
 @section('content')
 
     <div class="right-titpos">
         <ul class="add-snav">
-            @if($room['type']=='1')
-                <li class="active"><a href="#">日记详情</a></li>
+            @if($user_clock_info['type']=='1')
+                <li class="active"><a href="#">日历打卡，日记详情</a></li>
             @else
-                <li class="active"><a href="#">日记详情</a></li>
+                <li class="active"><a href="#">作业打卡，日记详情</a></li>
             @endif
         </ul>
     </div>
@@ -114,7 +114,7 @@
                         </td>
                         <td style="overflow:visible;">
                             <a class='btn btn-default'
-                               href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.users_clock_detail', ['id' => $row['id']])}}"
+                               href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.users_clock_comment_del', ['id' => $row['id']])}}"
                                title='删除'><i class='fa fa-edit'></i>删除
                             </a>
                         </td>

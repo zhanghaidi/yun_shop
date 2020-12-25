@@ -669,4 +669,27 @@ class ClockController extends BaseController
             'request' => $input,
         ])->render();
     }
+//    评论删除
+    public function users_clock_comment_del(){
+
+        $input = request()->all();
+        dd($input);
+        if (!array_key_exists('id', $input)) { //id
+            return $this->message('数据不存在', Url::absoluteWeb(''), 'danger');
+        }
+        $replay = DB::table('yz_xiaoe_users_clock_comment')->where('id', intval($input['id']))->first();
+        if (!$replay) {
+            return $this->message('数据不存在', Url::absoluteWeb(''), 'danger');
+        }
+
+        //删除评论
+        $del_res = DB::table('yz_xiaoe_users_clock_comment')->where('id', $replay['id'])->delete();
+
+        // 刷新接口数据缓存
+        if ($del_res) {
+            return $this->message('删除成功', Url::absoluteWeb('plugin.xiaoe-clock.admin.clock.users_clock_detail', ['id' => $replay['clock_users_id']]));
+        } else {
+            return $this->message('删除失败', Url::absoluteWeb(''), 'danger');
+        }
+    }
 }
