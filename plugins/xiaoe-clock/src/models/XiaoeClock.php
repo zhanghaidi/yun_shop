@@ -34,7 +34,7 @@ class XiaoeClock extends BaseModel
     /**
      * 获取打卡用户信息
      */
-    public function clockUser()
+    /*public function clockUser()
     {
         return $this->hasOneThrough('App\backend\modules\tracking\models\DiagnosticServiceUser', 'Yunshop\XiaoeClock\models\XiaoeClockUser',
             'clock_id', // 汽车表外键...
@@ -42,6 +42,6 @@ class XiaoeClock extends BaseModel
             'id', // 修理工表本地键...
             'ajy_uid' // 汽车表本地键...
         );
-    }
+    }*/
 
 }
