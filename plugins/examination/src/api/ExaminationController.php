@@ -241,7 +241,7 @@ class ExaminationController extends ApiController
             return $this->errorJson('参数错误');
         }
 
-        $answer = \YunShop::request()->answer;
+        $answer = \YunShop::request()->question;
         $answer = json_decode($answer, true);
         if ($answer === null) {
             return $this->errorJson('答案提交错误');
