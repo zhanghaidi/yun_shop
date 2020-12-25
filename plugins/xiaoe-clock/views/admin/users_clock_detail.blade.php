@@ -43,46 +43,88 @@
                         <div class="form-group">
                             <label class="col-md-2 col-sm-3 col-xs-12 control-label">打卡内容</label>
                             <div class="col-md-10 col-sm-9 col-xs-12">
-                                {!! yz_tpl_ueditor('text_desc', $user_clock_info['text_desc']) !!}
+                                {!! $user_clock_info['text_desc'] !!}
                             </div>
                         </div>
-                        @if(empty($user_clock_info['video_desc']))
+                        @if(!empty($user_clock_info['video_desc']))
                             <div class="form-group">
-                                <label class="col-md-2 col-sm-3 col-xs-12 control-label">主题正文：视频</label>
+                                <label class="col-md-2 col-sm-3 col-xs-12 control-label">评论视频地址</label>
                                 <div class="col-md-9 col-sm-9 col-xs-12">
-                                    {!! app\common\helpers\ImageHelper::tplFormFieldVideo('video_desc',$user_clock_info['video_desc']) !!}
+                                    {!! tomedia($user_clock_info['video_desc']) !!}
+                                    <a target="_blank" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;" href="{!! tomedia($user_clock_info['video_desc']) !!}">播放</a>
                                 </div>
                             </div>
                         @endif
-                        @if(empty($user_clock_info['image_desc']))
-                            @foreach($user_clock_info['image_desc'] as $row)
-                                <div class="form-group">
-                                    <label class="col-md-2 col-sm-3 col-xs-12 control-label">评论图片</label>
-                                    <div class="col-md-9 col-sm-9 col-xs-12">
+                        @if(!empty($user_clock_info['image_desc']))
+
+                            <div class="form-group">
+                                <label class="col-md-2 col-sm-3 col-xs-12 control-label">评论图片</label>
+                                <div class="col-md-9 col-sm-9 col-xs-12" style="display: flex">
+                                    @foreach($user_clock_info['image_desc'] as $row)
                                         <div class="show-cover-img-big"
                                              style="position:relative;width:50px;overflow:visible">
                                             <img src="{!! tomedia($row) !!}" alt=""
                                                  style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
                                             <img class="img-big" src="{!! tomedia($row) !!}" alt=""
-                                                 style="z-index:99999;position:absolute;top:0;left:0;border:1px solid #ccc;padding:1px;display: none">
+                                                 style="z-index:99999;top:0;left:0;border:1px solid #ccc;padding:1px; display: none;">
                                         </div>
-                                    </div>
+                                    @endforeach
                                 </div>
-                            @endforeach
-                        @endif
-                        <div class="form-group">
-                            <label class="col-md-2 col-sm-3 col-xs-12 control-label">排序</label>
-                            <div class="col-md-10 col-sm-9 col-xs-12">
-                                <input name="sort" type="number" class="form-control" value="{{ $info['sort'] }}"
-                                       placeholder="" required/>
                             </div>
-                        </div>
+                        @endif
+
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
+    <div class='panel panel-default'>
+        <div class="clearfix panel-heading">
+            <a id="" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;">评论</a>
+        </div>
+        <div class='panel-body'>
+            <table class="table table-hover" style="overflow:visible;">
+                <thead>
+                <tr>
+                    <th style='width:5%;'>ID</th>
+                    <th style='width:8%;'>id/头像/昵称</th>
+                    <th style='width:11%;'>评论时间</th>
+                    <th style='width:11%;'>评论内容</th>
+                    <th style='width:15%;'>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach($replay_list as $row)
+                    <tr>
+                        <td>{{ $row['id'] }}</td>
+                        <td style="overflow:visible;">
+                            {{ $row['user_id'] }}
+                            <div class="show-cover-img-big" style="position:relative;width:50px;overflow:visible">
+                                <img src="{!! tomedia($row['avatar']) !!}" alt=""
+                                     style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
+                                <img class="img-big" src="{!! tomedia($row['avatar']) !!}" alt=""
+                                     style="z-index:99999;position:absolute;top:0;left:0;border:1px solid #ccc;padding:1px;display: none">
+                            </div>
+                            {{ $row['nickname'] }}
+                        </td>
+                        <td>{{ date('Y-m-d H:i:s', $row['created_at']) }}</td>
+                        <td>
+                            {{ $row['content'] }}
+                        </td>
+                        <td style="overflow:visible;">
+                            <a class='btn btn-default'
+                               href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.users_clock_detail', ['id' => $row['id']])}}"
+                               title='删除'><i class='fa fa-edit'></i>删除
+                            </a>
+                        </td>
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
+            {!! $pager !!}
+        </div>
+    </div>
 
     <script type="text/javascript">
 
