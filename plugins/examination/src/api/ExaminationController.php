@@ -45,10 +45,24 @@ class ExaminationController extends ApiController
         $nowTime = time();
         if (isset($answerPaperRs->id) && $answerPaperRs->status == 1) {
             $lastTime = strtotime($answerPaperRs->created_at);
-            if (($nowTime - $lastTime) < 86400) {
+
+            // 判断未完成试卷是否有效
+            $isEffective = true;
+            if ($examinationRs->duration > 0) {
+                if (($nowTime - $lastTime) >= $examinationRs->duration * 60) {
+                    $isEffective = false;
+                }
+            } else {
+                if (($nowTime - $lastTime) >= 86400) {
+                    $isEffective = false;
+                }
+            }
+
+            if ($isEffective) {
                 $answerContentRs = AnswerPaperContentModel::select('id', 'content')
                     ->where('answer_paper_id', $answerPaperRs->id)->first();
                 if (isset($answerPaperRs->id)) {
+
                     $answerPaperContent = json_decode($answerContentRs->content, true);
 
                     $return = [
@@ -60,7 +74,11 @@ class ExaminationController extends ApiController
                         'is_question_score' => $examinationRs->is_question_score,
                         'question' => [],
                         'now_time' => time(),
+                        'remained' => 0,
                     ];
+                    if ($return['duration'] > 0) {
+                        $return['remained'] = $return['duration'] * 60 - ($nowTime - $lastTime);
+                    }
                     foreach ($answerPaperContent as $k => $v) {
                         unset($answerPaperContent[$k]['question_id']);
                         unset($answerPaperContent[$k]['obtain']);
@@ -170,7 +188,11 @@ class ExaminationController extends ApiController
             'is_question_score' => $examinationRs->is_question_score,
             'question' => [],
             'now_time' => time(),
+            'remained' => 0,
         ];
+        if ($return['duration'] > 0) {
+            $reutrn['remained'] = $return['duration'] * 60;
+        }
 
         foreach ($paperQuestionRs as $k => $v) {
             unset($paperQuestionRs[$k]['question_id']);
