@@ -20,20 +20,30 @@ class ExaminationController extends ApiController
     {
         $memberId = (int) \YunShop::app()->getMemberId();
         if ($memberId <= 0) {
-            return $this->errorJson('用户未授权登录');
+            return $this->errorJson('用户未授权登录', ['status' => 1]);
         }
 
         $id = (int) \YunShop::request()->id;
         if ($id <= 0) {
-            return $this->errorJson('参数错误');
+            return $this->errorJson('参数错误', ['status' => 1]);
         }
 
         $examinationRs = ExaminationModel::where([
             'id' => $id,
             'uniacid' => \YunShop::app()->uniacid,
         ])->first();
-        if (!isset($examinationRs->id) || $examinationRs->open_status != 1) {
-            return $this->errorJson('考试已结束');
+        if (!isset($examinationRs->id)) {
+            return $this->errorJson('考试数据不存在', ['status' => 1]);
+        }
+        $nowTime = time();
+        if (isset($examinationRs->start) && strtotime($examinationRs->start) > $nowTime) {
+            return $this->errorJson('考试未开始', ['status' => 2]);
+        }
+        if (isset($examinationRs->end) && strtotime($examinationRs->end) < $nowTime) {
+            return $this->errorJson('考试已结束', ['status' => 3]);
+        }
+        if ($examinationRs->open_status != 1) {
+            return $this->errorJson('考试已关闭', ['status' => 4]);
         }
 
         // 如果有一天内未完成答卷，则继续进行
@@ -42,7 +52,6 @@ class ExaminationController extends ApiController
             'examination_id' => $examinationRs->id,
             'uniacid' => $examinationRs->uniacid,
         ])->orderBy('id', 'desc')->first();
-        $nowTime = time();
         if (isset($answerPaperRs->id) && $answerPaperRs->status == 1) {
             $lastTime = strtotime($answerPaperRs->created_at);
 
@@ -98,7 +107,7 @@ class ExaminationController extends ApiController
                 'uniacid' => $examinationRs->uniacid,
             ])->count();
             if ($countRs >= $examinationRs->frequency) {
-                return $this->errorJson('本次考试，每人仅能参与' . $examinationRs->frequency . '次');
+                return $this->errorJson('本次考试，每人仅能参与' . $examinationRs->frequency . '次', ['status' => 5]);
             }
         }
 
@@ -123,7 +132,7 @@ class ExaminationController extends ApiController
                     } else {
                         $lastTime .= '分钟';
                     }
-                    return $this->errorJson('考试过于频繁，请' . $lastTime . '后重试');
+                    return $this->errorJson('考试过于频繁，请' . $lastTime . '后重试', ['status' => 6]);
                 }
             }
         }
@@ -133,14 +142,14 @@ class ExaminationController extends ApiController
             'uniacid' => $examinationRs->uniacid,
         ])->first();
         if (!isset($paperRs->id)) {
-            return $this->errorJson('考试的试卷还没有准备好，请稍后再试');
+            return $this->errorJson('考试的试卷还没有准备好，请稍后再试', ['status' => 1]);
         }
 
         $paperQuestionRs = PaperQuestionModel::getQuestion($examinationRs->uniacid, $paperRs->id);
         if (!isset($paperQuestionRs['code']) || $paperQuestionRs['code'] != 0 ||
             !isset($paperQuestionRs['data'])
         ) {
-            return $this->errorJson(isset($paperQuestionRs['msg']) ? $paperQuestionRs['msg'] : '试卷准备出错了，请稍后再试');
+            return $this->errorJson(isset($paperQuestionRs['msg']) ? $paperQuestionRs['msg'] : '试卷准备出错了，请稍后再试', ['status' => 1]);
         }
         $paperQuestionRs = $paperQuestionRs['data'];
 
@@ -176,7 +185,7 @@ class ExaminationController extends ApiController
         } catch (Exception $e) {
             DB::rollBack();
 
-            return $this->errorJson($e->getMessage());
+            return $this->errorJson($e->getMessage(), ['status' => 1]);
         }
 
         $return = [

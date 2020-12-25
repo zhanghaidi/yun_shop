@@ -7,7 +7,7 @@
     <div class="panel panel-default">
         <div class="panel-heading">
             题库分类管理 <small class="text-success">点击下面列表中分类的名称，可以查看其子分类</small>
-            <a href="{{ yzWebUrl('plugin.examination.admin.question-sort.edit') }}" class="pull-right btn btn-sm btn-success">添加分类</a>
+            <a href="{{ yzWebUrl('plugin.examination.admin.question-sort.edit') }}" class="pull-right btn btn-sm btn-info">添加分类</a>
         </div>
         <div class="panel-body">
             <table class="table">
@@ -30,9 +30,9 @@
                         <td>{{$value['number']}}</td>
                         <td>{{$value['created_at']}}</td>
                         <td>
-                            <a class='btn btn-success' href="{{ yzWebUrl('plugin.examination.admin.question-sort.edit', ['id' => $value['id']]) }}"><i class="fa fa-edit"></i></a>
+                            <a class='btn btn-success' href="{{ yzWebUrl('plugin.examination.admin.question-sort.edit', ['id' => $value['id']]) }}" title="编辑"><i class="fa fa-edit"></i></a>
 
-                            <a class='btn btn-danger' href="{{ yzWebUrl('plugin.examination.admin.question-sort.del', ['id' => $value['id']]) }}" onclick="return confirm('确认删除该记录吗？');return false;"><i class="fa fa-remove"></i></a>
+                            <a class='btn btn-danger' href="{{ yzWebUrl('plugin.examination.admin.question-sort.del', ['id' => $value['id']]) }}" onclick="return confirm('确认删除该记录吗？');return false;" title="删除"><i class="fa fa-remove"></i></a>
                         </td>
                     </tr>
                     @endforeach
