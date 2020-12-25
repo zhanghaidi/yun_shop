@@ -97,7 +97,6 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'url_params' => '',
                             'parents' => ['xiaoe_clock', 'clock'],
                         ],
-
                         'clock_add' => [
                             'name' => '搜索课程',
                             'permit' => 1,
@@ -113,6 +112,24 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'menu' => 0,
                             'icon' => '',
                             'url' => 'plugin.xiaoe-clock.admin.clock.users_clock_list',
+                            'url_params' => '',
+                            'parents' => ['xiaoe_clock', 'clock'],
+                        ],
+                        'users_clock_detail' => [
+                            'name' => '日记详情',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'icon' => '',
+                            'url' => 'plugin.xiaoe-clock.admin.clock.users_clock_detail',
+                            'url_params' => '',
+                            'parents' => ['xiaoe_clock', 'clock'],
+                        ],
+                        'users_clock_comment_del' => [
+                            'name' => '评论删除',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'icon' => '',
+                            'url' => 'plugin.xiaoe-clock.admin.clock.users_clock_comment_del',
                             'url_params' => '',
                             'parents' => ['xiaoe_clock', 'clock'],
                         ],
