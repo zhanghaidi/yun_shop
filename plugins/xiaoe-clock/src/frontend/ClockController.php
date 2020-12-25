@@ -29,10 +29,8 @@ class ClockController extends ApiController
         $todayStart = Carbon::now()->startOfDay();
         $todayEnd = Carbon::now()->endOfDay();
 
-        $pageSize = \YunShop::request()->get('pagesize');
-        $pageSize = $pageSize ? $pageSize : self::PAGE_SIZE;
 
-        $clock = XiaoeClock::find($id)->hasManyNote()->paginate($pageSize)->toArray();
+        $clock = XiaoeClock::find($id)->hasManyNote()->paginate(15)->toArray();
 
 
         if(!$clock){
