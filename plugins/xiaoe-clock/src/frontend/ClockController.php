@@ -29,9 +29,15 @@ class ClockController extends ApiController
         $todayStart = Carbon::now()->startOfDay();
         $todayEnd = Carbon::now()->endOfDay();
 
+        $clock = XiaoeClock::find($id);
+        if($clock->type == 1){
+            $clock->hasManyTopic(function ($topic) use ($todayStart, $todayEnd) {
+                return $topic->whereBetween('theme_time',[$todayStart,$todayEnd]);
+            })->get();
+        }
 
-        $clock = XiaoeClock::find($id)->hasManyNote()->paginate(15)->toArray();
-
+        //$clock = XiaoeClock::find($id)->hasManyNote()->paginate(15)->toArray();
+        $clock->notes = $clock->with('hasManyNote')->toArray();
 
         if(!$clock){
             return $this->errorJson('不存在数据');
