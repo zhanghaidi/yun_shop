@@ -25,7 +25,7 @@ class ClockController extends ApiController
             return $this->errorJson('打卡id不能为空');
         }
 
-        $clock = XiaoeClock::where(['id'=> $id])->with(['hasManyTopic','hasManyNote','hasManyUser','clockUser'])->get();
+        $clock = XiaoeClock::where(['id'=> $id])->with(['hasManyTopic','hasManyNote','hasManyUser'])->get();
 
         if(!$clock){
             return $this->errorJson('不存在数据');
