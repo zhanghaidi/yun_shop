@@ -12,6 +12,7 @@ use Yunshop\XiaoeClock\models\XiaoeClockNoteComment;
 use Yunshop\XiaoeClock\models\XiaoeClockNoteCommentLike;
 use Yunshop\XiaoeClock\models\XiaoeClockUser;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 
 class ClockController extends ApiController
@@ -25,7 +26,14 @@ class ClockController extends ApiController
             return $this->errorJson('打卡id不能为空');
         }
 
-        $clock = XiaoeClock::where(['id'=> $id])->with(['hasManyTopic','hasManyNote','hasManyUser'])->get();
+        $todayStart = Carbon::now()->startOfDay();
+        $todayEnd = Carbon::now()->endOfDay();
+
+        $pageSize = \YunShop::request()->get('pagesize');
+        $pageSize = $pageSize ? $pageSize : self::PAGE_SIZE;
+
+        $clock = XiaoeClock::find($id)->hasManyNote()->paginate($pageSize)->toArray();
+
 
         if(!$clock){
             return $this->errorJson('不存在数据');
