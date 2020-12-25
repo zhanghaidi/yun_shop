@@ -7,6 +7,7 @@ use app\common\helpers\PaginationHelper;
 use app\common\helpers\Url;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Yunshop\Examination\models\ExaminationModel;
 use Yunshop\Examination\models\PaperModel;
 use Yunshop\Examination\models\PaperQuestionModel;
 use Yunshop\Examination\models\QuestionModel;
@@ -26,6 +27,21 @@ class PaperController extends BaseController
         }
         $list = $list->orderBy('id', 'desc')
             ->paginate($this->pageSize)->toArray();
+        $paperIds = array_column($list['data'], 'id');
+        if (isset($paperIds[0])) {
+            $examinationRs = ExaminationModel::selectRaw('paper_id, count(1) as countnum')
+                ->whereIn('paper_id', $paperIds)
+                ->orderBy('paper_id')->get()->toArray();
+            foreach ($list['data'] as $k1 => $v1) {
+                foreach ($examinationRs as $v2) {
+                    if ($v1['id'] != $v2['paper_id']) {
+                        continue;
+                    }
+                    $list['data'][$k1]['use_number'] = $v2['countnum'];
+                    break;
+                }
+            }
+        }
 
         $pager = PaginationHelper::show($list['total'], $list['current_page'], $this->pageSize);
 
@@ -199,5 +215,34 @@ class PaperController extends BaseController
             return $this->successJson('成功', $listRs);
         }
         return $this->errorJson('未知请求');
+    }
+
+    public function del()
+    {
+        $id = (int) \YunShop::request()->id;
+        $paperRs = PaperModel::select('id')->where([
+            'id' => $id,
+            'uniacid' => \YunShop::app()->uniacid,
+        ])->first();
+        if (!isset($paperRs->id)) {
+            return $this->message('试卷未找到', '', 'danger');
+        }
+
+        $examinationRs = ExaminationModel::select('id')
+            ->where('paper_id', $paperRs->id)->first();
+        if (isset($examinationRs->id)) {
+            return $this->message('该试卷被考试使用中，不能删除', '', 'danger');
+        }
+
+        PaperQuestionModel::where([
+            'paper_id' => $paperRs->id,
+        ])->delete();
+
+        PaperModel::where([
+            'id' => $id,
+            'uniacid' => \YunShop::app()->uniacid,
+        ])->delete();
+
+        return $this->message('删除成功');
     }
 }
