@@ -4,7 +4,7 @@
 
     <div class="right-titpos">
         <ul class="add-snav">
-            <li class="active"><a href="#">课程管理</a></li>
+            <li class="active"><a href="#">打卡管理</a></li>
         </ul>
     </div>
 
@@ -121,17 +121,17 @@
                             <td style="overflow:visible;">
                                 <a class='btn btn-default'
                                    href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_task_list', ['rid' => $row['id']])}}"
-                                   title='主题'><i class='fa fa-list'></i>主题
+                                   title='主题'><i class='fa fa-list'></i>&nbsp;&nbsp;主题
                                 </a>
                                 <a class='btn btn-default'
-                                   href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_task_list', ['rid' => $row['id']])}}"
-                                   title='主题'><i class='fa fa-list'></i>日记
+                                   href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.users_clock_list', ['rid' => $row['id']])}}"
+                                   title='主题'><i class='fa fa-list'></i>&nbsp;&nbsp;日记
                                 </a>
                                 <a class='btn btn-default'
-                                   href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_task_list', ['rid' => $row['id']])}}"
-                                   title='主题'><i class='fa fa-list'></i>学员
+                                   href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_users_list', ['rid' => $row['id']])}}"
+                                   title='主题'><i class='fa fa-list'></i>&nbsp;&nbsp;学员
                                 </a>
-                                
+
                             </td>
                         </tr>
                     @endforeach
@@ -233,23 +233,16 @@
                             <td style="overflow:visible;">
                                 <a class='btn btn-default'
                                    href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_task_list', ['rid' => $row['id']])}}"
-                                   title='作业列表'><i class='fa fa-list'></i>作业列表
+                                   title='作业'><i class='fa fa-list'></i>作业
                                 </a>
                                 <a class='btn btn-default'
-                                   href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.edit', ['id' => $row['id']])}}"
-                                   title='课程设置'><i class='fa fa-edit'></i>专辑设置
+                                   href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.users_clock_list', ['rid' => $row['id']])}}"
+                                   title='主题'><i class='fa fa-list'></i>&nbsp;&nbsp;日记
                                 </a>
-                                @if ($row['delete_time'] > 0)
-                                    <a class='btn btn-default btn-success'
-                                       href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.showhide', ['id' => $row['id']])}}"
-                                       title='显示'>显示
-                                    </a>
-                                @else
-                                    <a class='btn btn-default btn-danger'
-                                       href="{{yzWebUrl('plugin.appletslive.admin.controllers.room.showhide', ['id' => $row['id']])}}"
-                                       title='隐藏'>隐藏
-                                    </a>
-                                @endif
+                                <a class='btn btn-default'
+                                   href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_users_list', ['rid' => $row['id']])}}"
+                                   title='主题'><i class='fa fa-list'></i>&nbsp;&nbsp;学员
+                                </a>
                             </td>
                         </tr>
                     @endforeach
