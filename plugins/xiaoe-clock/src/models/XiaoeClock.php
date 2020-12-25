@@ -3,6 +3,7 @@
 namespace Yunshop\XiaoeClock\models;
 use app\common\models\BaseModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Carbon\Carbon;
 
 class XiaoeClock extends BaseModel
 {
@@ -11,6 +12,7 @@ class XiaoeClock extends BaseModel
     public $table = 'yz_xiaoe_clock';
     public $timestamps = true;
     protected $guarded = [''];
+
 
 
     //打卡关联多个主题(按天显示)
@@ -29,6 +31,11 @@ class XiaoeClock extends BaseModel
     public function hasManyUser()
     {
         return $this->hasMany('Yunshop\XiaoeClock\models\XiaoeClockUser', 'clock_id', 'id');
+    }
+
+    public function hasOneTopic()
+    {
+        return $this->hasOne('Yunshop\XiaoeClock\models\XiaoeClockTopic', 'clock_id', 'id');
     }
 
     /**
