@@ -58,7 +58,7 @@ class PluginApplication extends \app\common\services\PluginApplication
                         ],
                     ],
                 ],
-                
+
                 'question_sort_manage' => [
                     'name' => '题库分类管理',
                     'permit' => 1,
@@ -132,6 +132,20 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'permit' => 1,
                             'menu' => 0,
                             'url' => 'plugin.examination.admin.examination.status',
+                            'parents' => ['examination', 'examination_manage'],
+                        ],
+                        'examination_answer' => [
+                            'name' => '批阅答卷',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.examination.admin.examination.answer',
+                            'parents' => ['examination', 'examination_manage'],
+                        ],
+                        'examination_member' => [
+                            'name' => '考试人员',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.examination.admin.examination.member',
                             'parents' => ['examination', 'examination_manage'],
                         ],
                     ],

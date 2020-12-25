@@ -89,6 +89,14 @@ class ExaminationController extends ApiController
                         $return['remained'] = $return['duration'] * 60 - ($nowTime - $lastTime);
                     }
                     foreach ($answerPaperContent as $k => $v) {
+                        $tempAnswer = [];
+                        foreach ($v['answer'] as $k2 => $v2) {
+                            $tempAnswer[] = [
+                                'key' => $k2,
+                                'value' => $v2,
+                            ];
+                        }
+                        $answerPaperContent[$k]['answer'] = $tempAnswer;
                         unset($answerPaperContent[$k]['question_id']);
                         unset($answerPaperContent[$k]['obtain']);
                         unset($answerPaperContent[$k]['correct']);
@@ -204,6 +212,14 @@ class ExaminationController extends ApiController
         }
 
         foreach ($paperQuestionRs as $k => $v) {
+            $tempAnswer = [];
+            foreach ($v['answer'] as $k2 => $v2) {
+                $tempAnswer[] = [
+                    'key' => $k2,
+                    'value' => $v2,
+                ];
+            }
+            $paperQuestionRs[$k]['answer'] = $tempAnswer;
             unset($paperQuestionRs[$k]['question_id']);
             unset($paperQuestionRs[$k]['reply']);
             unset($paperQuestionRs[$k]['obtain']);
