@@ -628,4 +628,45 @@ class ClockController extends BaseController
         ])->render();
     }
 
+    //日记详情 日记评论列表
+    public function users_clock_detail()
+    {
+        //日记详情
+        $rid = request()->get('id', 0);
+        $user_clock_info = DB::table('yz_xiaoe_users_clock')
+            ->join('diagnostic_service_user', 'diagnostic_service_user.ajy_uid', '=', 'yz_xiaoe_users_clock.user_id')
+            ->select('diagnostic_service_user.nickname', 'diagnostic_service_user.avatar', 'yz_xiaoe_users_clock.*')
+            ->where('yz_xiaoe_users_clock.id', $rid)
+            ->first();
+
+        if (!$user_clock_info) {
+            return $this->message('数据不存在', Url::absoluteWeb(''), 'danger');
+        }
+        if (!empty($user_clock_info['image_desc'])) {
+            $user_clock_info['image_desc'] = json_decode($user_clock_info['image_desc']);
+        }
+
+        $input = \YunShop::request();
+        $limit = 20;
+
+        // 日历评论列表
+        $where[] = ['yz_xiaoe_users_clock_comment.clock_users_id', '=', $rid];
+
+        $replay_list = DB::table('yz_xiaoe_users_clock_comment')
+            ->join('diagnostic_service_user', 'diagnostic_service_user.ajy_uid', '=', 'yz_xiaoe_users_clock_comment.user_id')
+            ->select('diagnostic_service_user.nickname', 'diagnostic_service_user.avatar', 'yz_xiaoe_users_clock_comment.*')
+            ->where($where)
+            ->orderBy('id', 'desc')
+            ->paginate($limit);
+
+        $pager = PaginationHelper::show($replay_list->total(), $replay_list->currentPage(), $replay_list->perPage());
+
+        return view('Yunshop\XiaoeClock::admin.users_clock_detail', [
+            'rid' => $rid,
+            'user_clock_info' => $user_clock_info,
+            'replay_list' => $replay_list,
+            'pager' => $pager,
+            'request' => $input,
+        ])->render();
+    }
 }
