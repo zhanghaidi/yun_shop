@@ -113,7 +113,7 @@
                             {{ $row['content'] }}
                         </td>
                         <td style="overflow:visible;">
-                            <a class='btn btn-default'
+                            <a class='btn btn-default btn-delete'
                                href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.users_clock_comment_del', ['id' => $row['id']])}}"
                                title='删除'><i class='fa fa-edit'></i>删除
                             </a>

@@ -115,6 +115,15 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'url_params' => '',
                             'parents' => ['xiaoe_clock', 'clock'],
                         ],
+                        'users_clock_del' => [
+                            'name' => '日记删除',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'icon' => '',
+                            'url' => 'plugin.xiaoe-clock.admin.clock.users_clock_del',
+                            'url_params' => '',
+                            'parents' => ['xiaoe_clock', 'clock'],
+                        ],
                         'users_clock_detail' => [
                             'name' => '日记详情',
                             'permit' => 1,
