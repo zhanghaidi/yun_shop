@@ -218,7 +218,7 @@
                             <td>0/0</td>
                             <td>
                                 @if ($row['course_id'] > 0)
-                                    课程id {{ $row['course_id'] }}
+                                    课程id {{ $row['course_info'] }}
                                 @else
                                     --
                                 @endif

@@ -62,11 +62,20 @@ class ClockController extends BaseController
             $list = DB::table('yz_xiaoe_clock')->where($where)
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
+
             if ($list->total() > 0) {
-                foreach ($list as $k => &$comment_value) {
-                    $comment_value['comment_num'] = RoomComment::where([['room_id', '=', $comment_value['id']]])->count();
+                foreach ($list as &$value) {
+                    //总天数,计算总天数
+                    $value['count_day'] = floor(($value['end_time'] - $value['start_time'])/86400);
+                    //已经进行天数,计算已经进行
+                    $value['pass_day'] = floor((time() - $value['start_time'])/86400);
+                    //管理课程
+                    if($value['join_type'] == 1){
+                        $value['course_id'] = DB::table('yz_appletslive_room')->where('id', $value['course_id'])->first();
+                    }
                 }
             }
+            
             $pager = PaginationHelper::show($list->total(), $list->currentPage(), $list->perPage());
         }
 
