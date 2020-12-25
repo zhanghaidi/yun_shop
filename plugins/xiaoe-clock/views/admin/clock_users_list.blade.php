@@ -95,7 +95,7 @@
                             <td style="overflow:visible;">
                                 <a class='btn btn-default'
                                    href="{{yzWebUrl('member.member.detail', ['id' => $row['user_id']])}}"
-                                   title='会员详情'><i class='fa fa-edit'></i>会员详情
+                                   title='详情资料'><i class='fa fa-edit'></i>详情资料
                                 </a>
                             </td>
                         </tr>
