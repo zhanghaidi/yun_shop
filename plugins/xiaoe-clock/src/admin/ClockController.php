@@ -463,7 +463,7 @@ class ClockController extends BaseController
         if ($room_type == 1) {
 
             $where[] = ['yz_xiaoe_users_clock.clock_id', '=', $rid];
-
+            $where[] = ['yz_xiaoe_users_clock.check_status', '=', 0];
             // 处理搜索条件
             if (isset($input->search)) {
 
@@ -499,7 +499,7 @@ class ClockController extends BaseController
         if ($room_type == 2) {
 
             $where[] = ['yz_xiaoe_users_clock.clock_id', '=', $rid];
-
+            $where[] = ['yz_xiaoe_users_clock.check_status', '=', 0];
             // 处理搜索条件
             if (isset($input->search)) {
 
@@ -554,7 +554,7 @@ class ClockController extends BaseController
         if ($room_type == 1) {
 
             $where[] = ['yz_xiaoe_clock_users.clock_id', '=', $rid];
-            $where[] = ['yz_xiaoe_clock_users.check_status', '=', 0];
+
             // 处理搜索条件
             if (isset($input->search)) {
 
@@ -590,7 +590,7 @@ class ClockController extends BaseController
         if ($room_type == 2) {
 
             $where[] = ['yz_xiaoe_clock_users.clock_id', '=', $rid];
-            $where[] = ['yz_xiaoe_clock_users.check_status', '=', 0];
+
             // 处理搜索条件
             if (isset($input->search)) {
 
