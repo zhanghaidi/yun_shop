@@ -7,6 +7,8 @@ use app\common\helpers\PaginationHelper;
 use app\common\helpers\Url;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Yunshop\Examination\models\PaperModel;
+use Yunshop\Examination\models\PaperQuestionModel;
 use Yunshop\Examination\models\QuestionLogModel;
 use Yunshop\Examination\models\QuestionModel;
 use Yunshop\Examination\models\QuestionSortModel;
@@ -27,6 +29,7 @@ class QuestionController extends BaseController
         }
 
         $searchData = \YunShop::request()->search;
+        $searchData = array_filter($searchData);
         $list = QuestionModel::getList();
         if (isset($searchData['sort_id'])) {
             $list = $list->where('sort_id', $searchData['sort_id']);
@@ -37,9 +40,15 @@ class QuestionController extends BaseController
         if (isset($searchData['problem'])) {
             $list = $list->where('problem', 'like', '%' . $searchData['problem'] . '%');
         }
-        $list = $list->withTrashed()
-            ->orderBy('id', 'desc')
+        $list = $list->orderBy('id', 'desc')
             ->paginate($this->pageSize)->toArray();
+        $questionIds = array_column($list['data'], 'id');
+
+        if (isset($questionIds[0])) {
+            $paperRs = PaperQuestionModel::selectRaw('question_id,count(1) as countnum')
+                ->whereIn('question_id', $questionIds)
+                ->groupBy('question_id')->get()->toArray();
+        }
 
         foreach ($list['data'] as $key => $question) {
             $list['data'][$key]['problem'] = strip_tags($question['problem']);
@@ -52,6 +61,16 @@ class QuestionController extends BaseController
                 }
                 $list['data'][$key]['sort_name'] = $sort['name'];
                 break;
+            }
+
+            if (isset($paperRs)) {
+                foreach ($paperRs as $paper) {
+                    if ($question['id'] != $paper['question_id']) {
+                        continue;
+                    }
+                    $list['data'][$key]['use_number'] = $paper['countnum'];
+                    break;
+                }
             }
         }
 
@@ -88,7 +107,7 @@ class QuestionController extends BaseController
             try {
                 $data = QuestionLogModel::saveDataProcess($data);
             } catch (Exception $e) {
-                return $this->message($e->getMessage(), '', 'error');
+                return $this->message($e->getMessage(), '', 'danger');
             }
 
             DB::beginTransaction();
@@ -132,7 +151,7 @@ class QuestionController extends BaseController
             } catch (Exception $e) {
                 DB::rollBack();
 
-                return $this->message($e->getMessage(), '', 'error');
+                return $this->message($e->getMessage(), '', 'danger');
             }
 
             return $this->message('保存成功', Url::absoluteWeb('plugin.examination.admin.question.edit', ['id' => $question->id]));
@@ -154,7 +173,7 @@ class QuestionController extends BaseController
                     'question_id' => $questionRs->id,
                 ])->first();
                 if (!isset($logRs->id)) {
-                    return $this->message('题目数据错误，请联系开发或删除题目', '', 'error');
+                    return $this->message('题目数据错误，请联系开发或删除题目', '', 'danger');
                 }
 
                 $type = $questionRs->type;
@@ -177,5 +196,41 @@ class QuestionController extends BaseController
             'sort_tree' => $questionSortTreeRs,
             'data' => $question,
         ]);
+    }
+
+    public function del()
+    {
+        $id = (int) \YunShop::request()->id;
+        $questionRs = QuestionModel::select('id')->where([
+            'id' => $id,
+            'uniacid' => \YunShop::app()->uniacid,
+        ])->first();
+        if (!isset($questionRs->id)) {
+            return $this->message('题目未找到', '', 'danger');
+        }
+
+        $paperIds = PaperQuestionModel::select('id', 'paper_id')
+            ->where('question_id', $id)->get()->toArray();
+        $paperIds = array_column($paperIds, 'paper_id');
+        if (isset($paperIds[0])) {
+            $paperRs = PaperModel::select('id')
+                ->whereIn('id', $paperIds)
+                ->limit(1)->get()->toArray();
+            if (isset($paperRs[0]['id'])) {
+                return $this->message('该题目被试卷使用中，不能删除', '', 'danger');
+            }
+        }
+
+        QuestionLogModel::where([
+            'question_id' => $id,
+            'uniacid' => \YunShop::app()->uniacid,
+        ])->delete();
+
+        QuestionModel::where([
+            'id' => $id,
+            'uniacid' => \YunShop::app()->uniacid,
+        ])->delete();
+
+        return $this->message('删除成功');
     }
 }

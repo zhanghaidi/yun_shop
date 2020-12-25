@@ -55,11 +55,11 @@ class ExaminationController extends ApiController
                         'id' => $answerPaperRs->id,
                         'name' => $examinationRs->name,
                         'url' => yz_tomedia($examinationRs->url),
+                        'content' => html_entity_decode($examinationRs->content->content),
+                        'duration' => $examinationRs->duration,
                         'is_question_score' => $examinationRs->is_question_score,
-                        'is_score' => $examinationRs->is_score,
-                        'is_question' => $examinationRs->is_question,
-                        'is_answer' => $examinationRs->is_answer,
                         'question' => [],
+                        'now_time' => time(),
                     ];
                     foreach ($answerPaperContent as $k => $v) {
                         unset($answerPaperContent[$k]['question_id']);
@@ -165,11 +165,11 @@ class ExaminationController extends ApiController
             'id' => $answer->id,
             'name' => $examinationRs->name,
             'url' => yz_tomedia($examinationRs->url),
+            'content' => html_entity_decode($examinationRs->content->content),
+            'duration' => $examinationRs->duration,
             'is_question_score' => $examinationRs->is_question_score,
-            'is_score' => $examinationRs->is_score,
-            'is_question' => $examinationRs->is_question,
-            'is_answer' => $examinationRs->is_answer,
             'question' => [],
+            'now_time' => time(),
         ];
 
         foreach ($paperQuestionRs as $k => $v) {

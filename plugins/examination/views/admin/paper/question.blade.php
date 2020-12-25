@@ -68,6 +68,7 @@
                         <th width="5%"></th>
                         <th width="20%">题目</th>
                         <th width="10%">题型</th>
+                        <th width="10%">被引用次数</th>
                         <th width="10%">分类</th>
                         <th width="10%">最后更新时间</th>
                     </tr>
@@ -88,6 +89,7 @@
                             @else 未知
                             @endif
                         </td>
+                        <td>{{$value['use_number']}}</td>
                         <td>{{$value['sort_name']}}</td>
                         <td>{{$value['updated_at']}}</td>
                     </tr>

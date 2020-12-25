@@ -7,6 +7,7 @@ use app\common\helpers\PaginationHelper;
 use app\common\helpers\Url;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Yunshop\Examination\models\ExaminationModel;
 use Yunshop\Examination\models\PaperModel;
 use Yunshop\Examination\models\PaperQuestionModel;
 use Yunshop\Examination\models\QuestionModel;
@@ -26,6 +27,21 @@ class PaperController extends BaseController
         }
         $list = $list->orderBy('id', 'desc')
             ->paginate($this->pageSize)->toArray();
+        $paperIds = array_column($list['data'], 'id');
+        if (isset($paperIds[0])) {
+            $examinationRs = ExaminationModel::selectRaw('paper_id, count(1) as countnum')
+                ->whereIn('paper_id', $paperIds)
+                ->orderBy('paper_id')->get()->toArray();
+            foreach ($list['data'] as $k1 => $v1) {
+                foreach ($examinationRs as $v2) {
+                    if ($v1['id'] != $v2['paper_id']) {
+                        continue;
+                    }
+                    $list['data'][$k1]['use_number'] = $v2['countnum'];
+                    break;
+                }
+            }
+        }
 
         $pager = PaginationHelper::show($list['total'], $list['current_page'], $this->pageSize);
 
@@ -44,28 +60,28 @@ class PaperController extends BaseController
             if (!isset($data['question_id']) || !is_array($data['question_id']) ||
                 !isset($data['question_id'][0])
             ) {
-                return $this->message('试卷必须有题目', '', 'error');
+                return $this->message('试卷必须有题目', '', 'danger');
             }
             if (count($data['question_id']) > 255) {
-                return $this->message('单张试卷不能大于255道题目', '', 'error');
+                return $this->message('单张试卷不能大于255道题目', '', 'danger');
             }
             if (isset($data['omission_option'])) {
                 $data['omission_option'] = array_values($data['omission_option']);
             }
             foreach ($data['question_id'] as $k => $v) {
                 if (!isset($data['order'][$k]) || $data['order'][$k] <= 0) {
-                    return $this->message('题目顺序数据错误', '', 'error');
+                    return $this->message('题目顺序数据错误', '', 'danger');
                 }
                 if (!isset($data['score'][$k]) || $data['score'][$k] <= 0 ||
                     $data['score'][$k] > 255
                 ) {
-                    return $this->message('题目分值设置错误，分值必须大于0', '', 'error');
+                    return $this->message('题目分值设置错误，分值必须大于0', '', 'danger');
                 }
                 if (!isset($data['omission_option'][$k]) || !in_array($data['omission_option'][$k], [0, 1, 2])) {
-                    return $this->message('多选题漏选分设置设置错误', '', 'error');
+                    return $this->message('多选题漏选分设置设置错误', '', 'danger');
                 }
                 if (!isset($data['omission_score'][$k])) {
-                    return $this->message('多选题漏选分分值设置错误', '', 'error');
+                    return $this->message('多选题漏选分分值设置错误', '', 'danger');
                 }
             }
 
@@ -145,7 +161,7 @@ class PaperController extends BaseController
             } catch (Exception $e) {
                 DB::rollBack();
 
-                return $this->message($e->getMessage(), '', 'error');
+                return $this->message($e->getMessage(), '', 'danger');
             }
 
             return $this->message('保存成功', Url::absoluteWeb('plugin.examination.admin.paper.index'));
@@ -199,5 +215,34 @@ class PaperController extends BaseController
             return $this->successJson('成功', $listRs);
         }
         return $this->errorJson('未知请求');
+    }
+
+    public function del()
+    {
+        $id = (int) \YunShop::request()->id;
+        $paperRs = PaperModel::select('id')->where([
+            'id' => $id,
+            'uniacid' => \YunShop::app()->uniacid,
+        ])->first();
+        if (!isset($paperRs->id)) {
+            return $this->message('试卷未找到', '', 'danger');
+        }
+
+        $examinationRs = ExaminationModel::select('id')
+            ->where('paper_id', $paperRs->id)->first();
+        if (isset($examinationRs->id)) {
+            return $this->message('该试卷被考试使用中，不能删除', '', 'danger');
+        }
+
+        PaperQuestionModel::where([
+            'paper_id' => $paperRs->id,
+        ])->delete();
+
+        PaperModel::where([
+            'id' => $id,
+            'uniacid' => \YunShop::app()->uniacid,
+        ])->delete();
+
+        return $this->message('删除成功');
     }
 }

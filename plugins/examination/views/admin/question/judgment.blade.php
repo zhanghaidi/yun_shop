@@ -3,6 +3,17 @@
 @section('content')
 @section('title', trans($pluginName))
 
+<style>
+.mt-5 {
+  margin-top: 3rem !important;
+}
+.pt-5 {
+  padding-top: 3rem !important;
+}
+.fs-6 {
+  font-size: 20px !important;
+}
+</style>
 <div class="rightlist">
     <div class="panel panel-default">
         <div class="panel-body">
@@ -34,14 +45,14 @@
 
             <hr>
             <div class="form-group">
-                <label class="col-xs-12 col-sm-3 col-md-2 control-label">题目(*)</label>
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label mt-5 pt-5 fs-6">题目(*)</label>
                 <div class="col-xs-12 col-sm-8 col-md-9">
                 {!! yz_tpl_ueditor('data[problem]', $data['problem']) !!}
                 </div>
             </div>
 
             <div class="form-group options">
-                <label class="col-xs-12 col-sm-3 col-md-2 control-label">答案(*)</label>
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label fs-6">答案(*)</label>
                 <div class="col-xs-12 col-sm-8 col-md-9">
                     <label class="radio-inline">
                         <input type="radio" name="data[answer]" value="1" @if($data['answer'] == true) checked @endif /> 正确
@@ -59,7 +70,7 @@
 
             <hr>
             <div class="form-group">
-                <label class="col-xs-12 col-sm-3 col-md-2 control-label">解析</label>
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label mt-5 pt-5 fs-6">解析</label>
                 <div class="col-xs-12 col-sm-8 col-md-9">
                 {!! yz_tpl_ueditor('data[explain]', $data['explain']) !!}
                 </div>
