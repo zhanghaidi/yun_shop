@@ -15,6 +15,7 @@ use Yunshop\Appletslive\common\models\Replay;
 use Yunshop\Appletslive\common\models\Room;
 use Yunshop\Appletslive\common\models\RoomComment;
 use Yunshop\Appletslive\common\services\CacheService;
+use Yunshop\XiaoeClock\models\XiaoeClock;
 
 /**
  * 打卡任务管理控制器
@@ -59,7 +60,8 @@ class ClockController extends BaseController
                     }
                 }
             }
-            $list = DB::table('yz_xiaoe_clock')->where($where)
+
+            $list = XiaoeClock::where($where)
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
 
@@ -75,7 +77,7 @@ class ClockController extends BaseController
                     }
                 }
             }
-            
+
             $pager = PaginationHelper::show($list->total(), $list->currentPage(), $list->perPage());
         }
 
@@ -98,12 +100,13 @@ class ClockController extends BaseController
                     }
                 }
             }
-            $list = DB::table('yz_xiaoe_clock')->where($where)
+            $list = XiaoeClock::where($where)
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
             if ($list->total() > 0) {
                 foreach ($list as $k => &$comment_value) {
-                    $comment_value['comment_num'] = RoomComment::where([['room_id', '=', $comment_value['id']]])->count();
+                    //作业数
+                    $comment_value['task_num'] = DB::table('yz_appletslive_room')->where('id', $value['course_id'])->first();
                 }
             }
             $pager = PaginationHelper::show($list->total(), $list->currentPage(), $list->perPage());

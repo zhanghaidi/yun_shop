@@ -102,11 +102,11 @@
                             <td style="overflow:visible;">
                                 {{ date('Y-m-d',$row['start_time'])}} 致 {{ date('Y-m-d',$row['end_time'])}}
                             </td>
-                            <td>0/0</td>
-                            <td>0/0</td>
+                            <td>{{ $row['pass_day'] }} / {{ $row['count_day'] }}</td>
+                            <td>{{ $row['clock_user_num'] }} / {{ $row['clock_num'] }}</td>
                             <td>
                                 @if ($row['course_id'] > 0)
-                                   课程id {{ $row['course_id'] }}
+                                   {{ $row['course_id']['name'] }}
                                 @else
                                     --
                                 @endif
@@ -214,11 +214,12 @@
                                     付费
                                 @endif
                             </td>
-                            <td>0</td>
-                            <td>0/0</td>
+                            <td>{{ $row['count_day'] }}</td>
+                            <td>{{ $row['pass_day'] }} / {{ $row['count_day'] }}</td>
+                            <td>{{ $row['clock_user_num'] }} / {{ $row['clock_num'] }}</td>
                             <td>
                                 @if ($row['course_id'] > 0)
-                                    课程id {{ $row['course_info'] }}
+                                    {{ $row['course_id']['name'] }}
                                 @else
                                     --
                                 @endif
