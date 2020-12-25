@@ -45,7 +45,9 @@
                     <tr>
                         <th width="5%">ID</th>
                         <th width="10%">名称</th>
-                        <th width="15%">开始结束时间</th>
+                        <th width="10%">会员(交卷/参与)</th>
+                        <th width="10%">答卷(交卷/参与)</th>
+                        <th width="15%">考试时间</th>
                         <th width="5%">考试时长</th>
                         <th width="5%">参与次数</th>
                         <th width="5%">重考间隔</th>
@@ -58,13 +60,18 @@
                     <tr>
                         <td>{{$value['id']}}</td>
                         <td>{{$value['name']}}</td>
+                        <td>{{$value['member_complete']}} / {{$value['member_total']}}</td>
+                        <td>{{$value['answer_complete']}} / {{$value['answer_total']}}</td>
                         <td>
-                            @if($value['start_at']) {{$value['start_at']}}
-                            @else 不限
-                            @endif
-                            - 
-                            @if($value['start_at']) {{$value['start_at']}}
-                            @else 不限
+                            @if(!isset($value['start']) && !isset($value['end'])) 不限
+                            @else
+                                @if($value['start']) {{substr($value['start'],5,11)}}
+                                @else 不限
+                                @endif
+                                &nbsp; - &nbsp;
+                                @if($value['end']) {{substr($value['end'],5,11)}}
+                                @else 不限
+                                @endif
                             @endif
                         </td>
                         <td>
@@ -82,11 +89,19 @@
                             @else 不限
                             @endif
                         </td>
-                        <td>@if($value['open_status'] == 1) 有效 @else 无效 @endif</td>
                         <td>
-                            <a class='btn btn-default' href="{{ yzWebUrl('plugin.examination.admin.examination.edit', ['id' => $value['id']]) }}"><i class="fa fa-edit"></i></a>
+                            @if($value['open_status'] == 1) 有效 
+                            <a class="text-danger" href="{{ yzWebUrl('plugin.examination.admin.examination.status', ['id' => $value['id'], 'action' => 'stop']) }}"><i class="fa fa-pause"></i> 停止</a>
+                            @else 无效 
+                            <a class="text-success" href="{{ yzWebUrl('plugin.examination.admin.examination.status', ['id' => $value['id'], 'action' => 'start']) }}"><i class="fa fa-play"></i> 开始</a>
+                            @endif
+                        </td>
+                        <td>
+                            <a class='btn btn-success' href="{{ yzWebUrl('plugin.examination.admin.examination.answer', ['id' => $value['id']]) }}" title="批阅答卷"><i class="fa fa-tasks"></i></a>
 
-                            <a class='btn btn-default' href="{{ yzWebUrl('plugin.examination.admin.examination.del', ['id' => $value['id']]) }}" onclick="return confirm('确认删除该记录吗？');return false;"><i class="fa fa-remove"></i></a>
+                            <a class='btn btn-info' href="{{ yzWebUrl('plugin.examination.admin.examination.member', ['id' => $value['id']]) }}" title="查看考试人员"><i class="fa fa-users"></i></a>
+
+                            <a class='btn btn-warning' href="{{ yzWebUrl('plugin.examination.admin.examination.edit', ['id' => $value['id']]) }}" title="编辑"><i class="fa fa-edit"></i></a>
                         </td>
                     </tr>
                     @endforeach

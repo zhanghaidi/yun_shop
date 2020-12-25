@@ -36,7 +36,7 @@
                         <th width="10%">名称</th>
                         <th width="5%">题目数量</th>
                         <th width="5%">试卷总分</th>
-                        <th width="5%">被引用次数</th>
+                        <th width="5%">被使用次数</th>
                         <th width="10%">最后更新时间</th>
                         <th width="10%">操作</th>
                     </tr>
@@ -51,9 +51,9 @@
                         <td>{{$value['use_number']}}</td>
                         <td>{{$value['updated_at']}}</td>
                         <td>
-                            <a class='btn btn-success' href="{{ yzWebUrl('plugin.examination.admin.paper.edit', ['id' => $value['id']]) }}"><i class="fa fa-edit"></i></a>
+                            <a class='btn btn-success' href="{{ yzWebUrl('plugin.examination.admin.paper.edit', ['id' => $value['id']]) }}" title="编辑"><i class="fa fa-edit"></i></a>
 
-                            <a class='btn btn-danger' href="{{ yzWebUrl('plugin.examination.admin.paper.del', ['id' => $value['id']]) }}" onclick="return confirm('确认删除该记录吗？');return false;"><i class="fa fa-remove"></i></a>
+                            <a class='btn btn-danger' href="{{ yzWebUrl('plugin.examination.admin.paper.del', ['id' => $value['id']]) }}" onclick="return confirm('确认删除该记录吗？');return false;"  title="删除"><i class="fa fa-remove"></i></a>
                         </td>
                     </tr>
                     @endforeach
@@ -64,4 +64,3 @@
     </div>
 </div>
 @endsection
-
