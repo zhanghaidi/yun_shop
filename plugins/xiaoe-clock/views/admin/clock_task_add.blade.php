@@ -1,5 +1,5 @@
 @extends('layouts.base')
-@section('title', trans('视频设置'))
+@section('title', trans('主题|作业添加'))
 @section('content')
 
     <div class="right-titpos">

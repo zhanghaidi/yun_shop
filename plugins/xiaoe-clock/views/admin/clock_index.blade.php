@@ -1,5 +1,5 @@
 @extends('layouts.base')
-@section('title', trans('课程管理'))
+@section('title', trans('打卡管理'))
 @section('content')
 
     <div class="right-titpos">

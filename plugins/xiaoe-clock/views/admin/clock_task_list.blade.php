@@ -1,5 +1,5 @@
 @extends('layouts.base')
-@section('title', trans('回看列表'))
+@section('title', trans('主题|作业列表'))
 @section('content')
 
     <div class="right-titpos">
@@ -175,7 +175,7 @@
                             <td style="overflow:visible;">
                                 <a class='btn btn-default'
                                    href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_task_edit', ['id' => $row['id']])}}"
-                                   title='设置'><i class='fa fa-edit'></i>设置
+                                   title='编辑'><i class='fa fa-edit'></i>编辑
                                 </a>
                                 @if ($row['delete_time'] > 0)
                                     <a class='btn btn-default btn-success'
