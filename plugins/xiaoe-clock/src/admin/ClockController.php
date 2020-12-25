@@ -107,6 +107,7 @@ class ClockController extends BaseController
             'request' => $input,
         ])->render();
     }
+
     //增加打卡
     public function clock_add()
     {
@@ -144,7 +145,7 @@ class ClockController extends BaseController
             }
             if (array_key_exists('start_time', $param)) { //有效期 开始是日期
                 $start_time = $param['start_time'] ? $param['start_time'] : 0;
-                if($start_time != 0){
+                if ($start_time != 0) {
                     $ist_data['start_time'] = strtotime($start_time);
                 } else {
                     return $this->message('请选择开始日期', Url::absoluteWeb(''), 'danger');
@@ -152,7 +153,7 @@ class ClockController extends BaseController
             }
             if (array_key_exists('end_time', $param)) { //有效期 结束是日期
                 $end_time = $param['end_time'] ? $param['end_time'] : 0;
-                if($end_time != 0){
+                if ($end_time != 0) {
                     $ist_data['end_time'] = strtotime($end_time);
                 } else {
                     return $this->message('请选择结束日期', Url::absoluteWeb(''), 'danger');
@@ -226,7 +227,7 @@ class ClockController extends BaseController
         $list = Room::select('id', 'name as title', 'cover_img as thumb')->where($where)->get();
 
         if (!$list->isEmpty()) {
-            $goods = set_medias($list->toArray(), array('thumb','share_icon'));
+            $goods = set_medias($list->toArray(), array('thumb', 'share_icon'));
 
         }
         return view('goods.query', [
@@ -235,6 +236,7 @@ class ClockController extends BaseController
         ])->render();
 
     }
+
     // 主题|作业添加
     public function clock_task_add()
     {
@@ -253,7 +255,7 @@ class ClockController extends BaseController
                     'type' => $type,
                     'name' => $param['name'] ? trim($param['name']) : '',
                     'theme_time' => strtotime($theme_time),
-                    'cover_img'  => $param['cover_img'] ? $param['cover_img'] : '',
+                    'cover_img' => $param['cover_img'] ? $param['cover_img'] : '',
                     'text_desc' => $param['text_desc'] ? $param['text_desc'] : '',
                     'video_desc' => $param['video_desc'] ? $param['video_desc'] : '',
                     'sort' => $param['sort'] ? $param['sort'] : 0,
@@ -300,6 +302,7 @@ class ClockController extends BaseController
             'room' => $clock,
         ])->render();
     }
+
     // 主题|作业列表
     public function clock_task_list()
     {
@@ -406,7 +409,7 @@ class ClockController extends BaseController
                 $upd_data = [
                     'name' => $param['name'] ? trim($param['name']) : '',
                     'theme_time' => strtotime($theme_time),
-                    'cover_img'  => $param['cover_img'] ? $param['cover_img'] : '',
+                    'cover_img' => $param['cover_img'] ? $param['cover_img'] : '',
                     'text_desc' => $param['text_desc'] ? $param['text_desc'] : '',
                     'video_desc' => $param['video_desc'] ? $param['video_desc'] : '',
                     'sort' => $param['sort'] ? $param['sort'] : 0,
@@ -551,7 +554,7 @@ class ClockController extends BaseController
         if ($room_type == 1) {
 
             $where[] = ['yz_xiaoe_clock_users.clock_id', '=', $rid];
-
+            $where[] = ['yz_xiaoe_clock_users.check_status', '=', 0];
             // 处理搜索条件
             if (isset($input->search)) {
 
@@ -587,7 +590,7 @@ class ClockController extends BaseController
         if ($room_type == 2) {
 
             $where[] = ['yz_xiaoe_clock_users.clock_id', '=', $rid];
-
+            $where[] = ['yz_xiaoe_clock_users.check_status', '=', 0];
             // 处理搜索条件
             if (isset($input->search)) {
 
@@ -651,7 +654,7 @@ class ClockController extends BaseController
 
         // 日历评论列表
         $where[] = ['yz_xiaoe_users_clock_comment.clock_users_id', '=', $rid];
-
+        $where[] = ['yz_xiaoe_users_clock_comment.check_status', '=', 0];
         $replay_list = DB::table('yz_xiaoe_users_clock_comment')
             ->join('diagnostic_service_user', 'diagnostic_service_user.ajy_uid', '=', 'yz_xiaoe_users_clock_comment.user_id')
             ->select('diagnostic_service_user.nickname', 'diagnostic_service_user.avatar', 'yz_xiaoe_users_clock_comment.*')
@@ -669,11 +672,37 @@ class ClockController extends BaseController
             'request' => $input,
         ])->render();
     }
-//    评论删除
-    public function users_clock_comment_del(){
+
+    public function users_clock_del()
+    {
+        $input = request()->all();
+
+        if (!array_key_exists('id', $input)) { //id
+            return $this->message('数据不存在', Url::absoluteWeb(''), 'danger');
+        }
+        $replay = DB::table('yz_xiaoe_users_clock')->where('id', intval($input['id']))->first();
+        if (!$replay) {
+            return $this->message('数据不存在', Url::absoluteWeb(''), 'danger');
+        }
+        $up_data['check_status'] = 2;
+        $up_data['deleted_at']   = time();
+        //删除评论
+        $del_res = DB::table('yz_xiaoe_users_clock')->where('id', $replay['id'])->update($up_data);
+
+        // 刷新接口数据缓存
+        if ($del_res) {
+            return $this->message('删除成功', Url::absoluteWeb('plugin.xiaoe-clock.admin.clock.users_clock_detail', ['id' => $replay['clock_users_id']]));
+        } else {
+            return $this->message('删除失败', Url::absoluteWeb(''), 'danger');
+        }
+    }
+
+//   评论删除
+    public function users_clock_comment_del()
+    {
 
         $input = request()->all();
-        dd($input);
+
         if (!array_key_exists('id', $input)) { //id
             return $this->message('数据不存在', Url::absoluteWeb(''), 'danger');
         }
@@ -681,9 +710,10 @@ class ClockController extends BaseController
         if (!$replay) {
             return $this->message('数据不存在', Url::absoluteWeb(''), 'danger');
         }
-
+        $up_data['check_status'] = 2;
+        $up_data['deleted_at']   = time();
         //删除评论
-        $del_res = DB::table('yz_xiaoe_users_clock_comment')->where('id', $replay['id'])->delete();
+        $del_res = DB::table('yz_xiaoe_users_clock_comment')->where('id', $replay['id'])->update($up_data);
 
         // 刷新接口数据缓存
         if ($del_res) {

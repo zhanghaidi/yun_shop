@@ -93,6 +93,12 @@
                                    title='详情'><i class='fa fa-edit'></i>详情
                                 </a>
                             </td>
+                            <td style="overflow:visible;">
+                                <a class='btn btn-default'
+                                   href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.users_clock_del', ['id' => $row['id']])}}"
+                                   title='删除'><i class='fa fa-edit'></i>删除
+                                </a>
+                            </td>
                         </tr>
                     @endforeach
                     </tbody>
