@@ -150,6 +150,10 @@ class ClockController extends ApiController
         $note_id = request()->get('id');
         $member_id = \YunShop::app()->getMemberId();
 
+        if(!$note_id){
+            return $this->errorJson('日记id不能为空');
+        }
+
         $params = array(
             'uniacid' => \YunShop::app()->uniacid,
             'user_id' => $member_id,
