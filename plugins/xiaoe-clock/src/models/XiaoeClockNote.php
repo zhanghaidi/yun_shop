@@ -33,7 +33,7 @@ class XiaoeClockNote extends BaseModel
     }
 
     //关联打卡
-    public function belongsToClock()
+    public function clock()
     {
         return $this->belongsTo('Yunshop\XiaoeClock\models\XiaoeClock','clock_id','id');
     }
