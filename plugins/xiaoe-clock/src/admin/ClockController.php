@@ -511,12 +511,14 @@ class ClockController extends BaseController
 
             $where[] = ['yz_xiaoe_users_clock.clock_id', '=', $rid];
             $where[] = ['yz_xiaoe_users_clock.check_status', '=', 0];
+
             // 处理搜索条件
             if (isset($input->search)) {
-
+                $search = $input->search;
                 if (intval($search['id']) > 0) {
                     $where[] = ['yz_xiaoe_users_clock.id', '=', intval($search['id'])];
                 }
+
                 if (trim($search['text_desc']) !== '') {
                     $where[] = ['yz_xiaoe_users_clock.text_desc', 'like', '%' . trim($search['text_desc']) . '%'];
                 }
@@ -566,21 +568,15 @@ class ClockController extends BaseController
 
                 $search = $input->search;
                 if (intval($search['id']) > 0) {
-                    $where[] = ['id', '=', intval($search['id'])];
+                    $where[] = ['yz_xiaoe_clock_users.id', '=', intval($search['id'])];
                 }
-                if (trim($search['title']) !== '') {
-                    $where[] = ['title', 'like', '%' . trim($search['title']) . '%'];
+                if (intval($search['user_id']) > 0) {
+                    $where[] = ['yz_xiaoe_clock_users.user_id', '=', intval($search['user_id'])];
                 }
-                if (trim($search['type']) !== '') {
-                    $where[] = ['type', '=', $search['type']];
+                if (trim($search['nickname']) !== '') {
+                    $where[] = ['diagnostic_service_user.nickname', 'like', '%' . trim($search['nickname']) . '%'];
                 }
-                if (trim($search['status']) !== '') {
-                    if ($search['status'] === '0') {
-                        $where[] = ['delete_time', '>', 0];
-                    } else {
-                        $where[] = ['delete_time', '=', 0];
-                    }
-                }
+
             }
 
             $replay_list = DB::table('yz_xiaoe_clock_users')
@@ -601,21 +597,14 @@ class ClockController extends BaseController
             if (isset($input->search)) {
 
                 $search = $input->search;
-                if (intval($search['roomid']) > 0) {
-                    $where[] = ['yz_appletslive_liveroom.roomid', '=', intval($search['roomid'])];
+                if (intval($search['id']) > 0) {
+                    $where[] = ['yz_xiaoe_clock_users.id', '=', intval($search['id'])];
                 }
-                if (trim($search['name']) !== '') {
-                    $where[] = ['yz_appletslive_liveroom.name', 'like', '%' . trim($search['name']) . '%'];
+                if (intval($search['user_id']) > 0) {
+                    $where[] = ['yz_xiaoe_clock_users.user_id', '=', intval($search['user_id'])];
                 }
-                if (trim($search['live_status']) !== '') {
-                    $where[] = ['yz_appletslive_liveroom.live_status', '=', $search['live_status']];
-                }
-                if (trim($search['status']) !== '') {
-                    if ($search['status'] === '0') {
-                        $where[] = ['yz_appletslive_replay.delete_time', '>', 0];
-                    } else {
-                        $where[] = ['yz_appletslive_replay.delete_time', '=', 0];
-                    }
+                if (trim($search['nickname']) !== '') {
+                    $where[] = ['diagnostic_service_user.nickname', 'like', '%' . trim($search['nickname']) . '%'];
                 }
             }
 
