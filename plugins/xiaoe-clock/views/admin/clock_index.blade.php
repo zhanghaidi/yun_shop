@@ -27,30 +27,16 @@
                     <input type="hidden" name="a" value="entry"/>
                     <input type="hidden" name="m" value="yun_shop"/>
                     <input type="hidden" name="do" value="{{ $request['do'] }}"/>
-                    <input type="hidden" name="route" value="plugin.appletslive.admin.controllers.room.index"/>
+                    <input type="hidden" name="route" value="plugin.xiaoe-clock.admin.clock.clock_index"/>
                     <input type="hidden" name="type" value="1"/>
                     <div class="form-group">
                         <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                            <input type="number" placeholder="课程ID" class="form-control" name="search[id]"
+                            <input type="number" placeholder="日历打卡ID" class="form-control" name="search[id]"
                                    value="{{$request['search']['id']}}"/>
                         </div>
                         <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
                             <input type="text" class="form-control" name="search[name]"
-                                   value="{{$request['search']['name']}}" placeholder="课程标题"/>
-                        </div>
-                        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                            <select name="search[status]" class="form-control">
-                                <option value="">请选择显示/隐藏</option>
-                                <option value="1" @if($request['search']['status']=='1') selected @endif>显示</option>
-                                <option value='0' @if($request['search']['status']=='0') selected @endif>隐藏</option>
-                            </select>
-                        </div>
-                        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                            <select name="search[is_selected]" class="form-control">
-                                <option value="">是否精选</option>
-                                <option value="1" @if($request['search']['is_selected']=='1') selected @endif>是</option>
-                                <option value='0' @if($request['search']['is_selected']=='0') selected @endif>否</option>
-                            </select>
+                                   value="{{$request['search']['name']}}" placeholder="日历打卡名称"/>
                         </div>
                         <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
                             <button type="submit" class="btn btn-success"><i class="fa fa-search"></i>搜索</button>
@@ -75,7 +61,7 @@
                         <th style='width:25%;'>已进行/总天数</th>
                         <th style='width:15%;'>打卡人数/次数</th>
                         <th style='width:15%;'>关联课程</th>
-                        <th style='width:15%;'>展示状态</th>
+{{--                        <th style='width:15%;'>展示状态</th>--}}
                         <th style='width:30%;'>操作</th>
                     </tr>
                     </thead>
@@ -102,22 +88,22 @@
                             <td style="overflow:visible;">
                                 {{ date('Y-m-d',$row['start_time'])}} 致 {{ date('Y-m-d',$row['end_time'])}}
                             </td>
-                            <td>0/0</td>
-                            <td>0/0</td>
+                            <td>{{ $row['pass_day'] }} / {{ $row['count_day'] }}</td>
+                            <td>{{ $row['clock_user_num'] }} / {{ $row['clock_num'] }}</td>
                             <td>
                                 @if ($row['course_id'] > 0)
-                                   课程id {{ $row['course_id'] }}
+                                   {{ $row['course_id']['name'] }}
                                 @else
                                     --
                                 @endif
                             </td>
-                            <td>
-                                @if ($row['display_status'] == 1)
-                                    <span style="color: green">显示</span>
-                                @else
-                                    <span style="color: red">隐藏</span>
-                                @endif
-                            </td>
+{{--                            <td>--}}
+{{--                                @if ($row['display_status'] == 1)--}}
+{{--                                    <span style="color: green">显示</span>--}}
+{{--                                @else--}}
+{{--                                    <span style="color: red">隐藏</span>--}}
+{{--                                @endif--}}
+{{--                            </td>--}}
                             <td style="overflow:visible;">
                                 <a class='btn btn-default'
                                    href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_task_list', ['rid' => $row['id']])}}"
@@ -150,24 +136,18 @@
                     <input type="hidden" name="a" value="entry"/>
                     <input type="hidden" name="m" value="yun_shop"/>
                     <input type="hidden" name="do" value="{{ $request['do'] }}"/>
-                    <input type="hidden" name="route" value="plugin.appletslive.admin.controllers.room.index"/>
+                    <input type="hidden" name="route" value="plugin.xiaoe-clock.admin.clock.clock_index"/>
                     <input type="hidden" name="type" value="2"/>
                     <div class="form-group">
                         <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                            <input type="number" placeholder="特卖专辑ID" class="form-control" name="search[id]"
+                            <input type="number" placeholder="作业打卡ID" class="form-control" name="search[id]"
                                    value="{{$request['search']['id']}}"/>
                         </div>
                         <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
                             <input type="text" class="form-control" name="search[name]"
-                                   value="{{$request['search']['name']}}" placeholder="专辑名称"/>
+                                   value="{{$request['search']['name']}}" placeholder="作业打卡名称"/>
                         </div>
-                        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                            <select name="search[status]" class="form-control">
-                                <option value="">请选择显示/隐藏</option>
-                                <option value="1" @if($request['search']['status']=='1') selected @endif>显示</option>
-                                <option value='0' @if($request['search']['status']=='0') selected @endif>隐藏</option>
-                            </select>
-                        </div>
+
                         <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
                             <button type="submit" class="btn btn-success"><i class="fa fa-search"></i>搜索</button>
                         </div>
@@ -190,7 +170,7 @@
                         <th style='width:15%;'>作业数</th>
                         <th style='width:15%;'>打卡人数/次数</th>
                         <th style='width:15%;'>关联课程</th>
-                        <th style='width:15%;'>展示状态</th>
+{{--                        <th style='width:15%;'>展示状态</th>--}}
                         <th style='width:30%;'>操作</th>
                     </tr>
                     </thead>
@@ -214,22 +194,22 @@
                                     付费
                                 @endif
                             </td>
-                            <td>0</td>
-                            <td>0/0</td>
+                            <td>{{ $row['task_num'] }}</td>
+                            <td>{{ $row['clock_user_num'] }} / {{ $row['clock_num'] }}</td>
                             <td>
                                 @if ($row['course_id'] > 0)
-                                    课程id {{ $row['course_info'] }}
+                                    {{ $row['course_id']['name'] }}
                                 @else
                                     --
                                 @endif
                             </td>
-                            <td>
-                                @if ($row['display_status'] == 1)
-                                    <span style="color: green">显示</span>
-                                @else
-                                    <span style="color: red">隐藏</span>
-                                @endif
-                            </td>
+{{--                            <td>--}}
+{{--                                @if ($row['display_status'] == 1)--}}
+{{--                                    <span style="color: green">显示</span>--}}
+{{--                                @else--}}
+{{--                                    <span style="color: red">隐藏</span>--}}
+{{--                                @endif--}}
+{{--                            </td>--}}
                             <td style="overflow:visible;">
                                 <a class='btn btn-default'
                                    href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_task_list', ['rid' => $row['id']])}}"

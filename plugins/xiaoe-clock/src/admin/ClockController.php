@@ -15,6 +15,7 @@ use Yunshop\Appletslive\common\models\Replay;
 use Yunshop\Appletslive\common\models\Room;
 use Yunshop\Appletslive\common\models\RoomComment;
 use Yunshop\Appletslive\common\services\CacheService;
+use Yunshop\XiaoeClock\models\XiaoeClock;
 
 /**
  * 打卡任务管理控制器
@@ -33,7 +34,7 @@ class ClockController extends BaseController
         $input = \YunShop::request();
         $limit = 20;
 
-        if ($type == 1) { // 录播
+        if ($type == 1) { // 日历打卡
             // 处理搜索条件
             $where[] = ['type', '=', 1];
             if (isset($input->search)) {
@@ -44,42 +45,29 @@ class ClockController extends BaseController
                 if (trim($search['name']) !== '') {
                     $where[] = ['name', 'like', '%' . trim($search['name']) . '%'];
                 }
-                if (trim($search['status']) !== '') {
-                    if ($search['status'] === '0') {
-                        $where[] = ['delete_time', '>', 0];
-                    } else {
-                        $where[] = ['delete_time', '=', 0];
-                    }
-                }
-                if (trim($search['is_selected']) !== '') {
-                    if ($search['is_selected'] === '0') {
-                        $where[] = ['is_selected', '=', 0];
-                    } else {
-                        $where[] = ['is_selected', '=', 1];
-                    }
-                }
             }
-            $list = DB::table('yz_xiaoe_clock')->where($where)
+
+            $list = XiaoeClock::where($where)
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
 
             if ($list->total() > 0) {
                 foreach ($list as &$value) {
                     //总天数,计算总天数
-                    $value['count_day'] = floor(($value['end_time'] - $value['start_time'])/86400);
+                    $value['count_day'] = floor(($value['end_time'] - $value['start_time']) / 86400);
                     //已经进行天数,计算已经进行
-                    $value['pass_day'] = floor((time() - $value['start_time'])/86400);
+                    $value['pass_day'] = floor((time() - $value['start_time']) / 86400);
                     //管理课程
-                    if($value['join_type'] == 1){
+                    if ($value['join_type'] == 1) {
                         $value['course_id'] = DB::table('yz_appletslive_room')->where('id', $value['course_id'])->first();
                     }
                 }
             }
-            
+
             $pager = PaginationHelper::show($list->total(), $list->currentPage(), $list->perPage());
         }
 
-        if ($type == 2) { // 品牌特卖
+        if ($type == 2) { // 作业打卡
             // 处理搜索条件
             $where[] = ['type', '=', 2];
             if (isset($input->search)) {
@@ -90,20 +78,17 @@ class ClockController extends BaseController
                 if (trim($search['name']) !== '') {
                     $where[] = ['name', 'like', '%' . trim($search['name']) . '%'];
                 }
-                if (trim($search['status']) !== '') {
-                    if ($search['status'] === '0') {
-                        $where[] = ['delete_time', '>', 0];
-                    } else {
-                        $where[] = ['delete_time', '=', 0];
-                    }
-                }
             }
-            $list = DB::table('yz_xiaoe_clock')->where($where)
+            $list = XiaoeClock::where($where)
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
             if ($list->total() > 0) {
-                foreach ($list as $k => &$comment_value) {
-                    $comment_value['comment_num'] = RoomComment::where([['room_id', '=', $comment_value['id']]])->count();
+                foreach ($list as $k => &$value) {
+                    //作业数
+                    $value['task_num'] = DB::table('yz_xiaoe_clock_task')->where('clock_id', $value['id'])->count();
+                    if ($value['join_type'] == 1) {//关联课程
+                        $value['course_id'] = DB::table('yz_appletslive_room')->where('id', $value['course_id'])->first();
+                    }
                 }
             }
             $pager = PaginationHelper::show($list->total(), $list->currentPage(), $list->perPage());
@@ -694,7 +679,7 @@ class ClockController extends BaseController
             return $this->message('数据不存在', Url::absoluteWeb(''), 'danger');
         }
         $up_data['check_status'] = 2;
-        $up_data['deleted_at']   = time();
+        $up_data['deleted_at'] = time();
         //删除评论
         $del_res = DB::table('yz_xiaoe_users_clock')->where('id', $replay['id'])->update($up_data);
 
@@ -720,7 +705,7 @@ class ClockController extends BaseController
             return $this->message('数据不存在', Url::absoluteWeb(''), 'danger');
         }
         $up_data['check_status'] = 2;
-        $up_data['deleted_at']   = time();
+        $up_data['deleted_at'] = time();
         //删除评论
         $del_res = DB::table('yz_xiaoe_users_clock_comment')->where('id', $replay['id'])->update($up_data);
 
