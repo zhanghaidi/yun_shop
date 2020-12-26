@@ -3,6 +3,7 @@
 
 namespace Yunshop\XiaoeClock\frontend;
 
+use app\backend\modules\tracking\models\DiagnosticServiceUser;
 use app\common\components\ApiController;
 use Yunshop\XiaoeClock\models\XiaoeClock;
 use Yunshop\XiaoeClock\models\XiaoeClockTopic;
@@ -12,28 +13,63 @@ use Yunshop\XiaoeClock\models\XiaoeClockNoteComment;
 use Yunshop\XiaoeClock\models\XiaoeClockNoteCommentLike;
 use Yunshop\XiaoeClock\models\XiaoeClockUser;
 use Illuminate\Support\Facades\DB;
+use Yunshop\Appletslive\common\services\BaseService;
 use Carbon\Carbon;
 
 
 class ClockController extends ApiController
 {
+    private $clockNoteModel;
 
-    //日历打卡活动详情 ims_yz_xiaoe_clock
+    private $page;
+
+    private $year;
+
+    private $month;
+
+    public function __construct()
+    {
+        $member_id = \YunShop::app()->getMemberId();
+        if(!$member_id){
+            response()->json([
+                'result' => 41009,
+                'msg' => '请登录',
+                'data' => '',
+            ], 200, ['charset' => 'utf-8'])->send();
+            exit;
+        }
+
+
+        $this->clockNoteModel = $this->getClockNoteModel($member_id);
+
+        $this->page = $this->getPostPage();
+        $this->year = $this->getPostYear();
+        $this->month = $this->getPostMonth();
+    }
+
+    //日历打卡活动详情 ims_yz_xiaoe_clock 默认显示一周的日历 用户一周打卡情况 当天是否打卡 当天的打卡主题
     public function getCalendarClock()
     {
-        $id = request()->get('id');
+        $id = intval(request()->get('id'));
         if (!$id) {
             return $this->errorJson('打卡id不能为空');
         }
         $member_id = \YunShop::app()->getMemberId();
+        //搜集新学员
+        $this->userJoin($id, $member_id);
 
-        $todayStart = Carbon::now()->startOfDay();
-        $todayEnd = Carbon::now()->endOfDay();
 
         $clock = XiaoeClock::where('id', $id)->withCount(['hasManyNote', 'hasManyUser'])->with(['hasManyNote', 'hasManyTopic'])->with(['myNote' => function ($my_note) use ($member_id) {
             return $my_note->where('user_id', $member_id);
         }])->first();
 
+        $data = [
+            'clock'     => $clock,
+            'clock_status'   => $this->getClockStatus($member_id),
+            'clock_total'    => $this->clockNoteModel->count() . "天",
+            'my_clock_log'      => $this->getCalendarData()
+        ];
+        return $this->successJson('ok', $data);
 
         if (!$clock) {
             return $this->errorJson('不存在数据');
@@ -47,14 +83,12 @@ class ClockController extends ApiController
     public function getHomeWorkClock()
     {
 
-        $id = request()->get('id');
+        $id = intval(request()->get('id'));
         if (!$id) {
             return $this->errorJson('打卡id不能为空');
         }
         $member_id = \YunShop::app()->getMemberId();
-
-        $todayStart = Carbon::now()->startOfDay();
-        $todayEnd = Carbon::now()->endOfDay();
+        $this->userJoin($id, $member_id);
 
         $clock = XiaoeClock::where('id', $id)->withCount(['hasManyNote', 'hasManyUser'])->with(['hasManyNote', 'hasManyTopic'])->with(['myNote' => function ($my_note) use ($member_id) {
             return $my_note->where('user_id', $member_id);
@@ -89,11 +123,66 @@ class ClockController extends ApiController
 
     }*/
 
+    //打卡记录评论列表 ims_yz_xiaoe_users_clock_comment
+    /*public function clockNoteCommentList()
+    {
+
+
+
+    }*/
+
+    public function clockNoteCreate()
+    {
+        $clock_id = intval(request()->get('id'));
+        if(!$clock_id){
+            return $this->errorJson('打卡id不能为空');
+        }
+
+        $member_id = \YunShop::app()->getMemberId();
+        $content = trim(request()->get('content'));
+
+        $clock_task_id = intval(request()->get('clock_task_id'));
+        $image = trim(request()->get('image'));
+        $video = trim(request()->get('video'));
+        $image_size = trim(request()->get('image_size'));
+        $video_size = '';
+
+        if(!$content){
+            return $this->errorJson('评论内容不能为空');
+        }
+
+        $this->checkBlack($member_id);
+
+        $wxapp_base_service = new BaseService();
+        $sensitive_check = $wxapp_base_service->msgSecCheck($content);
+        if (!is_bool($sensitive_check) || $sensitive_check === false) {
+            return $this->errorJson('评论内容包含敏感词', $sensitive_check);
+        }
+
+        // 组装插入数据
+        $content_status = $wxapp_base_service->textCheck($content, false);
+        $params = array(
+            'uniacid' => \YunShop::app()->uniacid,
+            'user_id' => $member_id,
+            'clock_id' => $clock_id,
+            'clock_task_id' => $clock_task_id,
+            'text_desc' => $content,
+            'image_desc' => $image,
+            'video_desc' => $video,
+            'image_info' => $image_size,
+            'content' => $content
+        );
+
+        XiaoeClockNoteComment::create($params);
+
+        return $this->successJson('打卡成功', $params);
+
+    }
 
     //打卡日记详情 ims_yz_xiaoe_users_clock
     public function clockNoteInfo()
     {
-        $note_id = request()->get('id');
+        $note_id = intval(request()->get('id'));
         $member_id = \YunShop::app()->getMemberId();
         if (!$note_id) {
             return $this->errorJson('日记id不能为空');
@@ -147,7 +236,7 @@ class ClockController extends ApiController
     //打卡日记点赞 ims_yz_xiaoe_users_clock_like
     public function clockNoteLike()
     {
-        $note_id = request()->get('id');
+        $note_id = intval(request()->get('id'));
         $member_id = \YunShop::app()->getMemberId();
 
         if(!$note_id){
@@ -174,15 +263,30 @@ class ClockController extends ApiController
     //打卡记录评论/回复 ims_yz_xiaoe_users_clock_comment
     public function clockNoteComment()
     {
-        $note_id = request()->get('id');
+        $note_id = intval(request()->get('id'));
+        if(!$note_id){
+            return $this->errorJson('日记id不能为空');
+        }
         $member_id = \YunShop::app()->getMemberId();
-        $content = request()->get('content');
+        $content = trim(request()->get('content'));
+        if(!$content){
+            return $this->errorJson('评论内容不能为空');
+        }
 
-        $content = (new Yunshop\Appletslive\common\services\BaseService())->textCheck($content, false);
+        $this->checkBlack($member_id);
+
+        $wxapp_base_service = new BaseService();
+        $sensitive_check = $wxapp_base_service->msgSecCheck($content);
+        if (!is_bool($sensitive_check) || $sensitive_check === false) {
+            return $this->errorJson('评论内容包含敏感词', $sensitive_check);
+        }
+
+        // 组装插入数据
+        $content_status = $wxapp_base_service->textCheck($content, false);
         $params = array(
             'uniacid' => \YunShop::app()->uniacid,
             'user_id' => $member_id,
-            'clock_user_id' => $note_id,
+            'clock_users_id' => $note_id,
             'content' => $content
         );
 
@@ -192,20 +296,35 @@ class ClockController extends ApiController
 
     }
 
-    //打卡记录评论列表 ims_yz_xiaoe_users_clock_comment
-    public function clockNoteCommentList()
-    {
-
-
-
+    protected function checkBlack($user_id){
+        //用户禁言
+        $user = DiagnosticServiceUser::where('ajy_uid', $user_id)->first();
+        if ($user->is_black == 1) {
+            if ($user->black_end_time > time()) {
+                response()->json([
+                    'result' => 301,
+                    'msg' => '您已被系统禁言！截止时间至：' . date('Y-m-d H:i:s', $user->black_end_time) . '申诉请联系管理员',
+                    'data' => false,
+                ], 200, ['charset' => 'utf-8'])->send();
+                exit;
+            } else {
+                $user->is_black = 0;
+                $user->black_content = '时间到期,自然解禁';
+                $user->save();
+            }
+        }
     }
+
 
     //打卡记录评论点赞 ims_yz_xiaoe_clock_users_comment_like
     public function clockNoteCommentLike()
     {
-        $comment_id = request()->get('comment_id');
+        $comment_id = intval(request()->get('comment_id'));
         $member_id = \YunShop::app()->getMemberId();
 
+        if(!$comment_id){
+            return $this->errorJson('评论id不能为空');
+        }
         $params = array(
             'uniacid' => \YunShop::app()->uniacid,
             'user_id' => $member_id,
@@ -223,17 +342,104 @@ class ClockController extends ApiController
     }
 
     //打卡记录参与用户ims_yz_xiaoe_clock_users
-    public function clockUserList()
+    protected function userJoin($clock_id, $user_id)
     {
-        $clock_id = request()->get('clock_id');
-        if(!$clock_id){
-            return $this->errorJson('打卡id不能为空');
-        }
-        $user_list = XiaoeClockUser::where('clock_id', $clock_id)->with(['user' => function($user){
-            return $user->select('nickname','avatarurl');
-        }])->get();
+        $params = array(
+            'clock_id' => $clock_id,
+            'user_id' => $user_id
+        );
 
-        return $this->successJson('点赞成功', $user_list);
+        XiaoeClockUser::firstOrCreate($params);
+    }
+
+
+
+
+    /**
+     * 日历打卡首页 日历数据重构
+     *
+     * @return array
+     */
+    private function getCalendarData()
+    {
+        $note_log = $this->getClockNoteData();
+        !$note_log && $note_log == [];
+
+        $result = [];
+        foreach ($note_log as $key => $item) {
+            $result[] = (int)date('d', $item->created_at->timestamp) - 1;
+        }
+
+        return $result;
+    }
+
+    private function getClockNoteModel($user_id)
+    {
+        return XiaoeClockNote::select('id', 'user_id','clock_id', 'clock_task_id', 'text_desc', 'created_time')->where(['user_id' => $user_id]);
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getClockNoteData()
+    {
+        list($startTime, $endTime) = $this->searchTime();
+
+        return $this->clockNoteModel->whereBetween('created_at', [$startTime, $endTime])
+            ->orderBy('created_at', 'desc')
+            ->paginate(32, '', '', $this->getPostPage());
+    }
+
+    //创建前端传递过来的月份
+    private function searchTime()
+    {
+        $startTime = Carbon::create($this->year, $this->month)->startOfMonth()->timestamp;
+        $endTime = Carbon::create($this->year, $this->month)->endOfMonth()->timestamp;
+
+        return [$startTime, $endTime];
+    }
+
+
+    /**
+     * 前段提交分页值
+     *
+     * @return int
+     */
+    private function getPostPage()
+    {
+        return \YunShop::request()->page ?: 1;
+    }
+
+    /**
+     * 前段提交月份值
+     *
+     * @return int
+     */
+    private function getPostMonth()
+    {
+        return (int)\YunShop::request()->month ?: (int)date("m");
+    }
+
+    /**
+     * 前段提交年份值
+     *
+     * @return int
+     */
+    private function getPostYear()
+    {
+        return (int)\YunShop::request()->year ?: (int)date("Y");
+    }
+
+    private function getClockStatus($user_id)
+    {
+        $todayStart = Carbon::now()->startOfDay()->timestamp;
+        $todayEnd = Carbon::now()->endOfDay()->timestamp;
+        $todayNoteLog = XiaoeClockNote::select('id', 'user_id','clock_id', 'clock_task_id', 'text_desc', 'created_time')->where(['user_id' => $user_id])->whereBetween('created_at', [$todayStart, $todayEnd])->first();
+        if(!empty($todayNoteLog)){
+            $status = 1;
+        }else{
+            $status = 0;
+        }
     }
 
 
