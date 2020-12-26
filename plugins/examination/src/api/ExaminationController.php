@@ -410,7 +410,7 @@ class ExaminationController extends ApiController
             return $this->errorJson('答卷数据不存在', ['status' => 1]);
         }
 
-        $examinationRs = ExaminationModel::select('id', 'name', 'url', 'is_score')->where([
+        $examinationRs = ExaminationModel::select('id', 'name', 'url', 'end', 'is_score')->where([
             'id' => $answerRs->examination_id,
             'uniacid' => \YunShop::app()->uniacid,
         ])->first();
@@ -428,6 +428,8 @@ class ExaminationController extends ApiController
             'score_obtain' => $answerRs->score_obtain,
             'question_total' => $answerRs->question_total,
             'question_correct' => $answerRs->question_correct,
+            'complete_at' => strtotime($answerRs->updated_at),
+            'end_at' => isset($examinationRs->end) ? strtotime($examinationRs->end) : 0,
         ];
         if ($examinationRs->is_score != 1) {
             $return['score_obtain'] = -1;
