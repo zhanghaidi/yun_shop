@@ -19,31 +19,37 @@ class ClockController extends ApiController
 {
 
     //打卡活动详情 ims_yz_xiaoe_clock
-    public function getClock()
+    public function getCalendarClock()
     {
         $id = request()->get('id');
         if(!$id){
             return $this->errorJson('打卡id不能为空');
         }
+        $member_id = \YunShop::app()->getMemberId();
 
         $todayStart = Carbon::now()->startOfDay();
         $todayEnd = Carbon::now()->endOfDay();
 
-        $clock = XiaoeClock::find($id);
-        if($clock->type == 1){
-            $clock->hasManyTopic(function ($topic) use ($todayStart, $todayEnd) {
-                return $topic->whereBetween('theme_time',[$todayStart,$todayEnd]);
-            })->get();
-        }
+        //$clock =  XiaoeClock::where('id', $id)->withCount(['hasManyNote','hasManyUser'])->with(['hasManyNote','hasManyTopic'])->first();
+        $clock =  XiaoeClock::where('id', $id)->withCount(['hasManyNote','hasManyUser'])->with(['hasManyNote','hasManyTopic'])->with(['myNote' => function ($my_note) use ($member_id){
+        return $my_note->where('user_id', $member_id);
+        }])->first();
 
-        //$clock = XiaoeClock::find($id)->hasManyNote()->paginate(15)->toArray();
-        $clock->notes = $clock->with('hasManyNote')->toArray();
+        $clock = XiaoeClock::where('id', $id)
+            ->with(['hasManyTopic' => function ($topic) use ($todayStart, $todayEnd) {
+                return $topic->whereBetween('end_time', [$todayStart, $todayEnd]);
+                },'hasManyNote'])
+            ->first();
 
         if(!$clock){
             return $this->errorJson('不存在数据');
         }
 
         return $this->successJson('success', $clock);
+    }
+
+    public function getHomeWorkClock(){
+
     }
 
     //打卡活动主题 ims_yz_xiaoe_clock_task

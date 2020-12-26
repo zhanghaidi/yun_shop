@@ -27,6 +27,12 @@ class XiaoeClock extends BaseModel
         return $this->hasMany('Yunshop\XiaoeClock\models\XiaoeClockNote', 'clock_id', 'id');
     }
 
+    //我的打卡记录
+    public function myNote()
+    {
+        return $this->hasMany('Yunshop\XiaoeClock\models\XiaoeClockNote', 'clock_id', 'id');
+    }
+
     //打卡关联所有用户
     public function hasManyUser()
     {
