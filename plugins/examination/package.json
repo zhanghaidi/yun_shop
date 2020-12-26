@@ -1,0 +1,11 @@
+{
+  "name": "examination",
+  "version": "1.0.0",
+  "title": "养居益考试工具",
+  "description": "养居益考试工具，包含题库、试卷、考试等功能模块",
+  "author": "芸众",
+  "url": "http://www.yunzshop.com",
+  "namespace": "Yunshop\\Examination",
+  "config": "config.tpl"
+
+}
