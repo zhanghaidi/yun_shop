@@ -233,25 +233,25 @@ class ExaminationController extends ApiController
     {
         $memberId = (int) \YunShop::app()->getMemberId();
         if ($memberId <= 0) {
-            return $this->errorJson('用户未授权登录');
+            return $this->errorJson('用户未授权登录', ['status' => 1]);
         }
 
         $id = (int) \YunShop::request()->id;
         if ($id <= 0) {
-            return $this->errorJson('参数错误');
+            return $this->errorJson('参数错误', ['status' => 1]);
         }
 
         $answer = \YunShop::request()->question;
         $answer = json_decode($answer, true);
         if ($answer === null) {
-            return $this->errorJson('答案提交错误');
+            return $this->errorJson('答案提交错误', ['status' => 1]);
         }
 
         // 延时互斥锁
         $lockKey = 'AJYEXAM:SUBMIT:' . $memberId . ':' . $id . ':' . date('ymdHi');
         $lockRs = $this->DelayMutex($lockKey);
         if ($lockRs === false) {
-            return $this->errorJson('答题太快了');
+            return $this->errorJson('答题太快了', ['status' => 2]);
         }
 
         $paperRs = AnswerPaperModel::where([
@@ -259,20 +259,20 @@ class ExaminationController extends ApiController
             'member_id' => $memberId,
         ])->first();
         if (!isset($paperRs->id)) {
-            return $this->errorJson('答卷未找到');
+            return $this->errorJson('答卷未找到', ['status' => 1]);
         }
         if ($paperRs->status != 1) {
-            return $this->errorJson('答卷状态错误');
+            return $this->errorJson('答卷状态错误', ['status' => 1]);
         }
         $nowTime = time();
         $lastTime = strtotime($paperRs->created_at);
         if (($nowTime - $lastTime) >= 86400 * 2) {
-            return $this->errorJson('答卷作答时间过长');
+            return $this->errorJson('答卷作答时间过长', ['status' => 3]);
         }
 
         $contentRs = AnswerPaperContentModel::where('answer_paper_id', $paperRs->id)->first();
         if (!isset($contentRs->id)) {
-            return $this->errorJson('试卷找不到了');
+            return $this->errorJson('试卷找不到了', ['status' => 1]);
         }
         $questionContent = json_decode($contentRs->content, true);
 
@@ -330,7 +330,7 @@ class ExaminationController extends ApiController
         } catch (Exception $e) {
             DB::rollBack();
 
-            return $this->errorJson($e->getMessage());
+            return $this->errorJson($e->getMessage(), ['status' => 1]);
         }
 
         // 考试超时等处理
@@ -338,16 +338,16 @@ class ExaminationController extends ApiController
             'id', 'start', 'end', 'duration', 'is_score', 'status'
         )->where('id', $paperRs->examination_id)->first();
         if (!isset($examinationRs->id)) {
-            return $this->errorJson('考试信息获取错误');
+            return $this->errorJson('考试信息获取错误', ['status' => 1]);
         }
         if ($examinationRs->open_status != 1) {
-            return $this->errorJson('考试已经结束了');
+            return $this->errorJson('考试已经结束了', ['status' => 4]);
         }
         if ($examinationRs->duration > 0) {
             $tempStart = strtotime($paperRs->created_at);
             $tempEnd = strtotime($paperRs->updated_at);
             if (($tempEnd - $tempStart) >= $examinationRs->duration * 60) {
-                return $this->errorJson('你已经过了交卷时间');
+                return $this->errorJson('你已经过了交卷时间', ['status' => 5]);
             }
         }
 
@@ -382,5 +382,65 @@ class ExaminationController extends ApiController
             }
         }
         return $isLock;
+    }
+
+    public function answer()
+    {
+        $memberId = (int) \YunShop::app()->getMemberId();
+        if ($memberId <= 0) {
+            return $this->errorJson('用户未授权登录', ['status' => 1]);
+        }
+
+        $id = (int) \YunShop::request()->id;
+        if ($id <= 0) {
+            return $this->errorJson('参数错误', ['status' => 1]);
+        }
+
+        $answerRs = AnswerPaperModel::where([
+            'id' => $id,
+            'uniacid' => \YunShop::app()->uniacid,
+            'member_id' => $memberId,
+            'status' => 2,
+        ])->first();
+        if (!isset($answerRs->id)) {
+            return $this->errorJson('答卷数据不存在', ['status' => 1]);
+        }
+
+        $examinationRs = ExaminationModel::select('id', 'name', 'url', 'is_score')->where([
+            'id' => $answerRs->examination_id,
+            'uniacid' => \YunShop::app()->uniacid,
+        ])->first();
+        if (!isset($examinationRs->id)) {
+            return $this->errorJson('考试数据不存在', ['status' => 1]);
+        }
+
+        $return = [
+            'id' => $answerRs->id,
+            'name' => $examinationRs->name,
+            'url' => yz_tomedia($examinationRs->url),
+            'content' => html_entity_decode($examinationRs->content->content),
+            'question' => [],
+            'score_total' => $answerRs->score_total,
+            'score_obtain' => $answerRs->score_obtain,
+            'question_total' => $answerRs->question_total,
+            'question_correct' => $answerRs->question_correct,
+        ];
+        if ($examinationRs->is_score != 1) {
+            $return['score_obtain'] = -1;
+        }
+        $contentRs = json_decode($answerRs->content->content, true);
+        foreach ($contentRs as $k => $v) {
+            $tempAnswer = [];
+            foreach ($v['answer'] as $k2 => $v2) {
+                $tempAnswer[] = [
+                    'key' => $k2,
+                    'value' => $v2,
+                ];
+            }
+            $contentRs[$k]['answer'] = $tempAnswer;
+            unset($contentRs[$k]['question_id']);
+        }
+        $return['question'] = $contentRs;
+        return $this->successJson('成功', $return);
     }
 }
