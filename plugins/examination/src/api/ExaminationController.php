@@ -14,8 +14,6 @@ use Yunshop\Examination\models\PaperQuestionModel;
 
 class ExaminationController extends ApiController
 {
-    protected $publicAction = ['detail', 'submit'];
-
     public function detail()
     {
         $memberId = (int) \YunShop::app()->getMemberId();
@@ -115,7 +113,10 @@ class ExaminationController extends ApiController
                 'uniacid' => $examinationRs->uniacid,
             ])->count();
             if ($countRs >= $examinationRs->frequency) {
-                return $this->errorJson('本次考试，每人仅能参与' . $examinationRs->frequency . '次', ['status' => 5]);
+                return $this->errorJson('本次考试，每人仅能参与' . $examinationRs->frequency . '次', [
+                    'status' => 5,
+                    'id' => $answerPaperRs->id,
+                ]);
             }
         }
 
@@ -140,7 +141,10 @@ class ExaminationController extends ApiController
                     } else {
                         $lastTime .= '分钟';
                     }
-                    return $this->errorJson('考试过于频繁，请' . $lastTime . '后重试', ['status' => 6]);
+                    return $this->errorJson('考试过于频繁，请' . $lastTime . '后重试', [
+                        'status' => 6,
+                        'id' => $lastRs->id,
+                    ]);
                 }
             }
         }
