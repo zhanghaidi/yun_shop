@@ -109,7 +109,7 @@ class ClockController extends ApiController
                     return $topic->select('id','clock_id','type','name');
                 },
                 'clock' => function($clock){
-                    return $clock->select('id','text_desc','image_desc','video_desc')->withCount(['hasManyUser','hasManyNote']);
+                    return $clock->select('id','name','cover_img')->withCount(['hasManyUser','hasManyNote']);
                 },
                 'hasManyLike' => function($like){
                     return $like->select('user_id')->with([
