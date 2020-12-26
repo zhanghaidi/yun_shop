@@ -21,31 +21,18 @@
                     <input type="hidden" name="a" value="entry"/>
                     <input type="hidden" name="m" value="yun_shop"/>
                     <input type="hidden" name="do" value="{{ $request['do'] }}"/>
-                    <input type="hidden" name="route" value="plugin.appletslive.admin.controllers.room.replaylist"/>
+                    <input type="hidden" name="route" value="plugin.xiaoe-clock.admin.clock.clock_task_list"/>
                     <input type="hidden" name="rid" value="{{ $request['rid'] }}"/>
                     <div class="form-group">
                         <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                            <input type="number" placeholder="视频ID" class="form-control" name="search[id]"
+                            <input type="number" placeholder="主题ID" class="form-control" name="search[id]"
                                    value="{{$request['search']['id']}}"/>
                         </div>
                         <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
-                            <input type="text" class="form-control" name="search[title]"
-                                   value="{{$request['search']['title']}}" placeholder="视频标题"/>
+                            <input type="text" class="form-control" name="search[name]"
+                                   value="{{$request['search']['name']}}" placeholder="主题名称"/>
                         </div>
-                        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                            <select name="search[type]" class="form-control">
-                                <option value="">请选择视频类型</option>
-                                <option value="1" @if($request['search']['type']=='1') selected @endif>本地上传</option>
-                                <option value='2' @if($request['search']['type']=='2') selected @endif>腾讯视频</option>
-                            </select>
-                        </div>
-                        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                            <select name="search[status]" class="form-control">
-                                <option value="">请选择显示/隐藏</option>
-                                <option value="1" @if($request['search']['status']=='1') selected @endif>显示</option>
-                                <option value='0' @if($request['search']['status']=='0') selected @endif>隐藏</option>
-                            </select>
-                        </div>
+
                         <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
                             <button type="submit" class="btn btn-success"><i class="fa fa-search"></i>搜索</button>
                         </div>
@@ -109,32 +96,16 @@
                     <input type="hidden" name="a" value="entry"/>
                     <input type="hidden" name="m" value="yun_shop"/>
                     <input type="hidden" name="do" value="{{ $request['do'] }}"/>
-                    <input type="hidden" name="route" value="plugin.appletslive.admin.controllers.room.replaylist"/>
+                    <input type="hidden" name="route" value="plugin.xiaoe-clock.admin.clock.clock_task_list"/>
                     <input type="hidden" name="rid" value="{{ $request['rid'] }}"/>
                     <div class="form-group">
                         <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                            <input type="number" placeholder="房间号" class="form-control" name="search[roomid]"
-                                   value="{{$request['search']['roomid']}}"/>
+                            <input type="number" placeholder="作业ID" class="form-control" name="search[id]"
+                                   value="{{$request['search']['id']}}"/>
                         </div>
                         <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
                             <input type="text" class="form-control" name="search[name]"
-                                   value="{{$request['search']['name']}}" placeholder="名称"/>
-                        </div>
-                        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                            <select name="search[live_status]" class="form-control">
-                                <option value="">直播状态</option>
-                                <option value="101" @if($request['search']['live_status']=='101') selected @endif>直播中</option>
-                                <option value='102' @if($request['search']['live_status']=='102') selected @endif>待开播</option>
-                                <option value='103' @if($request['search']['live_status']=='103') selected @endif>已结束</option>
-                                <option value='107' @if($request['search']['live_status']=='107') selected @endif>已过期</option>
-                            </select>
-                        </div>
-                        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                            <select name="search[status]" class="form-control">
-                                <option value="">请选择显示/隐藏</option>
-                                <option value="1" @if($request['search']['status']=='1') selected @endif>显示</option>
-                                <option value='0' @if($request['search']['status']=='0') selected @endif>隐藏</option>
-                            </select>
+                                   value="{{$request['search']['name']}}" placeholder="作业名称"/>
                         </div>
                         <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
                             <button type="submit" class="btn btn-success"><i class="fa fa-search"></i>搜索</button>

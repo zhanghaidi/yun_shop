@@ -53,10 +53,15 @@ class ClockController extends BaseController
 
             if ($list->total() > 0) {
                 foreach ($list as &$value) {
+
                     //总天数,计算总天数
                     $value['count_day'] = floor(($value['end_time'] - $value['start_time']) / 86400);
-                    //已经进行天数,计算已经进行
-                    $value['pass_day'] = floor((time() - $value['start_time']) / 86400);
+                    if (time() >= $value['end_time']) {
+                        $value['pass_day'] = $value['count_day'];
+                    } else {
+                        //已经进行天数,计算已经进行
+                        $value['pass_day'] = floor((time() - $value['start_time']) / 86400);
+                    }
                     //管理课程
                     if ($value['join_type'] == 1) {
                         $value['course_id'] = DB::table('yz_appletslive_room')->where('id', $value['course_id'])->first();
@@ -84,7 +89,7 @@ class ClockController extends BaseController
                 ->paginate($limit);
             if ($list->total() > 0) {
                 foreach ($list as $k => &$value) {
-                    //作业数
+                    //作业打卡的作业数
                     $value['task_num'] = DB::table('yz_xiaoe_clock_task')->where('clock_id', $value['id'])->count();
                     if ($value['join_type'] == 1) {//关联课程
                         $value['course_id'] = DB::table('yz_appletslive_room')->where('id', $value['course_id'])->first();
@@ -110,7 +115,7 @@ class ClockController extends BaseController
             $param = request()->all();
 
             if (!array_key_exists('type', $param) || !in_array($param['type'], [1, 2])) { // 类型
-                return $this->message('类型参数有误', Url::absoluteWeb(''), 'danger');
+                return $this->message('打卡类型参数有误', Url::absoluteWeb(''), 'danger');
             }
             $ist_data = ['type' => $param['type'], 'sort' => intval($param['sort'])];
             if (array_key_exists('name', $param)) { // 打卡名称
@@ -131,29 +136,12 @@ class ClockController extends BaseController
             if (array_key_exists('audio_desc', $param)) { // 打卡音频介绍
                 $ist_data['audio_desc'] = $param['audio_desc'] ? $param['audio_desc'] : '';
             }
-            if (array_key_exists('join_type', $param)) { // 打卡方式
+            if (array_key_exists('join_type', $param)) { // 参与打卡方式
                 $ist_data['join_type'] = $param['join_type'] ? $param['join_type'] : 0;
             }
             if (array_key_exists('course_id', $param)) { // 管理课程id
                 $ist_data['course_id'] = $param['course_id'] ? $param['course_id'] : 0;
             }
-            if (array_key_exists('start_time', $param)) { //有效期 开始是日期
-                $start_time = $param['start_time'] ? $param['start_time'] : 0;
-                if ($start_time != 0) {
-                    $ist_data['start_time'] = strtotime($start_time);
-                } else {
-                    return $this->message('请选择开始日期', Url::absoluteWeb(''), 'danger');
-                }
-            }
-            if (array_key_exists('end_time', $param)) { //有效期 结束是日期
-                $end_time = $param['end_time'] ? $param['end_time'] : 0;
-                if ($end_time != 0) {
-                    $ist_data['end_time'] = strtotime($end_time);
-                } else {
-                    return $this->message('请选择结束日期', Url::absoluteWeb(''), 'danger');
-                }
-            }
-
             if (array_key_exists('text_length', $param)) { //图文长度
                 $ist_data['text_length'] = $param['text_length'] ? $param['text_length'] : 5;
             }
@@ -175,7 +163,37 @@ class ClockController extends BaseController
             if (array_key_exists('helper_wechat', $param)) { //助手微信
                 $ist_data['helper_wechat'] = $param['helper_wechat'] ? $param['helper_wechat'] : '';
             }
-            if ($param['type'] == 1) {//日历打卡
+            $now_day_time = strtotime(date('Y-m-d', time()));
+            if ($param['type'] == 1) { //日历打卡 开始，结束时间校验
+                if (array_key_exists('start_time', $param)) { //有效期 开始是日期
+                    $start_time = $param['start_time'] ? $param['start_time'] : 0;
+                    if ($start_time != 0) {
+                        $ist_data['start_time'] = strtotime($start_time);
+                        if ($now_day_time > $ist_data['start_time']) {
+                            return $this->message('开始日期不能小于当前日期', Url::absoluteWeb(''), 'danger');
+                        }
+                    } else {
+                        return $this->message('请选择开始日期', Url::absoluteWeb(''), 'danger');
+                    }
+                } else {
+                    return $this->message('请选择开始日期', Url::absoluteWeb(''), 'danger');
+                }
+                if (array_key_exists('end_time', $param)) { //有效期 结束是日期
+                    $end_time = $param['end_time'] ? $param['end_time'] : 0;
+                    if ($end_time != 0) {
+                        $ist_data['end_time'] = strtotime($end_time);
+                        if ($now_day_time > $ist_data['end_time']) {
+                            return $this->message('结束日期不能小于当前日期', Url::absoluteWeb(''), 'danger');
+                        }
+                    } else {
+                        return $this->message('请选择结束日期', Url::absoluteWeb(''), 'danger');
+                    }
+                } else {
+                    return $this->message('请选择结束日期', Url::absoluteWeb(''), 'danger');
+                }
+                if ($ist_data['start_time'] > $ist_data['end_time']) {
+                    return $this->message('结束日期不能小于开始日期', Url::absoluteWeb(''), 'danger');
+                }
                 if (array_key_exists('valid_time_start', $param)) { //有效时段
                     $ist_data['valid_time_start'] = $param['valid_time_start'] ? $param['valid_time_start'] : 0;
                 }
@@ -242,13 +260,17 @@ class ClockController extends BaseController
                 return $this->message('打卡不存在', Url::absoluteWeb(''), 'danger');
             }
             $type = array_key_exists('type', $param) ? intval($param['type']) : 1;
-            if ($type == 1) {//日历主题
+            if ($type == 1) { //日历主题
                 $theme_time = $param['theme_time'] ? $param['theme_time'] : 0;
+                if($theme_time < $room['start_time'] || $theme_time > $room['end_time']){
+                    return $this->message('该日期已超出了日历打卡的时间范围！请重新选择', Url::absoluteWeb(''), 'danger');
+                }
                 $ist_data = [
                     'clock_id' => $rid,
                     'type' => $type,
                     'name' => $param['name'] ? trim($param['name']) : '',
                     'theme_time' => strtotime($theme_time),
+                    'start_time' => strtotime($theme_time),
                     'cover_img' => $param['cover_img'] ? $param['cover_img'] : '',
                     'text_desc' => $param['text_desc'] ? $param['text_desc'] : '',
                     'video_desc' => $param['video_desc'] ? $param['video_desc'] : '',
@@ -319,18 +341,8 @@ class ClockController extends BaseController
                 if (intval($search['id']) > 0) {
                     $where[] = ['id', '=', intval($search['id'])];
                 }
-                if (trim($search['title']) !== '') {
-                    $where[] = ['title', 'like', '%' . trim($search['title']) . '%'];
-                }
-                if (trim($search['type']) !== '') {
-                    $where[] = ['type', '=', $search['type']];
-                }
-                if (trim($search['status']) !== '') {
-                    if ($search['status'] === '0') {
-                        $where[] = ['delete_time', '>', 0];
-                    } else {
-                        $where[] = ['delete_time', '=', 0];
-                    }
+                if (trim($search['name']) !== '') {
+                    $where[] = ['name', 'like', '%' . trim($search['name']) . '%'];
                 }
             }
             $replay_list = DB::table('yz_xiaoe_clock_task')->where($where)
@@ -347,21 +359,11 @@ class ClockController extends BaseController
             if (isset($input->search)) {
 
                 $search = $input->search;
-                if (intval($search['roomid']) > 0) {
-                    $where[] = ['yz_appletslive_liveroom.roomid', '=', intval($search['roomid'])];
+                if (intval($search['id']) > 0) {
+                    $where[] = ['id', '=', intval($search['id'])];
                 }
                 if (trim($search['name']) !== '') {
-                    $where[] = ['yz_appletslive_liveroom.name', 'like', '%' . trim($search['name']) . '%'];
-                }
-                if (trim($search['live_status']) !== '') {
-                    $where[] = ['yz_appletslive_liveroom.live_status', '=', $search['live_status']];
-                }
-                if (trim($search['status']) !== '') {
-                    if ($search['status'] === '0') {
-                        $where[] = ['yz_appletslive_replay.delete_time', '>', 0];
-                    } else {
-                        $where[] = ['yz_appletslive_replay.delete_time', '=', 0];
-                    }
+                    $where[] = ['name', 'like', '%' . trim($search['name']) . '%'];
                 }
             }
 
@@ -375,6 +377,7 @@ class ClockController extends BaseController
         return view('Yunshop\XiaoeClock::admin.clock_task_list', [
             'rid' => $rid,
             'room_type' => $room_type,
+            'room' => $room,
             'replay_list' => $replay_list,
             'pager' => $pager,
             'request' => $input,
