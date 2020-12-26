@@ -7,7 +7,7 @@
     <div class="panel panel-default">
         <div class="panel-heading">考试编辑</div>
         <div class="panel-body">
-        
+
             <form id="form" action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
             <input type="hidden" name="data[id]" value="{{$info['id']}}">
 
@@ -189,5 +189,11 @@
         </div>
     </div>
 </div>
-@endsection
 
+<script language="JavaScript">
+$(function () {
+    $('input[name="data[is_question]"]').parents('.form-group').hide('slow');
+    $('input[name="data[is_answer]"]').parents('.form-group').hide('slow');
+});
+</script>
+@endsection

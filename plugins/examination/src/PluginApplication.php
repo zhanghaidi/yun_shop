@@ -148,6 +148,13 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'url' => 'plugin.examination.admin.examination.member',
                             'parents' => ['examination', 'examination_manage'],
                         ],
+                        'examination_paper' => [
+                            'name' => '答卷详情',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.examination.admin.examination.paper',
+                            'parents' => ['examination', 'examination_manage'],
+                        ],
                     ],
                 ],
 
