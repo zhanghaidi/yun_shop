@@ -101,6 +101,13 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'url' => 'plugin.examination.admin.paper.edit',
                             'parents' => ['examination', 'paper_manage'],
                         ],
+                        'paper_add_question' => [
+                            'name' => '添加题库',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.examination.admin.paper.add-question',
+                            'parents' => ['examination', 'paper_manage'],
+                        ],
                         'paper_del' => [
                             'name' => '删除试卷',
                             'permit' => 1,
