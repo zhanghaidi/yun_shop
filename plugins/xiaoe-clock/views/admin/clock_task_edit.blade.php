@@ -54,6 +54,7 @@
                                 <label class="col-md-2 col-sm-3 col-xs-12 control-label">主题正文：视频</label>
                                 <div class="col-md-9 col-sm-9 col-xs-12">
                                     {!! app\common\helpers\ImageHelper::tplFormFieldVideo('video_desc',$info['video_desc']) !!}
+                                    <a target="_blank" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;" href="{!! tomedia($info['video_desc']) !!}">播放</a>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -123,6 +124,7 @@
                         <label class="col-md-2 col-sm-3 col-xs-12 control-label">主题正文：视频</label>
                         <div class="col-md-9 col-sm-9 col-xs-12">
                             {!! app\common\helpers\ImageHelper::tplFormFieldVideo('video_desc',$info['video_desc']) !!}
+                            <a target="_blank" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;" href="{!! tomedia($info['video_desc']) !!}">播放</a>
                         </div>
                     </div>
                     <div class="form-group">
