@@ -93,7 +93,7 @@
                     <input type="hidden" name="data[question_id][]" value="{{$value['question_id']}}">
                     <input type="hidden" name="data[order][]" value="{{$value['order']}}">
                 </label>
-                <div class="col-xs-12 col-sm-8 col-md-9">
+                <div class="col-xs-12 col-sm-7 col-md-8">
                     <div class="input-group">
                         <div class="input-group">
                             <div class="input-group-addon type">
@@ -116,6 +116,13 @@
                         </div>
                         @if($value['type'] == 2)
                         <div class="input-group">
+                            <div class="input-group-addon">选项共计:</div>
+                            <input type="number" name="question_number" class="form-control" value="{{$value['question_number']}}" disabled="disabled">
+                            <div class="input-group-addon">个，正确选项：</div>
+                            <input type="number" name="answer_number" class="form-control" value="{{$value['answer_number']}}" disabled="disabled">
+                            <div class="input-group-addon">个</div>
+                        </div>
+                        <div class="input-group">
                             <div class="input-group-addon">漏选分设置:</div>
                             <label class="radio-inline">
                                 <input type="radio" name="data[omission_option][o{{$value['question_id']}}]" value="1"@if($value['omission_option'] == 1) checked @endif>
@@ -137,9 +144,10 @@
                         @endif
                     </div>
                 </div>
-                <div class="col-xs-12 col-sm-1 col-md-1 question_operate hide">
+                <div class="col-xs-12 col-sm-2 col-md-2 question_operate hide">
                     <button type="button" class="btn btn-xs btn-success" name="op-up" style="margin-bottom: 5px;margin-top: -5px"><i class="fa fa-chevron-up"></i></button> <br />
-                    <button type="button" class="btn btn-xs btn-primary" name="op-down" style="margin-bottom: 5px"><i class="fa fa-chevron-down"></i></button> <br />
+                    <button type="button" class="btn btn-xs btn-primary" name="op-down" style="margin-bottom: 5px"><i class="fa fa-chevron-down"></i></button> 
+                    <a href="{{ yzWebUrl('plugin.examination.admin.question.edit', ['id' => $value['question_id']]) }}" target="_blank" class="btn btn-xs btn-warning" style="margin-bottom:5px"><i class="fa fa-edit"></i></a> <br />
                     <button type="button" class="btn btn-xs btn-danger" name="op-del"><i class="fa fa-trash"></i></button>
                 </div>
             </div>
@@ -261,6 +269,8 @@ function addQuestion(question_ids) {
     _question_add_url = _question_add_url.replace(/&amp;/g, '&');
     _question_add_url += '&id=' + _question_ids;
     $.get(_question_add_url, function(res){
+        _question_edit_url = "{{ yzWebUrl('plugin.examination.admin.question.edit') }}";
+        _question_edit_url = _question_edit_url.replace(/&amp;/g, '&');
         _question_str = '';
         for (i in res.data) {
             _question_str += '<div class="form-group question">';
@@ -268,7 +278,7 @@ function addQuestion(question_ids) {
             _question_str += '<input type="hidden" name="data[question_id][]" value="' + res.data[i].id + '">';
             _question_str += '<input type="hidden" name="data[order][]" value="0">';
             _question_str += '</label>';
-            _question_str += '<div class="col-xs-12 col-sm-8 col-md-9">';
+            _question_str += '<div class="col-xs-12 col-sm-7 col-md-8">';
             _question_str += '<div class="input-group">';
             _question_str += '<div class="input-group">';
             if (res.data[i].type == 1) {
@@ -289,6 +299,13 @@ function addQuestion(question_ids) {
             _question_str += '</div>';
             if (res.data[i].type == 2) {
                 _question_str += '<div class="input-group">';
+                _question_str += '<div class="input-group-addon">选项共计:</div>';
+                _question_str += '<input type="number" name="question_number" class="form-control" value="' + res.data[i].question_number + '" disabled="disabled">';
+                _question_str += '<div class="input-group-addon">个，正确选项：</div>';
+                _question_str += '<input type="number" name="answer_number" class="form-control" value="' + res.data[i].answer_number + '" disabled="disabled">';
+                _question_str += '<div class="input-group-addon">个</div>';
+                _question_str += '</div>';
+                _question_str += '<div class="input-group">';
                 _question_str += '<div class="input-group-addon">漏选分设置:</div>';
                 _question_str += '<label class="radio-inline">';
                 _question_str += '<input type="radio" name="data[omission_option][o' + res.data[i].id + ']" value="1"> 漏选则扣X分';
@@ -308,9 +325,10 @@ function addQuestion(question_ids) {
             }
             _question_str += '</div>';
             _question_str += '</div>';
-            _question_str += '<div class="col-xs-12 col-sm-1 col-md-1 question_operate hide">';
+            _question_str += '<div class="col-xs-12 col-sm-2 col-md-2 question_operate hide">';
             _question_str += '<button type="button" class="btn btn-xs btn-success" name="op-up" style="margin-bottom: 5px;margin-top: -5px"><i class="fa fa-chevron-up"></i></button> <br />';
-            _question_str += '<button type="button" class="btn btn-xs btn-primary" name="op-down" style="margin-bottom: 5px"><i class="fa fa-chevron-down"></i></button> <br />';
+            _question_str += '<button type="button" class="btn btn-xs btn-primary" name="op-down" style="margin-bottom: 5px"><i class="fa fa-chevron-down"></i></button> ';
+            _question_str += '<a href="' + _question_edit_url + '&id=' +  res.data[i].id + '" target="_blank" class="btn btn-xs btn-warning" style="margin-bottom:5px"><i class="fa fa-edit"></i></a> <br />';
             _question_str += '<button type="button" class="btn btn-xs btn-danger" name="op-del"><i class="fa fa-trash"></i></button>';
             _question_str += '</div>';
             _question_str += '</div>';
