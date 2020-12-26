@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Yunshop\Examination\models\ExaminationModel;
 use Yunshop\Examination\models\PaperModel;
 use Yunshop\Examination\models\PaperQuestionModel;
+use Yunshop\Examination\models\QuestionLogModel;
 use Yunshop\Examination\models\QuestionModel;
 use Yunshop\Examination\services\ExaminationService;
 
@@ -204,13 +205,29 @@ class PaperController extends BaseController
         $id = \YunShop::request()->id;
         $id = explode(',', $id);
         if (isset($id[0])) {
-            $listRs = QuestionModel::select('id', 'type', 'problem')
+            $listRs = QuestionModel::select('id', 'type', 'problem', 'log_id')
                 ->whereIn('id', $id)
                 ->where('uniacid', \YunShop::app()->uniacid)
                 ->get()->toArray();
+            $questionLogIds = array_column($listRs, 'log_id');
+            if (isset($questionLogIds[0])) {
+                $questionLogRs = QuestionLogModel::select('id', 'question_id', 'answer')
+                    ->whereIn('id', $questionLogIds)->get()->toArray();
+            }
             foreach ($listRs as $k => $v) {
                 $listRs[$k]['problem'] = strip_tags($v['problem']);
+                if (!isset($questionLogRs)) {
+                    continue;
+                }
+                foreach ($questionLogRs as $v2) {
+                    if ($v['id'] != $v2['question_id'] || $v['log_id'] != $v2['id']) {
+                        continue;
+                    }
+                    $listRs[$k]['answer'] = json_decode($v2['answer'], true);
+                    break;
+                }
             }
+            var_dump($listRs);exit;
 
             return $this->successJson('成功', $listRs);
         }
