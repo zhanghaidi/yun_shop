@@ -12,6 +12,7 @@ use app\framework\Support\Facades\Log;
 use app\common\helpers\PaginationHelper;
 use app\common\services\tencentlive\IMService;
 use app\common\models\live\CloudLiveRoomGoods;
+use app\common\models\live\CloudLiveRoomMessage;
 
 class LiveRoomController extends BaseController
 {
@@ -130,6 +131,9 @@ class LiveRoomController extends BaseController
         if($id){
             $this->verifyRoom($id);
             $this->room_model->live_status = 101;
+            if (is_array($this->room_model['goods_sort'])) {
+                unset($this->room_model['goods_sort']);
+            }
             if($this->room_model->save() !== $this->room_model){
                 (new LiveService())->resumeLiveStream($this->room_model->stream_name);
                 return $this->message('开始直播成功', Url::absoluteWeb('live.live-room.index'));
@@ -146,6 +150,9 @@ class LiveRoomController extends BaseController
         if($id){
             $this->verifyRoom($id);
             $this->room_model->live_status = 103;
+            if (is_array($this->room_model['goods_sort'])) {
+                unset($this->room_model['goods_sort']);
+            }
             if($this->room_model->save() !== false){
                 $live_service = new LiveService();
                 if($live_service->getDescribeLiveStreamState($this->room_model->stream_name) == 'active'){
@@ -191,6 +198,47 @@ class LiveRoomController extends BaseController
         $room_model['goods_sort'] = $goods_sort;
 
         $this->room_model = $room_model;
+    }
+
+
+    //直播间消息列表
+    public function roomMessage()
+    {
+        $records = CloudLiveRoomMessage::records();
+
+        $search = \YunShop::request()->search;
+        if ($search) {
+
+            $records = $records->search($search);
+
+        }
+
+        $recordList = $records->orderBy('id', 'desc')->paginate();
+
+        $pager = PaginationHelper::show($recordList->total(), $recordList->currentPage(), $recordList->perPage());
+
+        return view('live.room-message', [
+            'pageList'    => $recordList,
+            'page'          => $pager,
+            'search'        => $search
+
+        ])->render();
+    }
+
+    //删除直播间消息
+    public function roomMessageDel(){
+
+        $id = \YunShop::request()->id;
+        if(empty($id)){
+            return $this->message('Id不能为空', '', 'error');
+        }
+        $res = CloudLiveRoomMessage::destroy($id);
+
+        if(!$res){
+            return $this->message('删除失败', '', 'error');
+        }
+
+        return $this->message('删除成功', Url::absoluteWeb('live.live-room.room-message'));
     }
     
 }

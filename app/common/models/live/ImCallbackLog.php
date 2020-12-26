@@ -2,7 +2,6 @@
 
 namespace app\common\models\live;
 
-use Carbon\Carbon;
 use app\common\models\BaseModel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -30,11 +29,12 @@ class ImCallbackLog extends BaseModel
     use SoftDeletes;
 
     public $table = "yz_im_callback_log";
-    public $timestamps = false;
-    public $dates = ['deleted_at'];
     protected $guarded = [''];
-    protected $casts = ['msg_time' => 'date', 'updated_at' => 'date', 'created_at' => 'date'];
-    protected $appends = ['type_parse','msg_type_parse','msg_content_parse'];
+    /*protected $casts = [
+        'msg_content' => 'json',
+        'callback_data' => 'json',
+    ];*/
+    protected $appends = ['type_parse','msg_type_parse'];
 
     protected static $type = [['', '未知'], ['State', '在线状态'], ['Sns', '资料关系链'], ['C2C', '单聊消息'], ['Group', '群组系统']];
     protected static $msgType = [['', '未知'], ['TIMTextElem', '文本消息'], ['TIMLocationElem', '地理位置消息'], ['TIMFaceElem', '表情消息'], ['TIMCustomElem', '自定义消息'], ['TIMSoundElem', '语音消息'], ['TIMImageElem', '图像消息'], ['TIMFileElem', '文件消息'], ['TIMVideoFileElem', '视频消息']];
@@ -102,9 +102,9 @@ class ImCallbackLog extends BaseModel
         return $this->parseMsgType($this->msg_type);
     }
 
-    public function getMsgContentParseAttribute()
+    public function getMsgContentAttribute($value)
     {
-        return $this->parseMsgContent($this->msg_content);
+        return json_decode($value);
     }
 
     public function scopeSearch(Builder $query, $search)
@@ -168,27 +168,15 @@ class ImCallbackLog extends BaseModel
         return self::$type[$type][1];
     }
 
-    public function getType($type_str)
+    public function getType($callbackCommand)
     {
+        $type_str = substr($callbackCommand, 0, strpos($callbackCommand, '.')); //截取回调方法前缀
         foreach (self::$type as $k => $v) {
             if ($v[0] == $type_str) {
                 return $k;
             }
         }
         return 0;
-    }
-
-    public function parseMsgContent($msg_content)
-    {
-        $res_josn = json_decode($msg_content);
-        if($res_josn){
-            if(isset($res_josn->text)){
-                return $res_josn->text;
-            }else{
-                return $res_josn->Data.':'.$res_josn->Ext;
-            }
-        }
-        return $msg_content;
     }
 
     static public function del($start, $end)
