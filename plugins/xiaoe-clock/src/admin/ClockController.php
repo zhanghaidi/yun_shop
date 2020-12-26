@@ -53,7 +53,6 @@ class ClockController extends BaseController
 
             if ($list->total() > 0) {
                 foreach ($list as &$value) {
-
                     //总天数,计算总天数
                     $value['count_day'] = floor(($value['end_time'] - $value['start_time']) / 86400);
                     if (time() >= $value['end_time']) {
@@ -62,9 +61,8 @@ class ClockController extends BaseController
                         //已经进行天数,计算已经进行
                         $value['pass_day'] = floor((time() - $value['start_time']) / 86400);
                     }
-                    //管理课程
-                    if ($value['join_type'] == 1) {
-                        $value['course_id'] = DB::table('yz_appletslive_room')->where('id', $value['course_id'])->first();
+                    if ($value['join_type'] == 1) { //关联课程
+                        $value['course_name'] = DB::table('yz_appletslive_room')->where('id', $value['course_id'])->value('name');
                     }
                 }
             }
@@ -92,7 +90,7 @@ class ClockController extends BaseController
                     //作业打卡的作业数
                     $value['task_num'] = DB::table('yz_xiaoe_clock_task')->where('clock_id', $value['id'])->count();
                     if ($value['join_type'] == 1) {//关联课程
-                        $value['course_id'] = DB::table('yz_appletslive_room')->where('id', $value['course_id'])->first();
+                        $value['course_name'] = DB::table('yz_appletslive_room')->where('id', $value['course_id'])->value('name');
                     }
                 }
             }

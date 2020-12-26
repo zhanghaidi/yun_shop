@@ -92,7 +92,7 @@
                             <td>{{ $row['clock_user_num'] }} / {{ $row['clock_num'] }}</td>
                             <td>
                                 @if ($row['course_id'] > 0)
-                                   {{ $row['course_id']['name'] }}
+                                   {{ $row['course_name'] }}
                                 @else
                                     --
                                 @endif
@@ -198,7 +198,7 @@
                             <td>{{ $row['clock_user_num'] }} / {{ $row['clock_num'] }}</td>
                             <td>
                                 @if ($row['course_id'] > 0)
-                                    {{ $row['course_id']['name'] }}
+                                    {{ $row['course_name'] }}
                                 @else
                                     --
                                 @endif
