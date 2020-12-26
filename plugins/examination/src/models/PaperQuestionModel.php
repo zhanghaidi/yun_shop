@@ -126,6 +126,13 @@ class PaperQuestionModel extends BaseModel
         return $return;
     }
 
+    public static function clearGetQuestionCache(int $serviceId, int $paperId)
+    {
+        $cacheKey = 'AJYEXAM:PQ:GQ:' . $serviceId . ':' . $paperId;
+        Redis::del($cacheKey);
+        return true;
+    }
+
     /**
      * 获取试卷中任一个题目的得分、是否正确
      * @param $questionRs 题目信息，包含答卷中content的全部信息

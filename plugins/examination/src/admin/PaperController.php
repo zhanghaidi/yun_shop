@@ -143,6 +143,9 @@ class PaperController extends BaseController
                     $paperQuestion->problem = $tempQuestion['problem'];
                     $paperQuestion->score = $data['score'][$k1];
                     if ($tempQuestion['type'] == 2) {
+                        if ($data['omission_score'][$k1] <= 0) {
+                            throw new Exception('试卷中多选题的漏选分分值，必须大于0');
+                        }
                         $option = [
                             'option' => $data['omission_option'][$k1],
                             'score' => $data['omission_score'][$k1],
@@ -165,6 +168,10 @@ class PaperController extends BaseController
                 return $this->message($e->getMessage(), '', 'danger');
             }
 
+            if (isset($data['id']) && $data['id'] > 0) {
+                PaperQuestionModel::clearGetQuestionCache(\YunShop::app()->uniacid, $data['id']);
+            }
+
             return $this->message('保存成功', Url::absoluteWeb('plugin.examination.admin.paper.index'));
         }
 
@@ -180,13 +187,49 @@ class PaperController extends BaseController
                     ->where('paper_id', $paper->id)
                     ->orderBy('order', 'asc')
                     ->orderBy('id', 'asc')->get()->toArray();
+                $multipleQuestionIds = [];
                 foreach ($listRs as $k => $v) {
                     if ($v['type'] == 2) {
+                        $multipleQuestionIds[] = $v['question_id'];
                         $temp = json_decode($v['option'], true);
                         $listRs[$k]['omission_option'] = isset($temp['option']) ? $temp['option'] : 1;
                         $listRs[$k]['omission_score'] = isset($temp['score']) ? $temp['score'] : 1;
                     }
                 }
+                if (isset($multipleQuestionIds[0])) {
+                    $questionRs = QuestionModel::select('id', 'log_id')
+                        ->whereIn('id', $multipleQuestionIds)->get()->toArray();
+                    $multipleQuestionIds = array_column($questionRs, 'log_id');
+                    if (isset($multipleQuestionIds[0])) {
+                        $questionRs = QuestionLogModel::select('id', 'question_id', 'answer')
+                            ->whereIn('id', $multipleQuestionIds)->get()->toArray();
+
+                        foreach ($listRs as $k1 => $v1) {
+                            if ($v1['type'] != 2) {
+                                continue;
+                            }
+
+                            foreach ($questionRs as $v2) {
+                                if ($v1['question_id'] != $v2['question_id']) {
+                                    continue;
+                                }
+                                $tempContent = json_decode($v2['answer'], true);
+                                $tempQuestionNumber = 0;
+                                foreach ($tempContent as $k3 => $v3) {
+                                    if (strpos($k3, 'option') !== 0) {
+                                        continue;
+                                    }
+                                    $tempQuestionNumber += 1;
+                                }
+
+                                $listRs[$k1]['question_number'] = $tempQuestionNumber;
+                                $listRs[$k1]['answer_number'] = count(explode(',', $tempContent['answer']));
+                                break;
+                            }
+                        }
+                    }
+                }
+
                 $paper->question = $listRs;
             } else {
                 $paper = [];
@@ -216,6 +259,9 @@ class PaperController extends BaseController
             }
             foreach ($listRs as $k => $v) {
                 $listRs[$k]['problem'] = strip_tags($v['problem']);
+                if ($v['type'] != 2) {
+                    continue;
+                }
                 if (!isset($questionLogRs)) {
                     continue;
                 }
@@ -223,11 +269,21 @@ class PaperController extends BaseController
                     if ($v['id'] != $v2['question_id'] || $v['log_id'] != $v2['id']) {
                         continue;
                     }
-                    $listRs[$k]['answer'] = json_decode($v2['answer'], true);
+
+                    $tempContent = json_decode($v2['answer'], true);
+                    $tempQuestionNumber = 0;
+                    foreach ($tempContent as $k3 => $v3) {
+                        if (strpos($k3, 'option') !== 0) {
+                            continue;
+                        }
+                        $tempQuestionNumber += 1;
+                    }
+
+                    $listRs[$k]['question_number'] = $tempQuestionNumber;
+                    $listRs[$k]['answer_number'] = count(explode(',', $tempContent['answer']));
                     break;
                 }
             }
-            var_dump($listRs);exit;
 
             return $this->successJson('成功', $listRs);
         }

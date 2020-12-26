@@ -105,6 +105,10 @@
                 </div>
                 @endif
 
+                <div class="col-xs-12 bg-info">
+                    得分: {{$value['obtain']}}
+                </div>
+
             </div>
             @endforeach
         </div>
