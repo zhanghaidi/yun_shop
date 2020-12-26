@@ -13,7 +13,7 @@ class XiaoeClockTopic extends BaseModel
     protected $guarded = [''];
 
 
-    //关联打卡
+    //关联所属打卡
     public function belongsToClock()
     {
         return $this->belongsTo('Yunshop\XiaoeClock\models\XiaoeClock','clock_id','id');
@@ -24,5 +24,12 @@ class XiaoeClockTopic extends BaseModel
     {
         return $this->hasMany('Yunshop\XiaoeClock\models\XiaoeClockUser', 'clock_task_id', 'id');
     }
+
+    //该主题下日记数
+    public function hasManyNote()
+    {
+        return $this->hasMany('Yunshop\XiaoeClock\models\XiaoeClockNote', 'clock_id', 'id');
+    }
+
 
 }

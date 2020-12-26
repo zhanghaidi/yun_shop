@@ -93,14 +93,39 @@ class ClockController extends ApiController
     //打卡日记详情 ims_yz_xiaoe_users_clock
     public function clockNoteInfo()
     {
-        $note_id = request()->get('note_id');
+        $note_id = request()->get('id');
         $member_id = \YunShop::app()->getMemberId();
         if (!$note_id) {
             return $this->errorJson('日记id不能为空');
         }
 
-        //是否点赞
-        $note = XiaoeClockNote::where('id', $note_id)->with(['hasManyComment','user'])->first();
+        //关联用户打卡天数、关联主题主题参与人数和打卡数 关联评论
+        $note = XiaoeClockNote::where('id', $note_id)
+            ->with([
+                'user' => function($user) {
+                    return $user->select('nickname','avatarurl');
+                },
+                'topic'=>function($topic){
+                    return $topic->select('id','clock_id','type','name');
+                },
+                'clock' => function($clock){
+                    return $clock->select('id','text_desc','image_desc','video_desc')->withCount(['hasManyUser','hasManyNote']);
+                },
+                'hasManyLike' => function($like){
+                    return $like->select('user_id')->with([
+                        'user' => function($user){
+                            return $user->select('nickname','avatarurl');
+                        }
+                    ]);
+                },
+                'hasManyComment' => function($like){
+                    return $like->select('user_id')->with([
+                        'user' => function($user){
+                            return $user->select('nickname','avatarurl');
+                        }
+                    ]);
+                },
+            ])->first();
 
         $note->is_like = 0;
 
