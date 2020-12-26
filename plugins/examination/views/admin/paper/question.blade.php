@@ -37,8 +37,8 @@
                             <option value="1" @if($search['type'] == 1) selected="selected" @endif>单选题</option>
                             <option value="2" @if($search['type'] == 2) selected="selected" @endif>多选题</option>
                             <option value="3" @if($search['type'] == 3) selected="selected" @endif>判断题</option>
-                            <option value="4" @if($search['type'] == 4) selected="selected" @endif>填空题</option>
-                            <option value="5" @if($search['type'] == 5) selected="selected" @endif>问答题</option>
+                            <!-- <option value="4" @if($search['type'] == 4) selected="selected" @endif>填空题</option>
+                            <option value="5" @if($search['type'] == 5) selected="selected" @endif>问答题</option> -->
                         </select>
                     </div>
                 </div>

@@ -79,7 +79,7 @@
                     <button type="button" class="btn btn-primary" id="manualQuestion" style="margin-bottom: 5px">
                         <i class="fa fa-plus"></i> 手动选题
                     </button>
-                    <button type="button" class="btn btn-warning" style="margin-bottom: 5px;margin-left: 20px">
+                    <button type="button" class="btn btn-warning hide" style="margin-bottom: 5px;margin-left: 20px">
                         <i class="fa fa-plus"></i> 系统抽题
                     </button>
                 </div>
