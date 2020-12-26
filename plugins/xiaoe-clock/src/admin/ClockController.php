@@ -284,6 +284,9 @@ class ClockController extends BaseController
 
                 $start_time = $param['start_time'] ? $param['start_time'] : 0;
                 $end_time = $param['end_time'] ? $param['end_time'] : 0;
+                if($end_time < $start_time){
+                    $this->message('结束日期必须小于开始日期', Url::absoluteWeb(''), 'danger');
+                }
                 $ist_data = [
                     'clock_id' => $rid,
                     'type' => $type,
@@ -399,13 +402,20 @@ class ClockController extends BaseController
             if (DB::table('yz_xiaoe_clock_task')->where('name', $upd_data['name'])->where('clock_id', $replay['clock_id'])->where('id', '<>', $id)->first()) {
                 return $this->message('名称已存在', Url::absoluteWeb(''), 'danger');
             }
-
+            $room = DB::table('yz_xiaoe_clock')->where('id', $replay['clock_id'])->first();
+            if (!$room) {
+                return $this->message('打卡不存在', Url::absoluteWeb(''), 'danger');
+            }
             $type = $replay['type'];
             if ($type == 1) {//日历主题
                 $theme_time = $param['theme_time'] ? $param['theme_time'] : 0;
+                if($theme_time < $room['start_time'] || $theme_time > $room['end_time']){
+                    return $this->message('该日期已超出了日历打卡的时间范围！请重新选择', Url::absoluteWeb(''), 'danger');
+                }
                 $upd_data = [
                     'name' => $param['name'] ? trim($param['name']) : '',
                     'theme_time' => strtotime($theme_time),
+                    'start_time' => strtotime($theme_time),
                     'cover_img' => $param['cover_img'] ? $param['cover_img'] : '',
                     'text_desc' => $param['text_desc'] ? $param['text_desc'] : '',
                     'video_desc' => $param['video_desc'] ? $param['video_desc'] : '',
@@ -416,6 +426,9 @@ class ClockController extends BaseController
 
                 $start_time = $param['start_time'] ? $param['start_time'] : 0;
                 $end_time = $param['end_time'] ? $param['end_time'] : 0;
+                if($end_time < $start_time){
+                    $this->message('结束日期必须小于开始日期', Url::absoluteWeb(''), 'danger');
+                }
                 $upd_data = [
                     'start_time' => strtotime($start_time),
                     'end_time' => strtotime($end_time),
@@ -439,10 +452,14 @@ class ClockController extends BaseController
         if (!$info) {
             return $this->message('数据不存在', Url::absoluteWeb(''), 'danger');
         }
-
+        $room = DB::table('yz_xiaoe_clock')->where('id', $info['clock_id'])->first();
+        if (!$room) {
+            return $this->message('打卡不存在', Url::absoluteWeb(''), 'danger');
+        }
         return view('Yunshop\XiaoeClock::admin.clock_task_edit', [
             'id' => $id,
             'info' => $info,
+            'room' => $room
         ])->render();
     }
 
@@ -456,7 +473,7 @@ class ClockController extends BaseController
         $input = \YunShop::request();
         $limit = 20;
 
-        // 日历主题
+        // 日历打卡列表
         if ($room_type == 1) {
 
             $where[] = ['yz_xiaoe_users_clock.clock_id', '=', $rid];
@@ -466,21 +483,18 @@ class ClockController extends BaseController
 
                 $search = $input->search;
                 if (intval($search['id']) > 0) {
-                    $where[] = ['id', '=', intval($search['id'])];
+                    $where[] = ['yz_xiaoe_users_clock.id', '=', intval($search['id'])];
                 }
-                if (trim($search['title']) !== '') {
-                    $where[] = ['title', 'like', '%' . trim($search['title']) . '%'];
+                if (trim($search['text_desc']) !== '') {
+                    $where[] = ['yz_xiaoe_users_clock.text_desc', 'like', '%' . trim($search['text_desc']) . '%'];
                 }
-                if (trim($search['type']) !== '') {
-                    $where[] = ['type', '=', $search['type']];
+                if (trim($search['user_id']) !== '') {
+                    $where[] = ['yz_xiaoe_users_clock.user_id', '=', $search['user_id']];
                 }
-                if (trim($search['status']) !== '') {
-                    if ($search['status'] === '0') {
-                        $where[] = ['delete_time', '>', 0];
-                    } else {
-                        $where[] = ['delete_time', '=', 0];
-                    }
+                if (trim($search['nickname']) !== '') {
+                    $where[] = ['diagnostic_service_user.nickname', 'like', '%' . trim($search['nickname']) . '%'];
                 }
+
             }
 
             $replay_list = DB::table('yz_xiaoe_users_clock')
@@ -492,7 +506,7 @@ class ClockController extends BaseController
 
         }
 
-        // 作业
+        // 作业打卡列表
         if ($room_type == 2) {
 
             $where[] = ['yz_xiaoe_users_clock.clock_id', '=', $rid];
@@ -500,22 +514,17 @@ class ClockController extends BaseController
             // 处理搜索条件
             if (isset($input->search)) {
 
-                $search = $input->search;
-                if (intval($search['roomid']) > 0) {
-                    $where[] = ['yz_appletslive_liveroom.roomid', '=', intval($search['roomid'])];
+                if (intval($search['id']) > 0) {
+                    $where[] = ['yz_xiaoe_users_clock.id', '=', intval($search['id'])];
                 }
-                if (trim($search['name']) !== '') {
-                    $where[] = ['yz_appletslive_liveroom.name', 'like', '%' . trim($search['name']) . '%'];
+                if (trim($search['text_desc']) !== '') {
+                    $where[] = ['yz_xiaoe_users_clock.text_desc', 'like', '%' . trim($search['text_desc']) . '%'];
                 }
-                if (trim($search['live_status']) !== '') {
-                    $where[] = ['yz_appletslive_liveroom.live_status', '=', $search['live_status']];
+                if (trim($search['user_id']) !== '') {
+                    $where[] = ['yz_xiaoe_users_clock.user_id', '=', $search['user_id']];
                 }
-                if (trim($search['status']) !== '') {
-                    if ($search['status'] === '0') {
-                        $where[] = ['yz_appletslive_replay.delete_time', '>', 0];
-                    } else {
-                        $where[] = ['yz_appletslive_replay.delete_time', '=', 0];
-                    }
+                if (trim($search['nickname']) !== '') {
+                    $where[] = ['diagnostic_service_user.nickname', 'like', '%' . trim($search['nickname']) . '%'];
                 }
             }
 

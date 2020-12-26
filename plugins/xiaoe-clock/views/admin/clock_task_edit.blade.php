@@ -103,6 +103,7 @@
                         <label class="col-md-2 col-sm-3 col-xs-12 control-label">主题日期</label>
                         <div class="col-md-10 col-sm-9 col-xs-6">
                             {!! tpl_form_field_date('theme_time', date('Y-m-d', ($info['theme_time'] ? $info['theme_time'] : time())), false) !!}
+                            <span class='help-block' style="color: red">请选择 {{ date('Y-m-d',$room['start_time'])}} 致 {{ date('Y-m-d',$room['end_time'])}} 内的日期</span>
                         </div>
                     </div>
                     <div class="form-group">
