@@ -143,6 +143,9 @@ class PaperController extends BaseController
                     $paperQuestion->problem = $tempQuestion['problem'];
                     $paperQuestion->score = $data['score'][$k1];
                     if ($tempQuestion['type'] == 2) {
+                        if ($data['omission_score'][$k1] <= 0) {
+                            throw new Exception('试卷中多选题的漏选分分值，必须大于0');
+                        }
                         $option = [
                             'option' => $data['omission_option'][$k1],
                             'score' => $data['omission_score'][$k1],
@@ -163,6 +166,10 @@ class PaperController extends BaseController
                 DB::rollBack();
 
                 return $this->message($e->getMessage(), '', 'danger');
+            }
+
+            if (isset($data['id']) && $data['id'] > 0) {
+                PaperQuestionModel::clearGetQuestionCache(\YunShop::app()->uniacid, $data['id']);
             }
 
             return $this->message('保存成功', Url::absoluteWeb('plugin.examination.admin.paper.index'));
