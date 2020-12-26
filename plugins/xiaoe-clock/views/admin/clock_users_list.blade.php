@@ -168,13 +168,13 @@
                             </td>
                             <td style="overflow:visible;">
                                 <a class='btn btn-default'
-                                   href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_task_edit', ['id' => $row['id']])}}"
-                                   title='编辑'><i class='fa fa-edit'></i>详情
+                                   href="{{yzWebUrl('member.member.detail', ['id' => $row['user_id']])}}"
+                                   title='详情资料'><i class='fa fa-edit'></i>详情资料
                                 </a>
-                                <a class='btn btn-default'
-                                   href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_task_edit', ['id' => $row['id']])}}"
-                                   title='编辑'><i class='fa fa-edit'></i>移入黑名单
-                                </a>
+{{--                                <a class='btn btn-default'--}}
+{{--                                   href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_task_edit', ['id' => $row['id']])}}"--}}
+{{--                                   title='编辑'><i class='fa fa-edit'></i>移入黑名单--}}
+{{--                                </a>--}}
                             </td>
                         </tr>
                     @endforeach
