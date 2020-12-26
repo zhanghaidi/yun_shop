@@ -237,10 +237,16 @@ class ExaminationController extends BaseController
             $listRs = $listRs->where('status', $search['status']);
         }
         if (isset($search['time_range']['start']) && $search['time_range']['start'] > 0) {
-            $listRs = $listRs->where('created_at', '>=', strtotime($search['time_range']['start']));
+            $listRs = $listRs->where('created_at', '>=', $search['time_range']['start']);
+            $search['time_range']['start'] = date('Y-m-d H:i', $search['time_range']['start']);
+        } else {
+            $search['time_range']['start'] = date('Y-m-d H:i', strtotime('-1 year'));
         }
         if (isset($search['time_range']['end']) && $search['time_range']['end'] > 0) {
-            $listRs = $listRs->where('created_at', '<=', strtotime($search['time_range']['end']));
+            $listRs = $listRs->where('created_at', '<=', $search['time_range']['end']);
+            $search['time_range']['end'] = date('Y-m-d H:i', $search['time_range']['end']);
+        } else {
+            $search['time_range']['end'] = date('Y-m-d H:i');
         }
         if (isset($search['score']['min']) && $search['score']['min'] >= 0) {
             $listRs = $listRs->where('score_obtain', '>=', $search['score']['min']);
