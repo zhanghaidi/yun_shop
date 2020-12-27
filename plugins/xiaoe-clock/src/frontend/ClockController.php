@@ -162,9 +162,10 @@ class ClockController extends ApiController
             return $this->errorJson('评论内容不能为空');
         }
 
+        //用户今日打卡状态
         $status = $this->getClockStatus($clock_id, $member_id);
         if($status == 1){
-            return $this->errorJson('今日打卡日记已完成');
+            return $this->errorJson('今日已打卡');
         }
         $image = trim(request()->get('image'));
         $video = trim(request()->get('video'));
@@ -198,6 +199,7 @@ class ClockController extends ApiController
         );
 
         XiaoeClockNote::create($params);
+        XiaoeClockUser::where(['clock_id' => $clock_id, 'user_id' => $member_id])->increment('clock_num');
 
 
         return $this->successJson('打卡成功', $params);
@@ -366,20 +368,6 @@ class ClockController extends ApiController
         }
     }
 
-    //打卡记录参与用户ims_yz_xiaoe_clock_users
-    protected function userJoin($clock_id, $user_id)
-    {
-        $params = array(
-            'clock_id' => $clock_id,
-            'user_id' => $user_id
-        );
-
-        XiaoeClockUser::firstOrCreate($params);
-    }
-
-
-
-
     /**
      * 日历打卡首页 日历数据重构
      *
@@ -455,6 +443,19 @@ class ClockController extends ApiController
         return (int)\YunShop::request()->year ?: (int)date("Y");
     }
 
+    //打卡记录参与用户ims_yz_xiaoe_clock_users
+    protected function userJoin($clock_id, $user_id)
+    {
+        $params = array(
+            'uniacid' => \YunShop::app()->uniacid,
+            'clock_id' => $clock_id,
+            'user_id' => $user_id
+        );
+
+        XiaoeClockUser::firstOrCreate($params);
+    }
+
+    //用户今日打卡状态
     private function getClockStatus($clock_id, $user_id)
     {
         $todayStart = Carbon::now()->startOfDay()->timestamp;
