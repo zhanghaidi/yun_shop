@@ -174,7 +174,7 @@ class ClockController extends ApiController
             'content' => $content
         );
 
-        XiaoeClockNoteComment::create($params);
+        XiaoeClockNote::create($params);
 
         return $this->successJson('打卡成功', $params);
 
