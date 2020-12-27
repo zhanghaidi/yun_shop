@@ -251,6 +251,29 @@
 
     <script src="{{resource_get('static/js/qrcode.min.js')}}"></script>
     <script type="text/javascript">
+
+        $('.clock_link').click(function (e) {
+            qrcodeScan(e.target.dataset.clock_link, 'clock_qr')
+        })
+
+        function qrcodeScan(url, name) {//生成二维码
+
+            try {
+                let qrcode = new QRCode('qrcode', {
+                    width: 200,  // 二维码宽度
+                    height: 200, // 二维码高度
+                    render: 'image',
+                    text: url
+                });
+            } catch (e) {
+                console.log('报错了')
+            }
+            var data = $("canvas")[$("canvas").length - 1].toDataURL().replace("image/png", "image/octet-stream;");
+            // $('#' + name + '').attr('src', data);
+            alertMask($("canvas")[$("canvas").length - 1].toDataURL(),url)
+            // this.img = data;
+        }
+        //分享弹出框  复制功能
         function alertMask(imgUrl,clock_link) {
             let template = `<div id="my_mask" style="position: fixed;left: 0;right: 0;top: 0;bottom: 0;background: rgba(0,0,0,0.7);">
                    <div class="centent" style="display: flex;flex-direction: column;justify-content: center;align-items: center; width: 500px;height: 600px;position: absolute;left: 50%;top: 50%;transform: translate(-50%,-50%);background: #fff;">
@@ -258,7 +281,7 @@
                     <span class="btn btn-default copy_links" style="margin-top: 25px;" title="复制链接">复制链接</span>
                    </div>
                 </div>`
-             $('body').append(template);
+            $('body').append(template);
             $('#my_mask').click(function () {
                 $('#my_mask').remove();
             })
@@ -280,31 +303,6 @@
                 document.body.removeChild(input);
             }
         }
-
-        $('.clock_link').click(function (e) {
-            qrcodeScan(e.target.dataset.clock_link, 'clock_qr')
-        })
-
-        function qrcodeScan(url, name) {//生成二维码
-
-            try {
-                let qrcode = new QRCode('qrcode', {
-                    width: 200,  // 二维码宽度
-                    height: 200, // 二维码高度
-                    render: 'image',
-                    text: url
-                });
-            } catch (e) {
-                console.log('报错了')
-            }
-
-            var data = $("canvas")[$("canvas").length - 1].toDataURL().replace("image/png", "image/octet-stream;");
-            // $('#' + name + '').attr('src', data);
-            alertMask($("canvas")[$("canvas").length - 1].toDataURL(),url)
-            // console.log(222)
-            // this.img = data;
-        }
-
         // 查看课程封面大图
         $('.show-cover-img-big').on('mouseover', function () {
             $(this).find('.img-big').show();
