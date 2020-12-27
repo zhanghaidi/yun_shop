@@ -65,7 +65,7 @@ class ClockController extends ApiController
 
         $data = [
             'clock'     => $clock,
-            'clock_status'   => $this->getClockStatus($member_id),
+            'clock_status'   => $this->getClockStatus($clock->id,$member_id),
             'clock_total'    => $this->clockNoteModel->count() . "天",
             'my_clock_log'      => $this->getCalendarData()
         ];
@@ -162,14 +162,10 @@ class ClockController extends ApiController
             return $this->errorJson('评论内容不能为空');
         }
 
-       /* $data = array(
-            'uniacid' => \YunShop::app()->uniacid,
-            'user_id' => $member_id,
-            'clock_id' => $clock_id,
-            'clock_task_id' => $topic_id,
-            ''
-        );*/
-
+        $status = $this->getClockStatus($clock_id, $member_id);
+        if($status == 1){
+            return $this->errorJson('今日打卡日记已完成');
+        }
         $image = trim(request()->get('image'));
         $video = trim(request()->get('video'));
         $image_size = trim(request()->get('image_size'));
@@ -202,6 +198,7 @@ class ClockController extends ApiController
         );
 
         XiaoeClockNote::create($params);
+
 
         return $this->successJson('打卡成功', $params);
 
@@ -458,16 +455,17 @@ class ClockController extends ApiController
         return (int)\YunShop::request()->year ?: (int)date("Y");
     }
 
-    private function getClockStatus($user_id)
+    private function getClockStatus($clock_id, $user_id)
     {
         $todayStart = Carbon::now()->startOfDay()->timestamp;
         $todayEnd = Carbon::now()->endOfDay()->timestamp;
-        $todayNoteLog = XiaoeClockNote::select('id', 'user_id','clock_id', 'clock_task_id', 'text_desc', 'created_at')->where(['user_id' => $user_id])->whereBetween('created_at', [$todayStart, $todayEnd])->first();
+        $todayNoteLog = XiaoeClockNote::select('id', 'user_id','clock_id', 'clock_task_id', 'text_desc', 'created_at')->where(['clock_id' => $clock_id, 'user_id' => $user_id])->whereBetween('created_at', [$todayStart, $todayEnd])->first();
         if(!empty($todayNoteLog)){
             $status = 1;
         }else{
             $status = 0;
         }
+        return $status;
     }
 
 
