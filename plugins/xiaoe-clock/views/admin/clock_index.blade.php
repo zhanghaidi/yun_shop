@@ -223,17 +223,21 @@
                                    href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_edit', ['rid' => $row['id']])}}"
                                    title='编辑'><i class='fa fa-edit'></i>编辑
                                 </a>
+                                <a class='btn btn-default clock_link' href="javascript:;"
+                                   data-clock_link="{{ $row['clock_link'] }}"
+                                   title='分享'><i class='fa fa-share'></i>&nbsp;&nbsp;分享
+                                </a>
                                 <a class='btn btn-default'
                                    href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_task_list', ['rid' => $row['id']])}}"
                                    title='作业'><i class='fa fa-list'></i>作业
                                 </a>
                                 <a class='btn btn-default'
                                    href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.users_clock_list', ['rid' => $row['id']])}}"
-                                   title='主题'><i class='fa fa-list'></i>&nbsp;&nbsp;日记
+                                   title='日记'><i class='fa fa-list'></i>&nbsp;&nbsp;日记
                                 </a>
                                 <a class='btn btn-default'
                                    href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_users_list', ['rid' => $row['id']])}}"
-                                   title='主题'><i class='fa fa-list'></i>&nbsp;&nbsp;学员
+                                   title='学员'><i class='fa fa-list'></i>&nbsp;&nbsp;学员
                                 </a>
                             </td>
                         </tr>
