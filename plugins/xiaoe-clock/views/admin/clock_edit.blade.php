@@ -195,6 +195,7 @@
                         <label class="col-xs-12 col-sm-3 col-md-1 control-label">打卡视频介绍</label>
                         <div class="col-sm-9 col-xs-12 col-md-6">
                             {!! app\common\helpers\ImageHelper::tplFormFieldVideo('video_desc',$info['video_desc']) !!}
+                            <a target="_blank" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;" href="{!! tomedia($info['video_desc']) !!}">播放</a>
                         </div>
                     </div>
                         <div class="form-group">
