@@ -134,22 +134,23 @@ class ClockController extends ApiController
     public function clockNoteCreate()
     {
         $clock_id = intval(request()->get('id'));
+        $topic_id = intval(request()->get('clock_task_id'));
         if(!$clock_id){
             return $this->errorJson('打卡id不能为空');
         }
 
         $member_id = \YunShop::app()->getMemberId();
         $content = trim(request()->get('content'));
+        if(!$content){
+            return $this->errorJson('评论内容不能为空');
+        }
 
-        $clock_task_id = intval(request()->get('clock_task_id'));
         $image = trim(request()->get('image'));
         $video = trim(request()->get('video'));
         $image_size = trim(request()->get('image_size'));
         $video_size = '';
 
-        if(!$content){
-            return $this->errorJson('评论内容不能为空');
-        }
+
 
         $this->checkBlack($member_id);
 
@@ -165,7 +166,7 @@ class ClockController extends ApiController
             'uniacid' => \YunShop::app()->uniacid,
             'user_id' => $member_id,
             'clock_id' => $clock_id,
-            'clock_task_id' => $clock_task_id,
+            'clock_task_id' => $topic_id,
             'text_desc' => $content,
             'image_desc' => $image,
             'video_desc' => $video,
