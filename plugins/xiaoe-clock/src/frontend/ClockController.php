@@ -139,11 +139,35 @@ class ClockController extends ApiController
             return $this->errorJson('打卡id不能为空');
         }
 
+        $clockInfo = XiaoeClock::get($clock_id);
+        if(empty($clockInfo)){
+            return $this->errorJson('打卡不存在或已被删除');
+        }
+
+
+        $time = time();
+
+        if($clockInfo->start_time > $time){
+            return $this->errorJson('打卡暂未开始');
+        }
+        if($clockInfo->end_time < $time){
+            return $this->errorJson('打卡已结束');
+        }
+
+
         $member_id = \YunShop::app()->getMemberId();
         $content = trim(request()->get('content'));
         if(!$content){
             return $this->errorJson('评论内容不能为空');
         }
+
+       /* $data = array(
+            'uniacid' => \YunShop::app()->uniacid,
+            'user_id' => $member_id,
+            'clock_id' => $clock_id,
+            'clock_task_id' => $topic_id,
+            ''
+        );*/
 
         $image = trim(request()->get('image'));
         $video = trim(request()->get('video'));
@@ -166,12 +190,12 @@ class ClockController extends ApiController
             'uniacid' => \YunShop::app()->uniacid,
             'user_id' => $member_id,
             'clock_id' => $clock_id,
+            'type' => $clockInfo->type,
             'clock_task_id' => $topic_id,
             'text_desc' => $content,
             'image_desc' => $image,
             'video_desc' => $video,
             'image_info' => $image_size,
-            'content' => $content
         );
 
         XiaoeClockNote::create($params);
