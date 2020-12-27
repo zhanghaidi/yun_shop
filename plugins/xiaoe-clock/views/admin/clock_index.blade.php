@@ -78,11 +78,11 @@
                                          style="z-index:99999;position:absolute;top:0;left:0;border:1px solid #ccc;padding:1px;display: none">
                                 </div>
                                 @if ($row['join_type'] == 0)
-                                    免费
+                                    <span style="color: red">免费</span>
                                 @elseif ($row['join_type'] == 1)
-                                    购买课程
+                                    <span style="color: green">购买课程</span>
                                 @else
-                                    付费
+                                    <span style="color: blue">付费</span>
                                 @endif
                             </td>
                             <td style="overflow:visible;">
@@ -105,6 +105,10 @@
 {{--                                @endif--}}
 {{--                            </td>--}}
                             <td style="overflow:visible;">
+                                <a class='btn btn-default'
+                                   href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_edit', ['rid' => $row['id']])}}"
+                                   title='编辑'><i class='fa fa-edit'></i>编辑
+                                </a>
                                 <a class='btn btn-default'
                                    href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_task_list', ['rid' => $row['id']])}}"
                                    title='主题'><i class='fa fa-list'></i>&nbsp;&nbsp;主题
@@ -187,11 +191,11 @@
                                          style="z-index:99999;position:absolute;top:0;left:0;border:1px solid #ccc;padding:1px;display: none">
                                 </div>
                                 @if ($row['join_type'] == 0)
-                                    免费
+                                    <span style="color: red">免费</span>
                                 @elseif ($row['join_type'] == 1)
-                                    购买课程
+                                    <span style="color: green">购买课程</span>
                                 @else
-                                    付费
+                                    <span style="color: blue">付费</span>
                                 @endif
                             </td>
                             <td>{{ $row['task_num'] }}</td>
@@ -211,6 +215,10 @@
 {{--                                @endif--}}
 {{--                            </td>--}}
                             <td style="overflow:visible;">
+                                <a class='btn btn-default'
+                                   href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_edit', ['rid' => $row['id']])}}"
+                                   title='编辑'><i class='fa fa-edit'></i>编辑
+                                </a>
                                 <a class='btn btn-default'
                                    href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_task_list', ['rid' => $row['id']])}}"
                                    title='作业'><i class='fa fa-list'></i>作业

@@ -127,6 +127,8 @@ class ClockController extends BaseController
             }
             if (array_key_exists('text_desc', $param)) { // 打卡图文介绍
                 $ist_data['text_desc'] = $param['text_desc'] ? $param['text_desc'] : '';
+            } else {
+                return $this->message('打卡图文介绍必填', Url::absoluteWeb(''), 'danger');
             }
             if (array_key_exists('video_desc', $param)) { // 打卡视频介绍
                 $ist_data['video_desc'] = $param['video_desc'] ? $param['video_desc'] : '';
@@ -141,7 +143,7 @@ class ClockController extends BaseController
                 $ist_data['course_id'] = $param['course_id'] ? $param['course_id'] : 0;
             }
             if (array_key_exists('text_length', $param)) { //图文长度
-                $ist_data['text_length'] = $param['text_length'] ? $param['text_length'] : 5;
+                $ist_data['text_length'] = $param['text_length'] ? $param['text_length'] : 0;
             }
             if (array_key_exists('image_length', $param)) { //音频长度
                 $ist_data['image_length'] = $param['image_length'] ? $param['image_length'] : 0;
@@ -221,6 +223,136 @@ class ClockController extends BaseController
             return $this->message('无效的类型', Url::absoluteWeb(''), 'danger');
         }
         return view('Yunshop\XiaoeClock::admin.clock_add', ['type' => $type])->render();
+    }
+// 打卡编辑
+    public function clock_edit()
+    {
+        if (request()->isMethod('post')) {
+
+            $param = request()->all();
+
+            if (!array_key_exists('type', $param) || !in_array($param['type'], [1, 2])) { // 类型
+                return $this->message('打卡类型参数有误', Url::absoluteWeb(''), 'danger');
+            }
+            $ist_data = ['type' => $param['type'], 'sort' => intval($param['sort'])];
+            if (array_key_exists('name', $param)) { // 打卡名称
+                $ist_data['name'] = $param['name'] ? trim($param['name']) : '';
+            }
+            if (DB::table('yz_xiaoe_clock')->where('name', $ist_data['name'])->first()) {
+                return $this->message('打卡名称已存在', Url::absoluteWeb(''), 'danger');
+            }
+            if (array_key_exists('cover_img', $param)) { // 打卡封面
+                $ist_data['cover_img'] = $param['cover_img'] ? $param['cover_img'] : '';
+            }
+            if (array_key_exists('text_desc', $param)) { // 打卡图文介绍
+                $ist_data['text_desc'] = $param['text_desc'] ? $param['text_desc'] : '';
+            } else {
+                return $this->message('打卡图文介绍必填', Url::absoluteWeb(''), 'danger');
+            }
+            if (array_key_exists('video_desc', $param)) { // 打卡视频介绍
+                $ist_data['video_desc'] = $param['video_desc'] ? $param['video_desc'] : '';
+            }
+            if (array_key_exists('audio_desc', $param)) { // 打卡音频介绍
+                $ist_data['audio_desc'] = $param['audio_desc'] ? $param['audio_desc'] : '';
+            }
+            if (array_key_exists('join_type', $param)) { // 参与打卡方式
+                $ist_data['join_type'] = $param['join_type'] ? $param['join_type'] : 0;
+            }
+            if (array_key_exists('course_id', $param)) { // 管理课程id
+                $ist_data['course_id'] = $param['course_id'] ? $param['course_id'] : 0;
+            }
+            if (array_key_exists('text_length', $param)) { //图文长度
+                $ist_data['text_length'] = $param['text_length'] ? $param['text_length'] : 0;
+            }
+            if (array_key_exists('image_length', $param)) { //音频长度
+                $ist_data['image_length'] = $param['image_length'] ? $param['image_length'] : 0;
+            }
+            if (array_key_exists('video_length', $param)) { //视频长度
+                $ist_data['video_length'] = $param['video_length'] ? $param['video_length'] : 0;
+            }
+            if (array_key_exists('display_status', $param)) { //显示状态
+                $ist_data['display_status'] = $param['display_status'] ? $param['display_status'] : 1;
+            }
+            if (array_key_exists('helper_nickname', $param)) { // 助手昵称
+                $ist_data['helper_nickname'] = $param['helper_nickname'] ? $param['helper_nickname'] : '';
+            }
+            if (array_key_exists('helper_avatar', $param)) { //助手头像
+                $ist_data['helper_avatar'] = $param['helper_avatar'] ? $param['helper_avatar'] : '';
+            }
+            if (array_key_exists('helper_wechat', $param)) { //助手微信
+                $ist_data['helper_wechat'] = $param['helper_wechat'] ? $param['helper_wechat'] : '';
+            }
+            $now_day_time = strtotime(date('Y-m-d', time()));
+            if ($param['type'] == 1) { //日历打卡 开始，结束时间校验
+                if (array_key_exists('start_time', $param)) { //有效期 开始是日期
+                    $start_time = $param['start_time'] ? $param['start_time'] : 0;
+                    if ($start_time != 0) {
+                        $ist_data['start_time'] = strtotime($start_time);
+                        if ($now_day_time > $ist_data['start_time']) {
+                            return $this->message('开始日期不能小于当前日期', Url::absoluteWeb(''), 'danger');
+                        }
+                    } else {
+                        return $this->message('请选择开始日期', Url::absoluteWeb(''), 'danger');
+                    }
+                } else {
+                    return $this->message('请选择开始日期', Url::absoluteWeb(''), 'danger');
+                }
+                if (array_key_exists('end_time', $param)) { //有效期 结束是日期
+                    $end_time = $param['end_time'] ? $param['end_time'] : 0;
+                    if ($end_time != 0) {
+                        $ist_data['end_time'] = strtotime($end_time);
+                        if ($now_day_time > $ist_data['end_time']) {
+                            return $this->message('结束日期不能小于当前日期', Url::absoluteWeb(''), 'danger');
+                        }
+                    } else {
+                        return $this->message('请选择结束日期', Url::absoluteWeb(''), 'danger');
+                    }
+                } else {
+                    return $this->message('请选择结束日期', Url::absoluteWeb(''), 'danger');
+                }
+                if ($ist_data['start_time'] > $ist_data['end_time']) {
+                    return $this->message('结束日期不能小于开始日期', Url::absoluteWeb(''), 'danger');
+                }
+                if (array_key_exists('valid_time_start', $param)) { //有效时段
+                    $ist_data['valid_time_start'] = $param['valid_time_start'] ? $param['valid_time_start'] : 0;
+                }
+                if (array_key_exists('valid_time_end', $param)) { // 有效时段
+                    $ist_data['valid_time_end'] = $param['valid_time_end'] ? $param['valid_time_end'] : 0;
+                }
+            }
+            if ($param['type'] == 2) { //作业打卡
+                if (array_key_exists('is_cheat_mode', $param)) { //防作弊
+                    $ist_data['is_cheat_mode'] = $param['is_cheat_mode'] ? $param['is_cheat_mode'] : 0;
+                }
+                if (array_key_exists('is_resubmit', $param)) { //删除原来，重复提交新的 是否允许重新打卡
+                    $ist_data['is_resubmit'] = $param['is_resubmit'] ? $param['is_resubmit'] : 0;
+                }
+            }
+            DB::beginTransaction();//开启事务
+            $insert_res = DB::table('yz_xiaoe_clock')->insert($ist_data);
+            if (!$insert_res) {
+                DB::rollBack();//事务回滚
+                return $this->message('创建失败', Url::absoluteWeb('plugin.xiaoe-clock.admin.clock.clock_index', ['type' => $param['type']]));
+            }
+            DB::commit();//事务提交
+            return $this->message('创建成功', Url::absoluteWeb('plugin.xiaoe-clock.admin.clock.clock_index', ['type' => $param['type']]));
+        }
+        //编辑详情
+        $id = request()->get('id', 0);
+        $info = DB::table('yz_xiaoe_clock')->where('id', $id)->first();
+        if (!$info) {
+            return $this->message('打卡不存在', Url::absoluteWeb(''), 'danger');
+        }
+        if($info['course_id']){
+            $info['course_name'] = DB::table('yz_appletslive_room')->where('id', $info['course_id'])->value('name');;
+        }else{
+            $info['course_name'] = '';
+        }
+        return view('Yunshop\XiaoeClock::admin.clock_edit', [
+            'id' => $id,
+            'info' => $info,
+            'type' => $info['type']
+        ])->render();
     }
 
     /**
@@ -436,11 +568,13 @@ class ClockController extends BaseController
                     'sort' => $param['sort'] ? $param['sort'] : 0,
                 ];
             }
-
+            DB::beginTransaction();//开启事务
             $updata_res = DB::table('yz_xiaoe_clock_task')->where('id', $id)->update($upd_data);
             if ($updata_res) {
+                DB::commit();//事务提交
                 return $this->message('保存成功', Url::absoluteWeb('plugin.xiaoe-clock.admin.clock.clock_task_list', ['rid' => $replay['clock_id']]));
             } else {
+                DB::rollBack();//事务回滚
                 return $this->message('保存失败', Url::absoluteWeb(''), 'danger');
             }
         }
