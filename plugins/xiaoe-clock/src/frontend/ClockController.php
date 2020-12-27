@@ -375,7 +375,7 @@ class ClockController extends ApiController
 
     private function getClockNoteModel($user_id)
     {
-        return XiaoeClockNote::select('id', 'user_id','clock_id', 'clock_task_id', 'text_desc', 'created_time')->where(['user_id' => $user_id]);
+        return XiaoeClockNote::select('id', 'user_id','clock_id', 'clock_task_id', 'text_desc', 'created_at')->where(['user_id' => $user_id]);
     }
 
     /**
@@ -434,7 +434,7 @@ class ClockController extends ApiController
     {
         $todayStart = Carbon::now()->startOfDay()->timestamp;
         $todayEnd = Carbon::now()->endOfDay()->timestamp;
-        $todayNoteLog = XiaoeClockNote::select('id', 'user_id','clock_id', 'clock_task_id', 'text_desc', 'created_time')->where(['user_id' => $user_id])->whereBetween('created_at', [$todayStart, $todayEnd])->first();
+        $todayNoteLog = XiaoeClockNote::select('id', 'user_id','clock_id', 'clock_task_id', 'text_desc', 'created_at')->where(['user_id' => $user_id])->whereBetween('created_at', [$todayStart, $todayEnd])->first();
         if(!empty($todayNoteLog)){
             $status = 1;
         }else{
