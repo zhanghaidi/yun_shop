@@ -61,7 +61,7 @@
                         <th style='width:25%;'>已进行/总天数</th>
                         <th style='width:15%;'>打卡人数/次数</th>
                         <th style='width:15%;'>关联课程</th>
-{{--                        <th style='width:15%;'>展示状态</th>--}}
+                        {{--                        <th style='width:15%;'>展示状态</th>--}}
                         <th style='width:30%;'>操作</th>
                     </tr>
                     </thead>
@@ -92,22 +92,26 @@
                             <td>{{ $row['clock_user_num'] }} / {{ $row['clock_num'] }}</td>
                             <td>
                                 @if ($row['course_id'] > 0)
-                                   {{ $row['course_name'] }}
+                                    {{ $row['course_name'] }}
                                 @else
                                     --
                                 @endif
                             </td>
-{{--                            <td>--}}
-{{--                                @if ($row['display_status'] == 1)--}}
-{{--                                    <span style="color: green">显示</span>--}}
-{{--                                @else--}}
-{{--                                    <span style="color: red">隐藏</span>--}}
-{{--                                @endif--}}
-{{--                            </td>--}}
+                            {{--                            <td>--}}
+                            {{--                                @if ($row['display_status'] == 1)--}}
+                            {{--                                    <span style="color: green">显示</span>--}}
+                            {{--                                @else--}}
+                            {{--                                    <span style="color: red">隐藏</span>--}}
+                            {{--                                @endif--}}
+                            {{--                            </td>--}}
                             <td style="overflow:visible;">
                                 <a class='btn btn-default'
                                    href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_edit', ['rid' => $row['id']])}}"
                                    title='编辑'><i class='fa fa-edit'></i>编辑
+                                </a>
+                                <a class='btn btn-default clock_link' href="javascript:;"
+                                   data-clock_link="{{ $row['clock_link'] }}"
+                                   title='分享'><i class='fa fa-share'></i>&nbsp;&nbsp;分享
                                 </a>
                                 <a class='btn btn-default'
                                    href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_task_list', ['rid' => $row['id']])}}"
@@ -115,11 +119,11 @@
                                 </a>
                                 <a class='btn btn-default'
                                    href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.users_clock_list', ['rid' => $row['id']])}}"
-                                   title='主题'><i class='fa fa-list'></i>&nbsp;&nbsp;日记
+                                   title='日记'><i class='fa fa-list'></i>&nbsp;&nbsp;日记
                                 </a>
                                 <a class='btn btn-default'
                                    href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_users_list', ['rid' => $row['id']])}}"
-                                   title='主题'><i class='fa fa-list'></i>&nbsp;&nbsp;学员
+                                   title='学员'><i class='fa fa-list'></i>&nbsp;&nbsp;学员
                                 </a>
 
                             </td>
@@ -174,7 +178,7 @@
                         <th style='width:15%;'>作业数</th>
                         <th style='width:15%;'>打卡人数/次数</th>
                         <th style='width:15%;'>关联课程</th>
-{{--                        <th style='width:15%;'>展示状态</th>--}}
+                        {{--                        <th style='width:15%;'>展示状态</th>--}}
                         <th style='width:30%;'>操作</th>
                     </tr>
                     </thead>
@@ -207,13 +211,13 @@
                                     --
                                 @endif
                             </td>
-{{--                            <td>--}}
-{{--                                @if ($row['display_status'] == 1)--}}
-{{--                                    <span style="color: green">显示</span>--}}
-{{--                                @else--}}
-{{--                                    <span style="color: red">隐藏</span>--}}
-{{--                                @endif--}}
-{{--                            </td>--}}
+                            {{--                            <td>--}}
+                            {{--                                @if ($row['display_status'] == 1)--}}
+                            {{--                                    <span style="color: green">显示</span>--}}
+                            {{--                                @else--}}
+                            {{--                                    <span style="color: red">隐藏</span>--}}
+                            {{--                                @endif--}}
+                            {{--                            </td>--}}
                             <td style="overflow:visible;">
                                 <a class='btn btn-default'
                                    href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_edit', ['rid' => $row['id']])}}"
@@ -242,8 +246,65 @@
     @endif
 
     <div style="width:100%;height:150px;"></div>
+    <div id="qrcode" ref="qrcode" style="display:none;"></div>
+    <img id='clock_qr'>
 
+    <script src="{{resource_get('static/js/qrcode.min.js')}}"></script>
     <script type="text/javascript">
+        function alertMask(imgUrl,clock_link) {
+            let template = `<div id="my_mask" style="position: fixed;left: 0;right: 0;top: 0;bottom: 0;background: rgba(0,0,0,0.7);">
+                   <div class="centent" style="display: flex;flex-direction: column;justify-content: center;align-items: center; width: 500px;height: 600px;position: absolute;left: 50%;top: 50%;transform: translate(-50%,-50%);background: #fff;">
+                    <img src="${imgUrl}" style="width: 450px;height: 450px;margin-top: 30px;font-size: 28px;" alt="">
+                    <span class="btn btn-default copy_links" style="margin-top: 25px;" title="复制链接">复制链接</span>
+                   </div>
+                </div>`
+             $('body').append(template);
+            $('#my_mask').click(function () {
+                $('#my_mask').remove();
+            })
+            $('.copy_links').click(function (e) {
+                e.preventDefault();//阻止浏览器的默认行为
+                e.stopPropagation();
+                copy(clock_link);
+            })
+            function copy(val) {
+                const input = document.createElement('input');
+                document.body.appendChild(input);
+                input.setAttribute('value', val);
+                input.select();
+                if (document.execCommand('copy')) {
+                    document.execCommand('copy');
+                    alert('复制成功');
+                    $('#my_mask').remove();
+                }
+                document.body.removeChild(input);
+            }
+        }
+
+        $('.clock_link').click(function (e) {
+            qrcodeScan(e.target.dataset.clock_link, 'clock_qr')
+        })
+
+        function qrcodeScan(url, name) {//生成二维码
+
+            try {
+                let qrcode = new QRCode('qrcode', {
+                    width: 200,  // 二维码宽度
+                    height: 200, // 二维码高度
+                    render: 'image',
+                    text: url
+                });
+            } catch (e) {
+                console.log('报错了')
+            }
+
+            var data = $("canvas")[$("canvas").length - 1].toDataURL().replace("image/png", "image/octet-stream;");
+            // $('#' + name + '').attr('src', data);
+            alertMask($("canvas")[$("canvas").length - 1].toDataURL(),url)
+            // console.log(222)
+            // this.img = data;
+        }
+
         // 查看课程封面大图
         $('.show-cover-img-big').on('mouseover', function () {
             $(this).find('.img-big').show();

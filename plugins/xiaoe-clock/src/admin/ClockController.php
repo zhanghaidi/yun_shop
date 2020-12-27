@@ -33,7 +33,8 @@ class ClockController extends BaseController
 
         $input = \YunShop::request();
         $limit = 20;
-
+//      打卡链接
+        $clock_link = Setting::get('plugin.xiaoe-clock')['clock_link'];
         if ($type == 1) { // 日历打卡
             // 处理搜索条件
             $where[] = ['type', '=', 1];
@@ -53,6 +54,8 @@ class ClockController extends BaseController
 
             if ($list->total() > 0) {
                 foreach ($list as &$value) {
+//                    打卡分享链接
+                    $value['clock_link'] = $clock_link . '?id='.$value['id'];
                     //总天数,计算总天数
                     $value['count_day'] = floor(($value['end_time'] - $value['start_time']) / 86400);
                     if (time() >= $value['end_time']) {
@@ -87,6 +90,8 @@ class ClockController extends BaseController
                 ->paginate($limit);
             if ($list->total() > 0) {
                 foreach ($list as $k => &$value) {
+//                    打卡分享链接
+                    $value['clock_link'] = $clock_link . '?id='.$value['id'];
                     //作业打卡的作业数
                     $value['task_num'] = DB::table('yz_xiaoe_clock_task')->where('clock_id', $value['id'])->count();
                     if ($value['join_type'] == 1) {//关联课程
