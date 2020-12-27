@@ -131,6 +131,7 @@ class ClockController extends ApiController
 
     }*/
 
+    //创建打卡日记:简单校验了开始结束时间和文本内容校验
     public function clockNoteCreate()
     {
         $clock_id = intval(request()->get('id'));
@@ -139,7 +140,7 @@ class ClockController extends ApiController
             return $this->errorJson('打卡id不能为空');
         }
 
-        $clockInfo = XiaoeClock::get($clock_id);
+        $clockInfo = XiaoeClock::find($clock_id);
         if(empty($clockInfo)){
             return $this->errorJson('打卡不存在或已被删除');
         }
@@ -184,8 +185,10 @@ class ClockController extends ApiController
             return $this->errorJson('评论内容包含敏感词', $sensitive_check);
         }
 
+
+
         // 组装插入数据
-        $content_status = $wxapp_base_service->textCheck($content, false);
+        $content = $wxapp_base_service->textCheck($content, false);
         $params = array(
             'uniacid' => \YunShop::app()->uniacid,
             'user_id' => $member_id,
@@ -307,7 +310,7 @@ class ClockController extends ApiController
         }
 
         // 组装插入数据
-        $content_status = $wxapp_base_service->textCheck($content, false);
+        $content = $wxapp_base_service->textCheck($content, false);
         $params = array(
             'uniacid' => \YunShop::app()->uniacid,
             'user_id' => $member_id,
