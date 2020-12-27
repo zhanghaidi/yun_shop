@@ -14,18 +14,16 @@ class SetController extends BaseController
 
     public function index()
     {
-        $set = Setting::get('plugin.circle');
+        $set = Setting::get('plugin.xiaoe-clock');
         $requestModel = \YunShop::request()->circle;
         if ($requestModel) {
-            if (Setting::set('plugin.circle', $requestModel)) {
-                return $this->message('设置成功', Url::absoluteWeb('plugin.circle.admin.set'));
+            if (Setting::set('plugin.xiaoe-clock', $requestModel)) {
+                return $this->message('设置成功', Url::absoluteWeb('plugin.xiaoe-clock.admin.set'));
             } else {
                 $this->error('设置失败');
             }
         }
-
-
-        return view('Yunshop\Circle::admin.set',
+        return view('Yunshop\XiaoeClock::admin.set',
             [
                 'set' => $set,
             ]
