@@ -31,6 +31,7 @@ class ClockController extends ApiController
 
     private $month;
 
+    private $date; // 2020-12-27
 
 
     public function __construct()
@@ -51,9 +52,7 @@ class ClockController extends ApiController
 
         $this->clockNoteModel = $this->getClockNoteModel();
 
-        $this->page = $this->getPostPage();
-        $this->year = $this->getPostYear();
-        $this->month = $this->getPostMonth();
+        $this->date = $this->getPostDate();
     }
 
     //日历打卡活动详情 ims_yz_xiaoe_clock 默认显示一周的日历 用户一周打卡情况 当天是否打卡 当天的打卡主题
@@ -67,16 +66,15 @@ class ClockController extends ApiController
             ->select('id','type','name','cover_img','text_desc','audio_desc','video_desc','join_type','course_id','price','start_time','end_time','valid_time_start',
                 'valid_time_end','text_length','image_length','video_length','is_cheat_mode','is_resubmit','created_at')
             ->withCount(['hasManyNote', 'hasManyUser'])
-            ->with([
-                'hasManyNote',
-                'hasManyTopic'
-            ])->first();
+            ->first();
+
+        //显示本周本用户打卡状态
 
         $data = [
             'clock' => $clock,
             'clock_status' => $this->getClockStatus($this->member_id),
             'clock_total' => $this->clockNoteModel->count() . "天",
-            'my_clock_log' => $this->getCalendarData()
+            'my_clock_log' => $this->getCalendarWeekData()
         ];
         return $this->successJson('ok', $data);
 
@@ -376,14 +374,19 @@ class ClockController extends ApiController
      *
      * @return array
      */
-    private function getCalendarData()
+    private function getCalendarWeekData()
     {
-        $note_log = $this->getClockNoteData();
+        $startTime = Carbon::now()->startOfWeek()->timestamp;
+        $endTime = Carbon::now()->endOfWeek()->timestamp;
+
+        $note_log = $this->clockNoteModel->where('user_id', $this->member_id)->whereBetween('created_at', [$startTime, $endTime])
+            ->orderBy('created_at', 'desc')->get();
+
         !$note_log && $note_log == [];
 
         $result = [];
         foreach ($note_log as $key => $item) {
-            $result[] = (int)date('d', $item->created_at->timestamp) - 1;
+            $result[] = $item;
         }
 
         return $result;
@@ -407,45 +410,28 @@ class ClockController extends ApiController
             ->paginate(32, '', '', $this->getPostPage());
     }
 
-    //创建前端传递过来的月份
-    private function searchTime()
+    //按月创建
+    private function searchTimeByMonth()
     {
-        $startTime = Carbon::create($this->year, $this->month)->startOfMonth()->timestamp;
-        $endTime = Carbon::create($this->year, $this->month)->endOfMonth()->timestamp;
+        $startTime = Carbon::create($this->date)->startOfMonth()->timestamp;
+        $endTime = Carbon::create($this->date)->endOfMonth()->timestamp;
 
         return [$startTime, $endTime];
     }
 
-
-    /**
-     * 前段提交分页值
-     *
-     * @return int
-     */
-    private function getPostPage()
+    //创建本周数据
+    private function searchTimeByWeek()
     {
-        return \YunShop::request()->page ?: 1;
+
+
+        return [$startTime, $endTime];
     }
 
-    /**
-     * 前段提交月份值
-     *
-     * @return int
-     */
-    private function getPostMonth()
+    private function getPostDate()
     {
-        return (int)\YunShop::request()->month ?: (int)date("m");
+        return \YunShop::request()->date ?: date('Y-m-d');
     }
 
-    /**
-     * 前段提交年份值
-     *
-     * @return int
-     */
-    private function getPostYear()
-    {
-        return (int)\YunShop::request()->year ?: (int)date("Y");
-    }
 
     //打卡记录参与用户ims_yz_xiaoe_clock_users
     protected function userJoin($clock_id, $user_id)
