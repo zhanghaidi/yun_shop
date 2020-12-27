@@ -105,7 +105,7 @@
                         <label class="col-xs-12 col-sm-3 col-md-1 control-label">打卡有效时段</label>
                         <div class="col-sm-9 col-xs-12 col-md-11">
                             开始时间：<input name="valid_time_start" type="text" value="{{ $info['valid_time_start'] }}" required/>&nbsp;&nbsp;&nbsp;&nbsp;结束时间：<input
-                                    name="valid_time_end" type="text" value="{{ $info['valid_time_start'] }}" required/>
+                                    name="valid_time_end" type="text" value="{{ $info['valid_time_end'] }}" required/>
                             <span class="help-block">打卡有效时段，开始时间，结束时间，如果每天早上九点才能打开就想写数字9,如果下午3点打卡结束就填写数字15，不要用空格等特殊字符</span>
                         </div>
                     </div>
@@ -315,6 +315,7 @@
                     <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
                     <div class="col-sm-9 col-xs-12">
                         <input type="hidden" name="type" value="{{ $type }}"/>
+                        <input type="hidden" name="id" value="{{ $id }}"/>
                         <input type="submit" name="submit" value="提交" class="btn btn-success"/>
                     </div>
                 </div>

@@ -228,7 +228,11 @@ class ClockController extends BaseController
     public function clock_edit()
     {
         if (request()->isMethod('post')) {
-
+            $id = request()->get('id', 0);
+            $info = DB::table('yz_xiaoe_clock')->where('id', $id)->first();
+            if (!$info) {
+                return $this->message('打卡不存在', Url::absoluteWeb(''), 'danger');
+            }
             $param = request()->all();
 
             if (!array_key_exists('type', $param) || !in_array($param['type'], [1, 2])) { // 类型
@@ -329,16 +333,16 @@ class ClockController extends BaseController
                 }
             }
             DB::beginTransaction();//开启事务
-            $insert_res = DB::table('yz_xiaoe_clock')->insert($ist_data);
+            $insert_res = DB::table('yz_xiaoe_clock')->where('id', $id)->update($ist_data);
             if (!$insert_res) {
                 DB::rollBack();//事务回滚
-                return $this->message('创建失败', Url::absoluteWeb('plugin.xiaoe-clock.admin.clock.clock_index', ['type' => $param['type']]));
+                return $this->message('编辑失败', Url::absoluteWeb('plugin.xiaoe-clock.admin.clock.clock_index', ['type' => $param['type']]));
             }
             DB::commit();//事务提交
-            return $this->message('创建成功', Url::absoluteWeb('plugin.xiaoe-clock.admin.clock.clock_index', ['type' => $param['type']]));
+            return $this->message('编辑成功', Url::absoluteWeb('plugin.xiaoe-clock.admin.clock.clock_index', ['type' => $param['type']]));
         }
         //编辑详情
-        $id = request()->get('id', 0);
+        $id = request()->get('rid', 0);
         $info = DB::table('yz_xiaoe_clock')->where('id', $id)->first();
         if (!$info) {
             return $this->message('打卡不存在', Url::absoluteWeb(''), 'danger');
