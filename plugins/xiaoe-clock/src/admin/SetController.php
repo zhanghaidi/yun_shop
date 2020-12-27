@@ -15,7 +15,8 @@ class SetController extends BaseController
     public function index()
     {
         $set = Setting::get('plugin.xiaoe-clock');
-        $requestModel = \YunShop::request()->circle;
+
+        $requestModel = \YunShop::request()->clock;
         if ($requestModel) {
             if (Setting::set('plugin.xiaoe-clock', $requestModel)) {
                 return $this->message('设置成功', Url::absoluteWeb('plugin.xiaoe-clock.admin.set'));
