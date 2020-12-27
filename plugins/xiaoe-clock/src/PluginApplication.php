@@ -70,6 +70,15 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'url_params' => '',
                             'parents' => ['xiaoe_clock', 'clock'],
                         ],
+                        'clock_edit' => [
+                            'name' => '编辑打卡活动',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'icon' => '',
+                            'url' => 'plugin.xiaoe-clock.admin.clock.clock_edit',
+                            'url_params' => '',
+                            'parents' => ['xiaoe_clock', 'clock'],
+                        ],
                         'clock_task_list' => [
                             'name' => '主题|作业列表',
                             'permit' => 1,
