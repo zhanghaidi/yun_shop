@@ -11,7 +11,7 @@
                         <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">打卡入口链接</label>
                             <div class="col-sm-9 col-xs-12">
-                                <input type="text" name="clock_link" class="form-control"
+                                <input type="text" name="clock[clock_link]" class="form-control"
                                        value="{{ $set['clock_link'] }}"/>
                             </div>
                         </div>
