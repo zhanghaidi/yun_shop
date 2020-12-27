@@ -394,7 +394,7 @@ class ClockController extends ApiController
 
     private function getClockNoteModel()
     {
-        return XiaoeClockNote::select('id', 'user_id', 'clock_id', 'clock_task_id', 'type', 'text_desc', 'image_desc', 'audio_desc', 'video_desc', 'created_at')->where('clock_id', $this->clock_id);
+        return XiaoeClockNote::select('id', 'user_id', 'clock_id', 'clock_task_id', 'type', 'text_desc', 'image_desc', 'audio_desc', 'video_desc', 'sort','created_at')->where('clock_id', $this->clock_id);
 
     }
 
@@ -419,13 +419,6 @@ class ClockController extends ApiController
         return [$startTime, $endTime];
     }
 
-    //创建本周数据
-    private function searchTimeByWeek()
-    {
-
-
-        return [$startTime, $endTime];
-    }
 
     private function getPostDate()
     {
