@@ -54,7 +54,7 @@ class ClockController extends ApiController
     {
 
         //搜集新加入此打卡的学员
-        $this->userJoin($this->clock_id, $this->member_id);
+        $user = $this->userJoin($this->clock_id, $this->member_id);
 
         $clock = XiaoeClock::where('id', $this->clock_id)
             ->select('id','type','name','cover_img','text_desc','audio_desc','video_desc','join_type','course_id','price','start_time','end_time','valid_time_start',
@@ -111,6 +111,7 @@ class ClockController extends ApiController
         //显示本周本用户打卡状态
         $data = [
             'clock' => $clock,
+            'user' => $user,
             'week_calendar' => $this->getCalendarWeekData()
         ];
         return $this->successJson('ok', $data);
@@ -121,15 +122,9 @@ class ClockController extends ApiController
     //作业打卡活动详情
     public function getHomeWorkClock()
     {
+        $user =  $this->userJoin($this->clock_id, $this->member_id);
 
-        $id = intval(request()->get('id'));
-        if (!$id) {
-            return $this->errorJson('打卡id不能为空');
-        }
-
-        $this->userJoin($this->clock_id, $this->member_id);
-
-        $clock = XiaoeClock::where('id', $id)->withCount(['hasManyNote', 'hasManyUser'])->with(['hasManyNote', 'hasManyTopic'])->with(['myNote' => function ($my_note) {
+        $clock = XiaoeClock::where('id', $this->clock_id)->withCount(['hasManyNote', 'hasManyUser'])->with(['hasManyNote', 'hasManyTopic'])->with(['myNote' => function ($my_note) {
             return $my_note->where('user_id', $this->member_id);
         }])->first();
 
@@ -475,7 +470,9 @@ class ClockController extends ApiController
             'user_id' => $user_id
         );
 
-        XiaoeClockUser::firstOrCreate($params);
+        $user = XiaoeClockUser::firstOrCreate($params);
+
+        return $user;
     }
 
     //用户今天打卡状态
