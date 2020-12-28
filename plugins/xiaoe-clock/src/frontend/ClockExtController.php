@@ -63,7 +63,7 @@ class ClockExtController extends ApiController
         return \YunShop::request()->date ?: date('Y-m-d');
     }
 
-    //获取用户当前周的打卡状态，打卡主题
+    //获取日历打卡，一周打卡详情
     public function getCalendarWeekClock(){
         $week = date('w', time());//周日是零
         $weekname = array('日','一', '二', '三', '四', '五', '六');
