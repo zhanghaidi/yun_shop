@@ -4,7 +4,7 @@
 @section('title', trans($pluginName))
 
 <style>
-.title-key > i {
+.title-key > i,.describe-key > i  {
     margin-right: 20px;
     font-size: 20px;
     color: orange;
@@ -204,7 +204,7 @@
                 <div class="col-xs-12 col-sm-9 col-md-10">
                     <textarea name="data[share_describe]" class="form-control" placeholder="请输入考试名称" rows="4">{{$info['content']['share_describe']}}</textarea>
                     <span class='help-block'>分享描述中支持变量，请双击下面变量，增加到内容尾部</span>
-                    <span class="help-block title-key"><i>{考试名称}</i><i>{成绩得分}</i></span>
+                    <span class="help-block describe-key"><i>{考试名称}</i><i>{成绩得分}</i></span>
                 </div>
             </div>
 
@@ -235,6 +235,11 @@ $(function () {
         _title = $('textarea[name="data[share_title]').val();
         _title += $(this).html();
         $('textarea[name="data[share_title]').val(_title);
+    });
+    $('.describe-key > i').on('dblclick', function(){
+        _title = $('textarea[name="data[share_describe]').val();
+        _title += $(this).html();
+        $('textarea[name="data[share_describe]').val(_title);
     });
 });
 </script>
