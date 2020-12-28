@@ -83,7 +83,7 @@ class ClockController extends ApiController
                             },
                             'joinUser' => function($joinUser) {
                                 return $joinUser->select('clock_id','clock_num','user_id')
-                                    ->where('clock_id', $this->clock_id)->first();
+                                    ->where('clock_id', $this->clock_id);
                             },
 
                             'topic' => function ($topic) {

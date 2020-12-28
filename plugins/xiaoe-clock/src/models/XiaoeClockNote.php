@@ -35,7 +35,7 @@ class XiaoeClockNote extends BaseModel
     //关联加入学员
     public function joinUser()
     {
-        return $this->belongsToMany('Yunshop\XiaoeClock\models\XiaoeClockUser','user_id','user_id');
+        return $this->belongsTo('Yunshop\XiaoeClock\models\XiaoeClockUser','user_id','user_id');
     }
 
     //关联打卡
