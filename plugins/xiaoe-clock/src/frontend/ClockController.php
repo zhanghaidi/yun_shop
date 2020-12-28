@@ -70,7 +70,12 @@ class ClockController extends ApiController
 
                 'hasManyNote' => function($note){
                     return $note->select('id', 'user_id', 'clock_id', 'clock_task_id', 'type', 'text_desc', 'image_desc', 'audio_desc', 'video_desc', 'sort','created_at')
-                        ->withCount(['hasManyLike'])
+                        ->withCount([
+                            'hasManyLike',
+                            'isLike' => function($like) {
+                                return $like->where('user_id', $this->member_id);
+                            }
+                        ])
                         ->with([
                             'user' => function ($user) {
                                 return $user->select('ajy_uid', 'nickname', 'avatarurl');
@@ -247,9 +252,6 @@ class ClockController extends ApiController
             ->withCount([
                 'hasManyLike',
                 'hasManyComment',
-                'isLike' => function($like) {
-                    return $like->where('user_id', $this->member_id);
-                }
             ])
             ->with([
                 'user' => function ($user) {
