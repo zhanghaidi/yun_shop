@@ -200,6 +200,15 @@
             </div>
 
             <div class="form-group">
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label">分享描述</label>
+                <div class="col-xs-12 col-sm-9 col-md-10">
+                    <textarea name="data[share_describe]" class="form-control" placeholder="请输入考试名称" rows="4">{{$info['content']['share_describe']}}</textarea>
+                    <span class='help-block'>分享描述中支持变量，请双击下面变量，增加到内容尾部</span>
+                    <span class="help-block title-key"><i>{考试名称}</i><i>{成绩得分}</i></span>
+                </div>
+            </div>
+
+            <div class="form-group">
                 <label class="col-xs-12 col-sm-3 col-md-2 control-label">分享图片</label>
                 <div class="col-xs-12 col-sm-9 col-md-10">
                     {!! app\common\helpers\ImageHelper::tplFormFieldImage('data[share_image]', $info['content']['share_image'])!!}

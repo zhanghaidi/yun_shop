@@ -46,7 +46,9 @@ class ExaminationController extends ApiController
         $examinationContentRs = $examinationRs->content;
 
         // 获取分享配置中的 {成绩得分}
-        if (strpos($examinationContentRs->share_title, '{成绩得分}') !== false) {
+        if (strpos($examinationContentRs->share_title, '{成绩得分}') !== false ||
+            strpos($examinationContentRs->share_describe, '{成绩得分}') !== false
+        ) {
             $lastAnswerScore = AnswerPaperModel::select('id', 'score_obtain')->where([
                 'member_id' => $memberId,
                 'examination_id' => $examinationRs->id,
@@ -105,6 +107,7 @@ class ExaminationController extends ApiController
                         'now_time' => time(),
                         'remained' => 0,
                         'share_title' => $examinationContentRs->share_title,
+                        'share_describe' => $examinationContentRs->share_describe,
                         'share_image' => yz_tomedia($examinationContentRs->share_image),
                     ];
                     if ($return['duration'] > 0) {
@@ -113,6 +116,10 @@ class ExaminationController extends ApiController
                     $return['share_title'] = str_replace('{考试名称}', $examinationRs->name, $return['share_title']);
                     if (isset($lastAnswerScore)) {
                         $return['share_title'] = str_replace('{成绩得分}', $lastAnswerScore, $return['share_title']);
+                    }
+                    $return['share_describe'] = str_replace('{考试名称}', $examinationRs->name, $return['share_describe']);
+                    if (isset($lastAnswerScore)) {
+                        $return['share_describe'] = str_replace('{成绩得分}', $lastAnswerScore, $return['share_describe']);
                     }
 
                     foreach ($answerPaperContent as $k => $v) {
@@ -240,6 +247,7 @@ class ExaminationController extends ApiController
             'now_time' => time(),
             'remained' => 0,
             'share_title' => $examinationContentRs->share_title,
+            'share_describe' => $examinationContentRs->share_describe,
             'share_image' => yz_tomedia($examinationContentRs->share_image),
         ];
         if ($return['duration'] > 0) {
@@ -248,6 +256,10 @@ class ExaminationController extends ApiController
         $return['share_title'] = str_replace('{考试名称}', $examinationRs->name, $return['share_title']);
         if (isset($lastAnswerScore)) {
             $return['share_title'] = str_replace('{成绩得分}', $lastAnswerScore, $return['share_title']);
+        }
+        $return['share_describe'] = str_replace('{考试名称}', $examinationRs->name, $return['share_describe']);
+        if (isset($lastAnswerScore)) {
+            $return['share_describe'] = str_replace('{成绩得分}', $lastAnswerScore, $return['share_describe']);
         }
 
         foreach ($paperQuestionRs as $k => $v) {
