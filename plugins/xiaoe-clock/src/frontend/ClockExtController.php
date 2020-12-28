@@ -52,24 +52,28 @@ class ClockExtController extends ApiController
         $this->clockNoteModel = $this->getClockNoteModel();
         $this->date = $this->getPostDate();
     }
+
     private function getClockNoteModel()
     {
-        return XiaoeClockNote::select('id', 'user_id', 'clock_id', 'clock_task_id', 'type', 'text_desc', 'image_desc', 'audio_desc', 'video_desc', 'sort','created_at')->where('clock_id', $this->clock_id);
+        return XiaoeClockNote::select('id', 'user_id', 'clock_id', 'clock_task_id', 'type', 'text_desc', 'image_desc', 'audio_desc', 'video_desc', 'sort', 'created_at')->where('clock_id', $this->clock_id);
     }
+
     private function getPostDate()
     {
         return \YunShop::request()->date ?: date('Y-m-d');
     }
+
     //获取日历打卡，一周打卡详情
-    public function getCalendarWeekClock(){
+    public function getCalendarWeekClock()
+    {
         $week = date('w', time());//周日是零
-        $weekname = array('日','一', '二', '三', '四', '五', '六');
+        $weekname = array('日', '一', '二', '三', '四', '五', '六');
         $data = [];
         for ($i = 0; $i <= 6; $i++) {
             $data[$i]['date'] = date('Y-m-d', strtotime('+' . $i - $week . ' days', time()));
             $data[$i]['week'] = $weekname[$i];
-            $startTime = strtotime($data[$i]['date'] .'00:00:00');
-            $endTime = strtotime($data[$i]['date'] .'23:59:59');
+            $startTime = strtotime($data[$i]['date'] . '00:00:00');
+            $endTime = strtotime($data[$i]['date'] . '23:59:59');
             if ($startTime <= time()) {
                 //用户当天是否打卡
                 $data[$i]['status'] = $this->getClockStatus($startTime, $endTime);
@@ -82,6 +86,7 @@ class ClockExtController extends ApiController
         }
         return $this->successJson('获取成功', $data);
     }
+
     //获取用户打卡状态
     private function getClockStatus($startTime, $endTime)
     {
@@ -95,11 +100,12 @@ class ClockExtController extends ApiController
         }
         return $status;
     }
+
 //    获取用户主题
     private function getCalendarClockTheme($toDayTime)
     {
-        $topic = XiaoeClockTopic::where(['start_time' => $toDayTime,'clock_id' => $this->clock_id])
-            ->select('name','cover_img','text_desc','video_desc','join_num','comment_num')
+        $topic = XiaoeClockTopic::where(['start_time' => $toDayTime, 'clock_id' => $this->clock_id])
+            ->select('name', 'cover_img', 'text_desc', 'video_desc', 'join_num', 'comment_num')
             ->first();
         return $topic;
     }
