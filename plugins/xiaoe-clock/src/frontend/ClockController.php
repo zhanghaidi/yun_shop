@@ -294,7 +294,7 @@ class ClockController extends ApiController
 
         $note->user->clock_num = XiaoeClockUser::where(['clock_id' => $note->clock_id, 'user_id' => $note->user_id])->value('clock_num'); //用户签到数量
 
-        $note->image_desc = json_decode($note->image_desc, true); //处理图片
+        //$note->image_desc = json_decode($note->image_desc, true); //处理图片
 
         return $this->successJson('打卡日记详情', $note);
 
