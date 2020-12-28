@@ -476,7 +476,7 @@ class ClockController extends ApiController
     }
 
     //用户今天打卡状态
-    private function getClockStatus($startTime, $endTime)
+    private function getClockStatus($startTime = '', $endTime= '')
     {
         $todayStart = $startTime ? $startTime : Carbon::now()->startOfDay()->timestamp;
         $todayEnd = $endTime ? $endTime : Carbon::now()->endOfDay()->timestamp;
