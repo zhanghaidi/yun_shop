@@ -412,8 +412,9 @@ class ClockController extends ApiController
         for ($i = 0; $i <= 6; $i++) {
             $data[$i]['date'] = date('Y-m-d', strtotime('+' . $i - $week . ' days', time()));
             $data[$i]['week'] = $weekname[$i];
-            $startTime = strtotime($data[$i]['date'] . '00:00:00');
-            $endTime = strtotime($data[$i]['date'] . '23:59:59');
+            $startTime = Carbon::parse($data[$i]['date'])->startOfDay();
+            $endTime = Carbon::parse($data[$i]['date'])->endOfDay();
+
             //用户当天是否打卡
             $data[$i]['status'] = $this->getClockStatus($startTime, $endTime);
             //是否有主题 获取用户主题
@@ -482,7 +483,7 @@ class ClockController extends ApiController
         $todayStart = $startTime;
         $todayEnd = $endTime;
 
-        $todayNoteLog = $this->clockNoteModel->where('user_id', $this->member_id)->whereBetween('created_at', [$todayStart, $todayEnd])->first();
+        $todayNoteLog = XiaoeClockNote::select('id', 'user_id', 'clock_id', 'clock_task_id', 'type', 'text_desc', 'image_desc', 'audio_desc', 'video_desc', 'sort','created_at')->where(['clock_id'=>$this->clock_id, 'user_id'=>$this->member_id])->whereBetween('created_at', [$todayStart, $todayEnd])->first();
 
         if (!empty($todayNoteLog)) {
             $status = 1;
