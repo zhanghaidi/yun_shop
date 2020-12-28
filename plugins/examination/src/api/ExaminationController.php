@@ -454,7 +454,31 @@ class ExaminationController extends ApiController
             'status' => 2,
         ])->first();
         if (!isset($answerRs->id)) {
-            return $this->errorJson('答卷数据不存在', ['status' => 1]);
+            $answerPaperRs = AnswerPaperModel::select('id', 'examination_id')->where([
+                'id' => $id,
+                'uniacid' => \YunShop::app()->uniacid,
+            ])->first();
+            if (isset($answerPaperRs->id)) {
+                $userAnserPaperRs = AnswerPaperModel::select('id')->where([
+                    'member_id' => $memberId,
+                    'uniacid' => \YunShop::app()->uniacid,
+                    'status' => 2,
+                ])->orderBy('id', 'desc')->first();
+                if (isset($userAnserPaperRs->id)) {
+                    return $this->errorJson('查看自己的答卷', [
+                        'status' => 2,
+                        'id' => $userAnserPaperRs->id,
+                        'examination_id' => $answerPaperRs->examination_id,
+                    ]);
+                } else {
+                    return $this->errorJson('没有答卷，请作答', [
+                        'status' => 3,
+                        'examination_id' => $answerPaperRs->examination_id,
+                    ]);
+                }
+            } else {
+                return $this->errorJson('答卷数据不存在', ['status' => 1]);
+            }
         }
 
         $examinationRs = ExaminationModel::select('id', 'name', 'url', 'end', 'is_score')->where([
@@ -478,6 +502,7 @@ class ExaminationController extends ApiController
             'question_correct' => $answerRs->question_correct,
             'complete_at' => strtotime($answerRs->updated_at),
             'end_at' => isset($examinationRs->end) ? strtotime($examinationRs->end) : 0,
+            'examination_id' => $examinationRs->id,
             'share_title' => $examinationContentRs->share_title,
             'share_describe' => $examinationContentRs->share_describe,
             'share_image' => yz_tomedia($examinationContentRs->share_image),
