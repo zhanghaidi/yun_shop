@@ -49,9 +49,7 @@ class ClockExtController extends ApiController
         if (!$this->clock_id) {
             return $this->errorJson('打卡id不能为空');
         }
-
         $this->clockNoteModel = $this->getClockNoteModel();
-
         $this->date = $this->getPostDate();
     }
     private function getClockNoteModel()
@@ -62,7 +60,6 @@ class ClockExtController extends ApiController
     {
         return \YunShop::request()->date ?: date('Y-m-d');
     }
-
     //获取日历打卡，一周打卡详情
     public function getCalendarWeekClock(){
         $week = date('w', time());//周日是零
@@ -71,7 +68,6 @@ class ClockExtController extends ApiController
         for ($i = 0; $i <= 6; $i++) {
             $data[$i]['date'] = date('Y-m-d', strtotime('+' . $i - $week . ' days', time()));
             $data[$i]['week'] = $weekname[$i];
-
             $startTime = strtotime($data[$i]['date'] .'00:00:00');
             $endTime = strtotime($data[$i]['date'] .'23:59:59');
             if ($startTime <= time()) {
@@ -83,7 +79,6 @@ class ClockExtController extends ApiController
                 $data[$i]['status'] = 0;
                 $data[$i]['theme'] = null;
             }
-
         }
         return $this->successJson('获取成功', $data);
     }
@@ -93,13 +88,11 @@ class ClockExtController extends ApiController
         $todayStart = $startTime;
         $todayEnd = $endTime;
         $todayNoteLog = $this->clockNoteModel->where('user_id', $this->member_id)->whereBetween('created_at', [$todayStart, $todayEnd])->first();
-
         if (!empty($todayNoteLog)) {
             $status = 1;
         } else {
             $status = 0;
         }
-
         return $status;
     }
 //    获取用户主题
@@ -108,8 +101,6 @@ class ClockExtController extends ApiController
         $topic = XiaoeClockTopic::where(['start_time' => $toDayTime,'clock_id' => $this->clock_id])
             ->select('name','cover_img','text_desc','video_desc','join_num','comment_num')
             ->first();
-
         return $topic;
     }
-
 }
