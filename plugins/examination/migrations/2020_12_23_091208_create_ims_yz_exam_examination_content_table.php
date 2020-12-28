@@ -15,6 +15,9 @@ class CreateImsYzExamExaminationContentTable extends Migration
                 $table->string('share_title', 200)->default('')->comment('分享标题');
                 $table->string('share_describe', 200)->default('')->comment('分享描述');
                 $table->string('share_image', 200)->default('')->comment('分享图片URL');
+                $table->string('share_title_after', 200)->default('')->comment('答题后分享标题');
+                $table->string('share_describe_after', 200)->default('')->comment('答题后分享描述');
+                $table->string('share_image_after', 200)->default('')->comment('答题后分享图片URL');
                 $table->text('content')->nullable()->comment('内容');
                 $table->integer('created_at')->nullable();
                 $table->integer('updated_at')->nullable();
