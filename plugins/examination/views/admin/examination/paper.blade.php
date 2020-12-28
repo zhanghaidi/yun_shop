@@ -106,7 +106,12 @@
                 @endif
 
                 <div class="col-xs-12 bg-info">
-                    得分: {{$value['obtain']}}
+                    得分: {{$value['obtain']}} 、 该题分值: {{$value['score']}}
+                    @if($value['type'] == 2)
+                        、@if($value['option']['option'] == 1) 漏选(/多选)扣除 {{$value['option']['score']}} 分
+                        @elseif($value['option']['option'] == 2) 漏选(/多选)每个选项扣除 {{$value['option']['score']}} 分
+                        @endif
+                    @endif
                 </div>
 
             </div>

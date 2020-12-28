@@ -143,6 +143,9 @@ class ExaminationController extends BaseController
                 $content = new ExaminationContentModel;
                 $content->examination_id = $examination->id;
             }
+            $content->share_title = isset($data['share_title']) ? $data['share_title'] : '';
+            $content->share_describe = isset($data['share_describe']) ? $data['share_describe'] : '';
+            $content->share_image = isset($data['share_image']) ? $data['share_image'] : '';
             if (isset($data['content'])) {
                 $data['content'] = strip_tags($data['content']);
             } else {
