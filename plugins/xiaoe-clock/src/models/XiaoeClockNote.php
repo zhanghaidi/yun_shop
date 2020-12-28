@@ -32,6 +32,12 @@ class XiaoeClockNote extends BaseModel
         return $this->belongsTo('App\backend\modules\tracking\models\DiagnosticServiceUser','user_id','ajy_uid');
     }
 
+    //关联加入学员
+    public function joinUser()
+    {
+        return $this->belongsToMany('Yunshop\XiaoeClock\models\XiaoeClockUser','user_id','user_id');
+    }
+
     //关联打卡
     public function clock()
     {
