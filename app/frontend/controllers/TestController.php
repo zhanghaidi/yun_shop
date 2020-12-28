@@ -171,11 +171,11 @@ class TestController extends BaseController
 
         $week = date('w', time());//周日是零
 
-        $weekname = array('星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日');
+        $weekname = array('星期日','星期一', '星期二', '星期三', '星期四', '星期五', '星期六');
         //星期日排到末位
-        if (empty($week)) {
-            $week = 7;
-        }
+//        if (empty($week)) {
+//            $week = 7;
+//        }
         for ($i = 0; $i <= 6; $i++) {
             $data[$i]['date'] = date('Y-m-d', strtotime('+' . $i + 1 - $week . ' days', time()));
             $data[$i]['week'] = $weekname[$i];
