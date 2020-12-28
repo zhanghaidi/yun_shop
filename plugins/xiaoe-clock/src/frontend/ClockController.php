@@ -81,6 +81,11 @@ class ClockController extends ApiController
                             'user' => function ($user) {
                                 return $user->select('ajy_uid', 'nickname', 'avatarurl');
                             },
+                            'joinUser' => function($joinUser) {
+                                return $joinUser->select('clock_id','clock_num','user_id')
+                                    ->where('clock_id', $this->clock_id)->first();
+                            },
+
                             'topic' => function ($topic) {
                                 return $topic->select('id', 'clock_id', 'type', 'name');
                             },
