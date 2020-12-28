@@ -3,6 +3,14 @@
 @section('content')
 @section('title', trans($pluginName))
 
+<style>
+.title-key > i {
+    margin-right: 20px;
+    font-size: 20px;
+    color: orange;
+    font-style: normal;
+}
+</style>
 <div class="rightlist">
     <div class="panel panel-default">
         <div class="panel-heading">考试编辑</div>
@@ -179,6 +187,25 @@
                 </div>
             </div>
 
+            <hr>
+            <div><b>分享设置:</b></div>
+
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label">分享标题</label>
+                <div class="col-xs-12 col-sm-9 col-md-10">
+                    <textarea name="data[share_title]" class="form-control" placeholder="请输入考试名称" rows="4">{{$info['content']['share_title']}}</textarea>
+                    <span class='help-block'>分享标题中支持变量，请双击下面变量，增加到内容尾部</span>
+                    <span class="help-block title-key"><i>{考试名称}</i><i>{成绩得分}</i></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label">分享图片</label>
+                <div class="col-xs-12 col-sm-9 col-md-10">
+                    {!! app\common\helpers\ImageHelper::tplFormFieldImage('data[share_image]', $info['content']['share_image'])!!}
+                </div>
+            </div>
+
             <div class="form-group">
                 <label class="col-sm-2 control-label"></label>
                     <div class="col-sm-2">
@@ -194,6 +221,12 @@
 $(function () {
     $('input[name="data[is_question]"]').parents('.form-group').hide('slow');
     $('input[name="data[is_answer]"]').parents('.form-group').hide('slow');
+
+    $('.title-key > i').on('dblclick', function(){
+        _title = $('textarea[name="data[share_title]').val();
+        _title += $(this).html();
+        $('textarea[name="data[share_title]').val(_title);
+    });
 });
 </script>
 @endsection
