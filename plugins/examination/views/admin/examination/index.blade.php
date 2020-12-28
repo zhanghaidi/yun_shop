@@ -97,7 +97,7 @@
                             @endif
                         </td>
                         <td>
-                            <a class='btn btn-default js-clip' href="javascript:void(0);" data-clipboard-text="https://www.aijuyi.net/static/ajy-h5/index.html#/?id={{$value['id']}}" data-url="https://www.aijuyi.net/static/ajy-h5/index.html#/?id={{$value['id']}}" title="复制访问链接"><i class="fa fa-share-alt"></i></a>
+                            <a class='btn btn-default js-clip' href="javascript:void(0);" data-clipboard-text="https://www.aijuyi.net/static/ajy-h5/index.html#/pages/examination/answer/index?id={{$value['id']}}" data-url="https://www.aijuyi.net/static/ajy-h5/index.html#/pages/examination/answer/index?id={{$value['id']}}" title="复制访问链接"><i class="fa fa-share-alt"></i></a>
 
                             <a class='btn btn-success' href="{{ yzWebUrl('plugin.examination.admin.examination.answer', ['id' => $value['id']]) }}" title="批阅答卷"><i class="fa fa-tasks"></i></a>
 

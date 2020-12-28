@@ -464,12 +464,13 @@ class ExaminationController extends ApiController
         if (!isset($examinationRs->id)) {
             return $this->errorJson('考试数据不存在', ['status' => 1]);
         }
+        $examinationContentRs = $examinationRs->content;
 
         $return = [
             'id' => $answerRs->id,
             'name' => $examinationRs->name,
             'url' => yz_tomedia($examinationRs->url),
-            'content' => html_entity_decode($examinationRs->content->content),
+            'content' => html_entity_decode($examinationContentRs->content),
             'question' => [],
             'score_total' => $answerRs->score_total,
             'score_obtain' => $answerRs->score_obtain,
@@ -477,10 +478,19 @@ class ExaminationController extends ApiController
             'question_correct' => $answerRs->question_correct,
             'complete_at' => strtotime($answerRs->updated_at),
             'end_at' => isset($examinationRs->end) ? strtotime($examinationRs->end) : 0,
+            'share_title' => $examinationContentRs->share_title,
+            'share_describe' => $examinationContentRs->share_describe,
+            'share_image' => yz_tomedia($examinationContentRs->share_image),
         ];
         if ($examinationRs->is_score != 1) {
             $return['score_obtain'] = -1;
         }
+
+        $return['share_title'] = str_replace('{考试名称}', $examinationRs->name, $return['share_title']);
+        $return['share_title'] = str_replace('{成绩得分}', $answerRs->score_obtain, $return['share_title']);
+        $return['share_describe'] = str_replace('{考试名称}', $examinationRs->name, $return['share_describe']);
+        $return['share_describe'] = str_replace('{成绩得分}', $answerRs->score_obtain, $return['share_describe']);
+
         $contentRs = json_decode($answerRs->content->content, true);
         foreach ($contentRs as $k => $v) {
             $tempAnswer = [];
