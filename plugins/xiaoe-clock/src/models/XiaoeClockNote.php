@@ -51,6 +51,16 @@ class XiaoeClockNote extends BaseModel
     }
 
 
+    //获取器转为数组
+    public function getImageDescAttribute($value){
+        return json_decode($value, true);
+    }
+
+    /*public function getActionIdAttribute(){
+        return $this->action;
+    }*/
+
+
 
 
 
