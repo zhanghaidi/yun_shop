@@ -414,15 +414,16 @@ class ClockController extends ApiController
             $data[$i]['week'] = $weekname[$i];
             $startTime = strtotime($data[$i]['date'] . '00:00:00');
             $endTime = strtotime($data[$i]['date'] . '23:59:59');
-            if ($startTime <= time()) {
-                //用户当天是否打卡
-                $data[$i]['status'] = $this->getClockStatus($startTime, $endTime);
-                //是否有主题 获取用户主题
-                $data[$i]['theme'] = $this->getCalendarClockTheme($startTime);
+            //用户当天是否打卡
+            $data[$i]['status'] = $this->getClockStatus($startTime, $endTime);
+            //是否有主题 获取用户主题
+            $data[$i]['theme'] = $this->getCalendarClockTheme($startTime);
+            /*if ($startTime <= time()) {
+
             } else {
                 $data[$i]['status'] = 0;
                 $data[$i]['theme'] = null;
-            }
+            }*/
         }
 
         return $data;
