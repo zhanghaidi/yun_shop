@@ -483,7 +483,7 @@ class ClockController extends ApiController
         $todayStart = $startTime;
         $todayEnd = $endTime;
 
-        $todayNoteLog = XiaoeClockNote::select('id', 'user_id', 'clock_id', 'clock_task_id', 'type', 'text_desc', 'image_desc', 'audio_desc', 'video_desc', 'sort','created_at')->where(['clock_id'=>$this->clock_id, 'user_id'=>$this->member_id])->whereBetween('created_at', [$todayStart, $todayEnd])->first();
+        $todayNoteLog = XiaoeClockNote::where(['clock_id'=>$this->clock_id,'user_id'=> $this->member_id])->whereBetween('created_at', [$todayStart, $todayEnd])->first();
 
         if (!empty($todayNoteLog)) {
             $status = 1;
