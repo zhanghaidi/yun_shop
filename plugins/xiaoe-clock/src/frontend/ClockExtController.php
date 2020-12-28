@@ -49,59 +49,64 @@ class ClockExtController extends ApiController
         if (!$this->clock_id) {
             return $this->errorJson('打卡id不能为空');
         }
-
         $this->clockNoteModel = $this->getClockNoteModel();
-
         $this->date = $this->getPostDate();
     }
+
     private function getClockNoteModel()
     {
-        return XiaoeClockNote::select('id', 'user_id', 'clock_id', 'clock_task_id', 'type', 'text_desc', 'image_desc', 'audio_desc', 'video_desc', 'sort','created_at')->where('clock_id', $this->clock_id);
+        return XiaoeClockNote::select('id', 'user_id', 'clock_id', 'clock_task_id', 'type', 'text_desc', 'image_desc', 'audio_desc', 'video_desc', 'sort', 'created_at')->where('clock_id', $this->clock_id);
     }
+
     private function getPostDate()
     {
         return \YunShop::request()->date ?: date('Y-m-d');
     }
 
-    //获取用户当前周的打卡状态，打卡主题
-    public function getCalendarWeekClock(){
+    //获取日历打卡，一周打卡详情
+    public function getCalendarWeekClock()
+    {
         $week = date('w', time());//周日是零
-        $weekname = array('日','一', '二', '三', '四', '五', '六');
+        $weekname = array('日', '一', '二', '三', '四', '五', '六');
         $data = [];
         for ($i = 0; $i <= 6; $i++) {
             $data[$i]['date'] = date('Y-m-d', strtotime('+' . $i - $week . ' days', time()));
             $data[$i]['week'] = $weekname[$i];
-
-            $startTime = strtotime($data[$i]['date'] .'00:00:00');
-            $endTime = strtotime($data[$i]['date'] .'23:59:59');
-            //用户当天是否打卡
-            $data[$i]['status'] = $this->getClockStatus($startTime,$endTime);
-            //是否有主题 获取用户主题
-            $data[$i]['theme'] = $this->getCalendarClockTheme($startTime);
+            $startTime = strtotime($data[$i]['date'] . '00:00:00');
+            $endTime = strtotime($data[$i]['date'] . '23:59:59');
+            if ($startTime <= time()) {
+                //用户当天是否打卡
+                $data[$i]['status'] = $this->getClockStatus($startTime, $endTime);
+                //是否有主题 获取用户主题
+                $data[$i]['theme'] = $this->getCalendarClockTheme($startTime);
+            } else {
+                $data[$i]['status'] = 0;
+                $data[$i]['theme'] = null;
+            }
         }
         return $this->successJson('获取成功', $data);
     }
+
     //获取用户打卡状态
     private function getClockStatus($startTime, $endTime)
     {
         $todayStart = $startTime;
         $todayEnd = $endTime;
         $todayNoteLog = $this->clockNoteModel->where('user_id', $this->member_id)->whereBetween('created_at', [$todayStart, $todayEnd])->first();
-
         if (!empty($todayNoteLog)) {
             $status = 1;
         } else {
             $status = 0;
         }
-
         return $status;
     }
+
 //    获取用户主题
     private function getCalendarClockTheme($toDayTime)
     {
-        $topic = XiaoeClockTopic::where(['start_time' => $toDayTime,'clock_id' => $this->clock_id])->select('name','cover_img','text_desc','video_desc','join_num','comment_num')->with(['hasManyUser'])->first();
-
+        $topic = XiaoeClockTopic::where(['start_time' => $toDayTime, 'clock_id' => $this->clock_id])
+            ->select('name', 'cover_img', 'text_desc', 'video_desc', 'join_num', 'comment_num')
+            ->first();
         return $topic;
     }
-
 }
