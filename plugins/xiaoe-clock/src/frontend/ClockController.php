@@ -66,6 +66,45 @@ class ClockController extends ApiController
             ->select('id','type','name','cover_img','text_desc','audio_desc','video_desc','join_type','course_id','price','start_time','end_time','valid_time_start',
                 'valid_time_end','text_length','image_length','video_length','is_cheat_mode','is_resubmit','created_at')
             ->withCount(['hasManyNote', 'hasManyUser'])
+            ->with([
+                'hasManyUser' => function($joinUser){
+                    return $joinUser->select('clock_id','clock_task_id','type','user_id','created_at')
+                        ->with(['user'=>function($user){
+                            return $user->select('ajy_uid', 'nickname', 'avatarurl');
+                        }]);
+                },
+
+                'hasManyNote' => function($note){
+                    return $note->select('id', 'user_id', 'clock_id', 'clock_task_id', 'type', 'text_desc', 'image_desc', 'audio_desc', 'video_desc', 'sort','created_at')
+                        ->withCount(['hasManyLike'])
+                        ->with([
+                            'user' => function ($user) {
+                                return $user->select('ajy_uid', 'nickname', 'avatarurl');
+                            },
+                            'joinUser' => function($joinUser) {
+                                return $joinUser->select('clock_id','clock_num','user_id')
+                                    ->where('clock_id', $this->clock_id);
+                            },
+
+                            'topic' => function ($topic) {
+                                return $topic->select('id', 'clock_id', 'type', 'name');
+                            },
+                            'hasManyLike' => function ($like) {
+                                return $like->select('clock_users_id', 'user_id', 'created_at')->with([
+                                    'user' => function ($user) {
+                                        return $user->select('ajy_uid', 'nickname', 'avatarurl');
+                                    }
+                                ]);
+                            },
+                            'hasManyComment' => function ($comment) {
+                                return $comment->select('id', 'clock_users_id', 'user_id', 'content', 'parent_id', 'is_reply', 'created_at')->with(['user' => function ($user) {
+                                    $user->select('ajy_uid', 'nickname', 'avatarurl');
+                                }])->orderBy('id', 'desc');
+                            },
+                        ]);
+                },
+
+            ])
             ->first();
 
         //显示本周本用户打卡状态
