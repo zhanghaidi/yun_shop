@@ -412,10 +412,10 @@ class ClockController extends ApiController
         for ($i = 0; $i <= 6; $i++) {
             $data[$i]['date'] = date('Y-m-d', strtotime('+' . $i - $week . ' days', time()));
             $data[$i]['week'] = $weekname[$i];
-            //$startTime = Carbon::parse($data[$i]['date'])->startOfDay();
-            //$endTime = Carbon::parse($data[$i]['date'])->endOfDay();
-            $startTime = strtotime($data[$i]['date'] . '00:00:00');
-            $endTime = strtotime($data[$i]['date'] . '23:59:59');
+            $startTime = Carbon::parse($data[$i]['date'])->startOfDay()->timestamp;
+            $endTime = Carbon::parse($data[$i]['date'])->endOfDay()->timestamp;
+            //$startTime = strtotime($data[$i]['date'] . '00:00:00');
+            //$endTime = strtotime($data[$i]['date'] . '23:59:59');
             //用户当天是否打卡
             $data[$i]['status'] = $this->getClockStatus($startTime, $endTime);
             //是否有主题 获取用户主题
