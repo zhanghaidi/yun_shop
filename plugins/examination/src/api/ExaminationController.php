@@ -45,30 +45,6 @@ class ExaminationController extends ApiController
         }
         $examinationContentRs = $examinationRs->content;
 
-        // 获取分享配置中的 {成绩得分}
-        if (strpos($examinationContentRs->share_title, '{成绩得分}') !== false ||
-            strpos($examinationContentRs->share_describe, '{成绩得分}') !== false
-        ) {
-            $lastAnswerScore = AnswerPaperModel::select('id', 'score_obtain')->where([
-                'member_id' => $memberId,
-                'examination_id' => $examinationRs->id,
-                'uniacid' => $examinationRs->uniacid,
-                'status' => 2,
-            ])->orderBy('id', 'desc')->first();
-            if (isset($lastAnswerScore->id)) {
-                $lastAnswerScore = $lastAnswerScore->score_obtain;
-            } else {
-                $lastAnswerScore = PaperModel::select('id', 'score')
-                    ->where('id', $examinationRs->paper_id)->first();
-                if (isset($lastAnswerScore->id)) {
-                    $lastAnswerScore = $lastAnswerScore->score;
-                } else {
-                    $lastAnswerScore = 100;
-                }
-                $lastAnswerScore = intval(lastAnswerScore * mt_rand(1, 6) / 10);
-            }
-        }
-
         // 如果有一天内未完成答卷，则继续进行
         $answerPaperRs = AnswerPaperModel::select('id', 'status', 'created_at')->where([
             'member_id' => $memberId,
@@ -112,14 +88,6 @@ class ExaminationController extends ApiController
                     ];
                     if ($return['duration'] > 0) {
                         $return['remained'] = $return['duration'] * 60 - ($nowTime - $lastTime);
-                    }
-                    $return['share_title'] = str_replace('{考试名称}', $examinationRs->name, $return['share_title']);
-                    if (isset($lastAnswerScore)) {
-                        $return['share_title'] = str_replace('{成绩得分}', $lastAnswerScore, $return['share_title']);
-                    }
-                    $return['share_describe'] = str_replace('{考试名称}', $examinationRs->name, $return['share_describe']);
-                    if (isset($lastAnswerScore)) {
-                        $return['share_describe'] = str_replace('{成绩得分}', $lastAnswerScore, $return['share_describe']);
                     }
 
                     foreach ($answerPaperContent as $k => $v) {
@@ -252,14 +220,6 @@ class ExaminationController extends ApiController
         ];
         if ($return['duration'] > 0) {
             $reutrn['remained'] = $return['duration'] * 60;
-        }
-        $return['share_title'] = str_replace('{考试名称}', $examinationRs->name, $return['share_title']);
-        if (isset($lastAnswerScore)) {
-            $return['share_title'] = str_replace('{成绩得分}', $lastAnswerScore, $return['share_title']);
-        }
-        $return['share_describe'] = str_replace('{考试名称}', $examinationRs->name, $return['share_describe']);
-        if (isset($lastAnswerScore)) {
-            $return['share_describe'] = str_replace('{成绩得分}', $lastAnswerScore, $return['share_describe']);
         }
 
         foreach ($paperQuestionRs as $k => $v) {
@@ -503,9 +463,9 @@ class ExaminationController extends ApiController
             'complete_at' => strtotime($answerRs->updated_at),
             'end_at' => isset($examinationRs->end) ? strtotime($examinationRs->end) : 0,
             'examination_id' => $examinationRs->id,
-            'share_title' => $examinationContentRs->share_title,
-            'share_describe' => $examinationContentRs->share_describe,
-            'share_image' => yz_tomedia($examinationContentRs->share_image),
+            'share_title' => $examinationContentRs->share_title_after,
+            'share_describe' => $examinationContentRs->share_describe_after,
+            'share_image' => yz_tomedia($examinationContentRs->share_image_after),
         ];
         if ($examinationRs->is_score != 1) {
             $return['score_obtain'] = -1;

@@ -146,6 +146,9 @@ class ExaminationController extends BaseController
             $content->share_title = isset($data['share_title']) ? $data['share_title'] : '';
             $content->share_describe = isset($data['share_describe']) ? $data['share_describe'] : '';
             $content->share_image = isset($data['share_image']) ? $data['share_image'] : '';
+            $content->share_title_after = isset($data['share_title_after']) ? $data['share_title_after'] : '';
+            $content->share_describe_after = isset($data['share_describe_after']) ? $data['share_describe_after'] : '';
+            $content->share_image_after = isset($data['share_image_after']) ? $data['share_image_after'] : '';
             if (isset($data['content'])) {
                 $data['content'] = strip_tags($data['content']);
             } else {
