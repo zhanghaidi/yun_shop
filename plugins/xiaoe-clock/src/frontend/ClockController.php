@@ -192,7 +192,7 @@ class ClockController extends ApiController
         }
 
         //用户今日打卡状态
-        $status = $this->getClockStatus();
+        $status = $this->getClockStatus(Carbon::now()->startOfDay()->timestamp, Carbon::now()->endOfDay()->timestamp);
         if ($status == 1) {
             return $this->errorJson('今日已打卡');
         }
@@ -477,10 +477,10 @@ class ClockController extends ApiController
     }
 
     //用户今天打卡状态
-    private function getClockStatus($startTime = '', $endTime= '')
+    private function getClockStatus($startTime, $endTime)
     {
-        $todayStart = $startTime ? $startTime : Carbon::now()->startOfDay()->timestamp;
-        $todayEnd = $endTime ? $endTime : Carbon::now()->endOfDay()->timestamp;
+        $todayStart = $startTime;
+        $todayEnd = $endTime;
 
         $todayNoteLog = $this->clockNoteModel->where('user_id', $this->member_id)->whereBetween('created_at', [$todayStart, $todayEnd])->first();
 
