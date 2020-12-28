@@ -50,15 +50,18 @@ class XiaoeClockNote extends BaseModel
         return $this->belongsTo('Yunshop\XiaoeClock\models\XiaoeClockTopic','clock_task_id','id');
     }
 
+    //是否点赞
+    public function isLike()
+    {
+        return $this->hasOne('Yunshop\XiaoeClock\models\XiaoeClockNoteLike', 'clock_users_id', 'id');
+    }
+
 
     //获取器转为数组
     public function getImageDescAttribute($value){
         return json_decode($value, true);
     }
 
-    /*public function getActionIdAttribute(){
-        return $this->action;
-    }*/
 
 
 

@@ -25,12 +25,6 @@ class ClockController extends ApiController
 
     private $clockNoteModel;
 
-    private $page;
-
-    private $year;
-
-    private $month;
-
     private $date; // 2020-12-27
 
 
@@ -104,22 +98,18 @@ class ClockController extends ApiController
                         ]);
                 },
 
-            ])
-            ->first();
+            ])->first();
 
+        if (!$clock) {
+            return $this->errorJson('不存在数据');
+        }
         //显示本周本用户打卡状态
-
         $data = [
             'clock' => $clock,
             'week_calendar' => $this->getCalendarWeekData()
         ];
         return $this->successJson('ok', $data);
 
-        if (!$clock) {
-            return $this->errorJson('不存在数据');
-        }
-
-        return $this->successJson('success', $clock);
     }
 
 
@@ -254,7 +244,13 @@ class ClockController extends ApiController
 
         //关联用户打卡天数、关联主题主题参与人数和打卡数 关联评论
         $note = $this->clockNoteModel->where('id', $note_id)
-            ->withCount(['hasManyLike', 'hasManyComment'])
+            ->withCount([
+                'hasManyLike',
+                'hasManyComment',
+                'isLike' => function($like) {
+                    return $like->where('user_id', $this->member_id);
+                }
+            ])
             ->with([
                 'user' => function ($user) {
                     return $user->select('ajy_uid', 'nickname', 'avatarurl');
@@ -435,31 +431,30 @@ class ClockController extends ApiController
         return $data;
     }
 
-    private function getClockNoteModel()
-    {
-        return XiaoeClockNote::select('id', 'user_id', 'clock_id', 'clock_task_id', 'type', 'text_desc', 'image_desc', 'audio_desc', 'video_desc', 'sort','created_at')->where('clock_id', $this->clock_id);
-
-    }
 
     /**
+     * 按初始化的日期构建日历
      * @return mixed
      */
-    private function getClockNoteData()
-    {
-        list($startTime, $endTime) = $this->searchTime();
-
-        return $this->clockNoteModel->where('user_id', $this->member_id)->whereBetween('created_at', [$startTime, $endTime])
-            ->orderBy('created_at', 'desc')
-            ->paginate(32, '', '', $this->getPostPage());
-    }
-
-    //按月创建
-    private function searchTimeByMonth()
+    private function getCalendarMonthData()
     {
         $startTime = Carbon::create($this->date)->startOfMonth()->timestamp;
         $endTime = Carbon::create($this->date)->endOfMonth()->timestamp;
 
-        return [$startTime, $endTime];
+        return $this->clockNoteModel->where('user_id', $this->member_id)->whereBetween('created_at', [$startTime, $endTime])
+            ->orderBy('created_at', 'desc')
+            ->paginate(32);
+    }
+
+
+    /**
+     * 返回此打卡下日记模型
+     * @return \app\common\models\BaseModel
+     */
+    private function getClockNoteModel()
+    {
+        return XiaoeClockNote::select('id', 'user_id', 'clock_id', 'clock_task_id', 'type', 'text_desc', 'image_desc', 'audio_desc', 'video_desc', 'sort','created_at')->where('clock_id', $this->clock_id);
+
     }
 
 
@@ -482,10 +477,11 @@ class ClockController extends ApiController
     }
 
     //用户今天打卡状态
-    private function getClockStatus()
+    private function getClockStatus($startTime, $endTime)
     {
-        $todayStart = Carbon::now()->startOfDay()->timestamp;
-        $todayEnd = Carbon::now()->endOfDay()->timestamp;
+        $todayStart = $startTime ? $startTime : Carbon::now()->startOfDay()->timestamp;
+        $todayEnd = $endTime ? $endTime : Carbon::now()->endOfDay()->timestamp;
+
         $todayNoteLog = $this->clockNoteModel->where('user_id', $this->member_id)->whereBetween('created_at', [$todayStart, $todayEnd])->first();
 
         if (!empty($todayNoteLog)) {
