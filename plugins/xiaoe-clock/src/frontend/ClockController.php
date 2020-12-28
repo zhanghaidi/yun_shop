@@ -68,30 +68,31 @@ class ClockController extends ApiController
             ->withCount(['hasManyNote', 'hasManyUser'])
             ->with([
                 'hasManyUser' => function($joinUser){
-                    return $joinUser->select('user_id','created_at')
+                    return $joinUser->select('clock_id','clock_task_id','type','user_id','created_at')
                         ->with(['user'=>function($user){
                             return $user->select('ajy_uid', 'nickname', 'avatarurl');
                         }]);
                 },
 
                 'hasManyNote' => function($note){
-                    return $note->withCount(['hasManyLike'])
+                    return $note->select('id', 'user_id', 'clock_id', 'clock_task_id', 'type', 'text_desc', 'image_desc', 'audio_desc', 'video_desc', 'sort','created_at')
+                        ->withCount(['hasManyLike'])
                         ->with([
                             'user' => function ($user) {
                                 return $user->select('ajy_uid', 'nickname', 'avatarurl');
                             },
                             'topic' => function ($topic) {
-                                return $topic->select('id','name');
+                                return $topic->select('id', 'clock_id', 'type', 'name');
                             },
                             'hasManyLike' => function ($like) {
-                                return $like->select('user_id', 'created_at')->with([
+                                return $like->select('clock_users_id', 'user_id', 'created_at')->with([
                                     'user' => function ($user) {
                                         return $user->select('ajy_uid', 'nickname', 'avatarurl');
                                     }
                                 ]);
                             },
                             'hasManyComment' => function ($comment) {
-                                return $comment->select('id','user_id', 'content', 'parent_id', 'is_reply', 'created_at')->with(['user' => function ($user) {
+                                return $comment->select('id', 'clock_users_id', 'user_id', 'content', 'parent_id', 'is_reply', 'created_at')->with(['user' => function ($user) {
                                     $user->select('ajy_uid', 'nickname', 'avatarurl');
                                 }])->orderBy('id', 'desc');
                             },
