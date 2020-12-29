@@ -186,7 +186,7 @@ class ClockController extends ApiController
             return $this->errorJson('不存在数据');
         }
 
-       /* $topic->my_note = $this->clockNoteModel->where(['user_id' => $this->member_id, 'clock_task_id' => $topic_id])
+        $topic->my_note = $this->clockNoteModel->where(['user_id' => $this->member_id, 'clock_task_id' => $topic_id])
             ->withCount([
                 'hasManyLike',
                 'isLike' => function($like) {
@@ -214,7 +214,7 @@ class ClockController extends ApiController
                         $user->select('ajy_uid', 'nickname', 'avatarurl');
                     }])->orderBy('id', 'desc');
                 }
-            ])->first();*/
+            ])->first();
 
 
         return $this->successJson('success', $topic);
