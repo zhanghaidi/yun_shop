@@ -438,7 +438,7 @@ class ClockController extends BaseController
 
                 $start_time = $param['start_time'] ? $param['start_time'] : 0;
                 $end_time = $param['end_time'] ? $param['end_time'] : 0;
-                if(strtotime($end_time) < strtotime(date('Y-m-d',time()))){
+                if(strtotime($start_time) < strtotime(date('Y-m-d',time()))){
                     $this->message('开始日期要大于当前日期', Url::absoluteWeb(''), 'danger');
                 }
                 if(strtotime($end_time) < strtotime($start_time)){
@@ -568,6 +568,7 @@ class ClockController extends BaseController
                 return $this->message('打卡不存在', Url::absoluteWeb(''), 'danger');
             }
             $type = $replay['type'];
+
             if ($type == 1) {//日历主题
                 $theme_time = $param['theme_time'] ? $param['theme_time'] : 0;
                 if(strtotime($theme_time) < $room['start_time'] || strtotime($theme_time) > $room['end_time']){
@@ -590,7 +591,8 @@ class ClockController extends BaseController
 
                 $start_time = $param['start_time'] ? $param['start_time'] : 0;
                 $end_time = $param['end_time'] ? $param['end_time'] : 0;
-                if(strtotime($end_time) < strtotime(date('Y-m-d',time()))){
+
+                if(strtotime($start_time) < strtotime(date('Y-m-d',time()))){
                     $this->message('开始日期要大于当前日期', Url::absoluteWeb(''), 'danger');
                 }
                 if(strtotime($end_time) < strtotime($start_time)){
