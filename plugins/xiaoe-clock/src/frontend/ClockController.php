@@ -45,6 +45,7 @@ class ClockController extends ApiController
         }
 
         $this->clockNoteModel = $this->getClockNoteModel();
+        $this->clockModel = $this->getClockModel();
 
         $this->date = $this->getPostDate();
     }
@@ -226,6 +227,7 @@ class ClockController extends ApiController
     public function clockNoteList()
     {
 
+        $clock = $this->clockModel->first();
         $list = XiaoeClockUser::where('clock_id', $this->clock_id)->with(['user' => function($user){
                 return $user->select('ajy_uid','nickname','avatarurl');
             }]
@@ -239,7 +241,7 @@ class ClockController extends ApiController
             }
         }
 
-        return $this->successJson('ok', compact('list','mine'));
+        return $this->successJson('ok', compact('clock','mine','list'));
     }
 
 
@@ -573,6 +575,15 @@ class ClockController extends ApiController
     private function getClockNoteModel()
     {
         return XiaoeClockNote::select('id', 'user_id', 'clock_id', 'clock_task_id', 'type', 'text_desc', 'image_desc', 'audio_desc', 'video_desc', 'sort','created_at')->where('clock_id', $this->clock_id);
+
+    }
+
+    private function getClockMdoel(){
+        //todo
+
+        return XiaoeClock::where('id', $this->clock_id)
+            ->select('id','type','name','cover_img','text_desc','audio_desc','video_desc','join_type','course_id','price','start_time','end_time','valid_time_start','valid_time_end','text_length','image_length','video_length','is_cheat_mode','is_resubmit','created_at')
+            ->withCount(['hasManyNote', 'hasManyUser']);
 
     }
 
