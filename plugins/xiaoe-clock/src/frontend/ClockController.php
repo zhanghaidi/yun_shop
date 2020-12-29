@@ -158,14 +158,12 @@ class ClockController extends ApiController
                         'user' => function ($user) {
                             return $user->select('ajy_uid', 'nickname', 'avatarurl');
                         },
+
                         'joinUser' => function($joinUser) {
                             return $joinUser->select('clock_id','clock_num','user_id')
                                 ->where('clock_id', $this->clock_id);
                         },
 
-                        'topic' => function ($topic) {
-                            return $topic->select('id', 'clock_id', 'type', 'name');
-                        },
                         'hasManyLike' => function ($like) {
                             return $like->select('clock_users_id', 'user_id', 'created_at')->with([
                                 'user' => function ($user) {
@@ -173,11 +171,12 @@ class ClockController extends ApiController
                                 }
                             ]);
                         },
+
                         'hasManyComment' => function ($comment) {
                             return $comment->select('id', 'clock_users_id', 'user_id', 'content', 'parent_id', 'is_reply', 'created_at')->with(['user' => function ($user) {
                                 $user->select('ajy_uid', 'nickname', 'avatarurl');
                             }])->orderBy('id', 'desc');
-                        },
+                        }
                     ]);
             },
 
@@ -187,7 +186,7 @@ class ClockController extends ApiController
             return $this->errorJson('不存在数据');
         }
 
-        $topic->my_note = $this->clockNoteModel->where(['user_id' => $this->member_id, 'clock_task_id' => $topic_id])
+       /* $topic->my_note = $this->clockNoteModel->where(['user_id' => $this->member_id, 'clock_task_id' => $topic_id])
             ->withCount([
                 'hasManyLike',
                 'isLike' => function($like) {
@@ -215,7 +214,7 @@ class ClockController extends ApiController
                         $user->select('ajy_uid', 'nickname', 'avatarurl');
                     }])->orderBy('id', 'desc');
                 }
-            ])->first();
+            ])->first();*/
 
 
         return $this->successJson('success', $topic);
@@ -512,7 +511,9 @@ class ClockController extends ApiController
     {
         $startTime = Carbon::parse($this->date)->startOfMonth()->timestamp;
         $endTime = Carbon::parse($this->date)->endOfMonth()->timestamp;
-
+        $clock = XiaoeClock::where('id', $this->clock_id)
+            ->select('id','type','name','cover_img','text_desc','audio_desc','video_desc','join_type','course_id','price','start_time','end_time','valid_time_start',
+                'valid_time_end','text_length','image_length','video_length','is_cheat_mode','is_resubmit','created_at')->first();
         $sign_log = $this->clockNoteModel->where('user_id', $this->member_id)->whereBetween('created_at', [$startTime, $endTime])
             ->withCount([
                 'hasManyLike',
@@ -548,13 +549,13 @@ class ClockController extends ApiController
 
         !$sign_log && $sign_log == [];
 
-        $result = [];
+        $log = [];
         foreach ($sign_log as $key => $item) {
-            //$result[] =
-            $result[(int)date('d', $item->created_at->timestamp)][]= $item;
+
+            $log[(int)date('d', $item->created_at->timestamp)][]= $item;
         }
 
-        return $this->successJson('ok',$result);
+        return $this->successJson('ok',compact('clock','log'));
     }
 
 
