@@ -144,11 +144,79 @@ class ClockController extends ApiController
             return $this->errorJson('主题id不能为空');
         }
 
-        $topic = XiaoeClockTopic::where(['id'=> $topic_id])->with(['hasManyUser'])->get();
+        $topic = XiaoeClockTopic::where(['id'=> $topic_id])->with([
+            'hasManyNote' => function($note){
+                return $note->select('id', 'user_id', 'clock_id', 'clock_task_id', 'type', 'text_desc', 'image_desc', 'audio_desc', 'video_desc', 'sort','created_at')
+                    ->where('user_id', '<>', $this->member_id)
+                    ->withCount([
+                        'hasManyLike',
+                        'isLike' => function($like) {
+                            return $like->where('user_id', $this->member_id);
+                        }
+                    ])
+                    ->with([
+                        'user' => function ($user) {
+                            return $user->select('ajy_uid', 'nickname', 'avatarurl');
+                        },
+                        'joinUser' => function($joinUser) {
+                            return $joinUser->select('clock_id','clock_num','user_id')
+                                ->where('clock_id', $this->clock_id);
+                        },
+
+                        'topic' => function ($topic) {
+                            return $topic->select('id', 'clock_id', 'type', 'name');
+                        },
+                        'hasManyLike' => function ($like) {
+                            return $like->select('clock_users_id', 'user_id', 'created_at')->with([
+                                'user' => function ($user) {
+                                    return $user->select('ajy_uid', 'nickname', 'avatarurl');
+                                }
+                            ]);
+                        },
+                        'hasManyComment' => function ($comment) {
+                            return $comment->select('id', 'clock_users_id', 'user_id', 'content', 'parent_id', 'is_reply', 'created_at')->with(['user' => function ($user) {
+                                $user->select('ajy_uid', 'nickname', 'avatarurl');
+                            }])->orderBy('id', 'desc');
+                        },
+                    ]);
+            },
+
+        ])->first();
 
         if(!$topic){
             return $this->errorJson('不存在数据');
         }
+
+        $topic->my_note = $this->clockNoteModel->where(['user_id' => $this->member_id, 'clock_task_id' => $topic_id])
+            ->withCount([
+                'hasManyLike',
+                'isLike' => function($like) {
+                    return $like->where('user_id', $this->member_id);
+                }
+            ])
+            ->with([
+                'user' => function ($user) {
+                    return $user->select('ajy_uid', 'nickname', 'avatarurl');
+                },
+                'joinUser' => function($joinUser) {
+                    return $joinUser->select('clock_id','clock_num','user_id')
+                        ->where('clock_id', $this->clock_id);
+                },
+
+                'hasManyLike' => function ($like) {
+                    return $like->select('clock_users_id', 'user_id', 'created_at')->with([
+                        'user' => function ($user) {
+                            return $user->select('ajy_uid', 'nickname', 'avatarurl');
+                        }
+                    ]);
+                },
+                'hasManyComment' => function ($comment) {
+                    return $comment->select('id', 'clock_users_id', 'user_id', 'content', 'parent_id', 'is_reply', 'created_at')->with(['user' => function ($user) {
+                        $user->select('ajy_uid', 'nickname', 'avatarurl');
+                    }])->orderBy('id', 'desc');
+                }
+            ])->first();
+
 
         return $this->successJson('success', $topic);
 
