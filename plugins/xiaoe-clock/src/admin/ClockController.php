@@ -222,6 +222,8 @@ class ClockController extends BaseController
                     $ist_data['is_resubmit'] = $param['is_resubmit'] ? $param['is_resubmit'] : 0;
                 }
             }
+            $ist_data['created_at'] = time();
+            $ist_data['updated_at'] = time();
             DB::beginTransaction();//开启事务
             $insert_res = DB::table('yz_xiaoe_clock')->insert($ist_data);
             if (!$insert_res) {
@@ -257,7 +259,7 @@ class ClockController extends BaseController
             if (array_key_exists('name', $param)) { // 打卡名称
                 $ist_data['name'] = $param['name'] ? trim($param['name']) : '';
             }
-            if (DB::table('yz_xiaoe_clock')->where('uniacid', $uniacid)->where('name', $ist_data['name'])->first()) {
+            if (DB::table('yz_xiaoe_clock')->where('uniacid', $uniacid)->where('id','<>',$id)->where('name', $ist_data['name'])->first()) {
                 return $this->message('打卡名称已存在', Url::absoluteWeb(''), 'danger');
             }
             if (array_key_exists('cover_img', $param)) { // 打卡封面
@@ -347,6 +349,8 @@ class ClockController extends BaseController
                     $ist_data['is_resubmit'] = $param['is_resubmit'] ? $param['is_resubmit'] : 0;
                 }
             }
+
+            $ist_data['updated_at'] = time();
             DB::beginTransaction();//开启事务
             $insert_res = DB::table('yz_xiaoe_clock')->where('uniacid', $uniacid)->where('id', $id)->update($ist_data);
             if (!$insert_res) {
@@ -429,6 +433,8 @@ class ClockController extends BaseController
                     'text_desc' => $param['text_desc'] ? $param['text_desc'] : '',
                     'video_desc' => $param['video_desc'] ? $param['video_desc'] : '',
                     'sort' => $param['sort'] ? $param['sort'] : 0,
+                    'created_at' => time(),
+                    'updated_at' => time()
                 ];
                 if ($type > 0 && DB::table('yz_xiaoe_clock_task')->where('theme_time', $ist_data['theme_time'])->where('clock_id', $rid)->where('uniacid', $uniacid)->first()) {
                     return $this->message('该日期已经存在主题了', Url::absoluteWeb(''), 'danger');
@@ -439,10 +445,10 @@ class ClockController extends BaseController
                 $start_time = $param['start_time'] ? $param['start_time'] : 0;
                 $end_time = $param['end_time'] ? $param['end_time'] : 0;
                 if(strtotime($start_time) < strtotime(date('Y-m-d',time()))){
-                    $this->message('开始日期要大于当前日期', Url::absoluteWeb(''), 'danger');
+                    return $this->message('开始日期要大于当前日期', Url::absoluteWeb(''), 'danger');
                 }
                 if(strtotime($end_time) < strtotime($start_time)){
-                    $this->message('结束日期必须小于开始日期', Url::absoluteWeb(''), 'danger');
+                    return $this->message('结束日期必须小于开始日期', Url::absoluteWeb(''), 'danger');
                 }
                 $ist_data = [
                     'uniacid' => $uniacid,
@@ -454,6 +460,8 @@ class ClockController extends BaseController
                     'text_desc' => $param['text_desc'] ? $param['text_desc'] : '',
                     'video_desc' => $param['video_desc'] ? $param['video_desc'] : '',
                     'sort' => $param['sort'] ? $param['sort'] : 0,
+                    'created_at' => time(),
+                    'updated_at' => time()
                 ];
             }
 
@@ -585,6 +593,7 @@ class ClockController extends BaseController
                     'text_desc' => $param['text_desc'] ? $param['text_desc'] : '',
                     'video_desc' => $param['video_desc'] ? $param['video_desc'] : '',
                     'sort' => $param['sort'] ? $param['sort'] : 0,
+                    'updated_at' => time()
                 ];
 
             } elseif ($type == 2) {//作业
@@ -593,10 +602,11 @@ class ClockController extends BaseController
                 $end_time = $param['end_time'] ? $param['end_time'] : 0;
 
                 if(strtotime($start_time) < strtotime(date('Y-m-d',time()))){
-                    $this->message('开始日期要大于当前日期', Url::absoluteWeb(''), 'danger');
+                    return $this->message('开始日期要大于当前日期', Url::absoluteWeb(''), 'danger');
                 }
+
                 if(strtotime($end_time) < strtotime($start_time)){
-                    $this->message('结束日期必须小于开始日期', Url::absoluteWeb(''), 'danger');
+                    return $this->message('结束日期必须小于开始日期', Url::absoluteWeb(''), 'danger');
                 }
                 $upd_data = [
                     'start_time' => strtotime($start_time),
@@ -605,6 +615,7 @@ class ClockController extends BaseController
                     'text_desc' => $param['text_desc'] ? $param['text_desc'] : '',
                     'video_desc' => $param['video_desc'] ? $param['video_desc'] : '',
                     'sort' => $param['sort'] ? $param['sort'] : 0,
+                    'updated_at' => time()
                 ];
             }
             DB::beginTransaction();//开启事务
