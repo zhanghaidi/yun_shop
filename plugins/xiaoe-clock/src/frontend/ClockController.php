@@ -451,7 +451,7 @@ class ClockController extends ApiController
         $result = [];
         foreach ($sign_log as $key => $item) {
             //$result[] =
-            $result[(int)date('d', $item->created_at->timestamp) - 1][]= $item;
+            $result[(int)date('d', $item->created_at->timestamp)][]= $item;
         }
 
         return $result;
