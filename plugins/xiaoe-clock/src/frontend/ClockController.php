@@ -443,7 +443,7 @@ class ClockController extends ApiController
 
         $sign_log = $this->clockNoteModel->where('user_id', $this->member_id)->whereBetween('created_at', [$startTime, $endTime])
             ->orderBy('created_at', 'desc')
-            ->paginate(32);
+            ->paginate(31);
 
 
         !$sign_log && $sign_log == [];
