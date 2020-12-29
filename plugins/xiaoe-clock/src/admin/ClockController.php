@@ -431,7 +431,7 @@ class ClockController extends BaseController
                     'sort' => $param['sort'] ? $param['sort'] : 0,
                 ];
                 if ($type > 0 && DB::table('yz_xiaoe_clock_task')->where('theme_time', $ist_data['theme_time'])->where('clock_id', $rid)->where('uniacid', $uniacid)->first()) {
-                    return $this->message('该日期已经添加主体了', Url::absoluteWeb(''), 'danger');
+                    return $this->message('该日期已经存在主题了', Url::absoluteWeb(''), 'danger');
                 }
 
             } elseif ($type == 2) {//作业
@@ -570,8 +570,8 @@ class ClockController extends BaseController
                 if(strtotime($theme_time) < $room['start_time'] || strtotime($theme_time) > $room['end_time']){
                     return $this->message('该日期已超出了日历打卡的时间范围！请重新选择', Url::absoluteWeb(''), 'danger');
                 }
-                if ($type > 0 && DB::table('yz_xiaoe_clock_task')->where('theme_time', strtotime($theme_time))->where('clock_id', $room['id'])->first()) {
-                    return $this->message('该日期已经添加主体了', Url::absoluteWeb(''), 'danger');
+                if ($type > 0 && DB::table('yz_xiaoe_clock_task')->where('theme_time', strtotime($theme_time))->where('id','<>', $replay['id'])->where('clock_id', $room['id'])->first()) {
+                    return $this->message('该日期已经存在主题了', Url::absoluteWeb(''), 'danger');
                 }
                 $upd_data = [
                     'name' => $param['name'] ? trim($param['name']) : '',
