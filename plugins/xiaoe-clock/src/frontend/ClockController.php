@@ -227,13 +227,17 @@ class ClockController extends ApiController
     {
 
         $clock = $this->clockModel->first();
-        $list = XiaoeClockUser::where('clock_id', $this->clock_id)->with(['user' => function($user){
+        $list = XiaoeClockUser::uniacid()
+            ->where('clock_id', $this->clock_id)
+            ->select('clock_id','clock_task_id','user_id','clock_num','created_at')
+            ->with(['user' => function($user){
                 return $user->select('ajy_uid','nickname','avatarurl');
-            }]
-        )->orderBy('clock_num','desc')->get();
+            }])
+            ->orderBy('clock_num','desc')->get();
 
         $mine = array();
         foreach ($list as $k => $v){
+            $list->order = $k+1;
             if($v->user_id == $this->member_id){
                 $mine['order'] = $k+1;
                 $mine['info'] = $v;
