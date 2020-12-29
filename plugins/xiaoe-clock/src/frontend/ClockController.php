@@ -147,7 +147,7 @@ class ClockController extends ApiController
         }
 
         $topic = XiaoeClockTopic::where(['id'=> $topic_id])->with([
-            'clock' => function ($clock) {
+            'belongsToClock' => function ($clock) {
                 return $clock->select('id', 'name', 'cover_img','start_time','end_time')->withCount(['hasManyUser', 'hasManyNote']);
             },
             'hasManyNote' => function($note){
