@@ -59,7 +59,7 @@ class ClockController extends BaseController
             if ($list->total() > 0) {
                 foreach ($list as &$value) {
 //                    打卡分享链接
-                    $value['clock_link'] = $clock_link . '&id='.$value['id'];
+                    $value['clock_link'] = $clock_link .$value['id'];
                     //总天数,计算总天数
                     $value['count_day'] = floor(($value['end_time'] - $value['start_time']) / 86400);
                     if (time() >= $value['end_time']) {
@@ -96,7 +96,7 @@ class ClockController extends BaseController
             if ($list->total() > 0) {
                 foreach ($list as $k => &$value) {
 //                    打卡分享链接
-                    $value['clock_link'] = $clock_link . '&id='.$value['id'];
+                    $value['clock_link'] = $clock_link . $value['id'];
                     //作业打卡的作业数
                     $value['task_num'] = DB::table('yz_xiaoe_clock_task')->where('uniacid', $uniacid)->where('clock_id', $value['id'])->count();
                     if ($value['join_type'] == 1) {//关联课程
