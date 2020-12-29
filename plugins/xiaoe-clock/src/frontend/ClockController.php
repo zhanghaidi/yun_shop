@@ -436,7 +436,7 @@ class ClockController extends ApiController
      * 按初始化的日期构建日历
      * @return mixed
      */
-    private function getCalendarMonthData()
+    public function getCalendarMonthData()
     {
         $startTime = Carbon::parse($this->date)->startOfMonth()->timestamp;
         $endTime = Carbon::parse($this->date)->endOfMonth()->timestamp;
