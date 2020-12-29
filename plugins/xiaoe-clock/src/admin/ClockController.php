@@ -438,6 +438,9 @@ class ClockController extends BaseController
 
                 $start_time = $param['start_time'] ? $param['start_time'] : 0;
                 $end_time = $param['end_time'] ? $param['end_time'] : 0;
+                if(strtotime($end_time) < strtotime(date('Y-m-d',time()))){
+                    $this->message('开始日期要大于当前日期', Url::absoluteWeb(''), 'danger');
+                }
                 if(strtotime($end_time) < strtotime($start_time)){
                     $this->message('结束日期必须小于开始日期', Url::absoluteWeb(''), 'danger');
                 }
@@ -587,7 +590,10 @@ class ClockController extends BaseController
 
                 $start_time = $param['start_time'] ? $param['start_time'] : 0;
                 $end_time = $param['end_time'] ? $param['end_time'] : 0;
-                if($end_time < $start_time){
+                if(strtotime($end_time) < strtotime(date('Y-m-d',time()))){
+                    $this->message('开始日期要大于当前日期', Url::absoluteWeb(''), 'danger');
+                }
+                if(strtotime($end_time) < strtotime($start_time)){
                     $this->message('结束日期必须小于开始日期', Url::absoluteWeb(''), 'danger');
                 }
                 $upd_data = [
