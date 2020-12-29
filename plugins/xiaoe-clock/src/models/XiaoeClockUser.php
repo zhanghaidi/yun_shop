@@ -18,4 +18,9 @@ class XiaoeClockUser extends BaseModel
         return $this->belongsTo('App\backend\modules\tracking\models\DiagnosticServiceUser','user_id','ajy_uid');
     }
 
+    public function clock()
+    {
+        return $this->belongsTo('Yunshop\XiaoeClock\models\XiaoeClock','clock_id','id');
+    }
+
 }
