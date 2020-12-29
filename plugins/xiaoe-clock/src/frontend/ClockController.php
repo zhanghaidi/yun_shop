@@ -225,7 +225,6 @@ class ClockController extends ApiController
     //打卡排行榜 ims_yz_xiaoe_users_clock
     public function getClockRanking()
     {
-
         $clock = $this->clockModel->first();
         $list = XiaoeClockUser::uniacid()
             ->where('clock_id', $this->clock_id)
@@ -233,12 +232,13 @@ class ClockController extends ApiController
             ->with(['user' => function($user){
                 return $user->select('ajy_uid','nickname','avatarurl');
             }])
-            ->orderBy('clock_num','desc')->get();
+            ->orderBy('clock_num','desc')->get()->toArray();
+
 
         $mine = array();
         foreach ($list as $k => $v){
-            $list->order = $k+1;
-            if($v->user_id == $this->member_id){
+            $list[$k]['order'] = $k+1;
+            if($v['user_id'] == $this->member_id){
                 $mine['order'] = $k+1;
                 $mine['info'] = $v;
             }
