@@ -27,6 +27,8 @@ class ClockController extends ApiController
 
     private $date; // 2020-12-27
 
+    private $user;
+
 
     public function __construct()
     {
@@ -45,8 +47,26 @@ class ClockController extends ApiController
         }
 
         $this->clockNoteModel = $this->getClockNoteModel();
+        $this->clockModel = $this->getClockModel();
 
         $this->date = $this->getPostDate();
+
+        //搜集新加入此打卡的学员
+        $this->user = $this->userJoin($this->clock_id, $this->member_id);
+    }
+
+    //获取打卡详情接口
+    public function getClockInfo()
+    {
+        $clock = $this->clockModel->first();
+
+        if (!$clock) {
+            return $this->errorJson('不存在数据');
+        }
+        $clock->clock_status = $this->getClockStatus(Carbon::now()->startOfDay()->timestamp, Carbon::now()->endOfDay()->timestamp);
+
+        return $this->successJson('ok', $clock);
+
     }
 
     //日历打卡活动详情 ims_yz_xiaoe_clock 默认显示一周的日历 用户一周打卡情况 当天是否打卡 当天的打卡主题
@@ -54,25 +74,25 @@ class ClockController extends ApiController
     {
 
         //搜集新加入此打卡的学员
-        $user = $this->userJoin($this->clock_id, $this->member_id);
+        //$user = $this->userJoin($this->clock_id, $this->member_id);
 
-        $clock = XiaoeClock::where('id', $this->clock_id)
-            ->select('id','type','name','cover_img','text_desc','audio_desc','video_desc','join_type','course_id','price','start_time','end_time','valid_time_start',
-                'valid_time_end','text_length','image_length','video_length','is_cheat_mode','is_resubmit','created_at')
-            ->withCount(['hasManyNote', 'hasManyUser'])
+        $clock = $this->clockModel
             ->with([
-                'hasManyUser' => function($joinUser){
-                    return $joinUser->select('clock_id','clock_task_id','type','user_id','created_at')
-                        ->with(['user'=>function($user){
+                'hasManyUser' => function ($joinUser) {
+                    return $joinUser->select('clock_id', 'clock_task_id', 'type', 'user_id', 'created_at')
+                        ->with(['user' => function ($user) {
                             return $user->select('ajy_uid', 'nickname', 'avatarurl');
                         }]);
                 },
+                'hasManyTopic' => function ($topic) {
+                    return $topic->select('id', 'clock_id', 'type', 'name', 'cover_img', 'text_desc', 'audio_desc', 'video_desc', 'start_time', 'end_time', 'theme_time');
+                },
 
-                'hasManyNote' => function($note){
-                    return $note->select('id', 'user_id', 'clock_id', 'clock_task_id', 'type', 'text_desc', 'image_desc', 'audio_desc', 'video_desc', 'sort','created_at')
+                'hasManyNote' => function ($note) {
+                    return $note->select('id', 'user_id', 'clock_id', 'clock_task_id', 'type', 'text_desc', 'image_desc', 'audio_desc', 'video_desc', 'sort', 'created_at')
                         ->withCount([
                             'hasManyLike',
-                            'isLike' => function($like) {
+                            'isLike' => function ($like) {
                                 return $like->where('user_id', $this->member_id);
                             }
                         ])
@@ -80,8 +100,8 @@ class ClockController extends ApiController
                             'user' => function ($user) {
                                 return $user->select('ajy_uid', 'nickname', 'avatarurl');
                             },
-                            'joinUser' => function($joinUser) {
-                                return $joinUser->select('clock_id','clock_num','user_id')
+                            'joinUser' => function ($joinUser) {
+                                return $joinUser->select('clock_id', 'clock_num', 'user_id')
                                     ->where('clock_id', $this->clock_id);
                             },
 
@@ -108,10 +128,11 @@ class ClockController extends ApiController
         if (!$clock) {
             return $this->errorJson('不存在数据');
         }
+        $clock->clock_status = $this->getClockStatus(Carbon::now()->startOfDay()->timestamp, Carbon::now()->endOfDay()->timestamp);
         //显示本周本用户打卡状态
         $data = [
             'clock' => $clock,
-            'user' => $user,
+            'user' => $this->user,
             'week_calendar' => $this->getCalendarWeekData()
         ];
         return $this->successJson('ok', $data);
@@ -119,12 +140,13 @@ class ClockController extends ApiController
     }
 
 
+
     //作业打卡活动详情
     public function getHomeWorkClock()
     {
-        $user =  $this->userJoin($this->clock_id, $this->member_id);
+        $user = $this->userJoin($this->clock_id, $this->member_id);
 
-        $clock = XiaoeClock::where('id', $this->clock_id)->withCount(['hasManyNote', 'hasManyUser'])->with(['hasManyNote', 'hasManyTopic'])->with(['myNote' => function ($my_note) {
+        $clock = XiaoeClock::uniacid()->where('id', $this->clock_id)->withCount(['hasManyNote', 'hasManyUser'])->with(['hasManyNote', 'hasManyTopic'])->with(['myNote' => function ($my_note) {
             return $my_note->where('user_id', $this->member_id);
         }])->first();
 
@@ -132,45 +154,123 @@ class ClockController extends ApiController
         return $this->successJson('success', $clock);
     }
 
-    //打卡活动主题 ims_yz_xiaoe_clock_task
-    /*public function getClockTopic()
+    //打卡活动主题详情 ims_yz_xiaoe_clock_task
+    public function getClockTopicInfo()
     {
-        $id = request()->get('id');
-        if(!$id){
+        $topic_id = request()->get('topic_id');
+
+        if (!$topic_id) {
             return $this->errorJson('主题id不能为空');
         }
 
-        $topic = XiaoeClockTopic::where(['id'=> $id])->with(['hasManyUser'])->get();
+        $topic = XiaoeClockTopic::uniacid()->where(['id' => $topic_id])->with([
+            'belongsToClock' => function ($clock) {
+                return $clock->select('id', 'name', 'cover_img', 'start_time', 'end_time')->withCount(['hasManyUser', 'hasManyNote']);
+            },
+            'hasManyNote' => function ($note) {
+                return $note->select('id', 'user_id', 'clock_id', 'clock_task_id', 'type', 'text_desc', 'image_desc', 'audio_desc', 'video_desc', 'sort', 'created_at')
+                    ->withCount([
+                        'hasManyLike',
+                        'isLike' => function ($like) {
+                            return $like->where('user_id', $this->member_id);
+                        }
+                    ])
+                    ->with([
+                        'user' => function ($user) {
+                            return $user->select('ajy_uid', 'nickname', 'avatarurl');
+                        },
+                        'joinUser' => function ($joinUser) {
+                            return $joinUser->select('clock_id', 'clock_num', 'user_id')
+                                ->where('clock_id', $this->clock_id);
+                        },
+                        'hasManyLike' => function ($like) {
+                            return $like->select('clock_users_id', 'user_id', 'created_at')->with([
+                                'user' => function ($user) {
+                                    return $user->select('ajy_uid', 'nickname', 'avatarurl');
+                                }
+                            ]);
+                        },
+                        'hasManyComment' => function ($comment) {
+                            return $comment->select('id', 'clock_users_id', 'user_id', 'content', 'parent_id', 'is_reply', 'created_at')->with(['user' => function ($user) {
+                                $user->select('ajy_uid', 'nickname', 'avatarurl');
+                            }])->orderBy('id', 'desc');
+                        },
+                    ]);
+            },
 
-        if(!$topic){
+        ])->first();
+
+        if (!$topic) {
             return $this->errorJson('不存在数据');
         }
 
+        $topic->my_note = $this->clockNoteModel->where(['user_id' => $this->member_id, 'clock_task_id' => $topic_id])
+            ->withCount([
+                'hasManyLike',
+                'isLike' => function ($like) {
+                    return $like->where('user_id', $this->member_id);
+                }
+            ])
+            ->with([
+                'user' => function ($user) {
+                    return $user->select('ajy_uid', 'nickname', 'avatarurl');
+                },
+                'joinUser' => function ($joinUser) {
+                    return $joinUser->select('clock_id', 'clock_num', 'user_id')
+                        ->where('clock_id', $this->clock_id);
+                },
+
+                'hasManyLike' => function ($like) {
+                    return $like->select('clock_users_id', 'user_id', 'created_at')->with([
+                        'user' => function ($user) {
+                            return $user->select('ajy_uid', 'nickname', 'avatarurl');
+                        }
+                    ]);
+                },
+                'hasManyComment' => function ($comment) {
+                    return $comment->select('id', 'clock_users_id', 'user_id', 'content', 'parent_id', 'is_reply', 'created_at')->with(['user' => function ($user) {
+                        $user->select('ajy_uid', 'nickname', 'avatarurl');
+                    }])->orderBy('id', 'desc');
+                }
+            ])->first();
+
+
         return $this->successJson('success', $topic);
 
-    }*/
+    }
 
-    //打卡日记列表 ims_yz_xiaoe_users_clock
-    /*public function clockNoteList()
+    //打卡用户排行榜 ims_yz_xiaoe_users_clock
+    public function getClockRanking()
     {
+        $clock = $this->clockModel->first();
+        $list = XiaoeClockUser::uniacid()
+            ->where('clock_id', $this->clock_id)
+            ->select('clock_id', 'clock_task_id', 'user_id', 'clock_num', 'created_at')
+            ->with(['user' => function ($user) {
+                return $user->select('ajy_uid', 'nickname', 'avatarurl');
+            }])
+            ->orderBy('clock_num', 'desc')->get()->toArray();
 
 
-    }*/
+        $mine = array();
+        foreach ($list as $k => $v) {
+            $list[$k]['order'] = $k + 1;
+            if ($v['user_id'] == $this->member_id) {
+                $mine['order'] = $k + 1;
+                $mine['info'] = $v;
+            }
+        }
 
-    //打卡记录评论列表 ims_yz_xiaoe_users_clock_comment
-    /*public function clockNoteCommentList()
-    {
+        return $this->successJson('ok', compact('clock', 'mine', 'list'));
+    }
 
-
-
-    }*/
 
     //创建打卡日记:简单校验了开始结束时间和文本内容校验
     public function clockNoteCreate()
     {
         $topic_id = intval(request()->get('clock_task_id'));
 
-        $clockInfo = XiaoeClock::find($this->clock_id);
+        $clockInfo = XiaoeClock::uniacid()->find($this->clock_id);
         if (empty($clockInfo)) {
             return $this->errorJson('打卡不存在或已被删除');
         }
@@ -278,14 +378,12 @@ class ClockController extends ApiController
 
         //当前用户是否点赞
         $note->is_like = 0;
-        $userLike = XiaoeClockNoteLike::where(['clock_users_id' => $note_id, 'user_id' => $member_id])->first();
+        $userLike = XiaoeClockNoteLike::uniacid()->where(['clock_users_id' => $note_id, 'user_id' => $member_id])->first();
         if (!empty($userLike)) {
             $note->is_like = 1;
         }
 
-        $note->user->clock_num = XiaoeClockUser::where(['clock_id' => $note->clock_id, 'user_id' => $note->user_id])->value('clock_num'); //用户签到数量
-
-        //$note->image_desc = json_decode($note->image_desc, true); //处理图片
+        $note->user->clock_num = XiaoeClockUser::uniacid()->where(['clock_id' => $note->clock_id, 'user_id' => $note->user_id])->value('clock_num'); //用户签到数量
 
         return $this->successJson('打卡日记详情', $note);
 
@@ -421,7 +519,10 @@ class ClockController extends ApiController
             //是否有主题 获取用户主题
             $data[$i]['theme'] = $this->getCalendarClockTheme($startTime);
             if ($startTime <= time()) {
-
+                //用户当天是否打卡
+                $data[$i]['status'] = $this->getClockStatus($startTime, $endTime);
+                //是否有主题 获取用户主题
+                $data[$i]['theme'] = $this->getCalendarClockTheme($startTime);
             } else {
                 $data[$i]['status'] = 0;
                 $data[$i]['theme'] = null;
@@ -436,14 +537,49 @@ class ClockController extends ApiController
      * 按初始化的日期构建日历
      * @return mixed
      */
-    private function getCalendarMonthData()
+    public function getCalendarMonthData()
     {
-        $startTime = Carbon::create($this->date)->startOfMonth()->timestamp;
-        $endTime = Carbon::create($this->date)->endOfMonth()->timestamp;
+        $startTime = Carbon::parse($this->date)->startOfMonth()->timestamp;
+        $endTime = Carbon::parse($this->date)->endOfMonth()->timestamp;
+        $clock = $this->clockModel->first();
+        $sign_log = $this->clockNoteModel->where('user_id', $this->member_id)->whereBetween('created_at', [$startTime, $endTime])
+            ->withCount([
+                'hasManyLike',
+                'isLike' => function ($like) {
+                    return $like->where('user_id', $this->member_id);
+                }
+            ])
+            ->with([
+                'user' => function ($user) {
+                    return $user->select('ajy_uid', 'nickname', 'avatarurl');
+                },
+                'joinUser' => function ($joinUser) {
+                    return $joinUser->select('clock_id', 'clock_num', 'user_id')
+                        ->where('clock_id', $this->clock_id);
+                },
+                'hasManyLike' => function ($like) {
+                    return $like->select('clock_users_id', 'user_id', 'created_at')->with([
+                        'user' => function ($user) {
+                            return $user->select('ajy_uid', 'nickname', 'avatarurl');
+                        }
+                    ]);
+                },
+                'hasManyComment' => function ($comment) {
+                    return $comment->select('id', 'clock_users_id', 'user_id', 'content', 'parent_id', 'is_reply', 'created_at')->with(['user' => function ($user) {
+                        $user->select('ajy_uid', 'nickname', 'avatarurl');
+                    }])->orderBy('id', 'desc');
+                },
+            ])->orderBy('created_at', 'desc')->paginate(31);
 
-        return $this->clockNoteModel->where('user_id', $this->member_id)->whereBetween('created_at', [$startTime, $endTime])
-            ->orderBy('created_at', 'desc')
-            ->paginate(32);
+        !$sign_log && $sign_log == [];
+
+        $log = [];
+        foreach ($sign_log as $key => $item) {
+
+            $log[(int)date('d', $item->created_at->timestamp)][] = $item;
+        }
+
+        return $this->successJson('ok', compact('clock', 'log'));
     }
 
 
@@ -453,11 +589,25 @@ class ClockController extends ApiController
      */
     private function getClockNoteModel()
     {
-        return XiaoeClockNote::select('id', 'user_id', 'clock_id', 'clock_task_id', 'type', 'text_desc', 'image_desc', 'audio_desc', 'video_desc', 'sort','created_at')->where('clock_id', $this->clock_id);
+        return XiaoeClockNote::uniacid()->select('id', 'user_id', 'clock_id', 'clock_task_id', 'type', 'text_desc', 'image_desc', 'audio_desc', 'video_desc', 'sort', 'created_at')->where('clock_id', $this->clock_id);
 
     }
 
+    /**
+     * @return mixed
+     */
+    private function getClockModel()
+    {
 
+        return XiaoeClock::uniacid()->where('id', $this->clock_id)
+            ->select('id', 'type', 'name', 'cover_img', 'text_desc', 'audio_desc', 'video_desc', 'join_type', 'course_id', 'price', 'start_time', 'end_time', 'valid_time_start', 'valid_time_end', 'text_length', 'image_length', 'video_length', 'is_cheat_mode', 'is_resubmit', 'created_at')
+            ->withCount(['hasManyNote', 'hasManyUser']);
+
+    }
+
+    /**
+     * @return false|string
+     */
     private function getPostDate()
     {
         return \YunShop::request()->date ?: date('Y-m-d');
@@ -484,7 +634,7 @@ class ClockController extends ApiController
         $todayStart = $startTime;
         $todayEnd = $endTime;
 
-        $todayNoteLog = XiaoeClockNote::where(['clock_id'=>$this->clock_id,'user_id'=> $this->member_id])->whereBetween('created_at', [$todayStart, $todayEnd])->first();
+        $todayNoteLog = XiaoeClockNote::uniacid()->where(['clock_id' => $this->clock_id, 'user_id' => $this->member_id])->whereBetween('created_at', [$todayStart, $todayEnd])->first();
 
         if (!empty($todayNoteLog)) {
             $status = 1;
@@ -497,8 +647,8 @@ class ClockController extends ApiController
     //    获取用户主题
     private function getCalendarClockTheme($toDayTime)
     {
-        $topic = XiaoeClockTopic::where(['start_time' => $toDayTime, 'clock_id' => $this->clock_id])
-            ->select('name', 'cover_img', 'text_desc', 'video_desc', 'join_num', 'comment_num')
+        $topic = XiaoeClockTopic::uniacid()->where(['start_time' => $toDayTime, 'clock_id' => $this->clock_id])
+            ->select('id','name', 'cover_img', 'text_desc', 'video_desc', 'join_num', 'comment_num')
             ->first();
         return $topic;
     }
