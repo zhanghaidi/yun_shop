@@ -16,6 +16,7 @@
                             <option value="">全部</option>
                             <option value="1" @if($search['status'] == 1) selected="selected" @endif>未交卷</option>
                             <option value="2" @if($search['status'] == 2) selected="selected" @endif>已交卷</option>
+                            <option value="3" @if($search['status'] == 3) selected="selected" @endif>超时交卷</option>
                         </select>
                     </div>
                 </div>
@@ -78,9 +79,9 @@
                         </td>
                         <td>{{$value['score_obtain']}} / {{$value['score_total']}}</td>
                         <td>{{$value['question_correct']}} / {{$value['question_total']}}</td>
-                        <td>@if($value['status'] ==2) 交卷 @endif</td>
+                        <td>@if($value['status'] ==2) 交卷 @elseif($value['status'] ==3) 超时交卷 @endif</td>
                         <td>{{$value['created_at']}}</td>
-                        <td>@if($value['status'] ==2) {{$value['updated_at']}} @endif</td>
+                        <td>@if($value['status'] ==2 || $value['status'] ==3) {{$value['updated_at']}} @endif</td>
                         <td>
                             <a class='btn btn-info' href="{{ yzWebUrl('plugin.examination.admin.examination.paper', ['id' => $value['id']]) }}" title="查看答卷"><i class="fa fa-leanpub"></i></a>
                         </td>

@@ -349,15 +349,18 @@ class ExaminationController extends ApiController
             'id', 'start', 'end', 'duration', 'is_score', 'status'
         )->where('id', $paperRs->examination_id)->first();
         if (!isset($examinationRs->id)) {
+            AnswerPaperModel::completeToInvalid($paperRs->uniacid, $paperRs->id);
             return $this->errorJson('考试信息获取错误', ['status' => 1]);
         }
         if ($examinationRs->open_status != 1) {
+            AnswerPaperModel::completeToInvalid($paperRs->uniacid, $paperRs->id);
             return $this->errorJson('考试已经结束了', ['status' => 4]);
         }
         if ($examinationRs->duration > 0) {
             $tempStart = strtotime($paperRs->created_at);
             $tempEnd = strtotime($paperRs->updated_at);
             if (($tempEnd - $tempStart) >= $examinationRs->duration * 60) {
+                AnswerPaperModel::completeToInvalid($paperRs->uniacid, $paperRs->id);
                 return $this->errorJson('你已经过了交卷时间', ['status' => 5]);
             }
         }
