@@ -264,13 +264,13 @@
                             <span class="help-block">用户打卡要求，图片张数限制</span>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">音频时间限制</label>
-                        <div class="col-sm-9 col-xs-12 col-md-11">
-                            <input name="video_length" type="text" class="form-control" value="{{ $info['video_length'] }}" required/>
-                            <span class="help-block">用户打卡要求，音频时间限制</span>
-                        </div>
-                    </div>
+{{--                    <div class="form-group">--}}
+{{--                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">音频时间限制</label>--}}
+{{--                        <div class="col-sm-9 col-xs-12 col-md-11">--}}
+{{--                            <input name="video_length" type="text" class="form-control" value="{{ $info['video_length'] }}" required/>--}}
+{{--                            <span class="help-block">用户打卡要求，音频时间限制</span>--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
 {{--                    <div class="form-group">--}}
 {{--                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">显示设置</label>--}}
 {{--                        <div class="col-sm-9 col-xs-12 col-md-11">--}}
