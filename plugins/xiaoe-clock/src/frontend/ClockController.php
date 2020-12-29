@@ -111,6 +111,7 @@ class ClockController extends ApiController
         if (!$clock) {
             return $this->errorJson('不存在数据');
         }
+        $clock->clock_status = $this->getClockStatus(Carbon::now()->startOfDay()->timestamp, Carbon::now()->endOfDay()->timestamp);
         //显示本周本用户打卡状态
         $data = [
             'clock' => $clock,
