@@ -67,6 +67,9 @@ class ClockController extends ApiController
                             return $user->select('ajy_uid', 'nickname', 'avatarurl');
                         }]);
                 },
+                'hasManyTopic' => function($topic){
+                    return $topic->select('id','clock_id','type','name','cover_img','text_desc','audio_desc','video_desc','start_time','end_time','theme_time');
+                },
 
                 'hasManyNote' => function($note){
                     return $note->select('id', 'user_id', 'clock_id', 'clock_task_id', 'type', 'text_desc', 'image_desc', 'audio_desc', 'video_desc', 'sort','created_at')
@@ -133,14 +136,15 @@ class ClockController extends ApiController
     }
 
     //打卡活动主题 ims_yz_xiaoe_clock_task
-    /*public function getClockTopic()
+    public function getClockTopicInfo()
     {
-        $id = request()->get('id');
-        if(!$id){
+        $topic_id = request()->get('topic_id');
+
+        if(!$topic_id){
             return $this->errorJson('主题id不能为空');
         }
 
-        $topic = XiaoeClockTopic::where(['id'=> $id])->with(['hasManyUser'])->get();
+        $topic = XiaoeClockTopic::where(['id'=> $topic_id])->with(['hasManyUser'])->get();
 
         if(!$topic){
             return $this->errorJson('不存在数据');
@@ -148,7 +152,7 @@ class ClockController extends ApiController
 
         return $this->successJson('success', $topic);
 
-    }*/
+    }
 
     //打卡日记列表 ims_yz_xiaoe_users_clock
     /*public function clockNoteList()
