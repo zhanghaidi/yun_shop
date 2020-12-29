@@ -442,9 +442,37 @@ class ClockController extends ApiController
         $endTime = Carbon::parse($this->date)->endOfMonth()->timestamp;
 
         $sign_log = $this->clockNoteModel->where('user_id', $this->member_id)->whereBetween('created_at', [$startTime, $endTime])
-            ->orderBy('created_at', 'desc')
-            ->paginate(31);
+            ->withCount([
+                'hasManyLike',
+                'isLike' => function($like) {
+                    return $like->where('user_id', $this->member_id);
+                }
+            ])
+            ->with([
+                'user' => function ($user) {
+                    return $user->select('ajy_uid', 'nickname', 'avatarurl');
+                },
+                'joinUser' => function($joinUser) {
+                    return $joinUser->select('clock_id','clock_num','user_id')
+                        ->where('clock_id', $this->clock_id);
+                },
 
+                /*'topic' => function ($topic) {
+                    return $topic->select('id', 'clock_id', 'type', 'name');
+                },*/
+                'hasManyLike' => function ($like) {
+                    return $like->select('clock_users_id', 'user_id', 'created_at')->with([
+                        'user' => function ($user) {
+                            return $user->select('ajy_uid', 'nickname', 'avatarurl');
+                        }
+                    ]);
+                },
+                'hasManyComment' => function ($comment) {
+                    return $comment->select('id', 'clock_users_id', 'user_id', 'content', 'parent_id', 'is_reply', 'created_at')->with(['user' => function ($user) {
+                        $user->select('ajy_uid', 'nickname', 'avatarurl');
+                    }])->orderBy('id', 'desc');
+                },
+            ])->orderBy('created_at', 'desc')->paginate(31);
 
         !$sign_log && $sign_log == [];
 
