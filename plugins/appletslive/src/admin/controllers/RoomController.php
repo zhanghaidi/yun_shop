@@ -45,10 +45,11 @@ class RoomController extends BaseController
 
         $input = \YunShop::request();
         $limit = 20;
-
+        $uniacid = \YunShop::app()->uniacid;
         if ($type == 1) { // 录播
             // 处理搜索条件
             $where[] = ['type', '=', 1];
+            $where[] = ['uniacid', '=', $uniacid];
             if (isset($input->search)) {
                 $search = $input->search;
                 if (intval($search['id']) > 0) {
@@ -87,6 +88,7 @@ class RoomController extends BaseController
         if ($type == 2) { // 品牌特卖
             // 处理搜索条件
             $where[] = ['type', '=', 2];
+            $where[] = ['uniacid', '=', $uniacid];
             if (isset($input->search)) {
                 $search = $input->search;
                 if (intval($search['id']) > 0) {
@@ -126,6 +128,7 @@ class RoomController extends BaseController
     // 房间编辑
     public function edit()
     {
+        $uniacid = \YunShop::app()->uniacid;
         if (request()->isMethod('post')) {
             $param = request()->all();
             $upd_data = ['sort' => intval($param['sort'])];
@@ -139,11 +142,11 @@ class RoomController extends BaseController
                 $upd_data['desc'] = $param['desc'] ? $param['desc'] : '';
             }
             $id = $param['id'] ? $param['id'] : 0;
-            $room = DB::table('yz_appletslive_room')->where('id', $id)->first();
+            $room = DB::table('yz_appletslive_room')->where('uniacid',$uniacid)->where('id', $id)->first();
             if (!$room) {
                 return $this->message('无效的ID', Url::absoluteWeb(''), 'danger');
             }
-            if (DB::table('yz_appletslive_room')->where('name', $upd_data['name'])->where('id', '<>', $id)->first()) {
+            if (DB::table('yz_appletslive_room')->where('uniacid',$uniacid)->where('name', $upd_data['name'])->where('id', '<>', $id)->first()) {
                 return $this->message('名称已存在', Url::absoluteWeb(''), 'danger');
             }
 
@@ -151,7 +154,7 @@ class RoomController extends BaseController
             if($room['type'] == 1){//课程状态 0筹备中 1更新中 2已完结
                 //{{--fixby-wk-课程付费 20201124 一个课程只能关联一个商品--}}
                 if ($param['goods_id'] > 0) {
-                    if (DB::table('yz_appletslive_room')->where('goods_id', $param['goods_id'])->where('id', '<>', $id)->first()) {
+                    if (DB::table('yz_appletslive_room')->where('uniacid',$uniacid)->where('goods_id', $param['goods_id'])->where('id', '<>', $id)->first()) {
                         return $this->message('该商品已经关联其它课程', Url::absoluteWeb(''), 'danger');
                     }
                     //{{--fixby-wk-课程付费 20201125 商品必须是虚拟商品--}}
@@ -203,7 +206,7 @@ class RoomController extends BaseController
         }
 
         $id = request()->get('id', 0);
-        $info = DB::table('yz_appletslive_room')->where('id', $id)->first();
+        $info = DB::table('yz_appletslive_room')->where('uniacid',$uniacid)->where('id', $id)->first();
         $info['is_display'] = Room::getIsDisplayAttribute($info);
         $info['is_share'] = Room::getIsShareAttribute($info);
 
@@ -226,6 +229,7 @@ class RoomController extends BaseController
     // 添加录播房间
     public function add()
     {
+        $uniacid = \YunShop::app()->uniacid;
         if (request()->isMethod('post')) {
 
             $param = request()->all();
@@ -233,6 +237,7 @@ class RoomController extends BaseController
                 return $this->message('类型参数有误', Url::absoluteWeb(''), 'danger');
             }
             $ist_data = ['type' => $param['type'], 'sort' => intval($param['sort'])];
+            $ist_data['uniacid'] = $uniacid;
             if (array_key_exists('name', $param)) { // 房间名
                 $ist_data['name'] = $param['name'] ? trim($param['name']) : '';
             }
