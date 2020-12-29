@@ -223,7 +223,7 @@ class ClockController extends ApiController
     }
 
     //打卡排行榜 ims_yz_xiaoe_users_clock
-    public function clockNoteList()
+    public function getClockRanking()
     {
 
         $clock = $this->clockModel->first();
