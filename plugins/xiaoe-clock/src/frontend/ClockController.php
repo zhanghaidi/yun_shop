@@ -27,6 +27,8 @@ class ClockController extends ApiController
 
     private $date; // 2020-12-27
 
+    private $user;
+
 
     public function __construct()
     {
@@ -48,6 +50,23 @@ class ClockController extends ApiController
         $this->clockModel = $this->getClockModel();
 
         $this->date = $this->getPostDate();
+
+        //搜集新加入此打卡的学员
+        $this->user = $this->userJoin($this->clock_id, $this->member_id);
+    }
+
+    //获取打卡详情接口
+    public function getClockInfo()
+    {
+        $clock = $this->clockModel->first();
+
+        if (!$clock) {
+            return $this->errorJson('不存在数据');
+        }
+        $clock->clock_status = $this->getClockStatus(Carbon::now()->startOfDay()->timestamp, Carbon::now()->endOfDay()->timestamp);
+
+        return $this->successJson('ok', $clock);
+
     }
 
     //日历打卡活动详情 ims_yz_xiaoe_clock 默认显示一周的日历 用户一周打卡情况 当天是否打卡 当天的打卡主题
@@ -55,7 +74,7 @@ class ClockController extends ApiController
     {
 
         //搜集新加入此打卡的学员
-        $user = $this->userJoin($this->clock_id, $this->member_id);
+        //$user = $this->userJoin($this->clock_id, $this->member_id);
 
         $clock = $this->clockModel
             ->with([
@@ -113,12 +132,13 @@ class ClockController extends ApiController
         //显示本周本用户打卡状态
         $data = [
             'clock' => $clock,
-            'user' => $user,
+            'user' => $this->user,
             'week_calendar' => $this->getCalendarWeekData()
         ];
         return $this->successJson('ok', $data);
 
     }
+
 
 
     //作业打卡活动详情
