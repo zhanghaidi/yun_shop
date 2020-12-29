@@ -438,12 +438,22 @@ class ClockController extends ApiController
      */
     private function getCalendarMonthData()
     {
-        $startTime = Carbon::create($this->date)->startOfMonth()->timestamp;
-        $endTime = Carbon::create($this->date)->endOfMonth()->timestamp;
+        $startTime = Carbon::parse($this->date)->startOfMonth()->timestamp;
+        $endTime = Carbon::parse($this->date)->endOfMonth()->timestamp;
 
-        return $this->clockNoteModel->where('user_id', $this->member_id)->whereBetween('created_at', [$startTime, $endTime])
+        $sign_log = $this->clockNoteModel->where('user_id', $this->member_id)->whereBetween('created_at', [$startTime, $endTime])
             ->orderBy('created_at', 'desc')
             ->paginate(32);
+
+
+        !$sign_log && $sign_log == [];
+
+        $result = [];
+        foreach ($sign_log as $key => $item) {
+            $result[] = (int)date('d', $item->created_at->timestamp) - 1;
+        }
+
+        return $result;
     }
 
 
