@@ -18,12 +18,14 @@
                 <div class="col-xs-12 col-sm-4 col-md-3">
                     @if($paper['status'] == 2)
                         交卷时间：{{$paper['updated_at']}}
+                    @elseif($paper['status'] == 3)
+                        超时交卷时间：{{$paper['updated_at']}}
                     @else
                         未交卷
                     @endif
                 </div>
                 <div class="col-xs-12 col-sm-4 col-md-3">
-                    @if($paper['status'] == 2)
+                    @if($paper['status'] == 2 || $paper['status'] == 3)
                         用时：{{$paper['use_time']}}
                     @else
                     @endif
@@ -33,7 +35,7 @@
                 </div>
             </div>
 
-            @if($paper['status'] == 2)
+            @if($paper['status'] == 2 || $paper['status'] == 3)
             <div class="row bg-info" style="margin:50px 0;height:100px">
                 <div class="col-xs-12 col-sm-4 col-md-3" style="padding:30px;text-align:center;">
                     <span class="text-success" style="font-size:50px;">{{$paper['score_obtain']}}<i style="font-size:11px;">分</i></span><br />

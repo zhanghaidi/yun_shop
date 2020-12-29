@@ -15,4 +15,13 @@ class AnswerPaperModel extends BaseModel
     {
         return $this->hasOne('Yunshop\Examination\models\AnswerPaperContentModel', 'answer_paper_id');
     }
+
+    public static function completeToInvalid(int $serviceId, int $id)
+    {
+        return self::where([
+            'id' => $id,
+            'uniacid' => $serviceId,
+            'status' => 2,
+        ])->limit(1)->update(['status' => 3]);
+    }
 }

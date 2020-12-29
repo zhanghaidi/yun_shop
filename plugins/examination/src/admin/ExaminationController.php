@@ -44,7 +44,7 @@ class ExaminationController extends BaseController
                     $v1->member_total = count(array_unique(array_column($v2, 'member_id')));
                     $v1->member_complete = count(array_unique(array_filter(array_map(function ($v3) {
                         if (isset($v3['status']) && isset($v3['member_id']) &&
-                            $v3['status'] == 2
+                            ($v3['status'] == 2 || $v3['status'] == 3)
                         ) {
                             return $v3['member_id'];
                         } else {
@@ -55,7 +55,7 @@ class ExaminationController extends BaseController
                     $v1->answer_total = count($v2);
                     $v1->answer_complete = count(array_filter(array_map(function ($v4) {
                         if (isset($v4['id']) && isset($v4['status']) &&
-                            $v4['status'] == 2
+                            ($v4['status'] == 2 || $v4['status'] == 3)
                         ) {
                             return $v4['id'];
                         } else {
@@ -239,7 +239,7 @@ class ExaminationController extends BaseController
             'uniacid' => $examinationRs->uniacid,
         ]);
 
-        if (isset($search['status']) && in_array($search['status'], [1, 2])) {
+        if (isset($search['status']) && in_array($search['status'], [1, 2, 3])) {
             $listRs = $listRs->where('status', $search['status']);
         }
         if (isset($search['time_range']['start']) && $search['time_range']['start'] > 0) {
@@ -350,7 +350,7 @@ class ExaminationController extends BaseController
                     if ($paper['member_id'] != $v1->member_id) {
                         return 0;
                     }
-                    if ($paper['status'] != 2) {
+                    if ($paper['status'] != 2 || $paper['status'] != 3) {
                         return 0;
                     }
                     return $paper['id'];
@@ -408,7 +408,7 @@ class ExaminationController extends BaseController
         if (!isset($answerPaperRs->id)) {
             return $this->message('答卷数据错误，请联系开发人员', '', 'danger');
         }
-        if ($answerPaperRs->status == 2) {
+        if ($answerPaperRs->status == 2 || $answerPaperRs->status == 3) {
             $useTime = strtotime($answerPaperRs->updated_at) - strtotime($answerPaperRs->created_at);
             $answerPaperRs->use_time = '';
             if ($useTime > 3600) {
