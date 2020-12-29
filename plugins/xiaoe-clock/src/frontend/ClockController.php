@@ -499,7 +499,10 @@ class ClockController extends ApiController
             //是否有主题 获取用户主题
             $data[$i]['theme'] = $this->getCalendarClockTheme($startTime);
             if ($startTime <= time()) {
-
+                //用户当天是否打卡
+                $data[$i]['status'] = $this->getClockStatus($startTime, $endTime);
+                //是否有主题 获取用户主题
+                $data[$i]['theme'] = $this->getCalendarClockTheme($startTime);
             } else {
                 $data[$i]['status'] = 0;
                 $data[$i]['theme'] = null;
@@ -625,7 +628,7 @@ class ClockController extends ApiController
     private function getCalendarClockTheme($toDayTime)
     {
         $topic = XiaoeClockTopic::uniacid()->where(['start_time' => $toDayTime, 'clock_id' => $this->clock_id])
-            ->select('name', 'cover_img', 'text_desc', 'video_desc', 'join_num', 'comment_num')
+            ->select('id','name', 'cover_img', 'text_desc', 'video_desc', 'join_num', 'comment_num')
             ->first();
         return $topic;
     }
