@@ -152,13 +152,13 @@ class ClockController extends ApiController
             },
             'hasManyNote' => function($note){
                 return $note->select('id', 'user_id', 'clock_id', 'clock_task_id', 'type', 'text_desc', 'image_desc', 'audio_desc', 'video_desc', 'sort','created_at')
-                    ->where('user_id', '<>', $this->member_id)
                     ->withCount([
                         'hasManyLike',
                         'isLike' => function($like) {
                             return $like->where('user_id', $this->member_id);
                         }
-                    ])->with([
+                    ])
+                    ->with([
                         'user' => function ($user) {
                             return $user->select('ajy_uid', 'nickname', 'avatarurl');
                         },
@@ -174,8 +174,7 @@ class ClockController extends ApiController
                             ]);
                         },
                         'hasManyComment' => function ($comment) {
-                            return $comment->select('id', 'clock_users_id', 'user_id', 'content', 'parent_id', 'is_reply', 'created_at')
-                                ->with(['user' => function ($user) {
+                            return $comment->select('id', 'clock_users_id', 'user_id', 'content', 'parent_id', 'is_reply', 'created_at')->with(['user' => function ($user) {
                                 $user->select('ajy_uid', 'nickname', 'avatarurl');
                             }])->orderBy('id', 'desc');
                         },
