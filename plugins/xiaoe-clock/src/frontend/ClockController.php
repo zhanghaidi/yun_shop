@@ -454,7 +454,7 @@ class ClockController extends ApiController
             $result[(int)date('d', $item->created_at->timestamp)][]= $item;
         }
 
-        return $result;
+        return $this->successJson('ok',$result);
     }
 
 
