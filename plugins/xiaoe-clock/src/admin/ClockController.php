@@ -208,10 +208,10 @@ class ClockController extends BaseController
                     return $this->message('结束日期不能小于开始日期', Url::absoluteWeb(''), 'danger');
                 }
                 if (array_key_exists('valid_time_start', $param)) { //有效时段
-                    $ist_data['valid_time_start'] = $param['valid_time_start'] ? $param['valid_time_start'] : 0;
+                    $ist_data['valid_time_start'] = intval($param['valid_time_start']) ? intval($param['valid_time_start']) : 0;
                 }
                 if (array_key_exists('valid_time_end', $param)) { // 有效时段
-                    $ist_data['valid_time_end'] = $param['valid_time_end'] ? $param['valid_time_end'] : 0;
+                    $ist_data['valid_time_end'] = intval($param['valid_time_end']) ? intval($param['valid_time_end']) : 0;
                 }
             }
             if ($param['type'] == 2) { //作业打卡
@@ -414,7 +414,8 @@ class ClockController extends BaseController
             $type = array_key_exists('type', $param) ? intval($param['type']) : 1;
             if ($type == 1) { //日历主题
                 $theme_time = $param['theme_time'] ? $param['theme_time'] : 0;
-                if($theme_time < $room['start_time'] || $theme_time > $room['end_time']){
+
+                if(strtotime($theme_time) < $room['start_time'] || strtotime($theme_time) > $room['end_time']){
                     return $this->message('该日期已超出了日历打卡的时间范围！请重新选择', Url::absoluteWeb(''), 'danger');
                 }
                 $ist_data = [
@@ -429,7 +430,7 @@ class ClockController extends BaseController
                     'video_desc' => $param['video_desc'] ? $param['video_desc'] : '',
                     'sort' => $param['sort'] ? $param['sort'] : 0,
                 ];
-                if ($type > 0 && DB::table('yz_xiaoe_clock_task')->where('theme_time', $ist_data['theme_time'])->where('id', $rid)->where('uniacid', $uniacid)->first()) {
+                if ($type > 0 && DB::table('yz_xiaoe_clock_task')->where('theme_time', $ist_data['theme_time'])->where('clock_id', $rid)->where('uniacid', $uniacid)->first()) {
                     return $this->message('该日期已经添加主体了', Url::absoluteWeb(''), 'danger');
                 }
 
@@ -437,7 +438,7 @@ class ClockController extends BaseController
 
                 $start_time = $param['start_time'] ? $param['start_time'] : 0;
                 $end_time = $param['end_time'] ? $param['end_time'] : 0;
-                if($end_time < $start_time){
+                if(strtotime($end_time) < strtotime($start_time)){
                     $this->message('结束日期必须小于开始日期', Url::absoluteWeb(''), 'danger');
                 }
                 $ist_data = [
@@ -453,7 +454,7 @@ class ClockController extends BaseController
                 ];
             }
 
-            if ($type > 0 && DB::table('yz_xiaoe_clock_task')->where('name', $ist_data['name'])->where('id', $rid)->where('uniacid', $uniacid)->first()) {
+            if ($type > 0 && DB::table('yz_xiaoe_clock_task')->where('name', $ist_data['name'])->where('clock_id', $rid)->where('uniacid', $uniacid)->first()) {
                 return $this->message('名称已存在', Url::absoluteWeb(''), 'danger');
             }
             $insert_res = DB::table('yz_xiaoe_clock_task')->insert($ist_data);
@@ -566,8 +567,11 @@ class ClockController extends BaseController
             $type = $replay['type'];
             if ($type == 1) {//日历主题
                 $theme_time = $param['theme_time'] ? $param['theme_time'] : 0;
-                if($theme_time < $room['start_time'] || $theme_time > $room['end_time']){
+                if(strtotime($theme_time) < $room['start_time'] || strtotime($theme_time) > $room['end_time']){
                     return $this->message('该日期已超出了日历打卡的时间范围！请重新选择', Url::absoluteWeb(''), 'danger');
+                }
+                if ($type > 0 && DB::table('yz_xiaoe_clock_task')->where('theme_time', strtotime($theme_time))->where('clock_id', $room['id'])->first()) {
+                    return $this->message('该日期已经添加主体了', Url::absoluteWeb(''), 'danger');
                 }
                 $upd_data = [
                     'name' => $param['name'] ? trim($param['name']) : '',
