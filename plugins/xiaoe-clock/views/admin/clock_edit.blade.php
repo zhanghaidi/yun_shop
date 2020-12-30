@@ -113,23 +113,23 @@
                         <label class="col-xs-12 col-sm-3 col-md-1 control-label">文字字数限制</label>
                         <div class="col-sm-9 col-xs-12 col-md-11">
                             <input name="text_length" type="text" class="form-control" value="{{ $info['text_length'] }}" required/>
-                            <span class="help-block">用户打卡要求，文字字数限制</span>
+                            <span class="help-block">用户打卡要求，最少文字字数限制</span>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-1 control-label">图片张数限制</label>
                         <div class="col-sm-9 col-xs-12 col-md-11">
                             <input name="image_length" type="text" class="form-control" value="{{ $info['image_length'] }}" required/>
-                            <span class="help-block">用户打卡要求，图片张数限制</span>
+                            <span class="help-block">用户打卡要求，最少图片张数限制</span>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">音频时间限制</label>
-                        <div class="col-sm-9 col-xs-12 col-md-11">
-                            <input name="video_length" type="text" class="form-control" value="{{ $info['video_length'] }}" required/>
-                            <span class="help-block">用户打卡要求，音频时间限制</span>
-                        </div>
-                    </div>
+{{--                    <div class="form-group">--}}
+{{--                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">音频时间限制</label>--}}
+{{--                        <div class="col-sm-9 col-xs-12 col-md-11">--}}
+{{--                            <input name="video_length" type="text" class="form-control" value="{{ $info['video_length'] }}" required/>--}}
+{{--                            <span class="help-block">用户打卡要求，音频时间限制</span>--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
 {{--                    <div class="form-group">--}}
 {{--                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">显示设置</label>--}}
 {{--                        <div class="col-sm-9 col-xs-12 col-md-11">--}}
@@ -254,14 +254,14 @@
                         <label class="col-xs-12 col-sm-3 col-md-1 control-label">文字字数限制</label>
                         <div class="col-sm-9 col-xs-12 col-md-11">
                             <input name="text_length" type="text" class="form-control" value="{{ $info['text_length'] }}" required/>
-                            <span class="help-block">用户打卡要求，文字字数限制</span>
+                            <span class="help-block">用户打卡要求，最少文字字数限制</span>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-1 control-label">图片张数限制</label>
                         <div class="col-sm-9 col-xs-12 col-md-11">
                             <input name="image_length" type="text" class="form-control" value="{{ $info['image_length'] }}" required/>
-                            <span class="help-block">用户打卡要求，图片张数限制</span>
+                            <span class="help-block">用户打卡要求，最少图片张数限制</span>
                         </div>
                     </div>
 {{--                    <div class="form-group">--}}
