@@ -670,10 +670,7 @@ class ClockController extends ApiController
             $clock_hour_timeout_status = 1;
         }
 
-        $sign_log = XiaoeClockNote::uniacid()->where(['clock_id' => $this->clock_id, 'user_id' => $this->member_id])->whereDate('created_at', $date)->first();
-        if (!empty($sign_log)) {
-            $user_clock_status = 1;
-        }
+        $user_clock_status = $this->getClockStatus(Carbon::parse($date)->startOfDay()->timestamp, Carbon::parse($date)->endOfDay()->timestamp);
 
         return compact('clock_timeout_status','clock_hour_timeout_status','user_clock_status');
     }
