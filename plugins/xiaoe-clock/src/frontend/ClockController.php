@@ -85,7 +85,10 @@ class ClockController extends ApiController
                         }]);
                 },
                 'hasManyTopic' => function ($topic) {
-                    return $topic->select('id', 'clock_id', 'type', 'name', 'cover_img', 'text_desc', 'audio_desc', 'video_desc', 'start_time', 'end_time', 'theme_time');
+                    return $topic->select('id', 'clock_id', 'type', 'name', 'cover_img', 'text_desc', 'audio_desc', 'video_desc', 'start_time', 'end_time', 'theme_time')
+                        ->withCount(['hasManyNote' => function($myNote){
+                            return $myNote->where('user_id',$this->member_id);
+                        }]);
                 },
 
                 'hasManyNote' => function ($note) {
@@ -120,7 +123,7 @@ class ClockController extends ApiController
                                     $user->select('ajy_uid', 'nickname', 'avatarurl');
                                 }])->orderBy('id', 'desc');
                             },
-                        ]);
+                        ])->orderBy('id', 'desc');
                 },
 
             ])->first();
@@ -128,7 +131,8 @@ class ClockController extends ApiController
         if (!$clock) {
             return $this->errorJson('不存在数据');
         }
-        $clock->clock_status = $this->getClockStatus(Carbon::now()->startOfDay()->timestamp, Carbon::now()->endOfDay()->timestamp);
+        $status = $this->getClockStatus(Carbon::now()->startOfDay()->timestamp, Carbon::now()->endOfDay()->timestamp);
+        $clock->clock_status = $status['status'];
         //显示本周本用户打卡状态
         $data = [
             'clock' => $clock,
@@ -144,8 +148,7 @@ class ClockController extends ApiController
     //作业打卡活动详情
     public function getHomeWorkClock()
     {
-        $user = $this->userJoin($this->clock_id, $this->member_id);
-
+        $user = $this->user;
         $clock = XiaoeClock::uniacid()->where('id', $this->clock_id)
             ->withCount(['hasManyNote', 'hasManyUser','hasManyTopic'])
             ->with([
@@ -161,7 +164,6 @@ class ClockController extends ApiController
         return $this->successJson('success', compact('user','clock'));
     }
 
-    //
 
     //打卡活动主题详情 ims_yz_xiaoe_clock_task
     public function getClockTopicInfo()
@@ -203,8 +205,8 @@ class ClockController extends ApiController
                             return $comment->select('id', 'clock_users_id', 'user_id', 'content', 'parent_id', 'is_reply', 'created_at')->with(['user' => function ($user) {
                                 $user->select('ajy_uid', 'nickname', 'avatarurl');
                             }])->orderBy('id', 'desc');
-                        },
-                    ]);
+                        }
+                    ])->orderBy('id', 'desc');
             },
 
         ])->first();
@@ -213,7 +215,7 @@ class ClockController extends ApiController
             return $this->errorJson('不存在数据');
         }
 
-        $topic->my_note = $this->clockNoteModel->where(['user_id' => $this->member_id, 'clock_task_id' => $topic_id])
+        $my_note = $this->clockNoteModel->where(['user_id' => $this->member_id, 'clock_task_id' => $topic_id])
             ->withCount([
                 'hasManyLike',
                 'isLike' => function ($like) {
@@ -243,6 +245,20 @@ class ClockController extends ApiController
                 }
             ])->first();
 
+
+        $topic->user_clock_status = 0;
+        if(!empty($my_note)){
+            $topic->user_clock_status = 1;
+        }
+
+        $time = time();
+        $topic->topic_timeout_status = 0;
+        if ($topic->start_time > $time || $topic->end_time < $time ) {
+
+            $topic->topic_timeout_status = 1;
+        }
+
+        $topic->my_note = $my_note;
 
         return $this->successJson('success', $topic);
 
@@ -524,15 +540,7 @@ class ClockController extends ApiController
             $data[$i]['status'] = $this->getClockStatus($startTime, $endTime);
             //是否有主题 获取用户主题
             $data[$i]['theme'] = $this->getCalendarClockTheme($startTime);
-            if ($startTime <= time()) {
-                //用户当天是否打卡
-                $data[$i]['status'] = $this->getClockStatus($startTime, $endTime);
-                //是否有主题 获取用户主题
-                $data[$i]['theme'] = $this->getCalendarClockTheme($startTime);
-            } else {
-                $data[$i]['status'] = 0;
-                $data[$i]['theme'] = null;
-            }
+
         }
 
         return $data;
@@ -642,12 +650,15 @@ class ClockController extends ApiController
 
         $todayNoteLog = XiaoeClockNote::uniacid()->where(['clock_id' => $this->clock_id, 'user_id' => $this->member_id])->whereBetween('created_at', [$todayStart, $todayEnd])->first();
 
+        $log = array(
+            'id' => $todayNoteLog->id
+        );
         if (!empty($todayNoteLog)) {
-            $status = 1;
+            $log['status'] = 1;
         } else {
-            $status = 0;
+            $log['status'] = 0;
         }
-        return $status;
+        return $log;
     }
 
     //获取是否能打卡状态
@@ -669,18 +680,25 @@ class ClockController extends ApiController
             }
         }
 
-        $user_clock_status = $this->getClockStatus(Carbon::parse($date)->startOfDay()->timestamp, Carbon::parse($date)->endOfDay()->timestamp);
+        $status = $this->getClockStatus(Carbon::parse($date)->startOfDay()->timestamp, Carbon::parse($date)->endOfDay()->timestamp);
+        $user_clock_status = $status['status'];
 
         return compact('clock_timeout_status','clock_hour_timeout_status','user_clock_status');
     }
 
-    //    获取用户主题
+    //    获取日历打卡主题
     private function getCalendarClockTheme($toDayTime)
     {
         $topic = XiaoeClockTopic::uniacid()->where(['start_time' => $toDayTime, 'clock_id' => $this->clock_id])
             ->select('id','name', 'cover_img', 'text_desc', 'video_desc', 'join_num', 'comment_num')
             ->first();
         return $topic;
+    }
+
+    // 获取主题打卡状态
+    private function getTopicStatus($topic)
+    {
+
     }
 
 }
