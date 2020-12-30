@@ -647,16 +647,16 @@ class ClockController extends ApiController
     private function getIsClockStatus($clock, $date){
         $time = time();
 
-        $clock_timeout_status = 0;
-        $clock_hour_timeout_status = 0;
-        $user_clock_status = 0;
+        $clock_timeout_status = 0; //打卡是否结束
+        $clock_hour_timeout_status = 0; //打卡时段是否结束
+        $user_clock_status = 0; //用户今日打卡状态
 
         if ($clock->start_time > $time || $clock->end_time < $time ) {
             $clock_timeout_status = 1;
         }
 
 
-        if(date('G') > $clock->valid_time_start && date('G') < $clock->valid_time_end){
+        if(date('G') > $clock->valid_time_end && date('G') < $clock->valid_time_start){
             $clock_hour_timeout_status = 1;
         }
 
