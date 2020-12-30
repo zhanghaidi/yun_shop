@@ -63,7 +63,7 @@ class ClockController extends ApiController
         if (!$clock) {
             return $this->errorJson('不存在数据');
         }
-        //$clock->clock_status = $this->getClockStatus(Carbon::now()->startOfDay()->timestamp, Carbon::now()->endOfDay()->timestamp);
+
         $clock->clock_status = $this->getIsClockStatus($clock, date('Y-m-d'));
 
         return $this->successJson('ok', $clock);
@@ -146,11 +146,22 @@ class ClockController extends ApiController
     {
         $user = $this->userJoin($this->clock_id, $this->member_id);
 
-        $clock = XiaoeClock::uniacid()->where('id', $this->clock_id)->withCount(['hasManyNote', 'hasManyUser','hasManyTopic'])->first();
-
+        $clock = XiaoeClock::uniacid()->where('id', $this->clock_id)
+            ->withCount(['hasManyNote', 'hasManyUser','hasManyTopic'])
+            ->with([
+                'hasManyTopic' => function ($topic) {
+                    return $topic->select('id', 'clock_id', 'type', 'name', 'cover_img', 'text_desc', 'audio_desc', 'video_desc', 'start_time', 'end_time', 'theme_time')
+                        ->withCount(['hasManyNote' => function($myNote){
+                            return $myNote->where('user_id',$this->member_id);
+                        }]);
+                },
+            ])
+            ->first();
 
         return $this->successJson('success', $clock);
     }
+
+    //
 
     //打卡活动主题详情 ims_yz_xiaoe_clock_task
     public function getClockTopicInfo()
