@@ -15,6 +15,7 @@ use Yunshop\XiaoeClock\models\XiaoeClockUser;
 use Illuminate\Support\Facades\DB;
 use Yunshop\Appletslive\common\services\BaseService;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Redis;
 
 
 class ClockController extends ApiController
@@ -635,6 +636,14 @@ class ClockController extends ApiController
             'clock_id' => $clock_id,
             'user_id' => $user_id
         );
+
+        $lockCacheKey = 'userJoin' . \YunShop::app()->uniacid . $clock_id . $user_id . date('Y-m-d H:i:s');
+
+        $lockCacheRs = Redis::setnx($lockCacheKey, 1);
+        if ($lockCacheRs != 1) {
+            return false;
+        }
+        Redis::expire($lockCacheKey, 5);
 
         $user = XiaoeClockUser::firstOrCreate($params);
 
