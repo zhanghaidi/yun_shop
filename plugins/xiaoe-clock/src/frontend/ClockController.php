@@ -146,9 +146,7 @@ class ClockController extends ApiController
     {
         $user = $this->userJoin($this->clock_id, $this->member_id);
 
-        $clock = XiaoeClock::uniacid()->where('id', $this->clock_id)->withCount(['hasManyNote', 'hasManyUser'])->with(['hasManyNote', 'hasManyTopic'])->with(['myNote' => function ($my_note) {
-            return $my_note->where('user_id', $this->member_id);
-        }])->first();
+        $clock = XiaoeClock::uniacid()->where('id', $this->clock_id)->withCount(['hasManyNote', 'hasManyUser','hasManyTopic'])->first();
 
 
         return $this->successJson('success', $clock);
