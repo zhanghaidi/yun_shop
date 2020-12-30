@@ -33,7 +33,8 @@ class ClockController extends ApiController
 
     public function __construct()
     {
-        if (!\YunShop::app()->getMemberId()) {
+        $member_id = intval(\YunShop::app()->getMemberId());
+        if(!$member_id){
             response()->json([
                 'result' => 41009,
                 'msg' => '请登录',
@@ -41,7 +42,8 @@ class ClockController extends ApiController
             ], 200, ['charset' => 'utf-8'])->send();
             exit;
         }
-        $this->member_id = \YunShop::app()->getMemberId();
+
+        $this->member_id = $member_id;
         $this->clock_id = intval(request()->get('id'));
         if (!$this->clock_id) {
             return $this->errorJson('打卡id不能为空');
