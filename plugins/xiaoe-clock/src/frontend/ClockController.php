@@ -63,7 +63,8 @@ class ClockController extends ApiController
         if (!$clock) {
             return $this->errorJson('不存在数据');
         }
-        $clock->clock_status = $this->getClockStatus(Carbon::now()->startOfDay()->timestamp, Carbon::now()->endOfDay()->timestamp);
+        //$clock->clock_status = $this->getClockStatus(Carbon::now()->startOfDay()->timestamp, Carbon::now()->endOfDay()->timestamp);
+        $clock->clock_status = $this->getIsClockStatus($clock, date('Y-m-d'));
 
         return $this->successJson('ok', $clock);
 
@@ -598,7 +599,7 @@ class ClockController extends ApiController
     {
 
         return XiaoeClock::uniacid()->where('id', $this->clock_id)
-            ->select('id', 'type', 'name', 'cover_img', 'text_desc', 'audio_desc', 'video_desc', 'join_type', 'course_id', 'price', 'start_time', 'end_time', 'valid_time_start', 'valid_time_end', 'text_length', 'image_length', 'video_length', 'is_cheat_mode', 'is_resubmit', 'created_at')
+            ->select('id', 'type', 'name', 'cover_img', 'text_desc', 'audio_desc', 'video_desc', 'join_type', 'course_id', 'price', 'start_time', 'end_time', 'valid_time_start', 'valid_time_end', 'text_length', 'image_length', 'video_length', 'is_cheat_mode', 'is_resubmit','helper_nickname', 'helper_avatar', 'helper_wechat', 'created_at')
             ->withCount(['hasManyNote', 'hasManyUser']);
 
     }
@@ -640,6 +641,31 @@ class ClockController extends ApiController
             $status = 0;
         }
         return $status;
+    }
+
+    //获取是否能打卡状态
+    private function getIsClockStatus($clock, $date){
+        $time = time();
+
+        $clock_timeout_status = 0;
+        $clock_hour_timeout_status = 0;
+        $user_clock_status = 0;
+
+        if ($clock->start_time > $time || $clock->end_time < $time ) {
+            $clock_timeout_status = 1;
+        }
+
+
+        if(date('G') > $clock->valid_time_start && date('G') < $clock->valid_time_end){
+            $clock_hour_timeout_status = 1;
+        }
+
+        $sign_log = XiaoeClockNote::uniacid()->where(['clock_id' => $this->clock_id, 'user_id' => $this->member_id])->whereDate('created_at', $date)->first();
+        if (!empty($sign_log)) {
+            $user_clock_status = 1;
+        }
+
+        return compact('clock_timeout_status','clock_hour_timeout_status','user_clock_status');
     }
 
     //    获取用户主题
