@@ -72,7 +72,6 @@ class ClockController extends ApiController
     //日历打卡活动详情 ims_yz_xiaoe_clock 默认显示一周的日历 用户一周打卡情况 当天是否打卡 当天的打卡主题
     public function getCalendarClock()
     {
-
         //搜集新加入此打卡的学员
         //$user = $this->userJoin($this->clock_id, $this->member_id);
 
@@ -502,7 +501,7 @@ class ClockController extends ApiController
      *
      * @return array
      */
-    private function getCalendarWeekData()
+    public function getCalendarWeekData()
     {
         $week = date('w', time());//周日是零
         $weekname = array('日', '一', '二', '三', '四', '五', '六');
@@ -512,8 +511,7 @@ class ClockController extends ApiController
             $data[$i]['week'] = $weekname[$i];
             $startTime = Carbon::parse($data[$i]['date'])->startOfDay()->timestamp;
             $endTime = Carbon::parse($data[$i]['date'])->endOfDay()->timestamp;
-            //$startTime = strtotime($data[$i]['date'] . '00:00:00');
-            //$endTime = strtotime($data[$i]['date'] . '23:59:59');
+
             //用户当天是否打卡
             $data[$i]['status'] = $this->getClockStatus($startTime, $endTime);
             //是否有主题 获取用户主题
