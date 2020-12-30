@@ -137,12 +137,11 @@ class ClockController extends ApiController
         $data = [
             'clock' => $clock,
             'user' => $this->user,
-            'week_calendar' => $this->getCalendarWeekData()
+            //'week_calendar' => $this->getCalendarWeekData()
         ];
         return $this->successJson('ok', $data);
 
     }
-
 
 
     //作业打卡活动详情
@@ -543,7 +542,7 @@ class ClockController extends ApiController
 
         }
 
-        return $data;
+        return $this->successJson('ok', $data);
     }
 
 
@@ -696,10 +695,5 @@ class ClockController extends ApiController
         return $topic;
     }
 
-    // 获取主题打卡状态
-    private function getTopicStatus($topic)
-    {
-
-    }
 
 }
