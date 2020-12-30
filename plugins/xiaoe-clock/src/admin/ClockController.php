@@ -208,10 +208,21 @@ class ClockController extends BaseController
                     return $this->message('结束日期不能小于开始日期', Url::absoluteWeb(''), 'danger');
                 }
                 if (array_key_exists('valid_time_start', $param)) { //有效时段
-                    $ist_data['valid_time_start'] = intval($param['valid_time_start']) ? intval($param['valid_time_start']) : 0;
+                    if (!preg_match('/^\+?[1-9]\d*$/',trim($param['valid_time_start']))) {
+                        return $this->message('请输入正确的打卡有效时段，开始时间（正整数）', Url::absoluteWeb(''), 'danger');
+
+                    }
+                    $ist_data['valid_time_start'] = intval(trim($param['valid_time_start'])) ? intval(trim($param['valid_time_start'])) : 0;
                 }
                 if (array_key_exists('valid_time_end', $param)) { // 有效时段
-                    $ist_data['valid_time_end'] = intval($param['valid_time_end']) ? intval($param['valid_time_end']) : 0;
+                    if (!preg_match('/^\+?[1-9]\d*$/',trim($param['valid_time_end']))) {
+                        return $this->message('请输入正确的打卡有效时段，结束时间（正整数）', Url::absoluteWeb(''), 'danger');
+
+                    }
+                    $ist_data['valid_time_end'] = intval(trim($param['valid_time_end'])) ? intval(trim($param['valid_time_end'])) : 0;
+                }
+                if(array_key_exists('valid_time_end', $param) && array_key_exists('valid_time_start', $param) &&  $ist_data['valid_time_start'] >= $ist_data['valid_time_end']){
+                    return $this->message('打卡有效时段，结束时间不能小于开始时间', Url::absoluteWeb(''), 'danger');
                 }
             }
             if ($param['type'] == 2) { //作业打卡
@@ -335,11 +346,23 @@ class ClockController extends BaseController
                     return $this->message('结束日期不能小于开始日期', Url::absoluteWeb(''), 'danger');
                 }
                 if (array_key_exists('valid_time_start', $param)) { //有效时段
-                    $ist_data['valid_time_start'] = $param['valid_time_start'] ? $param['valid_time_start'] : 0;
+                    if (!preg_match('/^\+?[1-9]\d*$/',trim($param['valid_time_start']))) {
+                        return $this->message('请输入正确的打卡有效时段，开始时间（正整数）', Url::absoluteWeb(''), 'danger');
+
+                    }
+                    $ist_data['valid_time_start'] = intval(trim($param['valid_time_start'])) ? intval(trim($param['valid_time_start'])) : 0;
                 }
                 if (array_key_exists('valid_time_end', $param)) { // 有效时段
-                    $ist_data['valid_time_end'] = $param['valid_time_end'] ? $param['valid_time_end'] : 0;
+                    if (!preg_match('/^\+?[1-9]\d*$/',trim($param['valid_time_end']))) {
+                        return $this->message('请输入正确的打卡有效时段，结束时间（正整数）', Url::absoluteWeb(''), 'danger');
+
+                    }
+                    $ist_data['valid_time_end'] = intval(trim($param['valid_time_end'])) ? intval(trim($param['valid_time_end'])) : 0;
                 }
+                if(array_key_exists('valid_time_end', $param) && array_key_exists('valid_time_start', $param) &&  $ist_data['valid_time_start'] >= $ist_data['valid_time_end']){
+                    return $this->message('打卡有效时段，结束时间不能小于开始时间', Url::absoluteWeb(''), 'danger');
+                }
+
             }
             if ($param['type'] == 2) { //作业打卡
                 if (array_key_exists('is_cheat_mode', $param)) { //防作弊
