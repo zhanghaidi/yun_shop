@@ -319,7 +319,7 @@ class ClockController extends BaseController
                 if (array_key_exists('start_time', $param)) { //有效期 开始是日期
                     $start_time = $param['start_time'] ? $param['start_time'] : 0;
                     if ($start_time != 0) {
-//                        $ist_data['start_time'] = strtotime($start_time);
+                        $ist_data['start_time'] = strtotime($start_time);
 //                        if ($now_day_time > $ist_data['start_time']) {
 //                            return $this->message('开始日期不能小于当前日期', Url::absoluteWeb(''), 'danger');
 //                        }
