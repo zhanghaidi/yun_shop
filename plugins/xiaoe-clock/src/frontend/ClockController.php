@@ -656,8 +656,10 @@ class ClockController extends ApiController
         }
 
 
-        if(date('G') > $clock->valid_time_end && date('G') < $clock->valid_time_start){
-            $clock_hour_timeout_status = 1;
+        if($clock->valid_time_end != 0){
+            if(date('G') >= $clock->valid_time_end || date('G') < $clock->valid_time_start){
+                $clock_hour_timeout_status = 1;
+            }
         }
 
         $sign_log = XiaoeClockNote::uniacid()->where(['clock_id' => $this->clock_id, 'user_id' => $this->member_id])->whereDate('created_at', $date)->first();
