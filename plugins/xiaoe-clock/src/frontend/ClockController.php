@@ -275,13 +275,16 @@ class ClockController extends ApiController
             return $this->errorJson('打卡不存在或已被删除');
         }
 
-        $time = time();
-
-        if ($clockInfo->start_time > $time) {
-            return $this->errorJson('打卡暂未开始');
+        $clock_status = $this->getIsClockStatus($clockInfo, date('Y-m-d'));
+        if($clock_status['clock_timeout_status'] == 1){
+            return $this->errorJson('打卡活动暂未开始或已超时');
         }
-        if ($clockInfo->end_time < $time) {
-            return $this->errorJson('打卡已结束');
+
+        if($clock_status['clock_hour_timeout_status'] == 1){
+            return $this->errorJson('打卡时段未开始或已结束');
+        }
+        if($clock_status['user_clock_status'] == 1){
+            return $this->errorJson('您今日已打过卡');
         }
 
 
@@ -291,11 +294,6 @@ class ClockController extends ApiController
             return $this->errorJson('评论内容不能为空');
         }
 
-        //用户今日打卡状态
-        $status = $this->getClockStatus(Carbon::now()->startOfDay()->timestamp, Carbon::now()->endOfDay()->timestamp);
-        if ($status == 1) {
-            return $this->errorJson('今日已打卡');
-        }
         $image = trim(request()->get('image'));
         $video = trim(request()->get('video'));
         $image_size = trim(request()->get('image_size'));
