@@ -36,14 +36,8 @@ class ClockExtController extends ApiController
 
     public function __construct()
     {
-        if (!\YunShop::app()->getMemberId()) {
-            response()->json([
-                'result' => 41009,
-                'msg' => '请登录',
-                'data' => '',
-            ], 200, ['charset' => 'utf-8'])->send();
-            exit;
-        }
+        parent::preAction();
+
         $this->member_id = \YunShop::app()->getMemberId();
         $this->clock_id = intval(request()->get('id'));
         if (!$this->clock_id) {
