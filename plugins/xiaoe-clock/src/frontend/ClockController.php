@@ -295,11 +295,11 @@ class ClockController extends ApiController
         }
 
         $clock_status = $this->getIsClockStatus($clockInfo, date('Y-m-d'));
-        if($clock_status['clock_timeout_status'] == 1){
+        if($clock_status['clock_timeout_status'] != 0){
             return $this->errorJson('打卡活动暂未开始或已超时');
         }
 
-        if($clock_status['clock_hour_timeout_status'] == 1){
+        if($clock_status['clock_hour_timeout_status'] != 0){
             return $this->errorJson('打卡时段未开始或已结束');
         }
         if($clock_status['user_clock_status'] == 1){
