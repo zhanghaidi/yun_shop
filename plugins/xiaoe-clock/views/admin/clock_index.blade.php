@@ -86,7 +86,7 @@
                                 @endif
                             </td>
                             <td style="overflow:visible;">
-                                {{ date('Y-m-d',$row['start_time'])}} 致 {{ date('Y-m-d',$row['end_time'])}}
+                                {{ date('Y-m-d',$row['start_time'])}} 至 {{ date('Y-m-d',$row['end_time'])}}
                             </td>
                             <td>{{ $row['pass_day'] }} / {{ $row['count_day'] }}</td>
                             <td>{{ $row['clock_user_num'] }} / {{ $row['clock_num'] }}</td>
