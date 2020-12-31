@@ -939,7 +939,7 @@ class ClockController extends BaseController
 
         // 刷新接口数据缓存
         if ($del_res) {
-            return $this->message('删除成功', Url::absoluteWeb('plugin.xiaoe-clock.admin.clock.users_clock_detail', ['id' => $replay['clock_users_id']]));
+            return $this->message('删除成功', Url::absoluteWeb(''));
         } else {
             return $this->message('删除失败', Url::absoluteWeb(''), 'danger');
         }
@@ -965,7 +965,7 @@ class ClockController extends BaseController
 
         // 刷新接口数据缓存
         if ($del_res) {
-            return $this->message('删除成功', Url::absoluteWeb('plugin.xiaoe-clock.admin.clock.users_clock_detail', ['id' => $replay['clock_users_id']]));
+            return $this->message('删除成功', Url::absoluteWeb(''));
         } else {
             return $this->message('删除失败', Url::absoluteWeb(''), 'danger');
         }
