@@ -76,12 +76,6 @@
                                 {{ $row['nickname'] }}
                             </td>
                             <td>{{ $row['clock_num'] }}</td>
-                            <td>
-                                {{ $row['like_num'] }}
-                            </td>
-                            <td>
-                                {{ $row['comment_num'] }}
-                            </td>
                             <td style="overflow:visible;">
                                 <a class='btn btn-default'
                                    href="{{yzWebUrl('member.member.detail', ['id' => $row['user_id']])}}"
@@ -140,8 +134,6 @@
                         <th style='width:5%;'>ID</th>
                         <th style='width:8%;'>id/头像/昵称</th>
                         <th style='width:11%;'>打卡次数</th>
-                        <th style='width:11%;'>被点赞数</th>
-                        <th style='width:11%;'>被评论数</th>
                         <th style='width:15%;'>操作</th>
                     </tr>
                     </thead>
