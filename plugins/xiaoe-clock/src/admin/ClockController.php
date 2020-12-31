@@ -140,6 +140,9 @@ class ClockController extends BaseController
             if (array_key_exists('name', $param)) { // 打卡名称
                 $ist_data['name'] = $param['name'] ? trim($param['name']) : '';
             }
+            if (array_key_exists('description', $param)) { // 打卡描述
+                $ist_data['description'] = $param['description'] ? trim($param['description']) : '';
+            }
             if (DB::table('yz_xiaoe_clock')->where('uniacid', $uniacid)->where('name', $ist_data['name'])->first()) {
                 return $this->message('打卡名称已存在', Url::absoluteWeb(''), 'danger');
             }
@@ -283,6 +286,9 @@ class ClockController extends BaseController
             $ist_data = ['type' => $param['type'], 'sort' => intval($param['sort'])];
             if (array_key_exists('name', $param)) { // 打卡名称
                 $ist_data['name'] = $param['name'] ? trim($param['name']) : '';
+            }
+            if (array_key_exists('description', $param)) { // 打卡描述
+                $ist_data['description'] = $param['description'] ? trim($param['description']) : '';
             }
             if (DB::table('yz_xiaoe_clock')->where('uniacid', $uniacid)->where('id','<>',$id)->where('name', $ist_data['name'])->first()) {
                 return $this->message('打卡名称已存在', Url::absoluteWeb(''), 'danger');
