@@ -34,6 +34,12 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">打卡分享描述</label>
+                        <div class="col-sm-9 col-xs-12 col-md-11">
+                            <input name="description" type="text" class="form-control" value="{{ $info['description'] }}" required/>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-1 control-label">封面图</label>
                         <div class="col-sm-9 col-xs-12 col-md-6">
                             {!! app\common\helpers\ImageHelper::tplFormFieldImage('cover_img', $info['cover_img']) !!}
@@ -171,6 +177,12 @@
                             <input name="name" type="text" class="form-control" value="{{ $info['name'] }}" required/>
                         </div>
                     </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-1 control-label">打卡分享描述</label>
+                            <div class="col-sm-9 col-xs-12 col-md-11">
+                                <input name="description" type="text" class="form-control" value="{{ $info['description'] }}" required/>
+                            </div>
+                        </div>
                     <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-1 control-label">封面图</label>
                         <div class="col-sm-9 col-xs-12 col-md-6">
