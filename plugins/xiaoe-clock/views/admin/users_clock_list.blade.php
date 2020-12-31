@@ -50,7 +50,7 @@
         <div class='panel panel-default'>
             <div class="clearfix panel-heading">
                 <a id="" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;"
-                   href="javascript:history.go(-1);">返回</a>
+                   href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_index',['type' => $room_type])}}">返回</a>
             </div>
             <div class='panel-body'>
                 <table class="table table-hover" style="overflow:visible;">
@@ -137,7 +137,7 @@
         <div class='panel panel-default'>
             <div class="clearfix panel-heading">
                 <a id="" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;"
-                   href="javascript:history.go(-1);">返回</a>
+                   href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_index',['type' => $room_type])}}">返回</a>
             </div>
             <div class='panel-body'>
                 <table class="table table-hover" style="overflow:visible;">
