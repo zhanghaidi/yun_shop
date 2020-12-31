@@ -129,8 +129,6 @@
                         <th style='width:5%;'>作业名称</th>
                         <th style='width:10%;'>作业有效期</th>
                         <th style='width:15%;'>打卡次数</th>
-                        <th style='width:10%;'>点赞数</th>
-                        <th style='width:5%;'>评论数</th>
                         <th style='width:15%;'>操作</th>
                     </tr>
                     </thead>
@@ -140,9 +138,7 @@
                             <td>{{ $row['id'] }}</td>
                             <td>{{ $row['name'] }}</td>
                             <td>{{ date('Y-m-d',$row['start_time'])}} 致 {{ date('Y-m-d',$row['end_time'])}}</td>
-                            <td>0</td>
-                            <td>0</td>
-                            <td>0</td>
+                            <td>{{ $row['join_num'] }}</td>
                             <td style="overflow:visible;">
                                 <a class='btn btn-default'
                                    href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.clock_task_edit', ['id' => $row['id']])}}"
