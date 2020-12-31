@@ -608,7 +608,7 @@ class ClockController extends ApiController
     {
 
         return XiaoeClock::uniacid()->where('id', $this->clock_id)
-            ->select('id', 'type', 'name', 'cover_img', 'text_desc', 'audio_desc', 'video_desc', 'join_type', 'course_id', 'price', 'start_time', 'end_time', 'valid_time_start', 'valid_time_end', 'text_length', 'image_length', 'video_length', 'is_cheat_mode', 'is_resubmit','helper_nickname', 'helper_avatar', 'helper_wechat', 'created_at')
+            ->select('id', 'type', 'name', 'description', 'cover_img', 'text_desc', 'audio_desc', 'video_desc', 'join_type', 'course_id', 'price', 'start_time', 'end_time', 'valid_time_start', 'valid_time_end', 'text_length', 'image_length', 'video_length', 'is_cheat_mode', 'is_resubmit','helper_nickname', 'helper_avatar', 'helper_wechat', 'created_at')
             ->withCount(['hasManyNote', 'hasManyUser']);
 
     }
