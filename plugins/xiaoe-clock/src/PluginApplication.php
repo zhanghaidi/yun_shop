@@ -62,7 +62,7 @@ class PluginApplication extends \app\common\services\PluginApplication
                     'parents' => ['xiaoe_clock'],
                     'child' => [
                         'clock_add' => [
-                            'name' => '添加打卡活动',
+                            'name' => '创建打卡',
                             'permit' => 1,
                             'menu' => 0,
                             'icon' => '',
@@ -106,7 +106,7 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'url_params' => '',
                             'parents' => ['xiaoe_clock', 'clock'],
                         ],
-                        'clock_add' => [
+                        'get_search_course' => [
                             'name' => '搜索课程',
                             'permit' => 1,
                             'menu' => 0,
