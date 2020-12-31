@@ -156,10 +156,16 @@ class ClockController extends BaseController
                 $ist_data['course_id'] = $param['course_id'] ? $param['course_id'] : 0;
             }
             if (array_key_exists('text_length', $param)) { //图文长度
-                $ist_data['text_length'] = $param['text_length'] ? $param['text_length'] : 0;
+                $ist_data['text_length'] = intval($param['text_length']) ? intval($param['text_length']) : 0;
+                if ($ist_data['text_length'] > 300) {
+                    return $this->message('文字字数限制超出范围，请填写300以内的整数。', Url::absoluteWeb(''), 'danger');
+                }
             }
             if (array_key_exists('image_length', $param)) { //音频长度
-                $ist_data['image_length'] = $param['image_length'] ? $param['image_length'] : 0;
+                $ist_data['image_length'] = intval($param['image_length']) ? intval($param['image_length']) : 0;
+                if ($ist_data['image_length'] > 9) {
+                    return $this->message('图片张数限制超出范围，请填写9以内的整数。', Url::absoluteWeb(''), 'danger');
+                }
             }
             if (array_key_exists('video_length', $param)) { //视频长度
                 $ist_data['video_length'] = $param['video_length'] ? $param['video_length'] : 0;
@@ -294,10 +300,16 @@ class ClockController extends BaseController
                 $ist_data['course_id'] = $param['course_id'] ? $param['course_id'] : 0;
             }
             if (array_key_exists('text_length', $param)) { //图文长度
-                $ist_data['text_length'] = $param['text_length'] ? $param['text_length'] : 0;
+                $ist_data['text_length'] = intval($param['text_length']) ? intval($param['text_length']) : 0;
+                if ($ist_data['text_length'] > 300) {
+                    return $this->message('文字字数限制超出范围，请填写300以内的整数。', Url::absoluteWeb(''), 'danger');
+                }
             }
             if (array_key_exists('image_length', $param)) { //音频长度
-                $ist_data['image_length'] = $param['image_length'] ? $param['image_length'] : 0;
+                $ist_data['image_length'] = intval($param['image_length']) ? intval($param['image_length']) : 0;
+                if ($ist_data['image_length'] > 9) {
+                    return $this->message('图片张数限制超出范围，请填写9以内的整数。', Url::absoluteWeb(''), 'danger');
+                }
             }
             if (array_key_exists('video_length', $param)) { //视频长度
                 $ist_data['video_length'] = $param['video_length'] ? $param['video_length'] : 0;
@@ -346,14 +358,14 @@ class ClockController extends BaseController
                     return $this->message('结束日期不能小于开始日期', Url::absoluteWeb(''), 'danger');
                 }
                 if (array_key_exists('valid_time_start', $param)) { //有效时段
-                    if (!preg_match('/^\+?[1-9]\d*$/',trim($param['valid_time_start']))) {
+                    if (!preg_match('/^\+?[0-9]\d*$/',trim($param['valid_time_start']))) {
                         return $this->message('请输入正确的打卡有效时段，开始时间（正整数）', Url::absoluteWeb(''), 'danger');
 
                     }
                     $ist_data['valid_time_start'] = intval(trim($param['valid_time_start'])) ? intval(trim($param['valid_time_start'])) : 0;
                 }
                 if (array_key_exists('valid_time_end', $param)) { // 有效时段
-                    if (!preg_match('/^\+?[1-9]\d*$/',trim($param['valid_time_end']))) {
+                    if (!preg_match('/^\+?[0-9]\d*$/',trim($param['valid_time_end']))) {
                         return $this->message('请输入正确的打卡有效时段，结束时间（正整数）', Url::absoluteWeb(''), 'danger');
 
                     }
@@ -544,6 +556,13 @@ class ClockController extends BaseController
             $replay_list = DB::table('yz_xiaoe_clock_task')->where($where)
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
+            if ($replay_list->total() > 0) {
+                foreach ($replay_list as &$value) {
+                    //打卡人数
+                    $value['join_num'] = DB::table('yz_xiaoe_clock_users')->where('clock_task_id', $value['id'])->count();
+
+                }
+            }
         }
 
         // 作业
@@ -566,6 +585,13 @@ class ClockController extends BaseController
             $replay_list = DB::table('yz_xiaoe_clock_task')->where($where)
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
+
+            if ($replay_list->total() > 0) {
+                foreach ($replay_list as &$value) {
+                    //打卡人数
+                    $value['join_num'] = DB::table('yz_xiaoe_clock_users')->where('clock_task_id', $value['id'])->count();
+                }
+            }
         }
 
         $pager = PaginationHelper::show($replay_list->total(), $replay_list->currentPage(), $replay_list->perPage());

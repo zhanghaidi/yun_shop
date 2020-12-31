@@ -15,7 +15,8 @@
         <div class='panel-body'>
             <div class="clearfix panel-heading" id="goodsTable">
                 <a id="" class="btn btn-defaultt" style="height: 35px;margin-top: 5px;color: white;"
-                   href="javascript:history.go(-1);">返回</a>
+                   href="{{yzWebUrl('plugin.xiaoe-clock.admin.clock.users_clock_list',['rid' => $user_clock_info['clock_id']])}}">返回</a>
+
             </div>
 
             <div class="w1200 m0a">
