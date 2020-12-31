@@ -66,9 +66,9 @@
                             <td style="overflow:visible;">
                                 {{ $row['user_id'] }}
                                 <div class="show-cover-img-big" style="position:relative;width:50px;overflow:visible">
-                                    <img src="{!! tomedia($row['avatar']) !!}" alt=""
+                                    <img src="{!! $row['avatar'] !!}" alt=""
                                          style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
-                                    <img class="img-big" src="{!! tomedia($row['avatar']) !!}" alt=""
+                                    <img class="img-big" src="{!! $row['avatar'] !!}" alt=""
                                          style="z-index:99999;position:absolute;top:0;left:0;border:1px solid #ccc;padding:1px;display: none">
                                 </div>
                                 {{ $row['nickname'] }}
@@ -142,9 +142,9 @@
                             <td>
                                 {{ $row['user_id'] }}
                                 <div class="show-cover-img-big" style="position:relative;width:50px;overflow:visible">
-                                    <img src="{!! tomedia($row['avatar']) !!}" alt=""
+                                    <img src="{!! $row['avatar'] !!}" alt=""
                                          style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
-                                    <img class="img-big" src="{!! tomedia($row['avatar']) !!}" alt=""
+                                    <img class="img-big" src="{!! $row['avatar'] !!}" alt=""
                                          style="z-index:99999;position:absolute;top:0;left:0;border:1px solid #ccc;padding:1px;display: none">
                                 </div>
                                 {{ $row['nickname'] }}

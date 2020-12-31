@@ -750,7 +750,7 @@ class ClockController extends BaseController
 
             $replay_list = DB::table('yz_xiaoe_users_clock')
                 ->join('diagnostic_service_user', 'diagnostic_service_user.ajy_uid', '=', 'yz_xiaoe_users_clock.user_id')
-                ->select('diagnostic_service_user.nickname', 'diagnostic_service_user.avatar', 'yz_xiaoe_users_clock.*')
+                ->select('diagnostic_service_user.nickname', 'diagnostic_service_user.avatarurl as avatar', 'yz_xiaoe_users_clock.*')
                 ->where($where)
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
@@ -784,7 +784,7 @@ class ClockController extends BaseController
 
             $replay_list = DB::table('yz_xiaoe_users_clock')->where($where)
                 ->join('diagnostic_service_user', 'diagnostic_service_user.ajy_uid', '=', 'yz_xiaoe_users_clock.user_id')
-                ->select('diagnostic_service_user.nickname', 'diagnostic_service_user.avatar', 'yz_xiaoe_users_clock.*')
+                ->select('diagnostic_service_user.nickname', 'diagnostic_service_user.avatarurl as avatar', 'yz_xiaoe_users_clock.*')
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
         }
@@ -833,7 +833,7 @@ class ClockController extends BaseController
 
             $replay_list = DB::table('yz_xiaoe_clock_users')
                 ->join('diagnostic_service_user', 'diagnostic_service_user.ajy_uid', '=', 'yz_xiaoe_clock_users.user_id')
-                ->select('diagnostic_service_user.nickname', 'diagnostic_service_user.avatar', 'yz_xiaoe_clock_users.*')
+                ->select('diagnostic_service_user.nickname', 'diagnostic_service_user.avatarurl as avatar', 'yz_xiaoe_clock_users.*')
                 ->where($where)
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
@@ -862,7 +862,7 @@ class ClockController extends BaseController
 
             $replay_list = DB::table('yz_xiaoe_clock_users')->where($where)
                 ->join('diagnostic_service_user', 'diagnostic_service_user.ajy_uid', '=', 'yz_xiaoe_clock_users.user_id')
-                ->select('diagnostic_service_user.nickname', 'diagnostic_service_user.avatar', 'yz_xiaoe_clock_users.*')
+                ->select('diagnostic_service_user.nickname', 'diagnostic_service_user.avatarurl as avatar', 'yz_xiaoe_clock_users.*')
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
         }
@@ -885,7 +885,7 @@ class ClockController extends BaseController
         $rid = request()->get('id', 0);
         $user_clock_info = DB::table('yz_xiaoe_users_clock')
             ->join('diagnostic_service_user', 'diagnostic_service_user.ajy_uid', '=', 'yz_xiaoe_users_clock.user_id')
-            ->select('diagnostic_service_user.nickname', 'diagnostic_service_user.avatar', 'yz_xiaoe_users_clock.*')
+            ->select('diagnostic_service_user.nickname', 'ddiagnostic_service_user.avatarurl as avatar', 'yz_xiaoe_users_clock.*')
             ->where('yz_xiaoe_users_clock.id', $rid)
             ->first();
 
@@ -905,7 +905,7 @@ class ClockController extends BaseController
         $where[] = ['yz_xiaoe_users_clock_comment.check_status', '=', 0];
         $replay_list = DB::table('yz_xiaoe_users_clock_comment')
             ->join('diagnostic_service_user', 'diagnostic_service_user.ajy_uid', '=', 'yz_xiaoe_users_clock_comment.user_id')
-            ->select('diagnostic_service_user.nickname', 'diagnostic_service_user.avatar', 'yz_xiaoe_users_clock_comment.*')
+            ->select('diagnostic_service_user.nickname', 'diagnostic_service_user.avatarurl as avatar', 'yz_xiaoe_users_clock_comment.*')
             ->where($where)
             ->orderBy('id', 'desc')
             ->paginate($limit);
