@@ -665,14 +665,17 @@ class ClockController extends ApiController
 
     //获取是否能打卡状态
     private function getIsClockStatus($clock, $date){
-        $time = time();
+        $now_time = time();
 
         $clock_timeout_status = 0; //打卡是否结束
         $clock_hour_timeout_status = 0; //打卡时段是否结束
         $user_clock_status = 0; //用户今日打卡状态
 
-        if ($clock->start_time > $time || $clock->end_time < $time ) {
+        if ($clock->start_time > $now_time) {
             $clock_timeout_status = 1;
+        }
+        if ($clock->end_time < $now_time) {
+            $clock_timeout_status = 2;
         }
 
         $now_hour = date('G');
@@ -680,7 +683,7 @@ class ClockController extends ApiController
             $clock_hour_timeout_status = 1;
         }
         if($clock->valid_time_end != 0 && $now_hour >= $clock->valid_time_end){
-            $clock_hour_timeout_status = 1;
+            $clock_hour_timeout_status = 2;
         }
 
         $status = $this->getClockStatus(Carbon::parse($date)->startOfDay()->timestamp, Carbon::parse($date)->endOfDay()->timestamp);
