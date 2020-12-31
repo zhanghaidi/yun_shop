@@ -136,6 +136,15 @@
 
                 // 查看直播间封面大图
                 $('.show-cover-img-big').on('mouseover', function () {
+                    let imgEle = $(this).find('.img-big')[0]
+                    let imgWidth = imgEle.width;
+                    let imgHeight = imgEle.height;
+                    let max_width = 300;
+                    if(imgWidth > max_width) {
+                        imgEle.width = max_width;
+                        const beisu = max_width / imgWidth;
+                        imgEle.height = imgHeight * beisu;
+                    }
                     $(this).find('.img-big').show();
                 });
                 $('.show-cover-img-big').on('mouseout', function () {
