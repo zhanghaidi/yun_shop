@@ -33,17 +33,9 @@ class ClockController extends ApiController
 
     public function __construct()
     {
-        $member_id = intval(\YunShop::app()->getMemberId());
-        if(!$member_id){
-            response()->json([
-                'result' => 41009,
-                'msg' => '请登录',
-                'data' => '',
-            ], 200, ['charset' => 'utf-8'])->send();
-            exit;
-        }
+        parent::preAction();
 
-        $this->member_id = $member_id;
+        $this->member_id = \YunShop::app()->getMemberId();
         $this->clock_id = intval(request()->get('id'));
         if (!$this->clock_id) {
             return $this->errorJson('打卡id不能为空');
@@ -616,7 +608,7 @@ class ClockController extends ApiController
     {
 
         return XiaoeClock::uniacid()->where('id', $this->clock_id)
-            ->select('id', 'type', 'name', 'cover_img', 'text_desc', 'audio_desc', 'video_desc', 'join_type', 'course_id', 'price', 'start_time', 'end_time', 'valid_time_start', 'valid_time_end', 'text_length', 'image_length', 'video_length', 'is_cheat_mode', 'is_resubmit','helper_nickname', 'helper_avatar', 'helper_wechat', 'created_at')
+            ->select('id', 'type', 'name', 'description', 'cover_img', 'text_desc', 'audio_desc', 'video_desc', 'join_type', 'course_id', 'price', 'start_time', 'end_time', 'valid_time_start', 'valid_time_end', 'text_length', 'image_length', 'video_length', 'is_cheat_mode', 'is_resubmit','helper_nickname', 'helper_avatar', 'helper_wechat', 'created_at')
             ->withCount(['hasManyNote', 'hasManyUser']);
 
     }
