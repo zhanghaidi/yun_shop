@@ -27,9 +27,9 @@
                             <label class="col-md-2 col-sm-3 col-xs-12 control-label">用户头像/昵称</label>
                             <div class="col-md-10 col-sm-9 col-xs-12">
                                 <div class="show-cover-img-big" style="position:relative;width:50px;overflow:visible">
-                                    <img src="{!! $row['avatar'] !!}" alt=""
+                                    <img src="{!! $user_clock_info['avatar'] !!}" alt=""
                                          style="width: 30px; height: 30px;border:1px solid #ccc;padding:1px;">
-                                    <img class="img-big" src="{!! $row['avatar'] !!}" alt=""
+                                    <img class="img-big" src="{!! $user_clock_info['avatar'] !!}" alt=""
                                          style="z-index:99999;position:absolute;top:0;left:0;border:1px solid #ccc;padding:1px;display: none">
                                 </div>
                                 {{ $user_clock_info['nickname'] }}
