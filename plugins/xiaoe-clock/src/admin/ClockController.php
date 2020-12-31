@@ -16,7 +16,7 @@ use Yunshop\Appletslive\common\models\Room;
 use Yunshop\Appletslive\common\models\RoomComment;
 use Yunshop\Appletslive\common\services\CacheService;
 use Yunshop\XiaoeClock\models\XiaoeClock;
-
+use  Yunshop\XiaoeClock\models\XiaoeClockTopic;
 /**
  * 打卡任务管理控制器
  */
@@ -71,6 +71,10 @@ class ClockController extends BaseController
                     if ($value['join_type'] == 1) { //关联课程
                         $value['course_name'] = DB::table('yz_appletslive_room')->where('id', $value['course_id'])->value('name');
                     }
+                    //打卡人数
+                    $value['clock_user_num'] = DB::table('yz_xiaoe_clock_users')->where('clock_id', $value['id'])->count();
+                    //打卡次数
+                    $value['clock_num'] = DB::table('yz_xiaoe_users_clock')->where('clock_id', $value['id'])->count();
                 }
             }
 
@@ -102,6 +106,10 @@ class ClockController extends BaseController
                     if ($value['join_type'] == 1) {//关联课程
                         $value['course_name'] = DB::table('yz_appletslive_room')->where('id', $value['course_id'])->value('name');
                     }
+                    //打卡人数
+                    $value['clock_user_num'] = DB::table('yz_xiaoe_clock_users')->where('clock_id', $value['id'])->count();
+                    //打卡次数
+                    $value['clock_num'] = DB::table('yz_xiaoe_users_clock')->where('clock_id', $value['id'])->count();
                 }
             }
             $pager = PaginationHelper::show($list->total(), $list->currentPage(), $list->perPage());
@@ -553,7 +561,7 @@ class ClockController extends BaseController
                     $where[] = ['name', 'like', '%' . trim($search['name']) . '%'];
                 }
             }
-            $replay_list = DB::table('yz_xiaoe_clock_task')->where($where)
+            $replay_list = XiaoeClockTopic::where($where)
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
             if ($replay_list->total() > 0) {
@@ -582,7 +590,7 @@ class ClockController extends BaseController
                 }
             }
 
-            $replay_list = DB::table('yz_xiaoe_clock_task')->where($where)
+            $replay_list = XiaoeClockTopic::where($where)
                 ->orderBy('id', 'desc')
                 ->paginate($limit);
 
