@@ -1,0 +1,10 @@
+{
+  "name": "xiaoe-clock",
+  "version": "1.0.1",
+  "title": "打卡任务",
+  "description": "打卡任务",
+  "author": "wk",
+  "url": "http://www.yunzshop.com",
+  "namespace": "Yunshop\\XiaoeClock",
+  "config": "config.tpl"
+}

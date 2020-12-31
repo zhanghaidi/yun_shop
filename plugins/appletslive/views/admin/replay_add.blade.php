@@ -95,6 +95,7 @@
                         <label class="col-md-2 col-sm-3 col-xs-12 control-label"></label>
                         <div class="col-md-10 col-sm-9 col-xs-12">
                             <input type="hidden" name="rid" value="{{ $rid }}" />
+
                             <input type="submit" name="submit" value="提交" class="btn btn-success"/>
                         </div>
                     </div>
