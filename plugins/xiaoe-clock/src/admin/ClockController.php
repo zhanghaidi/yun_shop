@@ -67,6 +67,9 @@ class ClockController extends BaseController
                     } else {
                         //已经进行天数,计算已经进行
                         $value['pass_day'] = floor((time() - $value['start_time']) / 86400);
+                        if ($value['pass_day'] < 0) {
+                            $value['pass_day'] = 0;
+                        }
                     }
                     if ($value['join_type'] == 1) { //关联课程
                         $value['course_name'] = DB::table('yz_appletslive_room')->where('id', $value['course_id'])->value('name');
