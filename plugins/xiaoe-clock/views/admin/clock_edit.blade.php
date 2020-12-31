@@ -106,30 +106,30 @@
                         <div class="col-sm-9 col-xs-12 col-md-11">
                             开始时间：<input name="valid_time_start" type="text" value="{{ $info['valid_time_start'] }}" required/>&nbsp;&nbsp;&nbsp;&nbsp;结束时间：<input
                                     name="valid_time_end" type="text" value="{{ $info['valid_time_end'] }}" required/>
-                            <span class="help-block">打卡有效时段，开始时间，结束时间，如果每天早上九点才能打开就想写数字9,如果下午3点打卡结束就填写数字15，不要用空格等特殊字符</span>
+                            <span class="help-block" style="color: red">打卡有效时段（整点，正整数），如果是每天早上九点才能开始打卡，开始时间就写数字9,如果下午3点之后就不能打卡了，结束时间就填写数字15，不要用空格等特殊字符，如果都是设置0，不限时段。</span>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-1 control-label">文字字数限制</label>
                         <div class="col-sm-9 col-xs-12 col-md-11">
                             <input name="text_length" type="text" class="form-control" value="{{ $info['text_length'] }}" required/>
-                            <span class="help-block">用户打卡要求，文字字数限制</span>
+                            <span class="help-block">用户打卡要求，最少文字字数限制</span>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-1 control-label">图片张数限制</label>
                         <div class="col-sm-9 col-xs-12 col-md-11">
                             <input name="image_length" type="text" class="form-control" value="{{ $info['image_length'] }}" required/>
-                            <span class="help-block">用户打卡要求，图片张数限制</span>
+                            <span class="help-block">用户打卡要求，最少图片张数限制</span>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">音频时间限制</label>
-                        <div class="col-sm-9 col-xs-12 col-md-11">
-                            <input name="video_length" type="text" class="form-control" value="{{ $info['video_length'] }}" required/>
-                            <span class="help-block">用户打卡要求，音频时间限制</span>
-                        </div>
-                    </div>
+{{--                    <div class="form-group">--}}
+{{--                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">音频时间限制</label>--}}
+{{--                        <div class="col-sm-9 col-xs-12 col-md-11">--}}
+{{--                            <input name="video_length" type="text" class="form-control" value="{{ $info['video_length'] }}" required/>--}}
+{{--                            <span class="help-block">用户打卡要求，音频时间限制</span>--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
 {{--                    <div class="form-group">--}}
 {{--                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">显示设置</label>--}}
 {{--                        <div class="col-sm-9 col-xs-12 col-md-11">--}}
@@ -254,23 +254,23 @@
                         <label class="col-xs-12 col-sm-3 col-md-1 control-label">文字字数限制</label>
                         <div class="col-sm-9 col-xs-12 col-md-11">
                             <input name="text_length" type="text" class="form-control" value="{{ $info['text_length'] }}" required/>
-                            <span class="help-block">用户打卡要求，文字字数限制</span>
+                            <span class="help-block">用户打卡要求，最少文字字数限制</span>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-1 control-label">图片张数限制</label>
                         <div class="col-sm-9 col-xs-12 col-md-11">
                             <input name="image_length" type="text" class="form-control" value="{{ $info['image_length'] }}" required/>
-                            <span class="help-block">用户打卡要求，图片张数限制</span>
+                            <span class="help-block">用户打卡要求，最少图片张数限制</span>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">音频时间限制</label>
-                        <div class="col-sm-9 col-xs-12 col-md-11">
-                            <input name="video_length" type="text" class="form-control" value="{{ $info['video_length'] }}" required/>
-                            <span class="help-block">用户打卡要求，音频时间限制</span>
-                        </div>
-                    </div>
+{{--                    <div class="form-group">--}}
+{{--                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">音频时间限制</label>--}}
+{{--                        <div class="col-sm-9 col-xs-12 col-md-11">--}}
+{{--                            <input name="video_length" type="text" class="form-control" value="{{ $info['video_length'] }}" required/>--}}
+{{--                            <span class="help-block">用户打卡要求，音频时间限制</span>--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
 {{--                    <div class="form-group">--}}
 {{--                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">显示设置</label>--}}
 {{--                        <div class="col-sm-9 col-xs-12 col-md-11">--}}

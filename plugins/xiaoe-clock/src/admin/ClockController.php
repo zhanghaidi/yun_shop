@@ -33,11 +33,15 @@ class ClockController extends BaseController
 
         $input = \YunShop::request();
         $limit = 20;
+
+        $uniacid = \YunShop::app()->uniacid;
+
 //      打卡链接
         $clock_link = Setting::get('plugin.xiaoe-clock')['clock_link'];
         if ($type == 1) { // 日历打卡
             // 处理搜索条件
             $where[] = ['type', '=', 1];
+            $where[] = ['uniacid', '=', $uniacid];
             if (isset($input->search)) {
                 $search = $input->search;
                 if (intval($search['id']) > 0) {
@@ -55,7 +59,7 @@ class ClockController extends BaseController
             if ($list->total() > 0) {
                 foreach ($list as &$value) {
 //                    打卡分享链接
-                    $value['clock_link'] = $clock_link . '&id='.$value['id'];
+                    $value['clock_link'] = $clock_link .$value['id'];
                     //总天数,计算总天数
                     $value['count_day'] = floor(($value['end_time'] - $value['start_time']) / 86400);
                     if (time() >= $value['end_time']) {
@@ -76,6 +80,7 @@ class ClockController extends BaseController
         if ($type == 2) { // 作业打卡
             // 处理搜索条件
             $where[] = ['type', '=', 2];
+            $where[] = ['uniacid', '=', $uniacid];
             if (isset($input->search)) {
                 $search = $input->search;
                 if (intval($search['id']) > 0) {
@@ -91,9 +96,9 @@ class ClockController extends BaseController
             if ($list->total() > 0) {
                 foreach ($list as $k => &$value) {
 //                    打卡分享链接
-                    $value['clock_link'] = $clock_link . '&id='.$value['id'];
+                    $value['clock_link'] = $clock_link . $value['id'];
                     //作业打卡的作业数
-                    $value['task_num'] = DB::table('yz_xiaoe_clock_task')->where('clock_id', $value['id'])->count();
+                    $value['task_num'] = DB::table('yz_xiaoe_clock_task')->where('uniacid', $uniacid)->where('clock_id', $value['id'])->count();
                     if ($value['join_type'] == 1) {//关联课程
                         $value['course_name'] = DB::table('yz_appletslive_room')->where('id', $value['course_id'])->value('name');
                     }
@@ -113,6 +118,8 @@ class ClockController extends BaseController
     //增加打卡
     public function clock_add()
     {
+        $uniacid = \YunShop::app()->uniacid;
+
         if (request()->isMethod('post')) {
 
             $param = request()->all();
@@ -121,10 +128,11 @@ class ClockController extends BaseController
                 return $this->message('打卡类型参数有误', Url::absoluteWeb(''), 'danger');
             }
             $ist_data = ['type' => $param['type'], 'sort' => intval($param['sort'])];
+            $ist_data['uniacid'] = $uniacid;
             if (array_key_exists('name', $param)) { // 打卡名称
                 $ist_data['name'] = $param['name'] ? trim($param['name']) : '';
             }
-            if (DB::table('yz_xiaoe_clock')->where('name', $ist_data['name'])->first()) {
+            if (DB::table('yz_xiaoe_clock')->where('uniacid', $uniacid)->where('name', $ist_data['name'])->first()) {
                 return $this->message('打卡名称已存在', Url::absoluteWeb(''), 'danger');
             }
             if (array_key_exists('cover_img', $param)) { // 打卡封面
@@ -200,10 +208,21 @@ class ClockController extends BaseController
                     return $this->message('结束日期不能小于开始日期', Url::absoluteWeb(''), 'danger');
                 }
                 if (array_key_exists('valid_time_start', $param)) { //有效时段
-                    $ist_data['valid_time_start'] = $param['valid_time_start'] ? $param['valid_time_start'] : 0;
+                    if (!preg_match('/^\+?[1-9]\d*$/',trim($param['valid_time_start']))) {
+                        return $this->message('请输入正确的打卡有效时段，开始时间（正整数）', Url::absoluteWeb(''), 'danger');
+
+                    }
+                    $ist_data['valid_time_start'] = intval(trim($param['valid_time_start'])) ? intval(trim($param['valid_time_start'])) : 0;
                 }
                 if (array_key_exists('valid_time_end', $param)) { // 有效时段
-                    $ist_data['valid_time_end'] = $param['valid_time_end'] ? $param['valid_time_end'] : 0;
+                    if (!preg_match('/^\+?[1-9]\d*$/',trim($param['valid_time_end']))) {
+                        return $this->message('请输入正确的打卡有效时段，结束时间（正整数）', Url::absoluteWeb(''), 'danger');
+
+                    }
+                    $ist_data['valid_time_end'] = intval(trim($param['valid_time_end'])) ? intval(trim($param['valid_time_end'])) : 0;
+                }
+                if(array_key_exists('valid_time_end', $param) && array_key_exists('valid_time_start', $param) &&  $ist_data['valid_time_start'] >= $ist_data['valid_time_end']){
+                    return $this->message('打卡有效时段，结束时间不能小于开始时间', Url::absoluteWeb(''), 'danger');
                 }
             }
             if ($param['type'] == 2) { //作业打卡
@@ -214,6 +233,8 @@ class ClockController extends BaseController
                     $ist_data['is_resubmit'] = $param['is_resubmit'] ? $param['is_resubmit'] : 0;
                 }
             }
+            $ist_data['created_at'] = time();
+            $ist_data['updated_at'] = time();
             DB::beginTransaction();//开启事务
             $insert_res = DB::table('yz_xiaoe_clock')->insert($ist_data);
             if (!$insert_res) {
@@ -232,9 +253,11 @@ class ClockController extends BaseController
 // 打卡编辑
     public function clock_edit()
     {
+        $uniacid = \YunShop::app()->uniacid;
+
         if (request()->isMethod('post')) {
             $id = request()->get('id', 0);
-            $info = DB::table('yz_xiaoe_clock')->where('id', $id)->first();
+            $info = DB::table('yz_xiaoe_clock')->where('uniacid', $uniacid)->where('id', $id)->first();
             if (!$info) {
                 return $this->message('打卡不存在', Url::absoluteWeb(''), 'danger');
             }
@@ -247,7 +270,7 @@ class ClockController extends BaseController
             if (array_key_exists('name', $param)) { // 打卡名称
                 $ist_data['name'] = $param['name'] ? trim($param['name']) : '';
             }
-            if (DB::table('yz_xiaoe_clock')->where('name', $ist_data['name'])->first()) {
+            if (DB::table('yz_xiaoe_clock')->where('uniacid', $uniacid)->where('id','<>',$id)->where('name', $ist_data['name'])->first()) {
                 return $this->message('打卡名称已存在', Url::absoluteWeb(''), 'danger');
             }
             if (array_key_exists('cover_img', $param)) { // 打卡封面
@@ -297,9 +320,9 @@ class ClockController extends BaseController
                     $start_time = $param['start_time'] ? $param['start_time'] : 0;
                     if ($start_time != 0) {
                         $ist_data['start_time'] = strtotime($start_time);
-                        if ($now_day_time > $ist_data['start_time']) {
-                            return $this->message('开始日期不能小于当前日期', Url::absoluteWeb(''), 'danger');
-                        }
+//                        if ($now_day_time > $ist_data['start_time']) {
+//                            return $this->message('开始日期不能小于当前日期', Url::absoluteWeb(''), 'danger');
+//                        }
                     } else {
                         return $this->message('请选择开始日期', Url::absoluteWeb(''), 'danger');
                     }
@@ -323,11 +346,23 @@ class ClockController extends BaseController
                     return $this->message('结束日期不能小于开始日期', Url::absoluteWeb(''), 'danger');
                 }
                 if (array_key_exists('valid_time_start', $param)) { //有效时段
-                    $ist_data['valid_time_start'] = $param['valid_time_start'] ? $param['valid_time_start'] : 0;
+                    if (!preg_match('/^\+?[1-9]\d*$/',trim($param['valid_time_start']))) {
+                        return $this->message('请输入正确的打卡有效时段，开始时间（正整数）', Url::absoluteWeb(''), 'danger');
+
+                    }
+                    $ist_data['valid_time_start'] = intval(trim($param['valid_time_start'])) ? intval(trim($param['valid_time_start'])) : 0;
                 }
                 if (array_key_exists('valid_time_end', $param)) { // 有效时段
-                    $ist_data['valid_time_end'] = $param['valid_time_end'] ? $param['valid_time_end'] : 0;
+                    if (!preg_match('/^\+?[1-9]\d*$/',trim($param['valid_time_end']))) {
+                        return $this->message('请输入正确的打卡有效时段，结束时间（正整数）', Url::absoluteWeb(''), 'danger');
+
+                    }
+                    $ist_data['valid_time_end'] = intval(trim($param['valid_time_end'])) ? intval(trim($param['valid_time_end'])) : 0;
                 }
+                if(array_key_exists('valid_time_end', $param) && array_key_exists('valid_time_start', $param) &&  $ist_data['valid_time_start'] >= $ist_data['valid_time_end']){
+                    return $this->message('打卡有效时段，结束时间不能小于开始时间', Url::absoluteWeb(''), 'danger');
+                }
+
             }
             if ($param['type'] == 2) { //作业打卡
                 if (array_key_exists('is_cheat_mode', $param)) { //防作弊
@@ -337,8 +372,10 @@ class ClockController extends BaseController
                     $ist_data['is_resubmit'] = $param['is_resubmit'] ? $param['is_resubmit'] : 0;
                 }
             }
+
+            $ist_data['updated_at'] = time();
             DB::beginTransaction();//开启事务
-            $insert_res = DB::table('yz_xiaoe_clock')->where('id', $id)->update($ist_data);
+            $insert_res = DB::table('yz_xiaoe_clock')->where('uniacid', $uniacid)->where('id', $id)->update($ist_data);
             if (!$insert_res) {
                 DB::rollBack();//事务回滚
                 return $this->message('编辑失败', Url::absoluteWeb('plugin.xiaoe-clock.admin.clock.clock_index', ['type' => $param['type']]));
@@ -348,12 +385,12 @@ class ClockController extends BaseController
         }
         //编辑详情
         $id = request()->get('rid', 0);
-        $info = DB::table('yz_xiaoe_clock')->where('id', $id)->first();
+        $info = DB::table('yz_xiaoe_clock')->where('uniacid', $uniacid)->where('id', $id)->first();
         if (!$info) {
             return $this->message('打卡不存在', Url::absoluteWeb(''), 'danger');
         }
         if($info['course_id']){
-            $info['course_name'] = DB::table('yz_appletslive_room')->where('id', $info['course_id'])->value('name');;
+            $info['course_name'] = DB::table('yz_appletslive_room')->where('uniacid', $uniacid)->where('id', $info['course_id'])->value('name');;
         }else{
             $info['course_name'] = '';
         }
@@ -371,11 +408,12 @@ class ClockController extends BaseController
     public function get_search_course()
     {
         $keyword = \YunShop::request()->keyword;
+        $uniacid = \YunShop::app()->uniacid;
         $where[] = ['type', '=', 1];
         if (trim($keyword) !== '') {
             $where[] = ['name', 'like', '%' . trim($keyword) . '%'];
         }
-        $list = Room::select('id', 'name as title', 'cover_img as thumb')->where($where)->get();
+        $list = Room::select('id', 'name as title', 'cover_img as thumb')->where($where)->where('uniacid', $uniacid)->get();
 
         if (!$list->isEmpty()) {
             $goods = set_medias($list->toArray(), array('thumb', 'share_icon'));
@@ -391,42 +429,53 @@ class ClockController extends BaseController
     // 主题|作业添加
     public function clock_task_add()
     {
+        $uniacid = \YunShop::app()->uniacid;
+
         if (request()->isMethod('post')) {
             $param = request()->all();
             $rid = $param['rid'] ? intval($param['rid']) : 0;
-            $room = DB::table('yz_xiaoe_clock')->where('id', $rid)->first();
+            $room = DB::table('yz_xiaoe_clock')->where('uniacid', $uniacid)->where('id', $rid)->first();
             if (!$room) {
                 return $this->message('打卡不存在', Url::absoluteWeb(''), 'danger');
             }
             $type = array_key_exists('type', $param) ? intval($param['type']) : 1;
             if ($type == 1) { //日历主题
                 $theme_time = $param['theme_time'] ? $param['theme_time'] : 0;
-                if($theme_time < $room['start_time'] || $theme_time > $room['end_time']){
+
+                if(strtotime($theme_time) < $room['start_time'] || strtotime($theme_time) > $room['end_time']){
                     return $this->message('该日期已超出了日历打卡的时间范围！请重新选择', Url::absoluteWeb(''), 'danger');
                 }
                 $ist_data = [
+                    'uniacid' => $uniacid,
                     'clock_id' => $rid,
                     'type' => $type,
                     'name' => $param['name'] ? trim($param['name']) : '',
                     'theme_time' => strtotime($theme_time),
                     'start_time' => strtotime($theme_time),
+                    'end_time' => strtotime($theme_time . ' 23:59:59'),
                     'cover_img' => $param['cover_img'] ? $param['cover_img'] : '',
                     'text_desc' => $param['text_desc'] ? $param['text_desc'] : '',
                     'video_desc' => $param['video_desc'] ? $param['video_desc'] : '',
                     'sort' => $param['sort'] ? $param['sort'] : 0,
+                    'created_at' => time(),
+                    'updated_at' => time()
                 ];
-                if ($type > 0 && DB::table('yz_xiaoe_clock_task')->where('theme_time', $ist_data['theme_time'])->where('id', $rid)->first()) {
-                    return $this->message('该日期已经添加主体了', Url::absoluteWeb(''), 'danger');
+                if ($type > 0 && DB::table('yz_xiaoe_clock_task')->where('theme_time', $ist_data['theme_time'])->where('clock_id', $rid)->where('uniacid', $uniacid)->first()) {
+                    return $this->message('该日期已经存在主题了', Url::absoluteWeb(''), 'danger');
                 }
 
             } elseif ($type == 2) {//作业
 
                 $start_time = $param['start_time'] ? $param['start_time'] : 0;
                 $end_time = $param['end_time'] ? $param['end_time'] : 0;
-                if($end_time < $start_time){
-                    $this->message('结束日期必须小于开始日期', Url::absoluteWeb(''), 'danger');
+                if(strtotime($start_time) < strtotime(date('Y-m-d',time()))){
+                    return $this->message('开始日期要大于当前日期', Url::absoluteWeb(''), 'danger');
+                }
+                if(strtotime($end_time) < strtotime($start_time)){
+                    return $this->message('结束日期必须小于开始日期', Url::absoluteWeb(''), 'danger');
                 }
                 $ist_data = [
+                    'uniacid' => $uniacid,
                     'clock_id' => $rid,
                     'type' => $type,
                     'start_time' => strtotime($start_time),
@@ -435,10 +484,12 @@ class ClockController extends BaseController
                     'text_desc' => $param['text_desc'] ? $param['text_desc'] : '',
                     'video_desc' => $param['video_desc'] ? $param['video_desc'] : '',
                     'sort' => $param['sort'] ? $param['sort'] : 0,
+                    'created_at' => time(),
+                    'updated_at' => time()
                 ];
             }
 
-            if ($type > 0 && DB::table('yz_xiaoe_clock_task')->where('name', $ist_data['name'])->where('id', $rid)->first()) {
+            if ($type > 0 && DB::table('yz_xiaoe_clock_task')->where('name', $ist_data['name'])->where('clock_id', $rid)->where('uniacid', $uniacid)->first()) {
                 return $this->message('名称已存在', Url::absoluteWeb(''), 'danger');
             }
             $insert_res = DB::table('yz_xiaoe_clock_task')->insert($ist_data);
@@ -450,7 +501,7 @@ class ClockController extends BaseController
         }
 
         $rid = request()->get('rid', 0);
-        $clock = DB::table('yz_xiaoe_clock')->where('id', $rid)->first();
+        $clock = DB::table('yz_xiaoe_clock')->where('uniacid', $uniacid)->where('id', $rid)->first();
         if (!$clock) {
             return $this->message('数据不存在', Url::absoluteWeb(''), 'danger');
         }
@@ -471,10 +522,13 @@ class ClockController extends BaseController
         $input = \YunShop::request();
         $limit = 20;
 
+        $uniacid = \YunShop::app()->uniacid;
+
         // 日历主题
         if ($room_type == 1) {
 
             $where[] = ['clock_id', '=', $rid];
+            $where[] = ['uniacid', '=', $uniacid];
 
             // 处理搜索条件
             if (isset($input->search)) {
@@ -496,7 +550,7 @@ class ClockController extends BaseController
         if ($room_type == 2) {
 
             $where[] = ['clock_id', '=', $rid];
-
+            $where[] = ['uniacid', '=', $uniacid];
             // 处理搜索条件
             if (isset($input->search)) {
 
@@ -546,27 +600,38 @@ class ClockController extends BaseController
                 return $this->message('打卡不存在', Url::absoluteWeb(''), 'danger');
             }
             $type = $replay['type'];
+
             if ($type == 1) {//日历主题
                 $theme_time = $param['theme_time'] ? $param['theme_time'] : 0;
-                if($theme_time < $room['start_time'] || $theme_time > $room['end_time']){
+                if(strtotime($theme_time) < $room['start_time'] || strtotime($theme_time) > $room['end_time']){
                     return $this->message('该日期已超出了日历打卡的时间范围！请重新选择', Url::absoluteWeb(''), 'danger');
+                }
+                if ($type > 0 && DB::table('yz_xiaoe_clock_task')->where('theme_time', strtotime($theme_time))->where('id','<>', $replay['id'])->where('clock_id', $room['id'])->first()) {
+                    return $this->message('该日期已经存在主题了', Url::absoluteWeb(''), 'danger');
                 }
                 $upd_data = [
                     'name' => $param['name'] ? trim($param['name']) : '',
                     'theme_time' => strtotime($theme_time),
                     'start_time' => strtotime($theme_time),
+                    'end_time' => strtotime($theme_time . ' 23:59:59'),
                     'cover_img' => $param['cover_img'] ? $param['cover_img'] : '',
                     'text_desc' => $param['text_desc'] ? $param['text_desc'] : '',
                     'video_desc' => $param['video_desc'] ? $param['video_desc'] : '',
                     'sort' => $param['sort'] ? $param['sort'] : 0,
+                    'updated_at' => time()
                 ];
 
             } elseif ($type == 2) {//作业
 
                 $start_time = $param['start_time'] ? $param['start_time'] : 0;
                 $end_time = $param['end_time'] ? $param['end_time'] : 0;
-                if($end_time < $start_time){
-                    $this->message('结束日期必须小于开始日期', Url::absoluteWeb(''), 'danger');
+
+                if(strtotime($start_time) < strtotime(date('Y-m-d',time()))){
+                    return $this->message('开始日期要大于当前日期', Url::absoluteWeb(''), 'danger');
+                }
+
+                if(strtotime($end_time) < strtotime($start_time)){
+                    return $this->message('结束日期必须小于开始日期', Url::absoluteWeb(''), 'danger');
                 }
                 $upd_data = [
                     'start_time' => strtotime($start_time),
@@ -575,6 +640,7 @@ class ClockController extends BaseController
                     'text_desc' => $param['text_desc'] ? $param['text_desc'] : '',
                     'video_desc' => $param['video_desc'] ? $param['video_desc'] : '',
                     'sort' => $param['sort'] ? $param['sort'] : 0,
+                    'updated_at' => time()
                 ];
             }
             DB::beginTransaction();//开启事务
@@ -613,12 +679,13 @@ class ClockController extends BaseController
 
         $input = \YunShop::request();
         $limit = 20;
-
+        $uniacid = \YunShop::app()->uniacid;
         // 日历打卡列表
         if ($room_type == 1) {
 
             $where[] = ['yz_xiaoe_users_clock.clock_id', '=', $rid];
             $where[] = ['yz_xiaoe_users_clock.check_status', '=', 0];
+            $where[] = ['yz_xiaoe_users_clock.uniacid', '=', $uniacid];
             // 处理搜索条件
             if (isset($input->search)) {
 
@@ -652,6 +719,7 @@ class ClockController extends BaseController
 
             $where[] = ['yz_xiaoe_users_clock.clock_id', '=', $rid];
             $where[] = ['yz_xiaoe_users_clock.check_status', '=', 0];
+            $where[] = ['yz_xiaoe_users_clock.uniacid', '=', $uniacid];
 
             // 处理搜索条件
             if (isset($input->search)) {
@@ -698,12 +766,12 @@ class ClockController extends BaseController
 
         $input = \YunShop::request();
         $limit = 20;
-
+        $uniacid = \YunShop::app()->uniacid;
         // 日历主题
         if ($room_type == 1) {
 
             $where[] = ['yz_xiaoe_clock_users.clock_id', '=', $rid];
-
+            $where[] = ['yz_xiaoe_clock_users.uniacid', '=', $uniacid];
             // 处理搜索条件
             if (isset($input->search)) {
 
@@ -733,7 +801,7 @@ class ClockController extends BaseController
         if ($room_type == 2) {
 
             $where[] = ['yz_xiaoe_clock_users.clock_id', '=', $rid];
-
+            $where[] = ['yz_xiaoe_clock_users.uniacid', '=', $uniacid];
             // 处理搜索条件
             if (isset($input->search)) {
 
@@ -787,8 +855,9 @@ class ClockController extends BaseController
 
         $input = \YunShop::request();
         $limit = 20;
-
+        $uniacid = \YunShop::app()->uniacid;
         // 日历评论列表
+        $where[] = ['yz_xiaoe_users_clock_comment.uniacid', '=', $uniacid];
         $where[] = ['yz_xiaoe_users_clock_comment.clock_users_id', '=', $rid];
         $where[] = ['yz_xiaoe_users_clock_comment.check_status', '=', 0];
         $replay_list = DB::table('yz_xiaoe_users_clock_comment')
