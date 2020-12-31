@@ -885,7 +885,7 @@ class ClockController extends BaseController
         $rid = request()->get('id', 0);
         $user_clock_info = DB::table('yz_xiaoe_users_clock')
             ->join('diagnostic_service_user', 'diagnostic_service_user.ajy_uid', '=', 'yz_xiaoe_users_clock.user_id')
-            ->select('diagnostic_service_user.nickname', 'ddiagnostic_service_user.avatarurl as avatar', 'yz_xiaoe_users_clock.*')
+            ->select('diagnostic_service_user.nickname', 'diagnostic_service_user.avatarurl as avatar', 'yz_xiaoe_users_clock.*')
             ->where('yz_xiaoe_users_clock.id', $rid)
             ->first();
 
