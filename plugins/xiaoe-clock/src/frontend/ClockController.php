@@ -28,8 +28,6 @@ class ClockController extends ApiController
 
     private $date; // 2020-12-27
 
-    private $user;
-
 
     public function __construct()
     {
@@ -47,7 +45,7 @@ class ClockController extends ApiController
         $this->date = $this->getPostDate();
 
         //搜集新加入此打卡的学员
-        $this->user = $this->userJoin($this->clock_id, $this->member_id);
+        $this->userJoin($this->clock_id, $this->member_id);
     }
 
     //获取打卡详情接口
@@ -123,15 +121,16 @@ class ClockController extends ApiController
 
             ])->first();
 
-        if (!$clock) {
+        if (empty($clock)) {
             return $this->errorJson('不存在数据');
         }
         $status = $this->getClockStatus(Carbon::now()->startOfDay()->timestamp, Carbon::now()->endOfDay()->timestamp);
         $clock->clock_status = $status['status'];
+        $Join_user = XiaoeClockUser::uniacid()->where(['clock_id' => $clock->id, 'user_id' => $this->member_id])->first();
         //显示本周本用户打卡状态
         $data = [
             'clock' => $clock,
-            'user' => $this->user,
+            'user' => $Join_user,
             //'week_calendar' => $this->getCalendarWeekData()
         ];
         return $this->successJson('ok', $data);
@@ -142,7 +141,7 @@ class ClockController extends ApiController
     //作业打卡活动详情
     public function getHomeWorkClock()
     {
-        $user = $this->user;
+
         $clock = XiaoeClock::uniacid()->where('id', $this->clock_id)
             ->withCount(['hasManyNote', 'hasManyUser','hasManyTopic'])
             ->with([
@@ -154,6 +153,12 @@ class ClockController extends ApiController
                 },
             ])
             ->first();
+
+        if (empty($clock)) {
+            return $this->errorJson('不存在数据');
+        }
+
+        $user = XiaoeClockUser::uniacid()->where(['clock_id' => $clock->id, 'user_id' => $this->member_id])->first();
 
         return $this->successJson('success', compact('user','clock'));
     }
@@ -639,9 +644,8 @@ class ClockController extends ApiController
         }
         Redis::expire($lockCacheKey, 5);
 
-        $user = XiaoeClockUser::firstOrCreate($params);
+        XiaoeClockUser::firstOrCreate($params);
 
-        return $user;
     }
 
     //获取用户打卡状态
