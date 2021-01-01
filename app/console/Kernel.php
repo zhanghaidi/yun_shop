@@ -39,6 +39,7 @@ class Kernel extends ConsoleKernel
 
         'app\console\Commands\CourseReminderAloneMiniApp',
         'app\console\Commands\LiveReminderAloneMiniApp',
+        'app\console\Commands\NotPaidOrderNoticeAloneMiniApp',
     ];
     /**
      * The bootstrap classes for the application.
