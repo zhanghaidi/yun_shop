@@ -38,6 +38,7 @@ class Kernel extends ConsoleKernel
         // SignReminder::class,
 
         'app\console\Commands\CourseReminderAloneMiniApp',
+        'app\console\Commands\LiveReminderAloneMiniApp',
     ];
     /**
      * The bootstrap classes for the application.

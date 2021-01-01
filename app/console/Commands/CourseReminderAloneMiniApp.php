@@ -6,13 +6,11 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-// use Illuminate\Support\Facades\App;
-
 class CourseReminderAloneMiniApp extends Command
 {
     protected $signature = 'command:coursereminder-aloneminiapp';
 
-    protected $description = '课程提醒命令行工具';
+    protected $description = '课程提醒命令行工具 - 多个小程序';
 
     public function handle()
     {
@@ -70,7 +68,6 @@ class CourseReminderAloneMiniApp extends Command
 
         // 4、获取所有的小程序、及其公众号APPID
         $miniAppRs = self::getAloneMiniApp();
-        // var_dump($miniAppRs);
 
         $jobListRs = [];
         foreach ($replayPublishSoon as $v1) {
@@ -86,7 +83,6 @@ class CourseReminderAloneMiniApp extends Command
             if (!isset($tempRoom['id'])) {
                 continue;
             }
-            // var_dump($tempRoom);
 
             // 5.2、获取uniacid的小程序 和 公众号 配置
             $tempApp = [];
@@ -103,7 +99,6 @@ class CourseReminderAloneMiniApp extends Command
             if (!isset($tempApp['min_app']['id'])) {
                 continue;
             }
-            // var_dump($tempApp);
 
             foreach ($subscribedUser as $v4) {
                 // TODO ims_yz_appletslive_room_comment 和 ims_yz_appletslive_room_subscription 两个表中的 uniacid 字段逻辑全部需要修改
@@ -146,9 +141,6 @@ class CourseReminderAloneMiniApp extends Command
 
                 $type = ($tempUser['wechat_openid'] != '') ? 'wechat' : 'wxapp';
                 $jobParam = $this->makeJobParam($type, $tempApp, $tempRoom['name'], $v1);
-
-                // var_dump($tempUser);
-                // var_dump($jobParam);
 
                 $jobListRs[] = [
                     'type' => $type,
