@@ -28,6 +28,36 @@
                             </div>
                         </div>
 
+                        <hr/>
+                        <div><h4>{{ trans('Yunshop\Sign::sign.sign_remind_template') }}</h4></div>
+
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" style="width: 10%">{{ trans('Yunshop\Sign::sign.sign_remind_wechat') }}</label>
+                            <div class="col-sm-9 col-xs-12">
+                                <select name='sign[reminder_wechat]' class='form-control'>
+                                    <option value="" @if(!$sign['reminder_wechat']) selected @endif;>
+                                        {{ trans('Yunshop\Sign::sign.choose_notice_template') }}
+                                    </option>
+                                    @foreach ($temp_list as $item)
+                                        <option value="{{$item['id']}}" @if($sign['reminder_wechat'] == $item['id']) selected @endif>{{$item['title']}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label" style="width: 10%">{{ trans('Yunshop\Sign::sign.sign_remind_minapp') }}</label>
+                            <div class="col-sm-9 col-xs-12">
+                                <select name='sign[reminder_minapp]' class='form-control'>
+                                    <option value="" @if(!$sign['reminder_minapp']) selected @endif;>
+                                        {{ trans('Yunshop\Sign::sign.choose_notice_template') }}
+                                    </option>
+                                    @foreach ($minapp_temp as $item)
+                                        <option value="{{$item['id']}}" @if($sign['reminder_minapp'] == $item['id']) selected @endif>{{$item['title']}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label" style="width: 10%"></label>
                             <div class="col-sm-9 col-xs-12">
