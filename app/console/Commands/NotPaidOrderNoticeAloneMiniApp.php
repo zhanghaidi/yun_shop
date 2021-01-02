@@ -81,8 +81,8 @@ class NotPaidOrderNoticeAloneMiniApp extends Command
     private function notPaidOrderNotice($appRs, $tradeSetRs, $noticeSetRs, $messageTemplate)
     {
         // 模板消息内容
-        $noticeData = json_decode($messageTemplate['data'], true);
-        if ($noticeData == false) {
+        $messageTemplate['data'] = json_decode($messageTemplate['data'], true);
+        if ($messageTemplate['data'] == false) {
             return false;
         }
 
@@ -161,7 +161,7 @@ class NotPaidOrderNoticeAloneMiniApp extends Command
         }
     }
 
-    private function makeJobParam($type, $appRs, $order, $goods,$template, $tradeSet)
+    private function makeJobParam($type, $appRs, $order, $goods, $template, $tradeSet)
     {
         if (!in_array($type, ['wechat', 'wxapp'])) {
             return [];
@@ -197,6 +197,9 @@ class NotPaidOrderNoticeAloneMiniApp extends Command
             ];
         }
 
-        $param['template_id'] = $
+        $param['template_id'] = $template['template_id'];
+        $param['notice_data'] = [];
+        $param['notice_data']['first'] = ['value' => $template['first'], 'color' => $template['first_color']];
+
     }
 }
