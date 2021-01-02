@@ -7,6 +7,8 @@ use app\common\services\tencentlive\LiveSetService;
 use app\common\facades\Setting;
 use app\common\helpers\Url;
 use app\framework\Support\Facades\Log;
+use app\common\models\notice\MessageTemp;
+use app\common\models\notice\MinAppTemplateMessage;
 
 class LiveSetController extends BaseController
 {
@@ -34,9 +36,19 @@ class LiveSetController extends BaseController
                 $this->error('云直播设置失败');
             }
         }
+
+        $wechatTemplate = MessageTemp::select('id', 'title')
+            ->where('uniacid', \YunShop::app()->uniacid)
+            ->get()->toArray();
+
+        $minAppTemplate = MinAppTemplateMessage::select('id', 'title')
+            ->where('uniacid', \YunShop::app()->uniacid)
+            ->get()->toArray();
         return view('live.set', [
             'live' => $live,
-            'im' => $im
+            'im' => $im,
+            'wechat' => $wechatTemplate,
+            'minapp' => $minAppTemplate,
         ])->render();
     }
 
