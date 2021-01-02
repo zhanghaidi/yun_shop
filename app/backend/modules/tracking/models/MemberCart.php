@@ -14,6 +14,12 @@ use Illuminate\Support\Facades\DB;
 
 class MemberCart extends Model
 {
+    public static function boot()
+    {
+        parent::boot();
+        self::addGlobalScope(new UniacidScope);
+    }
+
     use SoftDeletes;
     protected $guarded = ['id'];
     protected $table = 'yz_member_cart';

@@ -13,6 +13,12 @@ use Illuminate\Support\Facades\DB;
 
 class GoodsTracking extends Model
 {
+    public static function boot()
+    {
+        parent::boot();
+        self::addGlobalScope(new UniacidScope);
+    }
+
     protected $table = 'diagnostic_service_goods_tracking';
     public $timestamps = false;
 
