@@ -43,8 +43,9 @@ class CourseReminderAloneMiniApp extends Command
         }
 
         // 3、查询关注了这些课程的所有小程序用户
-        $subscribedUser = DB::table('yz_appletslive_room_subscription')->select('uniacid', 'room_id', 'user_id')
-            ->whereIn('room_id', $roomIds)->get()->toArray();
+        $subscribedUser = DB::table('yz_appletslive_room_subscription')->select('id', 'uniacid', 'room_id', 'user_id')
+            ->whereIn('room_id', $roomIds)
+            ->where('status', 1)->get()->toArray();
         if (!isset($subscribedUser[0])) {
             return 0;
         }
@@ -61,7 +62,6 @@ class CourseReminderAloneMiniApp extends Command
         if (!isset($subscribedUnionid[0])) {
             return 0;
         }
-        // TODO 为什么不用uid，而用这个unionid，uid不可靠还是不同应用的uid不同？
         $wechatUser = DB::table('mc_mapping_fans')->select('uniacid', 'uid', 'unionid', 'openid')
             ->whereIn('unionid', $subscribedUnionid)
             ->where('follow', 1)->get()->toArray();
@@ -69,9 +69,36 @@ class CourseReminderAloneMiniApp extends Command
         // 4、获取所有的小程序、及其公众号APPID
         $miniAppRs = self::getAloneMiniApp();
 
+        // 5、获取小程序直播的配置项信息(消息模板)
+        $settingRs = DB::table('yz_setting')->select('id', 'uniacid', 'value')->where([
+            'group' => 'plugin',
+            'key' => 'appletslive',
+        ])->get()->toArray();
+        $wechatMsgTemplateIds = $minappMsgTemplateIds = [];
+        foreach ($settingRs as $k => $v) {
+            $v['value'] = unserialize($v['value']);
+            if ($v['value'] == false) {
+                continue;
+            }
+            if (isset($v['value']['wechat_template']) && $v['value']['wechat_template'] > 0) {
+                $wechatMsgTemplateIds[] = $v['value']['wechat_template'];
+            }
+            if (isset($v['value']['minapp_template']) && $v['value']['minapp_template'] > 0) {
+                $minappMsgTemplateIds[] = $v['value']['minapp_template'];
+            }
+            $settingRs[$k]['value'] = $v['value'];
+        }
+        $wechatMsgTemplate = $minappMsgTemplate = [];
+        if (isset($wechatMsgTemplateIds[0])) {
+            $wechatMsgTemplate = DB::table('yz_message_template')->whereIn('id', $wechatMsgTemplateIds)->get()->toArray();
+        }
+        if (isset($minappMsgTemplateIds[0])) {
+            $minappMsgTemplate = DB::table('yz_mini_app_template_message')->whereIn('id', $minappMsgTemplateIds)->get()->toArray();
+        }
+
         $jobListRs = [];
         foreach ($replayPublishSoon as $v1) {
-            // 5.1、获取课程的uniacid
+            // 6.1、获取课程的uniacid
             $tempRoom = [];
             foreach ($relaRoom as $v2) {
                 if ($v1['rid'] != $v2['id']) {
@@ -84,7 +111,7 @@ class CourseReminderAloneMiniApp extends Command
                 continue;
             }
 
-            // 5.2、获取uniacid的小程序 和 公众号 配置
+            // 6.2、获取uniacid的小程序 和 公众号 配置
             $tempApp = [];
             foreach ($miniAppRs as $v3) {
                 if (!isset($v3['min_app']['uniacid'])) {
@@ -99,52 +126,102 @@ class CourseReminderAloneMiniApp extends Command
             if (!isset($tempApp['min_app']['id'])) {
                 continue;
             }
+            $tempAppIds = array_column($tempApp['account'], 'uniacid');
 
-            foreach ($subscribedUser as $v4) {
+            // 6.3、获取当前应用的课程开播通知的消息模板
+            $tempWechatTemplateId = $tempMinappTemplateId = 0;
+            foreach ($settingRs as $v4) {
+                if ($tempApp['min_app']['uniacid'] != $v4['uniacid']) {
+                    continue;
+                }
+                if (isset($v4['value']['wechat_template'])) {
+                    $tempWechatTemplateId = $v4['value']['wechat_template'];
+                }
+                if (isset($v4['value']['minapp_template'])) {
+                    $tempMinappTemplateId = $v4['value']['minapp_template'];
+                }
+            }
+            $tempWechatMsgTemplate = $tempMinappMsgTemplate = [];
+            if ($tempWechatTemplateId > 0) {
+                foreach ($wechatMsgTemplate as $v41) {
+                    if ($tempWechatTemplateId != $v41['id']) {
+                        continue;
+                    }
+                    $tempWechatMsgTemplate = $v41;
+                    break;
+                }
+            }
+            if ($tempMinappTemplateId > 0) {
+                foreach ($minappMsgTemplate as $v42) {
+                    if ($tempMinappTemplateId != $v42['id']) {
+                        continue;
+                    }
+                    $tempMinappMsgTemplate = $v42;
+                    break;
+                }
+            }
+
+            foreach ($subscribedUser as $v5) {
                 // TODO ims_yz_appletslive_room_comment 和 ims_yz_appletslive_room_subscription 两个表中的 uniacid 字段逻辑全部需要修改
 
-                // if ($tempRoom['uniacid'] != $v4['uniacid']) {
+                // if ($tempRoom['uniacid'] != $v5['uniacid']) {
                 //     continue;
                 // }
-                if ($tempRoom['id'] != $v4['room_id']) {
+                if ($tempRoom['id'] != $v5['room_id']) {
                     continue;
                 }
 
                 $tempUser = [
-                    'user_id' => $v4['user_id'],
+                    'user_id' => $v5['user_id'],
                 ];
-                foreach ($wxappUser as $v5) {
-                    if ($v4['user_id'] != $v5['ajy_uid']) {
+                foreach ($wxappUser as $v6) {
+                    if ($v5['user_id'] != $v6['ajy_uid']) {
                         continue;
                     }
-                    // if ($v4['uniacid'] != $tempRoom['uniacid']) {
-                    //     continue;
-                    // }
-                    $tempUser['unionid'] = $v5['unionid'];
-                    $tempUser['wxapp_openid'] = $v5['openid'];
+                    if (!in_array($v6['uniacid'], $tempAppIds)) {
+                        continue;
+                    }
+                    $tempUser['unionid'] = $v6['unionid'];
+                    $tempUser['wxapp_openid'] = $v6['openid'];
                     break;
                 }
                 if (!isset($tempUser['unionid']) || $tempUser['unionid'] == '') {
                     continue;
                 }
                 $tempUser['wechat_openid'] = '';
-                foreach ($wechatUser as $v6) {
-                    if ($tempUser['unionid'] != $v6['unionid']) {
+                foreach ($wechatUser as $v7) {
+                    if ($tempUser['unionid'] != $v7['unionid']) {
                         continue;
                     }
-                    if ($v6['uniacid'] != $tempRoom['uniacid']) {
+                    if (!in_array($v7['uniacid'], $tempAppIds)) {
                         continue;
                     }
-                    $tempUser['wechat_openid'] = $v6['openid'];
+                    $tempUser['wechat_openid'] = $v7['openid'];
                     break;
                 }
 
                 $type = ($tempUser['wechat_openid'] != '') ? 'wechat' : 'wxapp';
-                $jobParam = $this->makeJobParam($type, $tempApp, $tempRoom['name'], $v1);
+                // TODO 暂时仅使用模板的模板ID，其内消息定义暂不使用
+                $tempTemplateId = '';
+                if ($type == 'wechat') {
+                    if (!isset($tempWechatMsgTemplate['id'])) {
+                        continue;
+                    }
+                    $tempTemplateId = $tempWechatMsgTemplate['template_id'];
+                } else {
+                    if (!isset($tempMinappMsgTemplate['id'])) {
+                        continue;
+                    }
+                    $tempTemplateId = $tempMinappMsgTemplate['template_id'];
+                }
+                if ($tempTemplateId == '') {
+                    continue;
+                }
+                $jobParam = $this->makeJobParam($type, $tempApp, $tempTemplateId, $tempRoom['name'], $v1);
 
                 $jobListRs[] = [
                     'type' => $type,
-                    'openid' => ($tempUser['wechat_openid'] != '') ? $tempUser['wechat_openid'] : $tempUser['wxapp_openid'],
+                    'openid' => ($type == 'wechat') ? $tempUser['wechat_openid'] : $tempUser['wxapp_openid'],
                     'options' => $jobParam['options'],
                     'template_id' => $jobParam['template_id'],
                     'notice_data' => $jobParam['notice_data'],
@@ -160,11 +237,10 @@ class CourseReminderAloneMiniApp extends Command
                 $jobRs['openid'], '', $jobRs['page']
             );
             $dispatch = dispatch($job);
-            Log::info("模板消息内容:", $jobRs);
             if ($jobRs['type'] == 'wechat') {
-                Log::info("队列已添加:发送公众号模板消息", ['job' => $job, 'dispatch' => $dispatch]);
+                Log::info("课程提醒消息队列已添加:发送公众号模板消息", ['source' => $jobRs, 'job' => $job, 'dispatch' => $dispatch]);
             } elseif ($jobRs['type'] == 'wxapp') {
-                Log::info("队列已添加:发送小程序订阅模板消息", ['job' => $job, 'dispatch' => $dispatch]);
+                Log::info("课程提醒消息队列已添加:发送小程序订阅模板消息", ['source' => $jobRs, 'job' => $job, 'dispatch' => $dispatch]);
             }
         }
     }
@@ -180,7 +256,8 @@ class CourseReminderAloneMiniApp extends Command
                 'group' => 'plugin',
                 'type' => 'array',
             ])->orderBy('id', 'asc')->get()->toArray();
-        $miniAppRs = array();
+        $miniAppRs = [];
+        $openidIds = [];
         foreach ($listRs as $v) {
             if (!isset($v['id'])) {
                 continue;
@@ -192,8 +269,59 @@ class CourseReminderAloneMiniApp extends Command
                 continue;
             }
             $v['value'] = array_filter($v['value']);
+            if (isset($v['value']['key'])) {
+                $openidIds[] = $v['value']['key'];
+            }
+            if (isset($v['value']['shop_key'])) {
+                $openidIds[] = $v['value']['shop_key'];
+            }
+            if (isset($v['value']['app_id'])) {
+                $openidIds[] = $v['value']['app_id'];
+            }
 
             $miniAppRs[$v['uniacid']][$v['key']] = $v;
+        }
+
+        if (isset($openidIds[0])) {
+            $wxappRs = DB::table('account_wxapp')->select('uniacid', 'key')
+                ->whereIn('key', $openidIds)->get()->toArray();
+            $wechatRs = DB::table('account_wechats')->select('uniacid', 'key')
+                ->whereIn('key', $openidIds)->get()->toArray();
+
+            foreach ($miniAppRs as $k1 => $v1) {
+                $miniAppRs[$k1]['account'] = [];
+
+                foreach ($wxappRs as $v2) {
+                    $item = [
+                        'key' => $v2['key'],
+                        'uniacid' => $v2['uniacid'],
+                    ];
+                    if ($v1['min_app']['value']['key'] != '' && $v1['min_app']['value']['key'] == $v2['key']) {
+                        $item['type'] = 'wxapp,main';
+                    } elseif ($v1['min_app']['value']['shop_key'] != '' && $v1['min_app']['value']['shop_key'] == $v2['key']) {
+                        $item['type'] = 'wxapp,shop';
+                    }
+                    if (!isset($item['type'])) {
+                        continue;
+                    }
+
+                    if (!isset($v1['min_app']['value']['shop_key']) || $v1['min_app']['value']['shop_key'] == '') {
+                        $item['type'] = 'wxapp';
+                    }
+
+                    $miniAppRs[$k1]['account'][] = $item;
+                }
+
+                foreach ($wechatRs as $v3) {
+                    if ($v1['wechat']['value']['app_id'] != '' && $v1['wechat']['value']['app_id'] == $v3['key']) {
+                        $miniAppRs[$k1]['account'][] = [
+                            'key' => $v3['key'],
+                            'uniacid' => $v3['uniacid'],
+                            'type' => 'wechat',
+                        ];
+                    }
+                }
+            }
         }
 
         foreach ($miniAppRs as $k => $v) {
@@ -215,7 +343,7 @@ class CourseReminderAloneMiniApp extends Command
         return $miniAppRs;
     }
 
-    private function makeJobParam($type, $appRs, $roomName, $replayRs)
+    private function makeJobParam($type, $appRs, $templateId, $roomName, $replayRs)
     {
         if (!in_array($type, ['wechat', 'wxapp'])) {
             return [];
@@ -241,8 +369,7 @@ class CourseReminderAloneMiniApp extends Command
 
             $first = '尊敬的用户,您订阅的课程有新视频要发布啦~';
             $remark = '最新视频【' . $replayRs['title'] . '】将于' . date('Y-m-d H:i', $replayRs['publish_time']) . '倾情发布!';
-            // TODO 模板消息ID
-            $param['template_id'] = '';
+            $param['template_id'] = $templateId;
             $param['notice_data'] = [
                 'first' => ['value' => $first, 'color' => '#173177'],
                 'keyword1' => ['value' => '【' . $roomName . '】', 'color' => '#173177'],
@@ -261,8 +388,7 @@ class CourseReminderAloneMiniApp extends Command
 
             $thing1 = '课程更新';
             $thing2 = mb_substr($replayRs['title'], 0, 5, 'utf-8');
-            // TODO 模板消息ID
-            $param['template_id'] = '';
+            $param['template_id'] = $templateId;
             $param['notice_data'] = [
                 'thing1' => ['value' => $thing1, 'color' => '#173177'],
                 'thing2' => ['value' => '【' . $thing2 . '】', 'color' => '#173177'],
