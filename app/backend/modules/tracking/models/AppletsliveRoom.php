@@ -9,6 +9,7 @@
 namespace app\backend\modules\tracking\models;
 
 use Illuminate\Database\Eloquent\Model;
+use app\common\scopes\UniacidScope;
 
 class AppletsliveRoom extends Model
 {
