@@ -33,7 +33,7 @@ class LiveRoomController extends BaseController
             $room = $room->search($search);
         }
 
-        $roomList = $room->orderBy('sort','desc')->orderBy('id','desc')->paginate(static::PAGE_SIZE);
+        $roomList = $room->uniacid()->orderBy('sort','desc')->orderBy('id','desc')->paginate(static::PAGE_SIZE);
         $page = PaginationHelper::show($roomList->total(),$roomList->currentPage(),$roomList->perPage());
 
         return view('live.index',[
@@ -204,7 +204,7 @@ class LiveRoomController extends BaseController
     //直播间消息列表
     public function roomMessage()
     {
-        $records = CloudLiveRoomMessage::records();
+        $records = CloudLiveRoomMessage::uniacid()->records();
 
         $search = \YunShop::request()->search;
         if ($search) {
