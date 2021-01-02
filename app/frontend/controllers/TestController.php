@@ -15,6 +15,9 @@ use Yunshop\Love\Modules\Goods\GoodsLoveRepository;
 use app\Jobs\SendTemplateMsgJob;
 use Illuminate\Support\Facades\DB;
 use app\framework\Support\Facades\Log;
+use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Storage;
+use QrCode;
 
 class TestController extends BaseController
 {
@@ -182,5 +185,65 @@ class TestController extends BaseController
         }
         return $data;
     }
+
+
+    public function testImageMake(){
+
+        $member_id = \YunShop::app()->getMemberId();
+        $url = config('app.url').'/web/reg/index.html';
+        $disk = 'image';
+        $querys = '';
+        $querys .= '?recommend=' . $member_id;
+
+        $fileName = 'images/share/share.jpg';
+
+        $qrcode = env('IMG_URL').'/' .$fileName;
+
+        try{
+            if(file_get_contents($qrcode)){
+                return __return($this->successStatus, '获取成功',$qrcode);
+            }
+        } catch(\Exception $e){
+
+        }
+
+        if(!Storage::exists('share_poster')){
+            Storage::disk()->makeDirectory('share_poster');
+        }
+
+        $png = QrCode::format('png')->size(120)->margin(0)
+            ->generate($url . $querys);
+
+        Storage::disk($disk)->put($fileName,$png);
+
+        // 修改指定图片的大小share_en.jpg
+        $img = Image::make(env('IMG_URL').'/share/share_zh.jpg')->resize(750,1334);
+
+        $amount_profit = '测试谁呀';
+
+        $img->text($amount_profit, 320, 580, function($font) {
+            $font->file(base_path().'/public/fonts/msyhl.ttc');
+            $font->size(34);
+            $font->color('#747474');
+            $font->align('center');
+            // $font->valign('top');
+            // $font->angle(45);
+        });
+
+        // 插入水印, 水印位置在原图片的左下角, 距离下边距 10 像素, 距离右边距 15 像素
+        $img->insert($qrcode, 'bottom-right', 5, 5);
+
+        // 将处理后的图片重新保存到其他路径
+        $img->save($fileName);
+
+        Storage::disk($disk)->put($fileName,file_get_contents($fileName));
+
+        if(file_exists($fileName)){
+            unlink ($fileName);
+        }
+
+        return __return($this->successStatus, '获取成功',$qrcode);
+    }
+
 
 }
