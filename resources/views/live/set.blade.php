@@ -119,6 +119,31 @@
 
                 </div>
 
+                <div class='panel-heading'>开播消息提醒</div>
+                <div class='panel-body'>
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">微信公众号模板</label>
+                        <div class="col-xs-12 col-sm-4 col-md-6">
+                            <select name="live[start_remind_template_wechat]" class="form-control">
+                                @foreach($wechat as $item)
+                                <option value="{{$item['id']}}" @if($live['start_remind_template_wechat'] == $item['id']) selected="selected" @endif>{{$item['title']}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">小程序模板</label>
+                        <div class="col-xs-12 col-sm-4 col-md-6">
+                            <select name="live[start_remind_template_minapp]" class="form-control">
+                                @foreach($minapp as $item)
+                                <option value="{{$item['id']}}" @if($live['start_remind_template_minapp'] == $item['id']) selected="selected" @endif>{{$item['title']}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="form-group">
                 <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
                 <div class="col-xs-12 col-sm-4 col-md-6">
