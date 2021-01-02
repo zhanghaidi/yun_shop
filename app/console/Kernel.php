@@ -35,7 +35,11 @@ class Kernel extends ConsoleKernel
         CourseReminder::class,
         NotPaidOrderNotice::class,
         SyncWxappLiveRoom::class,
-//        SignReminder::class,
+        // SignReminder::class,
+
+        'app\console\Commands\CourseReminderAloneMiniApp',
+        'app\console\Commands\LiveReminderAloneMiniApp',
+        'app\console\Commands\NotPaidOrderNoticeAloneMiniApp',
     ];
     /**
      * The bootstrap classes for the application.
