@@ -39,7 +39,7 @@ use app\Jobs\SendTemplateMsgJob;
 class LiveController extends BaseController
 {
     protected $user_id = 0;
-    protected $uniacid = 45;
+    protected $uniacid = 0;
     protected $is_follow_account = false;
     protected $is_ios;
     /**
@@ -51,6 +51,7 @@ class LiveController extends BaseController
         $this->user_id = \YunShop::app()->getMemberId();
         $this->is_follow_account = $this->checkIsFollowAccount();
         $this-> is_ios = request()->get('os_name') == 'ios' ? true : false;
+        $this->uniacid =\YunShop::app()->uniacid;
     }
 
     /**
