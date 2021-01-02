@@ -18,8 +18,8 @@ class LiveReminderAloneMiniApp extends Command
     {
         $nowTime = time();
         $waitSeconds = 60 * 1;
-        $checkTimeRange = [$nowTime - 86400 * 60, $nowTime - $waitSeconds];
-        // $checkTimeRange = [$nowTime - $waitSeconds - 60, $nowTime - $waitSeconds];
+        // $checkTimeRange = [$nowTime - 86400 * 60, $nowTime - $waitSeconds];
+        $checkTimeRange = [$nowTime - $waitSeconds - 60, $nowTime - $waitSeconds];
 
         // 1、查询开始时间距离当前时间2分钟之内开播的直播 where('live_status', 101)暂时不卡播放状态
         $startLiveRoom = CloudLiveRoom::select('id', 'uniacid', 'name', 'live_status', 'start_time', 'anchor_name')
@@ -255,8 +255,8 @@ class LiveReminderAloneMiniApp extends Command
                 return [];
             }
             $param['options'] = [
-                'app_id' => $appRs['min_app']['value']['key'],
-                'secret' => $appRs['min_app']['value']['secret'],
+                'app_id' => $appRs['min_app']['value']['shop_key'],
+                'secret' => $appRs['min_app']['value']['shop_secret'],
             ];
 
             $thing1 = '直播间开播提醒';

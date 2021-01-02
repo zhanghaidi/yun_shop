@@ -238,9 +238,9 @@ class CourseReminderAloneMiniApp extends Command
             );
             $dispatch = dispatch($job);
             if ($jobRs['type'] == 'wechat') {
-                Log::info("课程提醒消息队列已添加:发送公众号模板消息", ['source' => $jobRs, 'job' => $job, 'dispatch' => $dispatch]);
+                Log::info("课程开播提醒消息队列已添加:发送公众号模板消息", ['source' => $jobRs, 'job' => $job, 'dispatch' => $dispatch]);
             } elseif ($jobRs['type'] == 'wxapp') {
-                Log::info("课程提醒消息队列已添加:发送小程序订阅模板消息", ['source' => $jobRs, 'job' => $job, 'dispatch' => $dispatch]);
+                Log::info("课程开播提醒消息队列已添加:发送小程序订阅模板消息", ['source' => $jobRs, 'job' => $job, 'dispatch' => $dispatch]);
             }
         }
     }

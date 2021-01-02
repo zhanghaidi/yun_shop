@@ -2,8 +2,10 @@
 namespace app\Console\Commands;
 
 use app\Console\Commands\CourseReminderAloneMiniApp;
+use app\Jobs\SendTemplateMsgJob;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class NotPaidOrderNoticeAloneMiniApp extends Command
 {
@@ -80,6 +82,8 @@ class NotPaidOrderNoticeAloneMiniApp extends Command
 
     private function notPaidOrderNotice($appRs, $tradeSetRs, $noticeSetRs, $messageTemplate)
     {
+        $tempAppIds = array_column($appRs['account'], 'uniacid');
+
         // 模板消息内容
         $messageTemplate['data'] = json_decode($messageTemplate['data'], true);
         if ($messageTemplate['data'] == false) {
@@ -88,6 +92,7 @@ class NotPaidOrderNoticeAloneMiniApp extends Command
 
         $nowTime = time();
         $waitSeconds = $tradeSetRs['not_paid_notice_minutes'] * 60;
+        // $checkTimeRange = [$nowTime - 86400 * 60, $nowTime - $waitSeconds];
         $checkTimeRange = [$nowTime - $waitSeconds - 60, $nowTime - $waitSeconds];
 
         // 查询待支付订单（下单时间距离现在n~n+1分钟）
@@ -111,8 +116,12 @@ class NotPaidOrderNoticeAloneMiniApp extends Command
         $wxappUser = DB::table('diagnostic_service_user')
             ->select('id', 'ajy_uid', 'uniacid', 'openid', 'shop_openid', 'unionid')
             ->whereIn('ajy_uid', $userIds)->get()->toArray();
+        $userUnionidIds = array_column($wxappUser, 'unionid');
+        if (!isset($userUnionidIds[0])) {
+            return false;
+        }
         $wechatUser = DB::table('mc_mapping_fans')->select('uniacid', 'uid', 'unionid', 'openid')
-            ->whereIn('uid', $userIds)
+            ->whereIn('unionid', $userUnionidIds)
             ->where('follow', 1)->get()->toArray();
 
         foreach ($orderRs as $v1) {
@@ -130,12 +139,18 @@ class NotPaidOrderNoticeAloneMiniApp extends Command
                 if ($v1['uid'] != $v3['ajy_uid']) {
                     continue;
                 }
+                if (!in_array($v3['uniacid'], $tempAppIds)) {
+                    continue;
+                }
                 $tempWxapp = $v3;
                 break;
             }
             $tempWechat = [];
             foreach ($wechatUser as $v4) {
-                if ($v1['uid'] != $v4['uid']) {
+                if ($tempWxapp['unionid'] != $v4['unionid']) {
+                    continue;
+                }
+                if (!in_array($v4['uniacid'], $tempAppIds)) {
                     continue;
                 }
                 $tempWechat = $v4;
@@ -147,17 +162,23 @@ class NotPaidOrderNoticeAloneMiniApp extends Command
                 $tempOpenid = $tempWechat['openid'];
                 $type = 'wechat';
             } else {
-                // if (isset($tempWxapp['shop_openid']) && $tempWxapp['shop_openid'] != '') {
-                //     $tempOpenid = $tempWxapp['shop_openid'];
-                // } else {
-                //     $tempOpenid = $tempWxapp['openid'];
-                // }
                 $tempOpenid = $tempWxapp['openid'];
                 $type = 'wxapp';
             }
 
-            $tempUser = [];
+            $jobParam = $this->makeJobParam($type, $appRs, $v1, $tempGoods, $messageTemplate, $tradeSetRs);
 
+            $job = new SendTemplateMsgJob(
+                $type, $jobParam['options'],
+                $jobParam['template_id'], $jobParam['notice_data'],
+                $tempOpenid, '', $jobParam['page']
+            );
+            $dispatch = dispatch($job);
+            if ($type == 'wechat') {
+                Log::info("订单未支付提醒消息队列已添加:发送公众号模板消息", ['source' => $jobParam, 'job' => $job, 'dispatch' => $dispatch]);
+            } elseif ($type == 'wxapp') {
+                Log::info("订单未支付提醒消息队列已添加:发送小程序订阅模板消息", ['source' => $jobParam, 'job' => $job, 'dispatch' => $dispatch]);
+            }
         }
     }
 
@@ -177,6 +198,7 @@ class NotPaidOrderNoticeAloneMiniApp extends Command
             'create_time' => date('Y-m-d H:i', $order['create_time']),
             'expire_time' => date('Y-m-d H:i', $order['create_time'] + intval($tradeSet['close_order_days']) * 86400),
             'goods_title' => $goods['title'],
+            'page' => $jumpTail,
         ];
 
         if ($type == 'wechat') {
@@ -197,9 +219,23 @@ class NotPaidOrderNoticeAloneMiniApp extends Command
             ];
         }
 
+        $valueKeySort = ['goods_title', 'amount', 'order_sn', 'create_time', 'expire_time'];
+
         $param['template_id'] = $template['template_id'];
         $param['notice_data'] = [];
         $param['notice_data']['first'] = ['value' => $template['first'], 'color' => $template['first_color']];
-
+        $i = 0;
+        foreach ($template['data'] as $v) {
+            $param['notice_data'][$v['keywords']] = [
+                'value' => $param[$valueKeySort[$i]],
+                'color' => $v['color'],
+            ];
+            $i++;
+        }
+        $param['notice_data']['remark'] = [
+            'value' => $template['remark'],
+            'color' => $template['remark_color'],
+        ];
+        return $param;
     }
 }
