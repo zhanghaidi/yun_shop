@@ -11,6 +11,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class GoodsTrackingStatistics extends Model
 {
+    public static function boot()
+    {
+        parent::boot();
+        self::addGlobalScope(new UniacidScope);
+    }
+
     protected $table = 'diagnostic_service_goods_tracking_statistics';
 
 
