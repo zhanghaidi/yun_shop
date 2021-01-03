@@ -17,10 +17,17 @@ class ExplainController extends ApiController
 {
     public function index()
     {
-        $content = SetService::getSignSet('explain_content');
+        $sign_setting = SetService::getSignSet('');
 
+        $data = [
+            'explain_content' => html_entity_decode($sign_setting['explain_content']),
+            'cumulative' => $sign_setting['cumulative']
+        ];
 
-        return $this->successJson('ok', ['explain_content' => html_entity_decode($content)]);
+        return $this->successJson('ok', $data);
     }
+
+
+
 
 }
