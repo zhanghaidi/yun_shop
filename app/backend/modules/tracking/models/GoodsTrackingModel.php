@@ -10,14 +10,10 @@ namespace app\backend\modules\tracking\models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use app\common\scopes\UniacidScope;
 
 class GoodsTrackingModel extends Model
 {
-    public static function boot()
-    {
-        parent::boot();
-        self::addGlobalScope(new UniacidScope);
-    }
 
     protected $table = 'diagnostic_service_goods_tracking';
     protected $appends = ['type_id','action_id','action_name','view_num','favorites_num','add_purchase_num','order_payment_num','create_order_num','order_payment_amount'];
@@ -25,6 +21,12 @@ class GoodsTrackingModel extends Model
 
     const CREATED_AT = 'create_time';
     const UPDATED_AT = 'update_time';
+
+    public static function boot()
+    {
+        parent::boot();
+        self::addGlobalScope(new UniacidScope());
+    }
 
     /**
      *  获取埋点来源类型.
