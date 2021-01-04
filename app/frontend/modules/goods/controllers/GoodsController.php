@@ -1516,6 +1516,7 @@ class GoodsController extends GoodsApiController
                 ->join('diagnostic_service_user as u', 'o.uid', '=', 'u.ajy_uid')
                 ->select('u.avatarurl', 'p.address')
                 ->where('o.status', 3)
+                ->where('o.uniacid',\YunShop::app()->uniacid)
                 ->groupBY('o.uid')
                 ->orderBy('o.create_time', 'DESC')
                 ->take(20)
