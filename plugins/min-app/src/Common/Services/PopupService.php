@@ -81,5 +81,4 @@ class PopupService {
         $this->logs['ip']      = $_SERVER['REMOTE_ADDR'];
         $this->logs['modules'] = 'shop';
     }
-
 }

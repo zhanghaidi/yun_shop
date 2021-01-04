@@ -24,7 +24,6 @@ class PopupController extends BaseController
         $popup = new Popup();
 
         if ($search) {
-            //dd($search);
             $popup = $popup->search($search);
         }
 
@@ -41,9 +40,7 @@ class PopupController extends BaseController
 
     public function edit()
     {
-
         $pop_id = intval(request()->id);
-
         if($pop_id){
             $this->verifyPopup($pop_id);
         }else{
@@ -78,7 +75,6 @@ class PopupController extends BaseController
         $position = new PopupPositon();
 
         if ($search) {
-            //dd($search);
             $position = $position->search($search);
         }
 
@@ -95,9 +91,7 @@ class PopupController extends BaseController
     }
 
     public function positionEdit(){
-
         $pos_id = intval(request()->id);
-
         if($pos_id){
             $this->verifyParam($pos_id);
         }else{
@@ -153,5 +147,4 @@ class PopupController extends BaseController
         }
         $this->pos_model = $pos_model;
     }
-
 }
