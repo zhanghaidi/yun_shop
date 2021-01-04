@@ -39,7 +39,7 @@ class LiveController extends BaseController
         $input = \YunShop::request();
         $limit = 20;
         $tag = request()->get('tag', '');
-
+        $uniacid = \YunShop::app()->uniacid;
         // 同步房间列表
         if ($tag == 'refresh') {
             if (!request()->ajax()) {
@@ -90,6 +90,7 @@ class LiveController extends BaseController
         }
 
         $list = LiveRoom::where($where)
+            ->where('uniacid',$uniacid)
             ->whereBetween($where_between[0], $where_between[1])
             ->orderBy('id', 'desc')
             ->paginate($limit);
@@ -105,6 +106,7 @@ class LiveController extends BaseController
     // 添加直播间
     public function add()
     {
+        $uniacid = \YunShop::app()->uniacid;
         if (request()->isMethod('post')) {
 
             $param = request()->all();
@@ -205,6 +207,7 @@ class LiveController extends BaseController
 
             $insert_data = [
                 'name' => $post_data['name'],
+                'uniacid' => $uniacid,
                 'roomid' => $result['roomId'],
                 'live_status' => APPLETSLIVE_ROOM_LIVESTATUS_102,
                 'start_time' => $post_data['startTime'],
@@ -234,6 +237,7 @@ class LiveController extends BaseController
     // 直播间导入商品
     public function import()
     {
+        $uniacid = \YunShop::app()->uniacid;
         if (request()->isMethod('post')) {
 
             if (!request()->ajax()) {
@@ -334,6 +338,7 @@ class LiveController extends BaseController
         }
 
         $goods = Goods::where($where)
+            ->where('uniacid',$uniacid)
             ->orderBy('id', 'desc')
             ->paginate($limit);
         $pager = PaginationHelper::show($goods->total(), $goods->currentPage(), $goods->perPage());

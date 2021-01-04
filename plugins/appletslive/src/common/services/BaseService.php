@@ -35,9 +35,10 @@ class BaseService
     {
         $set = Setting::get('plugin.appletslive');
         if (empty($set)) {
+            $uniacid =\YunShop::app()->uniacid;
             $wxapp_account = DB::table('account_wxapp')
                 ->select('key', 'secret')
-                ->where('uniacid', 45)
+                ->where('uniacid', $uniacid)
                 ->first();
             $this->appId = $wxapp_account['key'];
             $this->secret = $wxapp_account['secret'];
