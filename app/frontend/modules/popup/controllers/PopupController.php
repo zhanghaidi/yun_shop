@@ -15,5 +15,4 @@ class PopupController extends ApiController
         $popup = PopupService::getPopup();
         return $this->successJson('获取弹窗成功',$popup);
     }
-
 }

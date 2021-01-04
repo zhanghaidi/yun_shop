@@ -29,21 +29,16 @@ class ShareCouponController extends ApiController
 
     protected $member;
 
-
     public function preAction()
     {
         parent::preAction();
-
         $this->getData();
     }
-
 
     //分享页面
     public function share()
     {
-
         //event(new AfterOrderPaidImmediatelyEvent(Order::find(801)));
-        //dd(1);
         //拥有推广资格的会员才可以分享
         if ($this->set['share_limit'] == 1) {
             if (!$this->member->yzMember->is_agent) {
@@ -57,7 +52,6 @@ class ShareCouponController extends ApiController
         $this->share_model->map(function ($model) {
             $model->coupon_num = count($model->share_coupon);
             //fixby zhd 分享优惠券总金额-2020-10-10
-            //var_dump($model->share_coupon);
             $money = 0;
             if($model->coupon_num > 0){
                 foreach($model->share_coupon as $v){
@@ -65,7 +59,6 @@ class ShareCouponController extends ApiController
                 }
             }
             $model->coupon_money = $money;
-
         });
 
         $data = [
@@ -74,6 +67,7 @@ class ShareCouponController extends ApiController
             'coupon_num' => $this->share_model->sum('coupon_num'),
             'coupon_total_money' => number_format($this->share_model->sum('coupon_money'),2,'.',''),
         ];
+
         return $this->successJson('share', $data);
     }
 
@@ -115,7 +109,6 @@ class ShareCouponController extends ApiController
 
         $log_model = ShoppingShareCouponLog::yiLog($order_ids)->orderby('created_at','desc')->paginate(15)->toArray();
 
-
         $this->share_model->map(function ($model) {
             $model->coupon_num = count($model->share_coupon);
         });
@@ -133,9 +126,6 @@ class ShareCouponController extends ApiController
 
         return $this->successJson('成功', $returnData);
     }
-
-
-
 
     protected function handleCoupon($data)
     {
@@ -219,15 +209,12 @@ class ShareCouponController extends ApiController
         }
     }
 
-
     protected function getData()
     {
 
         $order_ids = explode('_', rtrim(\YunShop::request()->order_ids, '_'));
 
         $share_model = ShoppingShareCoupon::whereIn('order_id', $order_ids)->with('hasOneOrder')->get();
-
-
         if ($share_model->isEmpty()) {
             throw new AppException('无分享优惠卷');
         }
