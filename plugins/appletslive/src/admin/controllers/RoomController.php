@@ -390,7 +390,7 @@ class RoomController extends BaseController
         if ($room_type == 2) {
 
             $where[] = ['yz_appletslive_replay.rid', '=', $rid];
-            $where[] = ['uniacid', '=', $uniacid];
+            $where[] = ['yz_appletslive_replay.uniacid', '=', $uniacid];
             // 处理搜索条件
             if (isset($input->search)) {
 
