@@ -21,6 +21,7 @@ class AppletsliveRoom extends Model
 
     //小程序直播插件 小程序直播间表
     protected $table = 'yz_appletslive_liveroom';
+
     protected $primaryKey = 'roomid';
     public $timestamps = false;
 

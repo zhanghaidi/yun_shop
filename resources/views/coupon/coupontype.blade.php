@@ -481,6 +481,14 @@
     </div>
 
 </div>
+
+<div class="form-group">
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label">分享优惠券最大领取次数</label>
+    <div class="col-sm-9 col-xs-12">
+        <input type="text" name="coupon[share_get_max]" class="form-control" value="{{isset($coupon['share_get_max']) ? $coupon['share_get_max'] : 0}}"  />
+        <span class='help-block' >分享优惠券最大领取次数，必须为大于0的整数</span>
+    </div>
+</div>
 　
 <div class="form-group">
     <label class="col-xs-12 col-sm-3 col-md-2 control-label">发放总数</label>
