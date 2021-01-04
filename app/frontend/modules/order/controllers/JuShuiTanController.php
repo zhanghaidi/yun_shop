@@ -31,7 +31,7 @@ class JuShuiTanController extends ApiController
     //发送聚水潭接口
     public function index()
     {
-        $orders = \app\common\models\Order::where(['status' => 1, 'jushuitan_status' => 0])->where('pay_time', '<=', time()-1800)->with('address', 'hasManyOrderGoods', 'hasOneOrderPay')
+        $orders = \app\common\models\Order::where(['uniacid' => \YunShop::app()->uniacid, 'status' => 1, 'jushuitan_status' => 0])->where('pay_time', '<=', time()-1800)->with('address', 'hasManyOrderGoods', 'hasOneOrderPay')
             ->orderBy('create_time', 'ASC')->chunk(100, function ($orders) {
                 foreach ($orders as $order) {
 
