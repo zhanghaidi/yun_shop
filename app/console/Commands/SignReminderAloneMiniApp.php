@@ -179,7 +179,8 @@ class SignReminderAloneMiniApp extends Command
             $job = new SendTemplateMsgJob(
                 $type, $jobParam['options'],
                 $jobParam['template_id'], $jobParam['notice_data'],
-                $tempOpenid, '', $jobParam['page']
+                $tempOpenid, '', $jobParam['page'],
+                isset($jobParam['miniprogram']) ? $jobParam['miniprogram'] : []
             );
             $dispatch = dispatch($job);
             if ($type == 'wechat') {
@@ -218,6 +219,11 @@ class SignReminderAloneMiniApp extends Command
                 'keyword1' => ['value' => '领取健康金资格审核通过，点击领取守护家人健康~', 'color' => '#173177'],
                 'keyword2' => ['value' => date('Y-m-d H:i', time()), 'color' => '#173177'],
                 'remark' => ['value' => $remark, 'color' => '#173177'],
+            ];
+            $param['miniprogram'] = [
+                'miniprogram' => [
+                    'appid' => $appRs['min_app']['value']['key'],
+                ],
             ];
         } else {
             if (!isset($appRs['min_app']['value']['key'])) {
