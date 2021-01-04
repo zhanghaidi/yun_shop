@@ -1510,7 +1510,7 @@ class GoodsController extends GoodsApiController
     public function getGoodsHotOrders()
     {
         //Cache 的第二個參數是分鐘 多少分钟会过期
-        $list = Cache::remember('good_hot_orders', 30, function () {
+        $list = Cache::remember('good_hot_orders'.\YunShop::app()->uniacid, 30, function () {
             return DB::table('yz_order as o')
                 ->join('yz_order_address as p', 'o.id', '=', 'p.order_id')
                 ->join('diagnostic_service_user as u', 'o.uid', '=', 'u.ajy_uid')
