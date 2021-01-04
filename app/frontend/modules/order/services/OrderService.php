@@ -29,6 +29,7 @@ use app\frontend\modules\orderGoods\models\PreOrderGoodsCollection;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use app\common\facades\Setting;
 
 class OrderService
 {
@@ -405,13 +406,16 @@ class OrderService
      */
     public static function generate_signature($action = '')
     {
+        $jushuitanSetRs = Setting::get('shop.order');
+        $jushuitanSetRs = array_filter($jushuitanSetRs);
+
         $sign_str = '';
         //系统参数
         $system_params = array(
             'method' => $action,
-            'partnerid' => config('jushuitan')['partnerid'],
+            'partnerid' => $jushuitanSetRs['jushuitan_partnerid'],
             'ts' => time(),
-            'token' => config('jushuitan')['token'],
+            'token' => $jushuitanSetRs['jushuitan_token'],
         );
 
         //普通接口:  加密key中排除sign，method，partnerid,partnerkey
@@ -426,7 +430,7 @@ class OrderService
             $sign_str .= $key . strval($value);
         }
 
-        $sign_str .= config('jushuitan')['partnerkey'];
+        $sign_str .= $jushuitanSetRs['jushuitan_partnerkey'];
         $system_params['sign'] = md5($sign_str);
         \Log::info('----聚水潭签名参数---', $system_params);
         return $system_params;
@@ -441,6 +445,14 @@ class OrderService
      */
     public static function post($type= '', $data, $action)
     {
+        $jushuitanSetRs = Setting::get('shop.order');
+        $jushuitanSetRs = array_filter($jushuitanSetRs);
+        if (!isset($jushuitanSetRs['jushuitan_partnerid']) || !isset($jushuitanSetRs['jushuitan_partnerkey']) ||
+            !isset($jushuitanSetRs['jushuitan_token'])
+        ){
+            return null;
+        }
+
         $url = OrderService::$ju_url;
         //生成带签名的系统参数
         $url_params = OrderService::generate_signature($action);
