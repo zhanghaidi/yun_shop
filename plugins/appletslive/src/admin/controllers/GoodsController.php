@@ -39,7 +39,7 @@ class GoodsController extends BaseController
         $input = \YunShop::request();
         $limit = 20;
         $tag = request()->get('tag', '');
-
+        $uniacid = \YunShop::app()->uniacid;
         // 同步商品列表
         if ($tag == 'refresh') {
             if (!request()->ajax()) {
@@ -65,6 +65,7 @@ class GoodsController extends BaseController
         }
 
         $list = Goods::where($where)
+            ->where('uniacid',$uniacid)
             ->orderBy('id', 'desc')
             ->paginate($limit);
         $pager = PaginationHelper::show($list->total(), $list->currentPage(), $list->perPage());
@@ -98,6 +99,7 @@ class GoodsController extends BaseController
     // 添加商品
     public function add()
     {
+        $uniacid = \YunShop::app()->uniacid;
         if (request()->isMethod('post')) {
 
             $param = request()->all();
@@ -178,6 +180,7 @@ class GoodsController extends BaseController
 
             $insert_data = [
                 'id' => $result['goodsId'],
+                'uniacid' => $uniacid,
                 'audit_id' => $result['auditId'],
                 'goods_id' => $param['goodsId'],
                 'name' => $post_data['name'],
@@ -207,9 +210,9 @@ class GoodsController extends BaseController
         }
 
         $limit = 20;
-        $exist = Goods::pluck('goods_id');
-        $brand = Brand::where('uniacid', 39)->pluck('name', 'id');
-        $goods = YzGoods::whereNotIn('id', $exist)->where($where)->paginate($limit);
+        $exist = Goods::where('uniacid',$uniacid)->pluck('goods_id');
+        $brand = Brand::where('uniacid', $uniacid)->pluck('name', 'id');
+        $goods = YzGoods::whereNotIn('id', $exist)->where($where)->where('uniacid',$uniacid)->paginate($limit);
         $pager = PaginationHelper::show($goods->total(), $goods->currentPage(), $goods->perPage());
 
         return view('Yunshop\Appletslive::admin.goods_add', [

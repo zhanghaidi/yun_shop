@@ -352,12 +352,12 @@ class RoomController extends BaseController
 
         $input = \YunShop::request();
         $limit = 20;
-
+        $uniacid = \YunShop::app()->uniacid;
         // 录播视频
         if ($room_type == 1) {
 
             $where[] = ['rid', '=', $rid];
-
+            $where[] = ['uniacid', '=', $uniacid];
             // 处理搜索条件
             if (isset($input->search)) {
 
@@ -390,7 +390,7 @@ class RoomController extends BaseController
         if ($room_type == 2) {
 
             $where[] = ['yz_appletslive_replay.rid', '=', $rid];
-
+            $where[] = ['uniacid', '=', $uniacid];
             // 处理搜索条件
             if (isset($input->search)) {
 
@@ -441,6 +441,7 @@ class RoomController extends BaseController
     // 视频|直播设置
     public function replayedit()
     {
+        $uniacid = \YunShop::app()->uniacid;
         if (request()->isMethod('post')) {
             $upd_data = [];
             $param = request()->all();
@@ -469,7 +470,7 @@ class RoomController extends BaseController
                     return $this->message('无效的视频或直播ID', Url::absoluteWeb(''), 'danger');
                 }
             }
-            if (DB::table('yz_appletslive_replay')->where('title', $upd_data['title'])->where('rid', $replay->rid)->where('id', '<>', $id)->first()) {
+            if (DB::table('yz_appletslive_replay')->where('uniacid',$uniacid)->where('title', $upd_data['title'])->where('rid', $replay->rid)->where('id', '<>', $id)->first()) {
                 return $this->message('视频名称已存在', Url::absoluteWeb(''), 'danger');
             }
             DB::table('yz_appletslive_replay')->where('id', $id)->update($upd_data);
@@ -505,7 +506,7 @@ class RoomController extends BaseController
             APPLETSLIVE_ROOM_LIVESTATUS_101,
             APPLETSLIVE_ROOM_LIVESTATUS_102,
             APPLETSLIVE_ROOM_LIVESTATUS_105,
-        ])->paginate($limit);
+        ])->where('uniacid',$uniacid)->paginate($limit);
         $pager = PaginationHelper::show($liverooms->total(), $liverooms->currentPage(), $liverooms->perPage());
 
         return view('Yunshop\Appletslive::admin.replay_edit', [
@@ -519,6 +520,7 @@ class RoomController extends BaseController
     // 视频|直播添加
     public function replayadd()
     {
+        $uniacid = \YunShop::app()->uniacid;
         if (request()->isMethod('post')) {
             $param = request()->all();
             $rid = $param['rid'] ? intval($param['rid']) : 0;
@@ -529,6 +531,7 @@ class RoomController extends BaseController
             $type = array_key_exists('type', $param) ? intval($param['type']) :  0;
             $ist_data = [
                 'rid' => $rid,
+                'uniacid' => $uniacid,
                 'type' => $type,
                 'room_id' => array_key_exists('room_id', $param) ? intval($param['room_id']) : 0,
                 'title' => $param['title'] ? trim($param['title']) : '',
@@ -570,7 +573,7 @@ class RoomController extends BaseController
         }
 
         $rid = request()->get('rid', 0);
-        $room = DB::table('yz_appletslive_room')->where('id', $rid)->first();
+        $room = DB::table('yz_appletslive_room')->where('uniacid', $uniacid)->where('id', $rid)->first();
         if (!$room) {
             return $this->message('数据不存在', Url::absoluteWeb(''), 'danger');
         }
@@ -580,7 +583,7 @@ class RoomController extends BaseController
             APPLETSLIVE_ROOM_LIVESTATUS_101,
             APPLETSLIVE_ROOM_LIVESTATUS_102,
             APPLETSLIVE_ROOM_LIVESTATUS_105,
-        ])->paginate($limit);
+        ])->where('uniacid', $uniacid)->paginate($limit);
         $pager = PaginationHelper::show($liverooms->total(), $liverooms->currentPage(), $liverooms->perPage());
 
         return view('Yunshop\Appletslive::admin.replay_add', [
@@ -626,9 +629,9 @@ class RoomController extends BaseController
     // fixBy-wk 评论列表 2020.9.29
     public function commentlist()
     {
-
+        $uniacid = \YunShop::app()->uniacid;
         $rid = request()->get('rid', 0);
-        $room = DB::table('yz_appletslive_room')->where('id', $rid)->first();
+        $room = DB::table('yz_appletslive_room')->where('uniacid',$uniacid)->where('id', $rid)->first();
         $room_type = $room['type'];
 
         $input = \YunShop::request();
