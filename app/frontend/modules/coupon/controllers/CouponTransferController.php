@@ -40,7 +40,6 @@ class CouponTransferController extends ApiController
             return  $this->errorJson('转让者不能是自己');
         }
 
-
         $record_id = trim(\YunShop::request()->record_id);
         $_model = MemberCoupon::select('id','coupon_id')->where('id',$record_id)->with(['belongsToCoupon'])->first();
         if (!$_model) {
@@ -68,8 +67,6 @@ class CouponTransferController extends ApiController
         if (!$result) {
             return $this->errorJson('转让失败：(记录修改出错)');
         }
-//        '.$this->memberModel->uid.''.[$_model->coupon_id].'
-
         //发送获取通知
         //MessageNotice::couponNotice($_model->coupon_id,$recipient);
 
@@ -112,7 +109,6 @@ class CouponTransferController extends ApiController
     //fixby-zlt-coupontransfer 2020-10-14 17:15 接收转让优惠券
     public function receive()
     {
-
         if (!$this->getMemberInfo()) {
             return  $this->errorJson('未获取到会员信息',null);
         }
@@ -168,19 +164,15 @@ class CouponTransferController extends ApiController
 
     public function getCouponInfo()
     {
-
         $record_id = trim(\YunShop::request()->record_id);
-
         $_model = MemberCoupon::uniacid()->withTrashed()->where('id',$record_id)->with(['belongsToCoupon'])->first();
         if (!$_model) {
             return $this->transJson('未获取到该优惠券记录ID');
         }
-
         $this->transferInfo = DB::table('diagnostic_service_user')->select('ajy_uid as uid','nickname','avatar','avatarUrl')->where('ajy_uid',$_model->uid)->first();
 
         $is_self = false;
         if (!$this->getMemberInfo()) {
-            //return  $this->transJson('未获取到会员信息');
             if($_model->lock_expire_time){
                 return $this->transJson('优惠券转让中', 1, $is_self,2, $_model->toArray());
             }else if($_model->transfer_times){
