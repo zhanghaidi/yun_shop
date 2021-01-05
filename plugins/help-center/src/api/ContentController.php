@@ -15,6 +15,7 @@ use Yunshop\HelpCenter\models\HelpCenterAddModel;
 class ContentController extends ApiController
 {
     protected $publicAction = ['info'];
+    protected $ignoreAction = ['info'];
 
     public function info()
     {
