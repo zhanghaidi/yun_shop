@@ -16,6 +16,7 @@ use Yunshop\MinappContent\models\SystemCategoryModel;
 class IndexController extends ApiController
 {
     protected $publicAction = ['systemCategory', 'banner'];
+    protected $ignoreAction = ['systemCategory', 'banner'];
 
     public function systemCategory()
     {
