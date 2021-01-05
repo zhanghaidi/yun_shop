@@ -418,9 +418,7 @@ class LoginController extends ApiController
             $userInfo['openid'] = $data['openId'];
             $userInfo['openid_token'] = $openid_token;
         }
-
-        load()->func('file');
-
+        
         $year = date('Y', time());
         $month = date('m', time());
 
