@@ -195,6 +195,8 @@ class IndexController extends ApiController
             $v->images = json_decode($v->images, true);
             $v->video_size = json_decode($v->video_size, true);
             $v->image_size = json_decode($v->image_size, true);
+
+            $v->heat = 10 + ($v->like_nums * 30) + ($v->comment_nums * 50) + ($v->view_nums * 10);
         }
         unset($v);
         $search[4]['total'] = $list6Rs->total();
@@ -235,5 +237,150 @@ class IndexController extends ApiController
         }
 
         return $this->successJson('搜索成功', $search);
+    }
+
+    public function searchByType()
+    {
+        $pageSize = 10;
+
+        $type = intval(\YunShop::request()->search_type);
+        if (!in_array($type, [1, 3, 4, 5, 6])) {
+            return $this->errorJson('类型不存在');
+        }
+
+        $keywords = \YunShop::request()->keywords;
+        $keywords = trim($keywords);
+        if (!isset($keywords[0])) {
+            return $this->errorJson('请输入搜索关键词');
+        }
+        preg_match_all('/[\x{4e00}-\x{9fff}]+/u', $keywords, $matches);
+        $keyword = trim(join('', $matches[0]));
+        unset($keywords, $matches);
+        if (!isset($keyword[0])) {
+            return $this->errorJson('请检查关键词是否合法');
+        }
+        if (strlen($keyword) > 18) {
+            return $this->errorJson('输入的关键词太长');
+        }
+
+        $osName = \YunShop::request()->os_name;
+        if ($osName == 'ios') {
+            $isIos = true;
+        } else {
+            $isIos = false;
+        }
+
+        if ($type == 1) {
+            // 穴位
+            $listRs = AcupointModel::select('id', 'name', 'image', 'get_position')->where([
+                'uniacid' => \YunShop::app()->uniacid,
+                'status' => 1,
+            ])->where('name', 'like', '%' . str_replace('穴', '', $keyword) . '%')->paginate($pageSize);
+        } elseif ($type == 3) {
+            // 文章
+            $listRs = ArticleModel::select('id', 'title', 'thumb', 'description')->where([
+                'uniacid' => \YunShop::app()->uniacid,
+                'status' => 1,
+            ])->where('title', 'like', '%' . $keyword . '%')->paginate($pageSize);
+        } elseif ($type == 4) {
+            // 商品
+            $courseGoods = Room::select('id', 'goods_id')->where([
+                'type' => 1,
+                'delete_time' => 0,
+            ])->where('goods_id', '>', 0)->get()->toArray();
+            $goodsIds = array_column($courseGoods, 'goods_id');
+            if (!isset($goodsIds[0])) {
+                $goodsIds = [0];
+            }
+            // TODO 商品分类 25
+            $listRs = Goods::select('id', 'title', 'thumb', 'price', 'market_price')
+                ->whereHas('hasManyGoodsCategory', function ($query) {
+                    $query->where('category_id', '!=', 25);
+                })->where(['status' => 1])
+                ->whereNotIn('id', $goodsIds)
+                ->where('title', 'like', '%' . $keyword . '%')->paginate($pageSize);
+        } elseif ($type == 5) {
+            // 课程
+            if ($isIos) {
+                $iosNotShow = Room::select('id')->where([
+                    'uniacid' => \YunShop::app()->uniacid,
+                    'type' => 1,
+                    'delete_time' => 0,
+                    'buy_type' => 1,
+                    'ios_open' => 0,
+                ])->where('name', 'like', '%' . $keyword . '%')->get()->toArray();
+                $iosNotShow = array_column($iosNotShow, 'id');
+            }
+            if (!isset($iosNotShow[0])) {
+                $iosNotShow = [0];
+            }
+            $listRs = Room::select('id', 'name', 'cover_img', 'subscription_num', 'view_num', 'comment_num')
+                ->where([
+                    'uniacid' => \YunShop::app()->uniacid,
+                    'type' => 1,
+                    'delete_time' => 0,
+                ])->where('name', 'like', '%' . $keyword . '%')
+                ->whereIn('display_type', [1, 2])
+                ->whereNotIn('id', $iosNotShow)->paginate($pageSize);
+            foreach ($listRs as &$v) {
+                $v->hot_num = $v->subscription_num + $v->view_num + $v->comment_num;
+            }
+            unset($v);
+        } elseif ($type == 6) {
+            // 达人
+            $listRs = PostModel::select(
+                'id', 'title', 'content', 'images', 'video', 'video_thumb', 'view_nums',
+                'comment_nums', 'like_nums', 'video_size', 'image_size'
+            )->where([
+                'uniacid' => \YunShop::app()->uniacid,
+                'status' => 1,
+                'type' => 2,
+            ])->where('title', 'like', '%' . $keyword . '%')->paginate($pageSize);
+            foreach ($listRs as &$v) {
+                $v->images = json_decode($v->images, true);
+                $v->video_size = json_decode($v->video_size, true);
+                $v->image_size = json_decode($v->image_size, true);
+
+                $v->heat = 10 + ($v->like_nums * 30) + ($v->comment_nums * 50) + ($v->view_nums * 10);
+            }
+            unset($v);
+        }
+
+        // 判断是否搜索到结果
+        if ($listRs->total() == 0) {
+            $isSuccess = 0;
+        } else {
+            $isSuccess = 1;
+        }
+
+        // 搜索成功更新关键词记录表状态
+        $memberId = \YunShop::app()->getMemberId();
+        $searchRs = SearchModel::where([
+            'uniacid' => \YunShop::app()->uniacid,
+            'user_id' => $memberId,
+            'keywords' => $keyword,
+        ])->first();
+        if (isset($searchRs->id)) {
+            $searchRs->search_nums += 1;
+            $searchRs->is_delete = 0;
+            $searchRs->add_time = time();
+        } else {
+            $searchRs = new SearchModel;
+            $searchRs->uniacid = \YunShop::app()->uniacid;
+            $searchRs->user_id = $memberId;
+            $searchRs->keywords = $keyword;
+        }
+        $searchRs->is_success = $isSuccess;
+        $searchRs->save();
+
+        if ($isSuccess == 0) {
+            return $this->errorJson('未搜到任何信息');
+        }
+
+        return $this->successJson('搜索成功', [
+            'list' => $listRs->items(),
+            'total' => $listRs->total(),
+            'totalPage' => $listRs->lastPage(),
+        ]);
     }
 }
