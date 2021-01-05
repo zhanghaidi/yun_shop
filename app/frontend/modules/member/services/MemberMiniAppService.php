@@ -296,14 +296,14 @@ class MemberMiniAppService extends MemberService
             $postData = array(
                 'appid' => $min_set['shop_key'],
                 'secret' => $min_set['shop_secret'],
-                'code' => $code,
+                'js_code' => $code,
                 'grant_type' => 'authorization_code',
             );
         }else{
             $postData = array(
                 'appid' => $min_set['key'],
                 'secret' => $min_set['secret'],
-                'code' => $code,
+                'js_code' => $code,
                 'grant_type' => 'authorization_code',
             );
         }

@@ -220,7 +220,7 @@ class LoginController extends ApiController
                 $mcUpdatStatus = DB::table('mc_mapping_fans')->where(array('uniacid' => $uniacid, 'unionid' => $data['unionId']))->update(array('uid' => $user['member_id']));
 
                 if (!$mcUpdatStatus) {
-                    return $this->result(1, '粉丝表会员uid修改失败');
+                    return $this->errorJson('粉丝表会员uid修改失败');
                 }
                 DB::table('mc_members')->where('uid', $fan_user['uid'])->delete();
             }
@@ -301,7 +301,7 @@ class LoginController extends ApiController
             'credit2' => $mc_member['credit2'],  //余额
             'memberLevel' => $memberLevel
         ];
-        return $this->result(0, '登录成功', $data, 1);
+        return $this->successJson('登录成功', $data);
 
     }
 
@@ -438,6 +438,7 @@ class LoginController extends ApiController
 
         $avatarName = md5($this->w['uniacid'] . time() . random(6)) . ".png"; //文件名
         $avatarFile = $avatarPath . $avatarName;  //文件路径 avatar/45/2020/5/dfsafdggcs.png
+
 
         $user_avatarUrl = file_get_contents($data['avatarUrl']);
 
