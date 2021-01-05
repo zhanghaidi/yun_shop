@@ -418,7 +418,7 @@ class LoginController extends ApiController
             $userInfo['openid'] = $data['openId'];
             $userInfo['openid_token'] = $openid_token;
         }
-        
+
         $year = date('Y', time());
         $month = date('m', time());
 
@@ -445,7 +445,7 @@ class LoginController extends ApiController
 
     private function file_write($filename, $data) {
         $filename = ATTACHMENT_ROOT . '/' . $filename;
-        mkdirs(dirname($filename));
+        \app\common\services\Utils::mkdirs(dirname($filename));
         file_put_contents($filename, $data);
         @chmod($filename, $this->w['config']['setting']['filemode']);
 
