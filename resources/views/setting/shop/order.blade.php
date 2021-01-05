@@ -122,6 +122,39 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">聚水潭 - 合作方编号</label>
+                            <div class="col-sm-9 col-xs-12">
+                                <input type="text" name="order[jushuitan_partnerid]" class="form-control"
+                                       value="{{ $set['jushuitan_partnerid'] }}"/>
+                                <span class="help-block">合作方编号 partnerid</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">聚水潭 - 接入秘钥</label>
+                            <div class="col-sm-9 col-xs-12">
+                                <input type="text" name="order[jushuitan_partnerkey]" class="form-control"
+                                       value="{{ $set['jushuitan_partnerkey'] }}"/>
+                                <span class="help-block">接入秘钥 partnerkey</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">聚水潭 - 授权码</label>
+                            <div class="col-sm-9 col-xs-12">
+                                <input type="text" name="order[jushuitan_token]" class="form-control"
+                                       value="{{ $set['jushuitan_token'] }}"/>
+                                <span class="help-block">授权码 token</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">聚水潭 - 店铺编号</label>
+                            <div class="col-sm-9 col-xs-12">
+                                <input type="text" name="order[jushuitan_shop_id]" class="form-control"
+                                       value="{{ $set['jushuitan_shop_id'] }}"/>
+                                <span class="help-block">店铺编号 shop_id</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
                             <div class="col-sm-9 col-xs-12">
                                 <input type="submit" name="submit" value="提交" class="btn btn-success"

@@ -24,11 +24,11 @@ class PopupController extends BaseController
         $popup = new Popup();
 
         if ($search) {
-            //dd($search);
             $popup = $popup->search($search);
         }
 
-        $popupList = $popup->orderBy('sort','desc')->orderBy('created_at','desc')->paginate(static::PAGE_SIZE);
+        $popupList = $popup->where('uniacid', \YunShop::app()->uniacid)
+            ->orderBy('sort','desc')->orderBy('created_at','desc')->paginate(static::PAGE_SIZE);
         $page = PaginationHelper::show($popupList->total(),$popupList->currentPage(),$popupList->perPage());
 
         return view('Yunshop\MinApp::popup.index',[
@@ -41,9 +41,7 @@ class PopupController extends BaseController
 
     public function edit()
     {
-
         $pop_id = intval(request()->id);
-
         if($pop_id){
             $this->verifyPopup($pop_id);
         }else{
@@ -78,11 +76,11 @@ class PopupController extends BaseController
         $position = new PopupPositon();
 
         if ($search) {
-            //dd($search);
             $position = $position->search($search);
         }
 
-        $positionList = $position->orderBy('created_at','desc')->paginate(static::PAGE_SIZE);
+        $positionList = $position->where('uniacid', \YunShop::app()->uniacid)
+            ->orderBy('created_at','desc')->paginate(static::PAGE_SIZE);
         $page = PaginationHelper::show($positionList->total(),$positionList->currentPage(),$positionList->perPage());
 
         return view('Yunshop\MinApp::popup.position',[
@@ -95,9 +93,7 @@ class PopupController extends BaseController
     }
 
     public function positionEdit(){
-
         $pos_id = intval(request()->id);
-
         if($pos_id){
             $this->verifyParam($pos_id);
         }else{
@@ -153,5 +149,4 @@ class PopupController extends BaseController
         }
         $this->pos_model = $pos_model;
     }
-
 }

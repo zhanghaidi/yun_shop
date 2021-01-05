@@ -33,11 +33,7 @@ class CouponSendService
 
     protected $get_time; //优惠券获取时间
 
-
-
     //todo 确定 get_type 类型，增加类型数据验证，
-
-
 
     public function sendCouponsToMember($memberId, array $couponIds, $get_type = '0', $relation = '', $transferId = '')
     {
@@ -48,13 +44,11 @@ class CouponSendService
             return null;
         }
 
-
         $this->memberId = $memberId;
         $this->get_type = $get_type;
         $this->send_total = count($couponIds);
         $this->relation = $relation;
         $this->transferId = $transferId;
-
 
         $data = array();
         $log_data = array();
@@ -64,9 +58,6 @@ class CouponSendService
             $data[] = $this->getMemberCouponData();
             $log_data[] = $this->getCouponLogData();
         }
-
-//dump($log_data);
-//dd($data);
         return $this->updateMemberCoupons($data, $log_data);
     }
 
@@ -84,7 +75,6 @@ class CouponSendService
         $this->get_type = $get_type;
         $this->relation = $relation;
         $this->trans_from = $trans_from;
-
 
         $data = array();
         $log_data = array();
@@ -115,13 +105,10 @@ class CouponSendService
         $this->relation = $relation;
         $this->trans_from = $trans_from;
 
-
-
         $data = array();
         $log_data = array();
         foreach ($memberIds as $memberId) {
             $this->memberId = $memberId;
-
             $data[] = $this->getMemberCouponData();
             $log_data[] = $this->getCouponLogData();
         }
@@ -129,8 +116,9 @@ class CouponSendService
         return $this->updateMemberCoupons($data, $log_data);
     }
 
+    //新发放优惠券接口
     public function sendCouponToMember($memberId, $couponId, $get_type = '0', $relation = '', $trans_from = 0)
-    {//新发放优惠券接口
+    {
         if (empty($memberId) || !is_numeric($memberId)) {
             Log::info('优惠券发送接口调用失败，会员ID错误！', print_r($memberId,true));
             return null;
@@ -145,10 +133,8 @@ class CouponSendService
         $log_data = array();
 
         $this->couponId = $couponId;
-
         $data[] = $this->getMemberCouponData();
         $log_data[] = $this->getCouponLogData();
-
 
         return $this->updateMemberCoupons($data, $log_data);
     }
@@ -166,15 +152,14 @@ class CouponSendService
             CouponLog::insert($log_data);
             MemberCoupon::insert($data);
         });
-        Log::info('优惠券发送日志，会员领取成功！');
+//        Log::info('优惠券发送日志，会员领取成功！');
         foreach ($data as $coupon_data) {
             //发送获取优惠券通知
             MessageNotice::couponNotice($coupon_data['coupon_id'],$coupon_data['uid']);
         }
-        Log::info('发送获取优惠券通知执行成功！');
+//        Log::info('发送获取优惠券通知执行成功！');
         return true;
     }
-
 
     private function getCouponLogData()
     {
@@ -192,7 +177,6 @@ class CouponSendService
         ];
     }
 
-
     private function getMemberCouponData()
     {
         return [
@@ -207,13 +191,10 @@ class CouponSendService
         ];
     }
 
-
     //todo get_type 使用常量判断，目前不确定常量放在哪里
-
     private function getCouponLogRemark()
     {
         $adminId = \YunShop::app()->uid;
-
         switch ($this->get_type) {
             //case '0':
             //$remark = '手动发放优惠券: 管理员【ID:' . $adminId . '】成功发放 ' . $this->send_total . ' 张优惠券【优惠券ID:' . $this->couponId . '】给用户【会员ID:' . $this->memberId . '】';
@@ -266,18 +247,14 @@ class CouponSendService
         $this->trans_from = $trans_from;
         $this->get_time = $get_time ? $get_time : time();
 
-
         $data = array();
         $log_data = array();
         foreach ($couponIds as $couponId) {
             $this->couponId = $couponId;
-
             $data[] = array_merge($this->getMemberCouponData(), ['transfer_times'=>1]);
             $log_data[] = $this->getCouponLogData();
         }
 
         return $this->updateMemberCoupons($data, $log_data);
     }
-
-
 }
