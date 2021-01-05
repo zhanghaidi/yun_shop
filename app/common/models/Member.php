@@ -508,15 +508,17 @@ class Member extends BackendModel
     public static function chkAgent($member_id, $mid, $mark = '', $mark_id = '')
     {
         $model = MemberShopInfo::getMemberShopInfo($member_id);
+        if(!is_null($model)){
+            if (1 != $model->inviter && 2 != $model->status) {
+                $relation = new MemberRelation();
+                $relation->becomeChildAgent($mid, $model);
+            }
 
-        if (1 != $model->inviter && 2 != $model->status) {
-            $relation = new MemberRelation();
-            $relation->becomeChildAgent($mid, $model);
+            if ($mark_id && $mark) {
+                event(new PluginCreateRelationEvent($mid, $model, $mark, $mark_id));
+            }
         }
 
-        if ($mark_id && $mark) {
-            event(new PluginCreateRelationEvent($mid, $model, $mark, $mark_id));
-        }
     }
 
     /**
