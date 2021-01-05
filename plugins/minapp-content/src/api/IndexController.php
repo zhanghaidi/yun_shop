@@ -12,11 +12,12 @@ use Yunshop\MinappContent\models\BannerModel;
 use Yunshop\MinappContent\models\PostModel;
 use Yunshop\MinappContent\models\SearchModel;
 use Yunshop\MinappContent\models\SystemCategoryModel;
+use Yunshop\MinappContent\models\SystemImageModel;
 
 class IndexController extends ApiController
 {
-    protected $publicAction = ['systemCategory', 'banner'];
-    protected $ignoreAction = ['systemCategory', 'banner'];
+    protected $publicAction = ['systemCategory', 'banner', 'systemSecond', 'systemLoginImage'];
+    protected $ignoreAction = ['systemCategory', 'banner', 'systemSecond', 'systemLoginImage'];
 
     public function systemCategory()
     {
@@ -383,5 +384,28 @@ class IndexController extends ApiController
             'total' => $listRs->total(),
             'totalPage' => $listRs->lastPage(),
         ]);
+    }
+
+    public function systemSecond()
+    {
+        return $this->successJson('获取秒数成功', ['second' => 3]);
+    }
+
+    public function systemLoginImage()
+    {
+        $aid = intval(\YunShop::request()->app_aid);
+        if ($aid <= 0) {
+            return $this->errorJson('请传入aid');
+        }
+
+        $listRs = SystemImageModel::select('name', 'image', 'description', 'jumpurl', 'appid')->where([
+            'uniacid' => \YunShop::app()->uniacid,
+            'status' => 1,
+            'aid' => $aid,
+        ])->inRandomOrder()->limit(1)->get();
+        foreach ($listRs as &$v) {
+            $v->image = yz_tomedia($v->image);
+        }
+        return $this->successJson('获取图片成功', $listRs);
     }
 }
