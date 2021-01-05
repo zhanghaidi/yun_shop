@@ -8,6 +8,7 @@ use Yunshop\MinappContent\models\CustomShareModel;
 class CustomShareController extends ApiController
 {
     protected $publicAction = ['index'];
+    protected $ignoreAction = ['index'];
 
     public function index()
     {
