@@ -27,7 +27,8 @@ class PopupController extends BaseController
             $popup = $popup->search($search);
         }
 
-        $popupList = $popup->orderBy('sort','desc')->orderBy('created_at','desc')->paginate(static::PAGE_SIZE);
+        $popupList = $popup->where('uniacid', \YunShop::app()->uniacid)
+            ->orderBy('sort','desc')->orderBy('created_at','desc')->paginate(static::PAGE_SIZE);
         $page = PaginationHelper::show($popupList->total(),$popupList->currentPage(),$popupList->perPage());
 
         return view('Yunshop\MinApp::popup.index',[
@@ -78,7 +79,8 @@ class PopupController extends BaseController
             $position = $position->search($search);
         }
 
-        $positionList = $position->orderBy('created_at','desc')->paginate(static::PAGE_SIZE);
+        $positionList = $position->where('uniacid', \YunShop::app()->uniacid)
+            ->orderBy('created_at','desc')->paginate(static::PAGE_SIZE);
         $page = PaginationHelper::show($positionList->total(),$positionList->currentPage(),$positionList->perPage());
 
         return view('Yunshop\MinApp::popup.position',[
