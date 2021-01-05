@@ -155,7 +155,8 @@ class LoginController extends ApiController
     }
 
     //fixby-zhd-2021-1-4 改写增加小程序单独登录接口
-    public function serviceLogin(){
+    public function serviceLogin()
+    {
 
         load()->func('logging');
         load()->model('mc');
@@ -315,17 +316,6 @@ class LoginController extends ApiController
     }
 
 
-    //获取微擎统生产环境统一AccessToken
-    public function getMinAppAccessToken($appid)
-    {
-        $url = "https://www.aijuyi.net/api/accesstoken.php?type=4&appid={$appid}&secret=secret";
-        $res = ihttp_get($url);
-        $content = @json_decode($res['content'],true);
-        return $content['accesstoken'];
-
-    }
-
-
     //添加艾居益公众号微擎mc_member表
     public function mc_member_insert($openid = '', $user = '')
     {
@@ -442,7 +432,7 @@ class LoginController extends ApiController
 
         $user_avatarUrl = file_get_contents($data['avatarUrl']);
 
-        $res = file_write($avatarFile, $user_avatarUrl); //写入文件
+        $res = $this->file_write($avatarFile, $user_avatarUrl); //写入文件
 
         if ($res) {
             $userInfo['avatar'] = $avatarFile;
@@ -455,28 +445,14 @@ class LoginController extends ApiController
         return pdo_insertid();
     }
 
-    //添加mc_mapping_fans表数据gitceshi
-    /* public function mapping_fans_insert($openid = '', $user = '', $mc_uid = '', $ajy_fan = '')
-     {
-         $record = array(
-             'openid' => $openid,
-             'unionid' => $user['unionid'],
-             'uid' => $mc_uid,
-             'acid' => $this->w['acid'],
-             'uniacid' => $this->w['uniacid'],
-             'salt' => random(8),
-             'updatetime' => time(),
-             'nickname' => $user['nickname'],   //昵称
-             'follow' => $ajy_fan['follow'] ? $ajy_fan['follow'] : 0,    //是否关注
-             'followtime' => $ajy_fan['followtime'] ? $ajy_fan['followtime'] : 0, //粉丝关注时间
-             'unfollowtime' => $ajy_fan['unfollowtime'] ? $ajy_fan['unfollowtime'] : 0, //粉丝取消关注时间
-             'tag' => $ajy_fan['tag'] ? $ajy_fan['tag'] : '',
-             'user_from' => 1,
-         );
+    private function file_write($filename, $data) {
+        $filename = ATTACHMENT_ROOT . '/' . $filename;
+        mkdirs(dirname($filename));
+        file_put_contents($filename, $data);
+        @chmod($filename, $this->w['config']['setting']['filemode']);
 
-         pdo_insert('mc_mapping_fans', $record);
-         return pdo_insertid();
-     }*/
+        return is_file($filename);
+    }
 
     //添加yz_member_unique表数据
     public function member_unique_insert($user, $mc_uid)

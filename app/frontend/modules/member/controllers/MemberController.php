@@ -40,6 +40,7 @@ use app\frontend\modules\member\models\MemberModel;
 use app\frontend\modules\member\models\MemberUniqueModel;
 use app\frontend\modules\member\models\MemberWechatModel;
 use app\frontend\modules\member\models\SubMemberModel;
+use app\frontend\modules\member\services\factory\MemberFactory;
 use app\frontend\modules\member\services\MemberService;
 use EasyWeChat\Foundation\Application;
 use Illuminate\Support\Facades\DB;
@@ -2241,5 +2242,219 @@ class MemberController extends ApiController
         $this->dataIntegrated($this->getMyAgent_v2($request, true), 'my_agent');
         $this->dataIntegrated($this->getMyReferral_v2($request, true), 'my_referral');
         return $this->successJson('', $this->apiData);
+    }
+
+    //fixby-zhd-2021-1-5 迁移小程序修改用户信息接口
+    //修改用户信息
+    public function updateServiceUser()
+    {
+        $user_id = \YunShop::app()->getMemberId();
+        $uniacid = \YunShop::app()->uniacid;
+        $gender = \YunShop::request()->gender;
+        $age = intval(\YunShop::request()->age);
+        $birthday = \YunShop::request()->birthday;
+        $county = \YunShop::request()->county;
+        $city = \YunShop::request()->city;
+        $province = \YunShop::request()->province;
+
+        $data = array();
+        $nickname = trim(\YunShop::request()->nickname);
+        $avatar = trim(\YunShop::request()->avatar);
+        $ajyData = array();
+        if (!empty($nickname)) {
+            $ajyData['nickname'] = $nickname;
+            $data['nickname'] = $nickname;
+        }
+        if (!empty($avatar)) {
+            $ajyData['avatar'] = $avatar;
+            $data['avatarurl'] = $avatar;
+        }
+        if ($age) {
+            $data['age'] = $age;
+        }
+
+        if ($birthday) {
+            $data['birthday'] = $birthday;
+        }
+        if ($gender) {
+            $data['gender'] = $gender;
+        }
+
+        /*if($county){
+            $data['county'] = $county;
+        }
+
+        if($city){
+            $data['city'] = $city;
+        }*/
+
+        if ($province) {
+            $data['province'] = $province;
+            $data['county'] = $county ? $county : '';
+            $data['city'] = $city ? $city : '';
+        }
+        //判断有没有小程序用户
+        $service_user = pdo_get('diagnostic_service_user', array('uniacid' => $uniacid, 'ajy_uid' => $user_id));
+        if (!$service_user) {
+            return $this->errorJson('用户不存在');
+        }
+
+        pdo_begin();//开启事务
+        //更新小程序用户表
+        $res = pdo_update('diagnostic_service_user', $data, array('ajy_uid' => $user_id));
+        if ($res === false) {
+            pdo_rollback();
+            return $this->errorJson('修改失败', array('status' => 0));
+        } else {
+            //    fixBy-wk-20201209 用户昵称，头像修改
+            if (!empty($nickname) || !empty($avatar)) {
+
+                $mc_members = pdo_get('mc_members', array('uid' => $user_id));
+                if (!$mc_members) {
+                    return $this->errorJson( '粉丝用户不存在');
+                }
+                //粉丝是否关注养居益公众号
+                $fan_user = pdo_get('mc_mapping_fans', array('uid' => $user_id));
+                if (!$fan_user) {
+                    return $this->errorJson('粉丝不存在');
+                }
+                $user = pdo_get('yz_member_mini_app', array('member_id' => $user_id));
+                if (!$user) {
+                    return $this->errorJson('用户不存在');
+                }
+
+                //更新mc_member
+                $mc_membersUpdatStatus = pdo_update('mc_members', $ajyData, array('uid' => $user_id));
+                //ims_yz_member_mini_app
+                $ember_mini_appUpdatStatus = pdo_update('yz_member_mini_app', $ajyData, array('member_id' => $user_id));
+
+                if ($mc_membersUpdatStatus && $ember_mini_appUpdatStatus) {
+                    if (!empty($nickname)) {
+                        if (!empty($avatar)) {
+                            unset($ajyData['avatar']);
+                        }
+                        //更新粉丝
+                        $mcUpdatStatus = pdo_update('mc_mapping_fans', $ajyData, array('uid' => $user_id));
+                        if (!$mcUpdatStatus) {
+                            pdo_rollback();
+                            return $this->errorJson( '修改失败');
+                        }
+                    }
+                    pdo_commit();
+                    return $this->successJson( '修改成功', $data);
+                } else {
+                    pdo_rollback();
+                    return $this->errorJson( '修改失败');
+                }
+            }
+            pdo_commit();
+            return $this->successJson('修改成功', $data);
+        }
+
+    }
+
+
+    //解密用户手机号
+    public function decodePhone()
+    {
+        $user_id = \YunShop::app()->getMemberId();
+        $app_type = \YunShop::request()->app_type; //区分哪个小程序登录
+        $code = \YunShop::request()->code;    //code
+        $iv = \YunShop::request()->iv;  //偏移量
+        $encryptedData = \YunShop::request()->encryptedData; //加密数据
+        $type = \YunShop::request()->type;
+        if (!$code) {
+            return $this->errorJson( 'code不能为空');
+        }
+        if (!$iv || !$encryptedData) {
+            return $this->errorJson('解密参数不能为空');
+        }
+
+
+        $member = MemberFactory::create($type);
+        if($member == NULL){
+            return $this->errorJson('type类型错误');
+        }
+
+        //获取session_key
+        $res = $member->wxCode2SessionKey($code, $app_type);
+        if ($res['errno'] != 0) {
+
+            return $this->errorJson($res['msg'], ['status' => 1]);
+        }
+
+        //$openid = $res['res']['openid'];     //用户opneid
+        $session_key = $res['res']['session_key']; //用户sessionkey
+        if (!$session_key) {
+            return $this->errorJson('获取session_key失败', array('status' => 0));
+        }
+
+        //解密用户手机号信息
+        $info = $member->wxDecodeInfo($session_key, $encryptedData, $iv, $app_type);
+        if ($info['errno'] != 0) {
+
+            return $this->errorJson($res['msg'], ['status' => 2]);
+        }
+        $data = $info['res']; //解密数据
+        $telephone = $data['phoneNumber'];
+
+        $userData = [
+            'telephone' => $telephone,
+            'account' => $telephone,
+            'is_verify' => 1
+        ];
+        $res1 = Db::table('diagnostic_service_user')->where(array('ajy_uid' => $user_id))->update($userData);
+        $res2 = DB::table('mc_members')->where(array('uid' => $user_id))->update(array('mobile' => $telephone));
+
+        if (!$res1 || !$res2) {
+           return $this->errorJson('绑定失败', ['status' => 3]);
+        }
+
+        return $this->successJson('绑定成功', ['status' => 0]);
+
+    }
+
+    //解密用户步数
+    public function decodeSteps()
+    {
+        $user_id = \YunShop::app()->getMemberId();
+        $app_type = \YunShop::request()->app_type; //区分哪个小程序登录
+        $code = \YunShop::request()->code;    //code
+        $iv = \YunShop::request()->iv;  //偏移量
+        $encryptedData = \YunShop::request()->encryptedData; //加密数据
+        $type = \YunShop::request()->type;
+        if (!$code) {
+            return $this->errorJson( 'code不能为空');
+        }
+        if (!$iv || !$encryptedData) {
+            return $this->errorJson('解密参数不能为空');
+        }
+
+        $member = MemberFactory::create($type);
+        if($member == NULL){
+            return $this->errorJson('type类型错误');
+        }
+
+        //获取session_key
+        $res = $member->wxCode2SessionKey($code, $app_type);
+        if ($res['errno'] != 0) {
+
+            return $this->errorJson($res['msg'], ['status' => 1]);
+        }
+
+        //$openid = $res['res']['openid'];     //用户opneid
+        $session_key = $res['res']['session_key']; //用户sessionkey
+        if (!$session_key) {
+            return $this->errorJson('获取session_key失败', array('status' => 0));
+        }
+
+        //解密用户手机号信息
+        $info = $member->wxDecodeInfo($session_key, $encryptedData, $iv, $app_type);
+        if ($info['errno'] != 0) {
+
+            return $this->errorJson($res['msg'], ['status' => 2]);
+        }
+        $data = $info['res'];
+        return $this->successJson('ok', $data);
     }
 }
