@@ -234,7 +234,8 @@ class CourseReminderAloneMiniApp extends Command
             $job = new SendTemplateMsgJob(
                 $jobRs['type'], $jobRs['options'],
                 $jobRs['template_id'], $jobRs['notice_data'],
-                $jobRs['openid'], '', $jobRs['page']
+                $jobRs['openid'], '', $jobRs['page'],
+                isset($jobParam['miniprogram']) ? $jobParam['miniprogram'] : []
             );
             $dispatch = dispatch($job);
             if ($jobRs['type'] == 'wechat') {
@@ -376,6 +377,11 @@ class CourseReminderAloneMiniApp extends Command
                 'keyword2' => ['value' => '长期有效', 'color' => '#173177'],
                 'keyword3' => ['value' => '更新中', 'color' => '#173177'],
                 'remark' => ['value' => $remark, 'color' => '#173177'],
+            ];
+            $param['miniprogram'] = [
+                'miniprogram' => [
+                    'appid' => $appRs['min_app']['value']['key'],
+                ],
             ];
         } else {
             if (!isset($appRs['min_app']['value']['key'])) {

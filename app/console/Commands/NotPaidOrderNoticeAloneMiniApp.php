@@ -171,7 +171,8 @@ class NotPaidOrderNoticeAloneMiniApp extends Command
             $job = new SendTemplateMsgJob(
                 $type, $jobParam['options'],
                 $jobParam['template_id'], $jobParam['notice_data'],
-                $tempOpenid, '', $jobParam['page']
+                $tempOpenid, '', $jobParam['page'],
+                isset($jobParam['miniprogram']) ? $jobParam['miniprogram'] : []
             );
             $dispatch = dispatch($job);
             if ($type == 'wechat') {
@@ -208,6 +209,11 @@ class NotPaidOrderNoticeAloneMiniApp extends Command
             $param['options'] = [
                 'app_id' => $appRs['wechat']['value']['app_id'],
                 'secret' => $appRs['wechat']['value']['app_secret'],
+            ];
+            $param['miniprogram'] = [
+                'miniprogram' => [
+                    'appid' => $appRs['min_app']['value']['key'],
+                ],
             ];
         } else {
             if (!isset($appRs['min_app']['value']['key'])) {

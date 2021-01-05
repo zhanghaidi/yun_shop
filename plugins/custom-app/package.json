@@ -1,0 +1,11 @@
+{
+  "name": "custom-app",
+  "version": "1.0.0",
+  "title": "APP自定义内容",
+  "description": "小程序的协议内容管理,标题LOGO之类的管理",
+  "author": "芸众",
+  "url": "http://www.yunzshop.com",
+  "namespace": "Yunshop\\CustomApp",
+  "config": "config.tpl"
+
+}
