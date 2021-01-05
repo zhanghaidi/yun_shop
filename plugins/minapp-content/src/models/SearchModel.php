@@ -4,10 +4,10 @@ namespace Yunshop\MinappContent\models;
 
 use app\common\models\BaseModel;
 
-class AcupointModel extends BaseModel
+class SearchModel extends BaseModel
 {
     const CREATED_AT = 'add_time';
     const UPDATED_AT = null;
 
-    public $table = 'diagnostic_service_acupoint';
+    public $table = 'diagnostic_service_search';
 }
