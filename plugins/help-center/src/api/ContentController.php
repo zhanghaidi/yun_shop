@@ -8,13 +8,14 @@
 
 namespace Yunshop\HelpCenter\api;
 
-
 use app\common\components\ApiController;
-use app\frontend\modules\member\controllers\ServiceController;
+// use app\frontend\modules\member\controllers\ServiceController;
 use Yunshop\HelpCenter\models\HelpCenterAddModel;
 
 class ContentController extends ApiController
 {
+    protected $publicAction = ['info'];
+
     public function info()
     {
         $set_data = HelpCenterAddModel::select('title', 'content')->uniacid()->orderBy('sort')->get()->toarray();
@@ -22,8 +23,9 @@ class ContentController extends ApiController
         foreach ($set_data as $key => &$value) {
             $value['content'] = html_entity_decode($value['content']);
         }
+        return $this->successJson('ok', $set_data);
 
-        $customer_service = (new ServiceController())->index();
-        return $this->successJson('ok', ['set_data' => $set_data,'customer_service'=>$customer_service]);
+        // $customer_service = (new ServiceController())->index();
+        // return $this->successJson('ok', ['set_data' => $set_data,'customer_service'=>$customer_service]);
     }
 }

@@ -33,7 +33,7 @@
 
                     <div class="form-group">
                         <div class="col-sm-6" style="margin-left: 16%;">
-                            {!! yz_tpl_ueditor('adddata[content]', $data['content']) !!}
+                            <textarea class="form-control" name="adddata[content]" rows="5">{{ $data->content }}</textarea>
                         </div>
                     </div>
 
