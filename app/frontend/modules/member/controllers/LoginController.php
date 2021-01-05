@@ -435,7 +435,7 @@ class LoginController extends ApiController
         if ($res) {
             $userInfo['avatar'] = $avatarFile;
             if (!empty($this->w['setting']['remote']['type'])) { // 判断系统是否开启了远程附件
-                $remotestatus = file_remote_upload($avatarFile); //上传图片到远程
+                $remotestatus = file_remote_upload($avatarFile,'',$this->w['setting']['remote']); //上传图片到远程
             }
         }
 
