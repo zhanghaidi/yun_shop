@@ -201,6 +201,28 @@ class StepController extends ApiController
 
     }
 
+    public function userPoint()
+    {
+        $uniacid = \YunShop::app()->uniacid;
+        $user_id = \YunShop::app()->getMemberId();
+
+        $mc_member = pdo_get('mc_members', array('uid' => $user_id), array('credit1', 'credit2'));
+
+        if ($mc_member) {
+            $total = pdo_get('yz_point_log', array('uniacid' => $uniacid, 'member_id' => $user_id, 'point_income_type' => 1), array('SUM(point) AS total_point')); //收入
+            $used = pdo_get('yz_point_log', array('uniacid' => $uniacid, 'member_id' => $user_id, 'point_income_type' => -1), array('SUM(point) AS total_point')); //支出
+            $data = array(
+                'total_point' => $total['total_point'] ? $total['total_point'] : '0.00',
+                'used_point' => $used['total_point'] ? $used['total_point'] : '0.00',
+                'credit1' => $mc_member['credit1'],
+                'credit2' => $mc_member['credit2']
+            );
+            return $this->successJson('获取健康金成功', $data);
+        } else {
+            return $this->errorJson('获取失败');
+        }
+    }
+
     //根据字段对多维数组进行排序
     private function arraySortByOneField($data, $field, $sort = SORT_DESC)
     {
