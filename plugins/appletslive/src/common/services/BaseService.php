@@ -35,13 +35,17 @@ class BaseService
     {
         $set = Setting::get('plugin.appletslive');
         if (empty($set)) {
-            $uniacid =\YunShop::app()->uniacid;
-            $wxapp_account = DB::table('account_wxapp')
-                ->select('key', 'secret')
-                ->where('uniacid', $uniacid)
-                ->first();
-            $this->appId = $wxapp_account['key'];
-            $this->secret = $wxapp_account['secret'];
+            $min_set = Setting::get('plugin.min_app');
+            if (is_null($min_set) || 0 == $min_set['switch']) {
+                return show_json(0,'未开启小程序');
+            }
+//            $uniacid =\YunShop::app()->uniacid;
+//            $wxapp_account = DB::table('account_wxapp')
+//                ->select('key', 'secret')
+//                ->where('uniacid', $uniacid)
+//                ->first();
+            $this->appId = $min_set['key'];
+            $this->secret = $min_set['secret'];
         } else {
             $this->appId = $set['appId'];
             $this->secret = $set['secret'];
