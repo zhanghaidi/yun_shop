@@ -2398,14 +2398,10 @@ class MemberController extends ApiController
             'account' => $telephone,
             'is_verify' => 1
         ];
-        $res1 = Db::table('diagnostic_service_user')->where(array('ajy_uid' => $user_id))->update($userData);
-        $res2 = DB::table('mc_members')->where(array('uid' => $user_id))->update(array('mobile' => $telephone));
+        Db::table('diagnostic_service_user')->where(array('ajy_uid' => $user_id))->update($userData);
+        DB::table('mc_members')->where(array('uid' => $user_id))->update(array('mobile' => $telephone));
 
-        if (!$res1 || !$res2) {
-           return $this->errorJson('绑定失败', ['status' => 3]);
-        }
-
-        return $this->successJson('绑定成功', ['status' => 0]);
+        return $this->successJson('绑定成功', $userData);
 
     }
 
