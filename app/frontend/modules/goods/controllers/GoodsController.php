@@ -1690,7 +1690,12 @@ class GoodsController extends GoodsApiController
             if (!$res) {
                 return $this->errorJson('数据插入失败');
             }
-            $this->sendOrderTrack($data);
+
+            $qyWechatSetting = \Setting::get('plugin.enterprise-wechat');
+            if ($qyWechatSetting && $qyWechatSetting['weiban_corpid'] && $qyWechatSetting['weiban_secret']) {
+                $this->sendOrderTrack($data);
+            }
+
         }
 
         return $this->successJson('ok');

@@ -155,7 +155,8 @@ class LoginController extends ApiController
     }
 
     //fixby-zhd-2021-1-4 改写增加小程序单独登录接口
-    public function serviceLogin(){
+    public function serviceLogin()
+    {
 
         load()->func('logging');
         load()->model('mc');
@@ -208,19 +209,20 @@ class LoginController extends ApiController
         //每次登陆首先查询微擎粉丝表是否关注，在查询小程序会员是否有此用户，有的话比对会员和粉丝会员memberid是否一致，如果一致的话
         $openid_token = $this->getOpenidToken($openid); //用户身份令牌
 
+
         //粉丝表是否有此用户
         $fan_user = DB::table('mc_mapping_fans')->where(array('uniacid' => $uniacid, 'unionid' => $data['unionId']))->first();
 
         //微擎mc_member表是否有此用户
-        //$user = pdo_get('yz_member_unique', array('unionid' => $data['unionId'], 'uniacid' => \YunShop::app()->uniacid));
         $user = DB::table('yz_member_unique')->where(array('unionid' => $data['unionId'], 'uniacid' => $uniacid))->first();
+
         if (!empty($user)) {
             //判断粉丝的member和小程序和芸众的member是否是同一条
             if (!empty($fan_user) && ($fan_user['uid'] != $user['member_id'])) {
                 $mcUpdatStatus = DB::table('mc_mapping_fans')->where(array('uniacid' => $uniacid, 'unionid' => $data['unionId']))->update(array('uid' => $user['member_id']));
 
                 if (!$mcUpdatStatus) {
-                    return $this->result(1, '粉丝表会员uid修改失败');
+                    return $this->errorJson('粉丝表会员uid修改失败');
                 }
                 DB::table('mc_members')->where('uid', $fan_user['uid'])->delete();
             }
@@ -242,6 +244,7 @@ class LoginController extends ApiController
             //老会员登陆进行会员同步处理
             $synchronous_member = DB::table('diagnostic_service_user')->where(array('ajy_uid' => $user['member_id']))->first();
             if ($synchronous_member['status'] == 0) {
+                \Log::info('会员状态', $synchronous_member['status']);
                 $this->member_synchronous($user_id, $mid, $fan_user['openid']);
             }
 
@@ -301,7 +304,7 @@ class LoginController extends ApiController
             'credit2' => $mc_member['credit2'],  //余额
             'memberLevel' => $memberLevel
         ];
-        return $this->result(0, '登录成功', $data, 1);
+        return $this->successJson('登录成功', $data);
 
     }
 
@@ -312,17 +315,6 @@ class LoginController extends ApiController
         $openid_token = md5($openid . $salt); //缓存key
 
         return $openid_token;
-    }
-
-
-    //获取微擎统生产环境统一AccessToken
-    public function getMinAppAccessToken($appid)
-    {
-        $url = "https://www.aijuyi.net/api/accesstoken.php?type=4&appid={$appid}&secret=secret";
-        $res = ihttp_get($url);
-        $content = @json_decode($res['content'],true);
-        return $content['accesstoken'];
-
     }
 
 
@@ -429,24 +421,25 @@ class LoginController extends ApiController
             $userInfo['openid_token'] = $openid_token;
         }
 
-        load()->func('file');
-
         $year = date('Y', time());
         $month = date('m', time());
 
-        $avatarPath = "avatar/" . $this->w['uniacid'] . "/" . $year . "/" . $month . "/";
+        $avatarPath = "avatar/" .\YunShop::app()->uniacid . "/" . $year . "/" . $month . "/";
 
-        $avatarName = md5($this->w['uniacid'] . time() . random(6)) . ".png"; //文件名
+        $avatarName = md5(\YunShop::app()->uniacid . time() . random(6)) . ".png"; //文件名
         $avatarFile = $avatarPath . $avatarName;  //文件路径 avatar/45/2020/5/dfsafdggcs.png
+
 
         $user_avatarUrl = file_get_contents($data['avatarUrl']);
 
-        $res = file_write($avatarFile, $user_avatarUrl); //写入文件
+        $res = $this->file_write($avatarFile, $user_avatarUrl); //写入文件
 
         if ($res) {
             $userInfo['avatar'] = $avatarFile;
             if (!empty($this->w['setting']['remote']['type'])) { // 判断系统是否开启了远程附件
-                $remotestatus = file_remote_upload($avatarFile); //上传图片到远程
+                $remotestatus = file_remote_upload($avatarFile,'',$this->w['setting']['remote']); //上传图片到远程
+
+                \Log::info('remotestatus', $remotestatus);
             }
         }
 
@@ -454,28 +447,14 @@ class LoginController extends ApiController
         return pdo_insertid();
     }
 
-    //添加mc_mapping_fans表数据gitceshi
-    /* public function mapping_fans_insert($openid = '', $user = '', $mc_uid = '', $ajy_fan = '')
-     {
-         $record = array(
-             'openid' => $openid,
-             'unionid' => $user['unionid'],
-             'uid' => $mc_uid,
-             'acid' => $this->w['acid'],
-             'uniacid' => $this->w['uniacid'],
-             'salt' => random(8),
-             'updatetime' => time(),
-             'nickname' => $user['nickname'],   //昵称
-             'follow' => $ajy_fan['follow'] ? $ajy_fan['follow'] : 0,    //是否关注
-             'followtime' => $ajy_fan['followtime'] ? $ajy_fan['followtime'] : 0, //粉丝关注时间
-             'unfollowtime' => $ajy_fan['unfollowtime'] ? $ajy_fan['unfollowtime'] : 0, //粉丝取消关注时间
-             'tag' => $ajy_fan['tag'] ? $ajy_fan['tag'] : '',
-             'user_from' => 1,
-         );
+    private function file_write($filename, $data) {
+        $filename = ATTACHMENT_ROOT . '/' . $filename;
+        \app\common\services\Utils::mkdirs(dirname($filename));
+        file_put_contents($filename, $data);
+        @chmod($filename, $this->w['config']['setting']['filemode']);
 
-         pdo_insert('mc_mapping_fans', $record);
-         return pdo_insertid();
-     }*/
+        return is_file($filename);
+    }
 
     //添加yz_member_unique表数据
     public function member_unique_insert($user, $mc_uid)
@@ -602,7 +581,7 @@ class LoginController extends ApiController
         //$url = "https://www.aijuyi.net/addons/yun_shop/api.php?i=". $i ."&type=". $type ."&uid=". $uid ."&mid=".$mid."&route=member.member.memberFromHXQModule";  //芸众会员同步API
         $resdata = ihttp_request($url);
         $res = json_decode($resdata['content'], true);
-
+        \Log::info('会员同步接口返回', $res);
         pdo_insert('diagnostic_service_member_synchronous_logs', array('uid' => $uid, 'mid' => $mid, 'create_time' => TIMESTAMP, 'content' => $resdata));
         if ($res['result'] == 1) {
             //调用接口同步成功
@@ -625,7 +604,7 @@ class LoginController extends ApiController
         }
         $accessToken = $this->getEnterpriseAccessToken($corpId, $corpSecret);
         if (!$accessToken) {
-            logging_run('======accessToken获取失败======：\n\n' . $accessToken, $type = 'trace', $filename = 'ajy_run');
+            //logging_run('======accessToken获取失败======：\n\n' . $accessToken, $type = 'trace', $filename = 'ajy_run');
         }
 
         //请求方式：POST（HTTPS） 请求地址：https://qyapi.weixin.qq.com/cgi-bin/externalcontact/mark_tag?access_token=ACCESS_TOKEN
@@ -651,12 +630,12 @@ class LoginController extends ApiController
             $info = ihttp_get($customerInfoUrl);
             $customerInfo = @json_decode($info['content'], true);
             if ($customerInfo['errcode'] != 0) {
-                logging_run($customerInfo['errcode'] . "======客服详情API接口失败======\n\n", $type = 'trace', $filename = 'ajy_run');
+                //logging_run($customerInfo['errcode'] . "======客服详情API接口失败======\n\n", $type = 'trace', $filename = 'ajy_run');
             }
 
             $res = pdo_update('yz_member_qywechat', array('follow_user' => json_encode($customerInfo['follow_user'])), array('external_user_id'=> $qywechat_user['external_user_id']));
             if(!$res){
-                logging_run('======更新用户客服失败======：\n\n' , $type = 'trace', $filename = 'ajy_run');
+                //logging_run('======更新用户客服失败======：\n\n' , $type = 'trace', $filename = 'ajy_run');
             }
             $follow_user = $customerInfo['follow_user'][0]['userid'];
         }
@@ -671,7 +650,7 @@ class LoginController extends ApiController
 
         $content = @json_decode($info['content'], true);
         if ($content['errcode'] != 0) {
-            logging_run($content['errcode'] . "======企业微信客户打标签失败======\n\n", $type = 'trace', $filename = 'ajy_run');
+            //logging_run($content['errcode'] . "======企业微信客户打标签失败======\n\n", $type = 'trace', $filename = 'ajy_run');
         }
         return true;
 
