@@ -3,12 +3,16 @@
 namespace Yunshop\MinappContent\api;
 
 use app\common\components\ApiController;
+use \app\common\models\Goods;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Yunshop\Appletslive\common\services\BaseService;
 use Yunshop\MinappContent\models\AcupointMerModel;
 use Yunshop\MinappContent\models\AcupointModel;
+use Yunshop\MinappContent\models\ArticleModel;
 use Yunshop\MinappContent\models\MeridianModel;
-use function GuzzleHttp\Promise\is_settled;
+use app\backend\modules\tracking\models\DiagnosticServiceUser;
 
 //穴位|经络控制器
 class AcupointController extends ApiController
@@ -98,5 +102,257 @@ class AcupointController extends ApiController
         }
 
         return $this->successJson('请求成功', $data);
+    }
+
+    /**
+     * 获取穴位详情
+     * @return mixed
+     */
+    public function getAcupointInfo()
+    {
+        $id = intval(request()->get('id', 0));
+        if (!$id) {//获取穴位具体信息
+            return $this->errorJson('穴位id未发现');
+        }
+        $cache_key = 'acupotionInfo' . $this->uniacid . $id;
+        $acupotionInfo = Cache::get($cache_key);
+        if (!$acupotionInfo) {
+            $acupotionInfo = DB::table('diagnostic_service_acupoint')->where(['id' => $id, 'uniacid' => $this->uniacid])->first();
+            $acupotionInfo['goods'] = array();
+            $acupotionInfo['article'] = array();
+            if ($acupotionInfo['recommend_goods']) {  //查询推荐商品
+                $acupotionInfo['recommend_goods'] = explode(',', $acupotionInfo['recommend_goods']); //文章关联商品
+                foreach ($acupotionInfo['recommend_goods'] as $k => $value) {
+                    $recommend_goods = DB::table('yz_goods')->where(['id' => $value, 'uniacid' => $this->uniacid])->select('id', 'title', 'thumb', 'price', 'status', 'deleted_at')->first();
+                    if ($recommend_goods['status'] == 1 && !$recommend_goods['deleted_at']) {
+                        $acupotionInfo['goods'][] = $recommend_goods;
+                    }
+                }
+            }
+            //查询推荐穴位
+            if ($acupotionInfo['recommend_article']) {
+                $acupotionInfo['recommend_article'] = explode(',', $acupotionInfo['recommend_article']); //文章穴位管理
+                foreach ($acupotionInfo['recommend_article'] as $k => $v) {
+                    $recommend_article = DB::table('diagnostic_service_article')->where(['id' => $v, 'uniacid' => $this->uniacid])->select('id', 'title', 'description', 'thumb')->first();
+                    $acupotionInfo['article'][] = $recommend_article;
+                }
+            }
+            Cache::forget($cache_key);
+            Cache::add($cache_key, $acupotionInfo, 60);
+        }
+
+        return $this->successJson('请求成功', $acupotionInfo);
+    }
+
+    /**
+     * 穴位评论 穴位笔记
+     * @return mixed
+     */
+    public function acupointComment()
+    {
+        $user_id = $this->user_id;
+        //用户禁言
+        $user = DiagnosticServiceUser::where('ajy_uid', $this->user_id)->first();
+        if ($user->is_black == 1) {
+            if ($user->black_end_time > time()) {
+                response()->json([
+                    'result' => 301,
+                    'msg' => '您已被系统禁言！截止时间至：' . date('Y-m-d H:i:s', $user->black_end_time) . '申诉请联系管理员',
+                    'data' => false,
+                ], 200, ['charset' => 'utf-8'])->send();
+                exit;
+            } else {
+                $user->is_black = 0;
+                $user->black_content = '时间到期,自然解禁';
+                $user->save();
+            }
+        }
+        $uniacid = $this->uniacid;
+
+        $acupoint_id = intval(request()->get('acupoint_id', 0));
+        $content = trim(request()->get('content', ''));
+        $images = html_entity_decode(trim(request()->get('images', '')));
+        $parent_id = intval(request()->get('parent_id', 0));
+        if (!$acupoint_id) {
+            return $this->errorJson('穴位id不存在');
+        }
+        if (!$content) {
+            return $this->errorJson('内容不能为空');
+        }
+        $acupoint = DB::table('diagnostic_service_acupoint')->where(['id' => $acupoint_id])->first();
+        if (!$acupoint) {
+            return $this->errorJson('穴位不存在或已被删除');
+        }
+        // 评论内容敏感词过滤
+        $wxapp_base_service = new BaseService();
+        $sensitive_check = $wxapp_base_service->msgSecCheck($content);
+        if (!is_bool($sensitive_check) || $sensitive_check === false) {
+            return $this->errorJson('评论包含敏感内容', $sensitive_check);
+        }
+        $content_check = $wxapp_base_service->textCheck($content);
+        $data = [
+            'user_id' => $user_id,
+            'uniacid' => $uniacid,
+            'acupoint_id' => $acupoint_id,
+            'content' => $content,
+            'images' => $images,
+            'create_time' => TIMESTAMP
+        ];
+        if ($content_check) {
+            $data['status'] = 1;
+        } else {
+            $data['status'] = 0;
+        }
+
+        if ($parent_id) {
+            $data['parent_id'] = $parent_id;
+            $data['is_reply'] = 1;
+            $par_data = DB::table('diagnostic_service_acupoint_comment')->where(['id' => $parent_id])->first();
+            if (!empty($par_data)) {
+                $data['rele_user_id'] = $par_data['user_id'];
+            }
+            if ($user_id == $par_data['user_id']) {
+                $data['mess_status'] = 1;
+            }
+        }
+        $comment_id = DB::table('diagnostic_service_acupoint_comment')->insertGetId($data);
+        if (!$comment_id) {
+            return $this->errorJson('评论失败');
+        }
+        $newComment = DB::table('diagnostic_service_acupoint_comment')->where(['id' => $comment_id])->first();
+        $newComment['images'] = json_decode($newComment['images'], true);
+        if ($newComment['status'] == 0) {
+            return $this->successJson('评论内容涉及违规敏感词，请等待后台审核', array('status' => 0));
+        }
+        DB::table('diagnostic_service_acupoint')->where(['id' => $acupoint_id])->increment('comment_nums');
+        return $this->successJson('评论成功', array('status' => 1, 'newComment' => $newComment));
+    }
+
+    /**
+     * 穴位笔记和回复列表
+     * @return mixed
+     */
+    public function acupointCommentList()
+    {
+        $user_id = $this->user_id;
+        $uniacid = $this->uniacid;
+        $acupoint_id = intval(request()->get('acupoint_id', 0)); //穴位id
+        if (!$acupoint_id) {
+            return $this->errorJson('穴位id不能为空');
+        }
+        $acupointComments = DB::table('diagnostic_service_acupoint_comment as c')
+            ->select('c.id', 'c.user_id', 'u.nickname', 'u.avatarurl', 'u.province', 'c.content', 'c.images', 'c.create_time')
+            ->leftjoin('diagnostic_service_user as u', 'c.user_id', '=', 'u.ajy_uid')
+            ->where(['c.uniacid' => $uniacid, 'c.acupoint_id' => $acupoint_id, 'c.is_reply' => 0, 'c.status' => 1])
+            ->orderBy('c.display_order', 'DESC')
+            ->orderBy('c.create_time', 'DESC')
+            ->paginate(10);
+
+        $total = intval($acupointComments->total()); //总条数
+        $total_page = intval($acupointComments->lastPage()); //总页数
+        $list = $acupointComments->getCollection()->toArray();
+        foreach ($list as $k => &$v) {
+            $v['images'] = json_decode($v['images'], true);
+            Carbon::setLocale('zh');
+            $v['time'] = Carbon::createFromTimestamp($v['create_time'])->diffForHumans();
+            $like = DB::table('diagnostic_service_acupoint_comment_like')->where(['user_id' => $user_id, 'comment_id' => $v['id']])->first();
+            if ($like) {
+                $v['is_like'] = 2;  //已点赞
+            } else {
+                $v['is_like'] = 1;  //未点赞
+            }
+            $like_nums = DB::table('diagnostic_service_acupoint_comment_like')->where('comment_id', $v['id'])->count();
+            $v['like_nums'] = $like_nums;
+            //回复列表
+            $reply = DB::table('diagnostic_service_acupoint_comment as c')
+                ->select('c.id', 'c.user_id', 'u.nickname', 'u.avatarurl', 'u.province', 'c.content', 'c.create_time')
+                ->leftjoin('diagnostic_service_user as u', 'c.user_id', '=', 'u.ajy_uid')
+                ->where(array('c.uniacid' => $uniacid, 'c.parent_id' => $v['id'], 'c.is_reply' => 1, 'c.status' => 1))
+                ->orderby('c.create_time', 'DESC')
+                ->get();
+            $v['reply_nums'] = 0;
+            $v['reply'] = [];
+            if (!empty($reply[0])) {
+                $reply = $reply->toArray();
+                foreach ($reply as $key => $value) {
+                    $reply[$key]['time'] = Carbon::createFromTimestamp($value['create_time'])->diffForHumans();
+                }
+                $v['reply_nums'] = intval(count($reply));
+                $v['reply'] = $reply;
+            }
+        }
+        $acupointComments = $acupointComments->make($list);
+        return $this->successJson('请求成功', compact('acupointCommentCount', 'total', 'total_page', 'acupointComments'));
+    }
+
+    /**
+     * 穴位笔记/回复删除
+     * @return mixed
+     */
+    public function acupointCommentDel()
+    {
+        $user_id = $this->user_id;
+        $uniacid = $this->uniacid;
+        $id = intval(request()->get('id', 0));
+        if (!$id) {
+            return $this->errorJson('评论id不存在', array('status' => 0));
+        }
+        $comment = DB::table('diagnostic_service_acupoint_comment')->where(['id' => $id])->first();
+        if (!$comment) {
+            return $this->errorJson('该评论不存在或已被删除', array('status' => 0));
+        }
+        if ($comment['user_id'] != $user_id) {
+            return $this->errorJson('不是你的评论,无法删除', array('status' => 0));
+        }
+        $reply_nums = 0;//主评查出子评论个数
+        if ($comment['is_reply'] == 0) {
+            $reply_nums = DB::table('diagnostic_service_acupoint_comment')->where(['parent_id' => $id, 'status' => 1])->count();
+        }
+        $reply_nums += 1;
+        $res = DB::table('diagnostic_service_acupoint_comment')->where('id', $id)->delete();  //删除操作
+        if ($res) {
+            DB::table('diagnostic_service_acupoint_comment')->where('parent_id', $id)->delete();  //删除评论子评论
+            DB::table('diagnostic_service_acupoint')->where('id', $comment['acupoint_id'])->decrement('comment_nums', $reply_nums);
+            return $this->successJson('删除成功', array('status' => 1, 'nums' => $reply_nums));
+        } else {
+            return $this->errorJson('删除失败', array('status' => 0));
+        }
+    }
+
+    /**
+     * 穴位笔记（主评）点赞 (暂未调用）
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function acupointCommentLike()
+    {
+        $user_id = $this->user_id;
+        $uniacid = $this->uniacid;
+        $comment_id = intval(request()->get('comment_id', 0));
+        if (!$comment_id) {
+            return $this->errorJson('主评id不存在', array('status' => 0));
+        }
+        $like = pdo_get('diagnostic_service_acupoint_comment_like', array('user_id' => $user_id, 'comment_id' => $comment_id, 'uniacid' => $uniacid));
+        if ($like) {
+            //已点赞，取消点赞
+            $res = pdo_delete('diagnostic_service_acupoint_comment_like', array('user_id' => $user_id, 'comment_id' => $comment_id, 'uniacid' => $uniacid));
+            if ($res) {
+                return $this->successJson('取消点赞成功', array('status' => 1, 'is_like' => 1));
+            } else {
+                return $this->errorJson('取消点赞失败', array('status' => 0, 'is_like' => 2));
+            }
+        } else {
+            $data = [
+                'uniacid' => $uniacid,
+                'user_id' => $user_id,
+                'comment_id' => $comment_id,
+                'create_time' => time()
+            ];
+            $res = pdo_insert('diagnostic_service_acupoint_comment_like', $data);
+            if ($res) {
+                return $this->successJson('点赞成功', array('status' => 1, 'is_like' => 2));
+            } else {
+                return $this->errorJson('点赞失败', array('status' => 0, 'is_like' => 1));
+            }
+        }
     }
 }
