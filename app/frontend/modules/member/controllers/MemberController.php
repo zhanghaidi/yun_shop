@@ -2406,6 +2406,8 @@ class MemberController extends ApiController
         Db::table('diagnostic_service_user')->where(array('ajy_uid' => $user_id))->update($userData);
         DB::table('mc_members')->where(array('uid' => $user_id))->update(array('mobile' => $telephone));
 
+        $userData['status'] = 1;
+
         return $this->successJson('绑定成功', $userData);
 
     }
