@@ -3,16 +3,22 @@
 namespace Yunshop\MinappContent\api;
 
 use app\common\components\ApiController;
+use app\common\facades\Setting;
 use app\common\models\Goods;
+use Exception;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Storage;
 use Yunshop\Appletslive\common\models\Room;
 use Yunshop\MinappContent\models\AcupointModel;
 use Yunshop\MinappContent\models\ArticleModel;
 use Yunshop\MinappContent\models\BannerModel;
 use Yunshop\MinappContent\models\PostModel;
 use Yunshop\MinappContent\models\SearchModel;
+use Yunshop\MinappContent\models\ShareQrcodeModel;
 use Yunshop\MinappContent\models\SystemCategoryModel;
 use Yunshop\MinappContent\models\SystemImageModel;
+use Yunshop\MinappContent\services\WeixinMiniprogramService;
 
 class IndexController extends ApiController
 {
@@ -407,5 +413,72 @@ class IndexController extends ApiController
             $v->image = yz_tomedia($v->image);
         }
         return $this->successJson('获取图片成功', $listRs);
+    }
+
+    public function shareQrcode()
+    {
+        $page = \YunShop::request()->page;
+        $scene = \YunShop::request()->scene;
+        if (!isset($scene[0])) {
+            return $this->errorJson('小程序场景值不存在');
+        }
+
+        $memberId = \YunShop::app()->getMemberId();
+        // $localPath = \YunShop::app()->uniacid . '/' . date('Y/m/') . 'qrcode/';
+
+        $qrName = md5(\YunShop::app()->uniacid . $memberId . time() . random(6)) . '.png';
+        $qrName = $qrName;
+
+        try {
+            $qrResponse = WeixinMiniprogramService::getCodeUnlimit($scene, $page, 430, [
+                'auto_color' => false,
+                'line_color' => [
+                    'r' => '#ABABAB',
+                    'g' => '#ABABAC',
+                    'b' => '#ABABAD',
+                ],
+                'is_hyaline' => true,
+            ]);
+        } catch (Exception $e) {
+            Log::info("生成小程序码失败", [
+                'response' => isset($qrResponse) ? $qrResponse : '',
+                'page' => $page,
+                'scene' => $scene,
+                'msg' => $e->getMessage(),
+            ]);
+            return $this->errorJson($e->getMessage());
+        }
+
+        $fileRs = Storage::disk('image')->put($qrName, $qrResponse);
+        if ($fileRs !== true) {
+            return $this->errorJson('二维码写入错误');
+        }
+
+        $uploadRs = file_remote_upload_wq($qrName);
+        if (isset($uploadRs)) {
+            return $this->errorJson('二维码文件写入失败');
+        }
+
+        $qrcode = new ShareQrcodeModel();
+        $qrcode->uniacid = \YunShop::app()->uniacid;
+        $qrcode->uniacname = isset(Setting::get('plugin.wechat')['name']) ? Setting::get('plugin.wechat')['name'] : '';
+        $qrcode->user_id = $memberId;
+        $qrcode->qrcode = 'image/' . $qrName;
+        $qrcode->share_time = date('Y-m-d H:i:s');
+        $qrcode->clicknums = 0;
+        $qrcode->os = isset(\YunShop::request()->os) ? \YunShop::request()->os : '';
+        $qrcode->container = 'wechat';
+        $qrcode->type = 1;
+        $qrcode->poster = '';
+        $qrcode->page = $page;
+        $qrcode->scene = $scene;
+        $qrcode->save();
+        if (!isset($qrcode->id) || $qrcode->id <= 0) {
+            return $this->errorJson('二维码保存失败');
+        }
+        return $this->successJson('success', [
+            'id' => $qrcode->id,
+            'qrcode' => yz_tomedia($qrcode->qrcode),
+        ]);
     }
 }
