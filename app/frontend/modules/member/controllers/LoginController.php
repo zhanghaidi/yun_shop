@@ -581,7 +581,7 @@ class LoginController extends ApiController
         //$url = "https://www.aijuyi.net/addons/yun_shop/api.php?i=". $i ."&type=". $type ."&uid=". $uid ."&mid=".$mid."&route=member.member.memberFromHXQModule";  //芸众会员同步API
         $resdata = ihttp_request($url);
         $res = json_decode($resdata['content'], true);
-        \Log::info('会员同步', $remotestatus);
+        \Log::info('会员同步接口返回', $res);
         pdo_insert('diagnostic_service_member_synchronous_logs', array('uid' => $uid, 'mid' => $mid, 'create_time' => TIMESTAMP, 'content' => $resdata));
         if ($res['result'] == 1) {
             //调用接口同步成功
