@@ -17,9 +17,10 @@ use app\backend\modules\tracking\models\DiagnosticServiceUser;
 //穴位|经络控制器
 class AcupointController extends ApiController
 {
+    protected $ignoreAction = ['getMeridian', 'getSortAcupoint', 'getAcupointInfo', 'acupointCommentList'];
+
     protected $user_id = 0;
     protected $uniacid = 0;
-
     /**
      *  constructor
      */
@@ -43,12 +44,12 @@ class AcupointController extends ApiController
         }
         $cache_key = 'meridian' . $this->uniacid . $type_id;
         $meridian = Cache::get($cache_key);
-        if ($meridian->count() <= 0) {
+        if (!$meridian[0]) {
             $meridian = MeridianModel::where(['type_id' => $type_id, 'status' => 1, 'uniacid' => $this->uniacid])
                 ->select('id', 'name', 'discription', 'content', 'video', 'audio', 'image', 'start_time', 'end_time', 'recommend_course')
                 ->orderBy('list_order', 'DESC')
                 ->get();
-            if ($meridian->count() > 0) {
+            if (!$meridian[0]) {
                 foreach ($meridian as &$v) {
                     if ($v['start_time'] == "00:00:00") {
                         $v['start_time'] = null;
@@ -116,7 +117,7 @@ class AcupointController extends ApiController
         }
         $cache_key = 'acupotionInfo' . $this->uniacid . $id;
         $acupotionInfo = Cache::get($cache_key);
-        if (!$acupotionInfo) {
+        if (!$acupotionInfo['id']) {
             $acupotionInfo = DB::table('diagnostic_service_acupoint')->where(['id' => $id, 'uniacid' => $this->uniacid])->first();
             $acupotionInfo['goods'] = array();
             $acupotionInfo['article'] = array();
@@ -222,7 +223,7 @@ class AcupointController extends ApiController
         $newComment = DB::table('diagnostic_service_acupoint_comment')->where(['id' => $comment_id])->first();
         $newComment['images'] = json_decode($newComment['images'], true);
         if ($newComment['status'] == 0) {
-            return $this->successJson('评论内容涉及违规敏感词，请等待后台审核', array('status' => 0));
+            return $this->errorJson('评论内容涉及违规敏感词，请等待后台审核', array('status' => 0));
         }
         DB::table('diagnostic_service_acupoint')->where(['id' => $acupoint_id])->increment('comment_nums');
         return $this->successJson('评论成功', array('status' => 1, 'newComment' => $newComment));
