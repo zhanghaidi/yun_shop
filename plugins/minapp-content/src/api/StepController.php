@@ -201,4 +201,12 @@ class StepController extends ApiController
 
     }
 
+    //根据字段对多维数组进行排序
+    private function arraySortByOneField($data, $field, $sort = SORT_DESC)
+    {
+        $field = array_column($data, $field);
+        array_multisort($field, $sort, $data);
+        return $data;
+    }
+
 }
