@@ -201,7 +201,7 @@ class StepController extends ApiController
 
     }
 
-    public function UserPoint()
+    public function userPoint()
     {
         $uniacid = \YunShop::app()->uniacid;
         $user_id = \YunShop::app()->getMemberId();
