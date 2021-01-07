@@ -3,8 +3,13 @@
 namespace Yunshop\MinappContent\api;
 
 use app\common\components\ApiController;
+use app\common\models\Goods;
+use Exception;
 use Illuminate\Support\Facades\Redis;
+use Yunshop\MinappContent\api\IndexController;
+use Yunshop\MinappContent\models\AcupointModel;
 use Yunshop\MinappContent\models\AnswerModel;
+use Yunshop\MinappContent\models\ArticleModel;
 use Yunshop\MinappContent\models\DiseaseModel;
 use Yunshop\MinappContent\models\LabelModel;
 use Yunshop\MinappContent\models\QuestionBankModel;
@@ -360,6 +365,50 @@ class SomatoController extends ApiController
         $somatoTypeRs->acupotions = [];
         $somatoTypeRs->goods = [];
         $somatoTypeRs->articles = [];
+        if (isset($somatoTypeRs->recommend_acupotion[0])) {
+            $somatoTypeRs->acupotions = AcupointModel::select('id', 'name', 'get_position', 'image')
+                ->whereIn('id', $somatoTypeRs->recommend_acupotion)->get();
+        }
+        if (isset($somatoTypeRs->recommend_goods[0])) {
+            $somatoTypeRs->goods = Goods::select('id', 'title', 'thumb', 'status', 'deleted_at')
+                ->whereIn('id', $somatoTypeRs->recommend_goods)
+                ->where('status', 1)
+                ->whereNull('deleted_at')->get();
+        }
+        if (isset($somatoTypeRs->recommend_article[0])) {
+            $somatoTypeRs->articles = ArticleModel::select('id', 'title', 'description', 'thumb')
+                ->whereIn('id', $somatoTypeRs->recommend_article)->get();
+            foreach ($somatoTypeRs->articles as &$v) {
+                $v->thumb = explode(',', $v->thumb);
+                $v->image = isset($v->thumb[0]) ? $v->thumb[0] : '';
+            }
+            unset($v);
+        }
+        return $this->successJson('调取用户体质报告成功', $somatoTypeRs);
+    }
 
+    public function share()
+    {
+        $memberId = \YunShop::app()->getMemberId();
+        $scene = 'mid=' . $user_id;
+        $page = 'pages/homework/test/homework';
+        try {
+            $qrcode = IndexController::qrcodeCreateUnlimit($memberId, $scene, $page, isset(\YunShop::request()->os) ? \YunShop::request()->os : '');
+            if (!isset($qrcode->id) || !isset($qrcode->qrcode)) {
+                throw new Exception('小程序码生成错误');
+            }
+        } catch (Exception $e) {
+            Log::info("生成小程序码失败", [
+                'qrcode' => isset($qrcode) ? $qrcode : '',
+                'page' => $page,
+                'scene' => $scene,
+                'msg' => $e->getMessage(),
+            ]);
+            return $this->errorJson($e->getMessage());
+        }
+        return $this->successJson('二维码生成成功', [
+            'id' => $qrcode->id,
+            'qrcode' => yz_tomedia($qrcode->qrcode),
+        ]);
     }
 }
