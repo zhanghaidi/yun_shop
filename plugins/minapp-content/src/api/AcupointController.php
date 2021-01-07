@@ -14,13 +14,14 @@ use Yunshop\MinappContent\models\ArticleModel;
 use Yunshop\MinappContent\models\MeridianModel;
 use app\backend\modules\tracking\models\DiagnosticServiceUser;
 
-//穴位|经络控制器
+//穴位|经络控制器-wk 20210105
 class AcupointController extends ApiController
 {
     protected $ignoreAction = ['getMeridian', 'getSortAcupoint', 'getAcupointInfo', 'acupointCommentList'];
 
     protected $user_id = 0;
     protected $uniacid = 0;
+
     /**
      *  constructor
      */
@@ -241,48 +242,48 @@ class AcupointController extends ApiController
         if (!$acupoint_id) {
             return $this->errorJson('穴位id不能为空');
         }
-        $acupointComments = DB::table('diagnostic_service_acupoint_comment as c')
-            ->select('c.id', 'c.user_id', 'u.nickname', 'u.avatarurl', 'u.province', 'c.content', 'c.images', 'c.create_time')
-            ->leftjoin('diagnostic_service_user as u', 'c.user_id', '=', 'u.ajy_uid')
-            ->where(['c.uniacid' => $uniacid, 'c.acupoint_id' => $acupoint_id, 'c.is_reply' => 0, 'c.status' => 1])
-            ->orderBy('c.display_order', 'DESC')
-            ->orderBy('c.create_time', 'DESC')
-            ->paginate(10);
 
-        $total = intval($acupointComments->total()); //总条数
-        $total_page = intval($acupointComments->lastPage()); //总页数
-        $list = $acupointComments->getCollection()->toArray();
-        foreach ($list as $k => &$v) {
-            $v['images'] = json_decode($v['images'], true);
+        $pindex = intval(request()->get('page', 1)); //初始页
+        $psize = 10; //每页条数
+        $query = load()->object('query');
+        $acupointComments = $query->from('diagnostic_service_acupoint_comment', 'c')
+            ->select('c.id', 'c.user_id', 'u.nickname', 'u.avatarurl', 'u.province', 'c.content', 'c.images', 'c.create_time')
+            ->leftjoin('diagnostic_service_user', 'u')
+            ->on('c.user_id', 'u.ajy_uid')
+            ->where(array('c.uniacid' => $uniacid, 'c.acupoint_id' => $acupoint_id, 'c.is_reply' => 0, 'c.status' => 1))
+            ->orderby(array('c.display_order' => 'DESC', 'c.create_time' => 'DESC'))
+            ->page($pindex, $psize)
+            ->getall();
+
+        $total = intval($query->getLastQueryTotal()); //总条数
+        $total_page = intval(($total + $psize - 1) / $psize); //总页数
+        foreach ($acupointComments as $k => $v) {
+            $acupointComments[$k]['images'] = json_decode($v['images'], true);
             Carbon::setLocale('zh');
-            $v['time'] = Carbon::createFromTimestamp($v['create_time'])->diffForHumans();
-            $like = DB::table('diagnostic_service_acupoint_comment_like')->where(['user_id' => $user_id, 'comment_id' => $v['id']])->first();
+            $acupointComments['time'] = Carbon::createFromTimestamp($v['create_time'])->diffForHumans();
+            $like = pdo_get('diagnostic_service_acupoint_comment_like', array('user_id' => $user_id, 'comment_id' => $v['id']));
             if ($like) {
-                $v['is_like'] = 2;  //已点赞
+                $acupointComments[$k]['is_like'] = 2;  //已点赞
             } else {
-                $v['is_like'] = 1;  //未点赞
+                $acupointComments[$k]['is_like'] = 1;  //未点赞
             }
-            $like_nums = DB::table('diagnostic_service_acupoint_comment_like')->where('comment_id', $v['id'])->count();
-            $v['like_nums'] = $like_nums;
+            $like_nums = intval(pdo_fetchcolumn("SELECT COUNT(*) FROM " . tablename('diagnostic_service_acupoint_comment_like') . " WHERE comment_id = :comment_id ", array(':comment_id' => $v['id'])));
+            $acupointComments[$k]['like_nums'] = $like_nums;
             //回复列表
-            $reply = DB::table('diagnostic_service_acupoint_comment as c')
+            $reply = $query->from('diagnostic_service_acupoint_comment', 'c')
                 ->select('c.id', 'c.user_id', 'u.nickname', 'u.avatarurl', 'u.province', 'c.content', 'c.create_time')
-                ->leftjoin('diagnostic_service_user as u', 'c.user_id', '=', 'u.ajy_uid')
+                ->leftjoin('diagnostic_service_user', 'u')
+                ->on('c.user_id', 'u.ajy_uid')
                 ->where(array('c.uniacid' => $uniacid, 'c.parent_id' => $v['id'], 'c.is_reply' => 1, 'c.status' => 1))
                 ->orderby('c.create_time', 'DESC')
-                ->get();
-            $v['reply_nums'] = 0;
-            $v['reply'] = [];
-            if (!empty($reply[0])) {
-                $reply = $reply->toArray();
-                foreach ($reply as $key => $value) {
-                    $reply[$key]['time'] = Carbon::createFromTimestamp($value['create_time'])->diffForHumans();
-                }
-                $v['reply_nums'] = intval(count($reply));
-                $v['reply'] = $reply;
+                ->getall();
+            foreach ($reply as $key => $value) {
+                $reply[$key]['time'] = Carbon::createFromTimestamp($value['create_time'])->diffForHumans();
             }
+            $acupointComments[$k]['reply_nums'] = intval($query->getLastQueryTotal());
+            $acupointComments[$k]['reply'] = $reply;
         }
-        $acupointComments = $acupointComments->make($list);
+
         return $this->successJson('请求成功', compact('acupointCommentCount', 'total', 'total_page', 'acupointComments'));
     }
 
