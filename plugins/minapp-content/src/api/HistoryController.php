@@ -4,7 +4,7 @@ namespace Yunshop\MinappContent\api;
 
 use app\common\components\ApiController;
 
-//历史足迹控制器
+//历史足迹控制器-wk 20210106
 class HistoryController extends ApiController
 {
     protected $ignoreAction = [];
@@ -23,7 +23,7 @@ class HistoryController extends ApiController
     }
 
     /**
-     * 足记记录接口 文章id/穴位id/病例id（文章，穴位，病例共用） 历史记录接口 历史记录信息 同收藏。
+     * 足迹记录接口 文章id/穴位id/病例id（文章，穴位，病例共用） 历史记录接口 历史记录信息 同收藏。
      * @return mixed
      */
     public function history()
@@ -118,15 +118,15 @@ class HistoryController extends ApiController
 
         return $this->successJson('获取用户足迹信息成功', $lists);
     }
+
     /**
      * 清除用户记录 清除用户足迹
      * @return mixed
      */
-    //
-    public function deleteHistory()
+    public function deleteUserHistory()
     {
-        $user_id = $this->uid;
-        $uniacid = $this->w['uniacid'];
+        $user_id = $this->user_id;
+        $uniacid = $this->uniacid;
 
         $result = pdo_delete('diagnostic_service_history', array('user_id' => $user_id, 'uniacid' => $uniacid));
         if ($result) {

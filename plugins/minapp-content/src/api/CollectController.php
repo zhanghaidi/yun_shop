@@ -14,7 +14,7 @@ use Yunshop\MinappContent\models\ArticleModel;
 use Yunshop\MinappContent\models\MeridianModel;
 use app\backend\modules\tracking\models\DiagnosticServiceUser;
 
-//收藏|历史足迹控制器
+//收藏|历史足迹控制器-wk 20210106
 class CollectController extends ApiController
 {
     protected $ignoreAction = [];
@@ -91,8 +91,9 @@ class CollectController extends ApiController
             }
         }
     }
+
     /**
-     * 位、疾病详情页收藏状态
+     * 穴位、疾病详情页收藏状态
      * @return \Illuminate\Http\JsonResponse
      */
     public function collectStatus()
@@ -121,5 +122,26 @@ class CollectController extends ApiController
             ];
             return $this->successJson('获取成功', $data);
         }
+    }
+
+    /**
+     * 用户收藏数量统计
+     * @return mixed
+     */
+    public function userCollectCount()
+    {
+        $user_id = $this->user_id;
+        $uniacid = $this->uniacid;
+
+        //穴位收藏数
+        $acupointCollectCount = intval(pdo_fetchcolumn("SELECT COUNT(*) FROM " . tablename('diagnostic_service_collect') . " WHERE user_id = :user_id AND uniacid = :uniacid AND to_type_id = 1 ", array(':user_id' => $user_id, ':uniacid' => $uniacid)));
+        //病例收藏数
+        $caseCollectCount = intval(pdo_fetchcolumn("SELECT COUNT(*) FROM " . tablename('diagnostic_service_collect') . " WHERE user_id = :user_id AND uniacid = :uniacid AND to_type_id = 2 ", array(':user_id' => $user_id, ':uniacid' => $uniacid)));
+        //文章收藏数
+        $articleCollectCount = intval(pdo_fetchcolumn("SELECT COUNT(*) FROM " . tablename('diagnostic_service_collect') . " WHERE user_id = :user_id AND uniacid = :uniacid AND to_type_id = 3 ", array(':user_id' => $user_id, ':uniacid' => $uniacid)));
+        //芸众商品收藏数
+        $goodsCollectCount = intval(pdo_fetchcolumn("SELECT COUNT(*) FROM " . tablename('yz_member_favorite') . " WHERE member_id = :user_id AND  deleted_at is null ", array(':user_id' => $user_id)));
+
+        return $this->successJson('收藏数获取成功', compact('acupointCollectCount', 'caseCollectCount', 'articleCollectCount', 'goodsCollectCount'));
     }
 }
