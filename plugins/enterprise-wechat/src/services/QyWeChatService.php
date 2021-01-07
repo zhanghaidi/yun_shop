@@ -18,8 +18,8 @@ class QyWeChatService
      * @param $corpsecret
      * 封装企业微信accesstoken
      */
-    public function getEnterpriseAccessToken($corpid, $corpsecret) {
-        $cachekey = cache_system_key('enterprise_token', array('uniacid' => $this->w['uniacid']));
+    public static function getEnterpriseAccessToken($corpid, $corpsecret) {
+        $cachekey = cache_system_key('enterprise_token', array('uniacid' => \YunShop::app()->uniacid));
         $cache = cache_load($cachekey);
 
         if (!empty($cache) && !empty($cache['token']) && $cache['expire'] > TIMESTAMP) {
