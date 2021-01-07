@@ -4,14 +4,18 @@ namespace Yunshop\MinappContent\api;
 
 use app\common\components\ApiController;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Facades\Redis;
 use Yunshop\Appletslive\common\services\BaseService as AppletsliveBaseService;
+use Yunshop\MinappContent\api\IndexController;
+use Yunshop\MinappContent\models\ArticleModel;
 use Yunshop\MinappContent\models\PostCommentLikeModel;
 use Yunshop\MinappContent\models\PostCommentModel;
 use Yunshop\MinappContent\models\PostHistoryModel;
 use Yunshop\MinappContent\models\PostLikeModel;
 use Yunshop\MinappContent\models\PostModel;
 use Yunshop\MinappContent\models\SnsBoardModel;
+use Yunshop\MinappContent\models\UserFollowModel;
 use Yunshop\MinappContent\models\UserModel;
 
 class PostsController extends ApiController
@@ -507,7 +511,7 @@ class PostsController extends ApiController
         ]);
     }
 
-    private function dataarticletime($times)
+    public function dataarticletime($times)
     {
         Carbon::setLocale('zh');
         return Carbon::createFromTimestamp($times)->diffForHumans();
@@ -647,5 +651,167 @@ class PostsController extends ApiController
         PostModel::where('id', $postId)->increment('view_nums');
 
         return $this->successJson('浏览量更新成功');
+    }
+
+    public function userFollow()
+    {
+        $fansId = intval(\YunShop::request()->fans_id);
+        if ($fansId <= 0) {
+            return $this->errorJson('被关注者id不存在');
+        }
+
+        $memberId = \YunShop::app()->getMemberId();
+        if ($fansId == $memberId) {
+            return $this->errorJson('自己不能关注自己');
+        }
+
+        $fansRs = UserModel::select('id')->where('ajy_uid', $fansId)->first();
+        if (!isset($fansRs->id)) {
+            return $this->errorJson('关注用户不存在', ['is_follow' => 1]);
+        }
+
+        $followRs = UserFollowModel::select('id')->where([
+            'user_id' => $memberId,
+            'fans_id' => $fansId,
+            'uniacid' => \YunShop::app()->uniacid,
+        ])->first();
+        if (isset($followRs->id)) {
+            UserFollowModel::where('id', $followRs->id)->delete();
+            return $this->successJson('取消关注成功', ['is_follow' => 1]);
+        } else {
+            $follow = new UserFollowModel;
+            $follow->uniacid = \YunShop::app()->uniacid;
+            $follow->user_id = $memberId;
+            $follow->fans_id = $fansId;
+            $follow->rele_user_id = $fansId;
+            $follow->save();
+
+            if (!isset($follow->id) || $follow->id <= 0) {
+                return $this->successJson('关注失败', ['is_follow' => 1]);
+            } else {
+                return $this->successJson('关注成功', ['is_follow' => 2]);
+            }
+        }
+    }
+
+    public function followPosts()
+    {
+        $followRs = UserFollowModel::select('id', 'fans_id')->where([
+            'uniacid' => \YunShop::app()->uniacid,
+            'user_id' => \YunShop::app()->getMemberId(),
+        ])->get()->toArray();
+        $followRs = array_column($followRs, 'fans_id');
+        $followRs = array_values(array_unique(array_filter($followRs)));
+        if (!isset($followRs[0])) {
+            return $this->successJson('获取关注列表', [
+                'total' => 0,
+                'totalPage' => 1,
+                'posts' => [],
+            ]);
+        }
+
+        $listRs = PostModel::select(
+            'id', 'title', 'images', 'video', 'video_thumb', 'video_size', 'image_size',
+            'view_nums', 'comment_nums', 'like_nums', 'user_id'
+        )->whereIn('user_id', $followRs)
+            ->where('status', 1)->orderBy('create_time', 'desc')->paginate(10);
+        $userIds = [];
+        foreach ($listRs as &$v) {
+            $v->images = json_decode($v->images, true);
+            $v->video_size = json_decode($v->video_size, true);
+            $v->image_size = json_decode($v->image_size, true);
+            $v->heat = 10 + ($v->like_nums * 30) + ($v->comment_nums * 50) + ($v->view_nums * 10);
+            $userIds[] = $v->user_id;
+        }
+        $userIds = array_values(array_filter(array_unique($userIds)));
+        if (isset($userIds[0])) {
+            $userRs = UserModel::select('id', 'ajy_uid', 'nickname', 'avatarurl')
+                ->whereIn('ajy_uid', $userIds)->get()->toArray();
+            foreach ($listRs as &$v1) {
+                foreach ($userRs as $v2) {
+                    if ($v1->user_id != $v2['ajy_uid']) {
+                        continue;
+                    }
+                    $v1->nickname = $v2['nickname'];
+                    $v1->avatarurl = $v2['avatarurl'];
+                    break;
+                }
+            }
+        }
+        $return = [
+            'total' => $listRs->total(),
+            'totalPage' => $listRs->lastPage(),
+            'posts' => $listRs->items(),
+        ];
+        return $this->successJson('获取关注列表', $return);
+    }
+
+    public function postDelete()
+    {
+        $postId = intval(\YunShop::request()->id);
+        if ($postId <= 0) {
+            return $this->errorJson('请传入id');
+        }
+
+        $postRs = PostModel::select('id', 'type', 'user_id', 'article_id')->where([
+            'id' => $postId,
+            'uniacid' => \YunShop::app()->uniacid,
+        ])->first();
+        if (!isset($postRs->id)) {
+            return $this->errorJson('帖子不存在或已被删除');
+        }
+
+        $memberId = \YunShop::app()->getMemberId();
+        if ($postRs->user_id != $memberId) {
+            return $this->errorJson('不是你的帖子乱删个毛线');
+        }
+
+        PostModel::where('id', $postRs->id)->delete();
+
+        if ($postRs->type == 1) {
+            ArticleModel::where('id', $postRs->article_id)->decrement('discuss_viewpoint_nums');
+        }
+
+        PostCommentModel::where('post_id', $postRs->id)->delete();
+        PostLikeModel::where('post_id', $postRs->id)->delete();
+        return $this->successJson('删除成功');
+    }
+
+    public function share()
+    {
+        $page = \YunShop::request()->page;
+        $scene = \YunShop::request()->scene;
+        if (!isset($scene[0])) {
+            return $this->errorJson('小程序场景值不存在');
+        }
+        $postId = intval(\YunShop::request()->post_id);
+        if ($postId <= 0) {
+            return $this->errorJson('帖子id不能为空');
+        }
+
+        $memberId = \YunShop::app()->getMemberId();
+
+        
+
+
+
+        try {
+            $qrcode = IndexController::qrcodeCreateUnlimit($memberId, $scene, $page, isset(\YunShop::request()->os) ? \YunShop::request()->os : '');
+            if (!isset($qrcode->id) || !isset($qrcode->qrcode)) {
+                throw new Exception('小程序码生成错误');
+            }
+        } catch (Exception $e) {
+            Log::info("生成小程序码失败", [
+                'qrcode' => isset($qrcode) ? $qrcode : '',
+                'page' => $page,
+                'scene' => $scene,
+                'msg' => $e->getMessage(),
+            ]);
+            return $this->errorJson($e->getMessage());
+        }
+        return $this->successJson('二维码生成成功', [
+            'id' => $qrcode->id,
+            'qrcode' => yz_tomedia($qrcode->qrcode),
+        ]);
     }
 }
