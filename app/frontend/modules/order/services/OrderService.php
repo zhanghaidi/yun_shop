@@ -496,6 +496,7 @@ class OrderService
     public static function orderMess($order_sn = '', $order = '', $type = '')
     {
         DB::table('yz_order_messages')->insert([
+            'uniacid' =>  \YunShop::app()->uniacid,
             'order_sn' => $order_sn,
             'create_time' => time(),
             'order_id' => $order['id'],
