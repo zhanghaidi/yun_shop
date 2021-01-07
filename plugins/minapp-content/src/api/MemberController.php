@@ -10,7 +10,13 @@ use app\frontend\models\Member;
 class MemberController extends ApiController
 {
     private $pagesize = 15;
+    protected $ignoreAction = ['familyInvite'];
 
+    public function index(){
+        $uniacid = \YunShop::app()->uniacid;
+        $user_id = \YunShop::app()->getMemberId();
+        return $this->successJson('success');
+    }
     //获取用户关注公众号状态
     public function getFollow()
     {
@@ -377,6 +383,7 @@ class MemberController extends ApiController
         }
     }
 
+
     public function userPostList()
     {
         //个人中心用户发布和喜欢列表
@@ -437,6 +444,110 @@ class MemberController extends ApiController
         return $this->successJson('成功获取此用户帖子列表', $res);
     }
 
+
+    //用户搜索记录
+    public function mySerch()
+    {
+        //我的搜索记录
+        $uniacid = \YunShop::app()->uniacid;
+        $user_id = \YunShop::app()->getMemberId();
+
+        $myserch = pdo_getall('diagnostic_service_search', array('user_id' => $user_id, 'uniacid' => $uniacid, 'is_delete' => 0, 'is_success' => 1), array('id', 'keywords'), '', 'add_time DESC', array(1, 8));
+
+        return $this->successJson('success', $myserch);
+    }
+
+    //清除用户搜索记录
+    public function deleteSerch()
+    {
+        $uniacid = \YunShop::app()->uniacid;
+        $user_id = \YunShop::app()->getMemberId();
+
+        $result = pdo_update('diagnostic_service_search', array('is_delete' => 1), array('user_id' => $user_id, 'uniacid' => $uniacid, 'is_delete' => 0, 'is_success' => 1));
+        if ($result) {
+            return $this->successJson('清除成功');
+        } else {
+            return $this->errorJson('清除失败');
+        }
+
+    }
+
+    //显示用户收藏列表 to_type_id 1穴位，2病例 3文章
+    public function userCollect()
+    {
+        $uniacid = \YunShop::app()->uniacid;
+        $user_id = \YunShop::app()->getMemberId();
+        $to_type_id = intval(\YunShop::request()->to_type_id);
+        if (empty($to_type_id)) {
+            return $this->errorJson('to_type_id参数错误');
+        }
+
+        $collects = array();
+        if ($to_type_id == 1) {
+            //穴位收藏列表
+            $acupointCollects = pdo_getall('diagnostic_service_collect', array('user_id' => $user_id, 'uniacid' => $uniacid, 'to_type_id' => 1), array('info_id', 'title', 'description', 'image', 'to_type_id'));
+            $collects = $acupointCollects;
+
+        } elseif ($to_type_id == 2) {
+            //病例收藏列表
+            $caseCollects = pdo_getall('diagnostic_service_collect', array('user_id' => $user_id, 'uniacid' => $uniacid, 'to_type_id' => 2), array('info_id', 'title', 'description', 'image', 'to_type_id'));
+            $collects = $caseCollects;
+        } elseif ($to_type_id == 3) {
+            //文章收藏
+            $articleCollects = pdo_getall('diagnostic_service_collect', array('user_id' => $user_id, 'uniacid' => $uniacid, 'to_type_id' => 3), array('info_id', 'title', 'description', 'image', 'to_type_id'));
+            $collects = $articleCollects;
+        } else {
+            //所有收藏列表
+            //$yzgoods_collects = pdo_getall('yz_member_favorite', array('member_id' => $user_id, 'deleted_at' => null), array());
+            $collects = pdo_getall('diagnostic_service_collect', array('user_id' => $user_id, 'uniacid' => $uniacid), array('info_id', 'title', 'description', 'image', 'to_type_id'));
+        }
+
+        return $this->successJson('ok', $collects);
+    }
+
+    //验证微信地址是否存在芸众地址数据库中
+    public function userAddressValidate()
+    {
+        $uniacid = \YunShop::app()->uniacid;
+        $user_id = \YunShop::app()->getMemberId();
+        $province = \YunShop::request()->province; //省份
+        $city = \YunShop::request()->city;//市
+        $district = \YunShop::request()->district;//区、县
+
+        $data = array();
+        if (!$province || !$city || !$district) {
+            return $this->errorJson('参数有误！');
+        }
+        if ($province) {
+            $data['province'] = $province;
+        }
+        if ($city) {
+            $data['city'] = $city;
+        }
+        if ($district) {
+            $data['district'] = $district;
+        }
+
+        //判断有没有省份
+        $has_province = pdo_get('yz_address', array('areaname' => trim($province), 'parentid' => 0, 'level' => 1));
+        if ($has_province) {
+            //判断有没有市
+            $has_city = pdo_get('yz_address', array('areaname' => trim($city), 'parentid' => $has_province['id'], 'level' => 2));
+            if ($has_city) {
+                //判断有没有 区、县
+                $has_district = pdo_get('yz_address', array('areaname' => trim($district), 'parentid' => $has_city['id'], 'level' => 3));
+                if ($has_district) {
+                    return $this->successJson('验证成功', $data);
+                }
+            }
+        }
+
+        //验证失败 增加地址记录表
+        $data['uniacid'] = $uniacid;
+        $data['uid'] = $user_id;
+        pdo_insert('yz_address_validate', $data);
+        return $this->errorJson('地址正在努力收集中，请手动添加！');
+    }
 
 
 }
