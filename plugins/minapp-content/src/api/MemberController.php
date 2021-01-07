@@ -308,6 +308,7 @@ class MemberController extends ApiController
         return $this->successJson('获取用户关注列表', compact('total', 'totalPage', 'follow'));
     }
 
+    //积分记录
     public function pointLogs()
     {
         $member_id = \YunShop::app()->getMemberId();
@@ -318,5 +319,124 @@ class MemberController extends ApiController
 
         return $this->successJson('成功', $list);
     }
+
+    //论坛帖子用户中心
+    public function userPostCenter()
+    {
+        $uniacid = \YunShop::app()->uniacid;
+        $user_id = \YunShop::app()->getMemberId();
+
+        $uid = intval(\YunShop::request()->user_id); //用户个人中心id
+        if ($uid <= 0) {
+            return $this->errorJson('用户id不存在');
+        }
+
+        $user = pdo_get('diagnostic_service_user', array('ajy_uid' => $uid), array('nickname', 'avatarurl', 'ajy_uid', 'account'));
+
+        if ($user) {
+            if ($uid == $user_id) {
+                $user['is_self'] = 1;
+            } else {
+                $user['is_self'] = 0;
+                $follow = pdo_get('diagnostic_service_user_follow', array('uniacid' => $uniacid, 'user_id' => $user_id, 'fans_id' => $uid));
+                $fan = pdo_get('diagnostic_service_user_follow', array('uniacid' => $uniacid, 'user_id' => $uid, 'fans_id' => $user_id));
+                if ($follow) {
+                    if ($fan) {
+                        $user['is_follow'] = 3; //互相关注
+                    } else {
+                        $user['is_follow'] = 2; //已关注
+                    }
+                } else {
+                    $user['is_follow'] = 1; //未关注
+                }
+            }
+            //用户关注数(此用户关注了那些用户）
+            $userFollowCount = pdo_fetchcolumn("SELECT COUNT(*) FROM " . tablename('diagnostic_service_user_follow') . " WHERE user_id = :user_id AND uniacid = :uniacid", array(':user_id' => $uid, ':uniacid' => $uniacid));
+
+            //用户粉丝数（关注者id是此用户id)
+            $userFansCount = pdo_fetchcolumn("SELECT COUNT(*) FROM " . tablename('diagnostic_service_user_follow') . " WHERE fans_id = :user_id AND uniacid = :uniacid", array(':user_id' => $uid, ':uniacid' => $uniacid));
+
+            //用户帖子获赞数
+            $userAcquireLikeCount = pdo_fetchcolumn("SELECT SUM(like_nums) FROM " . tablename('diagnostic_service_post') . " WHERE user_id = :user_id AND uniacid = :uniacid", array(':user_id' => $uid, ':uniacid' => $uniacid));
+
+            //用户发布帖子数量
+            $userPostCount = pdo_fetchcolumn("SELECT COUNT(*) FROM " . tablename('diagnostic_service_post') . " WHERE user_id = :user_id AND uniacid = :uniacid AND status = 1", array(':user_id' => $uid, ':uniacid' => $uniacid));
+
+            //用户喜欢帖子数
+            $userLikePostCount = pdo_fetchcolumn("SELECT COUNT(*) FROM " . tablename('diagnostic_service_post_like') . " l LEFT JOIN " . tablename('diagnostic_service_post') . " p ON l.post_id = p.id  WHERE l.user_id = :user_id AND l.uniacid = :uniacid AND p.status = 1 ", array(':user_id' => $uid, ':uniacid' => $uniacid));
+
+            $user['followCount'] = intval($userFollowCount); //关注数
+            $user['fansCount'] = intval($userFansCount); //粉丝数
+            $user['acquireLikeCount'] = intval($userAcquireLikeCount); //被赞数
+            $user['postCount'] = intval($userPostCount); //帖子发布数
+            $user['likePostCount'] = intval($userLikePostCount); //点赞帖子数
+
+            return $this->successJson('获取成功', $user);
+        } else {
+            return $this->errorJson('获取用户信息失败');
+        }
+    }
+
+    public function userPostList()
+    {
+        //个人中心用户发布和喜欢列表
+        $uniacid = \YunShop::app()->uniacid;
+        $user_id = \YunShop::app()->getMemberId();
+
+        $uid = intval(\YunShop::request()->user_id); //用户个人中心id
+        if ($uid <= 0) {
+            return $this->errorJson('用户id不存在');
+        }
+
+        $pindex = intval(\YunShop::request()->page) ? intval(\YunShop::request()->page) : 1; //初始页
+        $psize = $this->pagesize;
+        $is_like_list = intval(\Yunshop::request()->is_like_list);
+
+        //用户话题列表(分页)
+        $query = load()->object('query');
+
+        if ($is_like_list) {
+            //此用户点赞帖子列表
+            $posts = $query->from('diagnostic_service_post', 'p')
+                ->select('p.id', 'p.title', 'p.images', 'p.video', 'p.video_thumb', 'p.video_size', 'p.image_size', 'p.view_nums', 'p.comment_nums', 'p.like_nums', 'u.nickname', 'u.avatarurl')
+                ->leftjoin('diagnostic_service_post_like', 'l')
+                ->on('l.post_id', 'p.id')
+                ->leftjoin('diagnostic_service_user', 'u')
+                ->on('p.user_id', 'u.ajy_uid')
+                ->where(array('l.uniacid' => $uniacid, 'l.user_id' => $uid, 'p.status' => 1))
+                ->orderby('l.create_time', 'DESC')
+                ->page($pindex, $psize)
+                ->getall();
+
+            $total = intval($query->getLastQueryTotal()); //总条数
+            $totalPage = intval(($total + $psize - 1) / $psize);
+
+        } else {
+            //此用户发布的话题列表
+            $posts = $query->from('diagnostic_service_post', 'p')
+                ->select('p.id', 'p.title', 'p.images', 'p.video', 'p.video_thumb', 'p.video_size', 'p.image_size', 'p.view_nums', 'p.comment_nums', 'p.like_nums', 'u.nickname', 'u.avatarurl')
+                ->leftjoin('diagnostic_service_user', 'u')
+                ->on('p.user_id', 'u.ajy_uid')
+                ->where(array('p.uniacid' => $uniacid, 'p.status' => 1, 'p.user_id ' => $uid))
+                ->orderby('p.create_time', 'DESC')
+                ->page($pindex, $psize)
+                ->getall();
+            $total = intval($query->getLastQueryTotal()); //总条数
+            $totalPage = intval(($total + $psize - 1) / $psize);
+        }
+
+        foreach ($posts as $k => $v) {
+            $posts[$k]['images'] = json_decode($v['images'], true);
+            $posts[$k]['video_size'] = json_decode($v['video_size'], true);
+            $posts[$k]['image_size'] = json_decode($v['image_size'], true);
+            //$posts[$k]['time'] = $this->dataarticletime($v['create_time']);
+            $posts[$k]['heat'] = 10 + ($v['like_nums'] * 30) + ($v['comment_nums'] * 50) + ($v['view_nums'] * 10);
+        }
+
+        $res = compact('total', 'totalPage', 'posts');
+        return $this->successJson('成功获取此用户帖子列表', $res);
+    }
+
+
 
 }
