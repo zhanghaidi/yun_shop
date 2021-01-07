@@ -5,12 +5,14 @@ use app\common\components\ApiController;
 use app\frontend\modules\member\services\factory\MemberFactory;
 use app\frontend\modules\finance\models\PointLog;
 use app\frontend\models\Member;
+use Yunshop\EnterpriseWechat\services\QyWeChatService;
 
 
 class MemberController extends ApiController
 {
     private $pagesize = 15;
     protected $ignoreAction = ['familyInvite'];
+    protected $xc_uniacid = 3;
 
     public function index(){
         $uniacid = \YunShop::app()->uniacid;
@@ -549,5 +551,152 @@ class MemberController extends ApiController
         return $this->errorJson('地址正在努力收集中，请手动添加！');
     }
 
+    public function zmCode()
+    {
+        global $_W;
+        //防伪码调用
+        $uniacid = \YunShop::app()->uniacid;
+        $user_id = \YunShop::app()->getMemberId();
+
+        $i = $this->xc_uniacid;    //仙草集团公众号id
+        $do = 'a'; //a 方法名
+        $co = \YunShop::request()->co;  //co: 防伪码 传过来的参数
+        $ip = $_W['clientip'];   //ip： 用户查询ip
+        $address = \YunShop::request()->address;
+
+        $key = 'qd4bPIyzLrUpc2mey4dBTq9BODoWmakT'; //通信秘钥zm微防伪后台设置的key
+
+        if (!$co) {
+            return $this->errorJson('防伪码不能为空');
+        }
+        if (!$ip) {
+            return $this->errorJson('ip不能为空');
+        }
+
+        $user = pdo_get('diagnostic_service_user', array('ajy_uid' => $user_id)); //小程序用户信息
+        $unionid = $user['unionid']; //小程序公众平台unionid
+
+        //获得仙草集团公众号粉丝信息
+        $xc_fans = pdo_get('mc_mapping_fans', array('uniacid' => $i, 'unionid' => $user['unionid']));
+
+        $xc_fans['gender'] = $user['gender']; //会员性别
+        $xc_fans['os'] = $_W['os'];
+        $xc_fans['container'] = $_W['container'];
+
+        $data = [
+            'c' => 'entry', //固定传入参数（不得改动）
+            'do' => $do,  //固定传入参数（不得改动）
+            'm' => 'zmcn_fw',    //固定传入参数（不得改动）
+            'i' => $i,           //变量传入--公众号ID（这个数字就是当前公众号ID，可直接用）
+            'co' => $co,    //变量传入--防伪码
+            'ip' => $ip,    //变量传入--客户IP（浏览网页之人IP，用于记录查询者地区）
+            'ke' => MD5($i . $co . $ip . $key), //加密鉴权（注意按示例排序）
+            'xc_fans' => json_encode($xc_fans),  //仙草集团粉丝信息
+            'address' => $address  //经纬度地址
+        ];
+
+        //https://www.aijuyi.net/app/index.php?i=39&co=FW2763150201310708&ip=127.0.0.1&c=entry&ke=546566&m=zmcn_fw&do=a
+        $url = $_W['siteroot'] . "app/index.php";  //请求地址url拼接
+
+        $resJson = $this->https_request($url, $data);
+
+        if (!$resJson) {
+            return $this->errorJson('请求失败');
+        }
+
+        if ($resJson['content'] == 0) {
+            return $this->successJson('success', json_decode($resJson, true));
+        } else {
+            $errCode = $resJson;
+            // 1888：服务器API接口关闭
+            //1839：非授权IP
+            //1877：防伪码格式不对
+            //1876：加密串格式不对
+            //1875：加密鉴权失败
+            //1899：防伪码验证错误
+            //1866：没有该批次或批号出错
+            if ($resJson == 1888) {
+                return $this->errorJson('服务器API接口关闭', $resJson);
+            } elseif ($resJson == 1839) {
+                return $this->errorJson('非授权IP', $resJson);
+            } elseif ($resJson == 1877) {
+                return $this->errorJson('防伪码格式不对', $resJson);
+            } elseif ($resJson == 1876) {
+                return $this->errorJson('加密串格式不对', $resJson);
+            } elseif ($resJson == 1875) {
+                return $this->errorJson('加密鉴权失败', $resJson);
+            } elseif ($resJson == 1899) {
+                return $this->errorJson('防伪码验证错误', $resJson);
+            } elseif ($resJson == 1866) {
+                return $this->errorJson('没有该批次或批号出错', $resJson);
+            } else {
+                return $this->errorJson('未知error', $resJson);
+            }
+
+        }
+    }
+
+    //检测企业微信加入状态
+    public function qyWechatJoinStatus()
+    {
+        $uniacid = \YunShop::app()->uniacid;
+        $user_id = \YunShop::app()->getMemberId();
+
+        $cachekey = 'joinChatStatus'.$uniacid.$user_id ;
+        $cache = cache_load($cachekey);
+        if($cache){
+            $chatStatus = $cache['chat_status'];
+            return $this->successJson('ok', array('chat_status'=> $chatStatus));
+        }
+
+        $chatStatus = 0;
+        $qywechat_user = pdo_get('yz_member_qywechat', array('member_id' => $user_id));
+        if(!empty($qywechat_user)){
+            $qyWechatSetting = \Setting::get('plugin.enterprise-wechat');
+            if ($qyWechatSetting && $qyWechatSetting['corpid'] && $qyWechatSetting['secret']) {
+                $chatStatus = $this->chekJoinChat($qyWechatSetting['corpid'], $qyWechatSetting['secret']);
+            }
+        }
+        cache_write($cachekey, array('chat_status'=> $chatStatus));
+        return $this->successJson('ok', array('chat_status'=> $chatStatus));
+    }
+
+    protected function chekJoinChat($corpId, $corpSecret)
+    {
+        $chatStatus = 0;
+        $accessToken = QyWeChatService::getEnterpriseAccessToken($corpId, $corpSecret);
+        if ($accessToken) {
+            //群列表 https://qyapi.weixin.qq.com/cgi-bin/externalcontact/groupchat/list?access_token=ACCESS_TOKEN
+            $chatListUrl = "https://qyapi.weixin.qq.com/cgi-bin/externalcontact/groupchat/list?access_token={$accessToken}";
+            $postData = array(
+                "status_filter" => 0,
+                "owner_filter" => array(),
+                "offset" => 0,
+                "limit" => 100
+            );
+            $info = ihttp_request($chatListUrl, json_encode($postData));
+            $chatList = @json_decode($info['content'], true);
+            if ($chatList['errcode'] == 0) {
+                foreach ($chatList['group_chat_list'] as $chat){
+                    $chatInfoUrl = "https://qyapi.weixin.qq.com/cgi-bin/externalcontact/groupchat/get?access_token={$accessToken}";
+                    $data = array(
+                        'chat_id' => $chat['chat_id']
+                    );
+                    $chatInfo = ihttp_request($chatInfoUrl, json_encode($data));
+                    $chatInfo = @json_decode($chatInfo['content'],true);
+                    if ($chatInfo['errcode'] == 0) {
+                        foreach ($chatInfo['group_chat']['member_list'] as $member){
+                            if($member['type'] == 2){
+                                if($member['unionid'] == $qywechat_user['unionid']){
+                                    $chatStatus = 1;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return $chatStatus;
+    }
 
 }
