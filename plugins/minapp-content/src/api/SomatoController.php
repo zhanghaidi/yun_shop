@@ -390,7 +390,7 @@ class SomatoController extends ApiController
     public function share()
     {
         $memberId = \YunShop::app()->getMemberId();
-        $scene = 'mid=' . $user_id;
+        $scene = 'mid=' . $memberId;
         $page = 'pages/homework/test/homework';
         try {
             $qrcode = IndexController::qrcodeCreateUnlimit($memberId, $scene, $page, isset(\YunShop::request()->os) ? \YunShop::request()->os : '');

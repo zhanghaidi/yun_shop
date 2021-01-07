@@ -33,23 +33,23 @@ class BaseService
 
     public function __construct()
     {
-        $set = Setting::get('plugin.appletslive');
-        if (empty($set)) {
+        // $set = Setting::get('plugin.appletslive');
+        // if (empty($set)) {
             $min_set = Setting::get('plugin.min_app');
             if (is_null($min_set) || 0 == $min_set['switch']) {
                 return show_json(0,'未开启小程序');
             }
-//            $uniacid =\YunShop::app()->uniacid;
-//            $wxapp_account = DB::table('account_wxapp')
-//                ->select('key', 'secret')
-//                ->where('uniacid', $uniacid)
-//                ->first();
+        //    $uniacid =\YunShop::app()->uniacid;
+        //    $wxapp_account = DB::table('account_wxapp')
+        //        ->select('key', 'secret')
+        //        ->where('uniacid', $uniacid)
+        //        ->first();
             $this->appId = $min_set['key'];
             $this->secret = $min_set['secret'];
-        } else {
-            $this->appId = $set['appId'];
-            $this->secret = $set['secret'];
-        }
+        // } else {
+        //     $this->appId = $set['appId'];
+        //     $this->secret = $set['secret'];
+        // }
     }
 
     public function downloadImgFromCos($filepath)
