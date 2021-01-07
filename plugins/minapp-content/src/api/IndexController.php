@@ -426,7 +426,30 @@ class IndexController extends ApiController
         $memberId = \YunShop::app()->getMemberId();
         // $localPath = \YunShop::app()->uniacid . '/' . date('Y/m/') . 'qrcode/';
 
-        $qrName = md5(\YunShop::app()->uniacid . $memberId . time() . random(6)) . '.png';
+        try {
+            $qrcode = self::qrcodeCreateUnlimit($memberId, $scene, $page, isset(\YunShop::request()->os) ? \YunShop::request()->os : '');
+            if (!isset($qrcode->id) || !isset($qrcode->qrcode)) {
+                throw new Exception('小程序码生成错误');
+            }
+        } catch (Exception $e) {
+            Log::info("生成小程序码失败", [
+                'qrcode' => isset($qrcode) ? $qrcode : '',
+                'page' => $page,
+                'scene' => $scene,
+                'msg' => $e->getMessage(),
+            ]);
+            return $this->errorJson($e->getMessage());
+        }
+
+        return $this->successJson('success', [
+            'id' => $qrcode->id,
+            'qrcode' => yz_tomedia($qrcode->qrcode),
+        ]);
+    }
+
+    public static function qrcodeCreateUnlimit(int $userId, string $scene, string $page, string $os = '')
+    {
+        $qrName = md5(\YunShop::app()->uniacid . $userId . time() . random(6)) . '.png';
         $qrName = $qrName;
 
         try {
@@ -446,23 +469,23 @@ class IndexController extends ApiController
                 'scene' => $scene,
                 'msg' => $e->getMessage(),
             ]);
-            return $this->errorJson($e->getMessage());
+            throw new Exception($e->getMessage());
         }
 
         $fileRs = Storage::disk('image')->put($qrName, $qrResponse);
         if ($fileRs !== true) {
-            return $this->errorJson('二维码写入错误');
+            throw new Exception('二维码写入错误');
         }
 
         $uploadRs = file_remote_upload_wq($qrName);
         if (isset($uploadRs)) {
-            return $this->errorJson('二维码文件写入失败');
+            throw new Exception('二维码文件写入失败');
         }
 
         $qrcode = new ShareQrcodeModel();
         $qrcode->uniacid = \YunShop::app()->uniacid;
         $qrcode->uniacname = isset(Setting::get('plugin.wechat')['name']) ? Setting::get('plugin.wechat')['name'] : '';
-        $qrcode->user_id = $memberId;
+        $qrcode->user_id = $userId;
         $qrcode->qrcode = 'image/' . $qrName;
         $qrcode->share_time = date('Y-m-d H:i:s');
         $qrcode->clicknums = 0;
@@ -474,11 +497,8 @@ class IndexController extends ApiController
         $qrcode->scene = $scene;
         $qrcode->save();
         if (!isset($qrcode->id) || $qrcode->id <= 0) {
-            return $this->errorJson('二维码保存失败');
+            throw new Exception('二维码保存失败');
         }
-        return $this->successJson('success', [
-            'id' => $qrcode->id,
-            'qrcode' => yz_tomedia($qrcode->qrcode),
-        ]);
+        return $qrcode;
     }
 }
