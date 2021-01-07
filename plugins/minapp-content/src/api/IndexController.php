@@ -450,7 +450,6 @@ class IndexController extends ApiController
     public static function qrcodeCreateUnlimit(int $userId, string $scene, string $page, string $os = '')
     {
         $qrName = md5(\YunShop::app()->uniacid . $userId . time() . random(6)) . '.png';
-        $qrName = $qrName;
 
         try {
             $qrResponse = WeixinMiniprogramService::getCodeUnlimit($scene, $page, 430, [
