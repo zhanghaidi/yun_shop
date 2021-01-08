@@ -133,4 +133,30 @@ class ComplaintController extends ApiController
             }
         }
     }
+
+    /**
+     * 违规图片上报
+     * @return mixed
+     */
+    public function postImageCheck()
+    {
+        $user_id = $this->user_id;
+        $uniacid = $this->uniacid;
+        $image = request()->get('image', '');
+        if(!$image){
+            return $this->errorJson('上报图片不能为空');
+        }
+        $data = [
+            'uniacid' => $uniacid,
+            'user_id' => $user_id,
+            'image' => $image,
+            'status' => 0,
+            'create_time' => date('Y-m-d H:i:s')
+        ];
+        $res = DB::table('diagnostic_service_sns_upload_filter')->insertGetId($data);
+        if (!$res) {
+            return $this->errorJson('上报失败');
+        }
+        return $this->successJson('上报成功');
+    }
 }

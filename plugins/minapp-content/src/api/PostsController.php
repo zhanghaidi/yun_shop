@@ -6,6 +6,7 @@ use app\common\components\ApiController;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Storage;
 use Yunshop\Appletslive\common\services\BaseService as AppletsliveBaseService;
 use Yunshop\MinappContent\api\IndexController;
 use Yunshop\MinappContent\models\ArticleModel;
@@ -14,9 +15,12 @@ use Yunshop\MinappContent\models\PostCommentModel;
 use Yunshop\MinappContent\models\PostHistoryModel;
 use Yunshop\MinappContent\models\PostLikeModel;
 use Yunshop\MinappContent\models\PostModel;
+use Yunshop\MinappContent\models\ShareQrcodeModel;
 use Yunshop\MinappContent\models\SnsBoardModel;
 use Yunshop\MinappContent\models\UserFollowModel;
 use Yunshop\MinappContent\models\UserModel;
+
+// use Yunshop\MinappContent\services\WeixinMiniprogramService;
 
 class PostsController extends ApiController
 {
@@ -791,9 +795,92 @@ class PostsController extends ApiController
 
         $memberId = \YunShop::app()->getMemberId();
 
-        
+        $posterRs = ShareQrcodeModel::where([
+            'user_id' => $memberId,
+            'uniacid' => \YunShop::app()->uniacid,
+            'scene' => $scene,
+            'page' => $page,
+        ])->first();
+        if (isset($posterRs->id)) {
+            return $this->successJson('获取分享海报成功', [
+                'poster' => $posterRs->poster,
+            ]);
+        }
 
+        $postRs = PostModel::where('id', $postId)->first();
+        if (!isset($postRs->id)) {
+            return $this->errorJson('帖子未找到');
+        }
 
+        $qrResponse = dirname(dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))));
+        $qrResponse .= '/0.png';
+        $qrResponse = file_get_contents($qrResponse);
+
+        $qrName = md5(\YunShop::app()->uniacid . $memberId . time() . random(6) . 'qr') . '.png';
+        $fileRs = Storage::disk('image')->put($qrName, $qrResponse);
+        if ($fileRs !== true) {
+            return $this->errorJson('生成分享海报二维码写入失败');
+        }
+        $qrFileName = ATTACHMENT_ROOT . Storage::disk('image')->url($qrName);
+
+        $pluginsRoot = dirname(SHOP_ROOT) . '/plugins/minapp-content';
+
+        $backgroundImg = $pluginsRoot . '/resource/images/post_bg.png'; //帖子背景海报路径
+        $config = array(
+            //昵称文字
+            'text' => array(
+                array(
+                    'text' => $postRs->title,
+                    'left' => 70,
+                    'top' => 170,
+                    'fontPath' => $pluginsRoot . '/resource/fonts/PingFangMedium.ttf', //字体文件
+                    'fontSize' => 28, //字号
+                    'fontColor' => '24,24,24', //字体颜色
+                    'angle' => 0,
+                ),
+            ),
+            'image' => array(
+                //二维码
+                array(
+                    'url' => $qrFileName, //二维码图片资源路径
+                    'left' => 380,
+                    'top' => 570,
+                    'stream' => 0, //图片资源是否是字符串图像流
+                    'right' => 0,
+                    'bottom' => 0,
+                    'width' => 150,
+                    'height' => 150,
+                    'opacity' => 100,
+                ),
+
+            ),
+            'background' => $backgroundImg,
+        );
+        var_dump($config);
+
+        $posterName = md5(\YunShop::app()->uniacid . $memberId . time() . random(6) . 'poster') . '.png';
+
+        // TODO 该功能前端无用，暂停开发
+
+        // try {
+        //     $qrResponse = WeixinMiniprogramService::getCodeUnlimit($scene, $page, 430, [
+        //         'auto_color' => false,
+        //         'line_color' => [
+        //             'r' => '#ABABAB',
+        //             'g' => '#ABABAC',
+        //             'b' => '#ABABAD',
+        //         ],
+        //         'is_hyaline' => true,
+        //     ]);
+        // } catch (Exception $e) {
+        //     Log::info("生成小程序码失败", [
+        //         'response' => isset($qrResponse) ? $qrResponse : '',
+        //         'page' => $page,
+        //         'scene' => $scene,
+        //         'msg' => $e->getMessage(),
+        //     ]);
+        //     return $this->errorJson('生成分享海报二维码失败');
+        // }
 
         try {
             $qrcode = IndexController::qrcodeCreateUnlimit($memberId, $scene, $page, isset(\YunShop::request()->os) ? \YunShop::request()->os : '');
@@ -812,6 +899,47 @@ class PostsController extends ApiController
         return $this->successJson('二维码生成成功', [
             'id' => $qrcode->id,
             'qrcode' => yz_tomedia($qrcode->qrcode),
+        ]);
+    }
+
+    public function postCommentDelete()
+    {
+        $commentId = intval(\YunShop::request()->id);
+        if ($commentId <= 0) {
+            return $this->errorJson('请传入评论id');
+        }
+
+        $commentRs = PostCommentModel::select('id', 'user_id', 'post_id', 'is_reply')->where([
+            'id' => $commentId,
+            'uniacid' => \YunShop::app()->uniacid,
+        ])->first();
+        if (!isset($commentRs->id)) {
+            return $this->errorJson('该评论不存在或已被删除');
+        }
+
+        $memberId = \YunShop::app()->getMemberId();
+        if ($commentRs->user_id != $memberId) {
+            return $this->errorJson('不是你的评论乱删个毛线');
+        }
+
+        $replyNums = 0;
+        if ($commentRs->is_reply == 0) {
+            $replyNums = PostCommentModel::where([
+                'parent_id' => $commentId,
+                'status' => 1,
+            ])->count();
+        }
+        $replyNums += 1;
+
+        PostCommentModel::where('id', $commentRs->id)->delete();
+
+        PostCommentModel::where('parent_id', $commentRs->id)->delete();
+
+        PostCommentLikeModel::where('comment_id', $commentRs->id)->delete();
+
+        PostModel::where('id', $commentRs->post_id)->decrement('comment_nums', $replyNums);
+        return $this->successJson('删除成功', [
+            'nums' => $replyNums,
         ]);
     }
 }
