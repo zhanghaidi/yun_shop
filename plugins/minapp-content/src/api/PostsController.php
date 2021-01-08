@@ -6,6 +6,7 @@ use app\common\components\ApiController;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Storage;
 use Yunshop\Appletslive\common\services\BaseService as AppletsliveBaseService;
 use Yunshop\MinappContent\api\IndexController;
 use Yunshop\MinappContent\models\ArticleModel;
@@ -14,9 +15,11 @@ use Yunshop\MinappContent\models\PostCommentModel;
 use Yunshop\MinappContent\models\PostHistoryModel;
 use Yunshop\MinappContent\models\PostLikeModel;
 use Yunshop\MinappContent\models\PostModel;
+use Yunshop\MinappContent\models\ShareQrcodeModel;
 use Yunshop\MinappContent\models\SnsBoardModel;
 use Yunshop\MinappContent\models\UserFollowModel;
 use Yunshop\MinappContent\models\UserModel;
+use Yunshop\MinappContent\services\WeixinMiniprogramService;
 
 class PostsController extends ApiController
 {
@@ -791,7 +794,49 @@ class PostsController extends ApiController
 
         $memberId = \YunShop::app()->getMemberId();
 
-        
+        $posterRs = ShareQrcodeModel::where([
+            'user_id' => $memberId,
+            'uniacid' => \YunShop::app()->uniacid,
+            'scene' => $scene,
+            'page' => $page,
+        ])->first();
+        if (isset($posterRs->id)) {
+            return $this->successJson('获取分享海报成功', [
+                'poster' => $posterRs->poster,
+            ]);
+        }
+
+        $postRs = PostModel::where('id', $postId)->first();
+
+        // try {
+        //     $qrResponse = WeixinMiniprogramService::getCodeUnlimit($scene, $page, 430, [
+        //         'auto_color' => false,
+        //         'line_color' => [
+        //             'r' => '#ABABAB',
+        //             'g' => '#ABABAC',
+        //             'b' => '#ABABAD',
+        //         ],
+        //         'is_hyaline' => true,
+        //     ]);
+        // } catch (Exception $e) {
+        //     Log::info("生成小程序码失败", [
+        //         'response' => isset($qrResponse) ? $qrResponse : '',
+        //         'page' => $page,
+        //         'scene' => $scene,
+        //         'msg' => $e->getMessage(),
+        //     ]);
+        //     return $this->errorJson('生成分享海报二维码失败');
+        // }
+
+        $qrResponse = dirname(dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))));
+        var_dump($qrResponse);
+        exit;
+
+        $qrName = md5(\YunShop::app()->uniacid . $userId . time() . random(6)) . '.png';
+        $fileRs = Storage::disk('image')->put($qrName, $qrResponse);
+        if ($fileRs !== true) {
+            return $this->errorJson('生成分享海报二维码写入失败');
+        }
 
 
 
