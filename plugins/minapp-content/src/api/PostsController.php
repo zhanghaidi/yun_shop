@@ -3,6 +3,7 @@
 namespace Yunshop\MinappContent\api;
 
 use app\common\components\ApiController;
+use app\common\models\Goods;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Redis;
@@ -24,8 +25,8 @@ use Yunshop\MinappContent\models\UserModel;
 
 class PostsController extends ApiController
 {
-    protected $publicAction = ['hotPosts', 'snsBoard', 'posts', 'recommendPosts', 'commentLists'];
-    protected $ignoreAction = ['hotPosts', 'snsBoard', 'posts', 'recommendPosts', 'commentLists'];
+    protected $publicAction = ['hotPosts', 'snsBoard', 'posts', 'recommendPosts', 'commentLists', 'postInfo'];
+    protected $ignoreAction = ['hotPosts', 'snsBoard', 'posts', 'recommendPosts', 'commentLists', 'postInfo'];
 
     public function hotPosts()
     {
@@ -334,7 +335,7 @@ class PostsController extends ApiController
 
         $appletsliveBaseService = new AppletsliveBaseService();
         $contentcheck = $appletsliveBaseService->msgSecCheck($content);
-        if ($titlecheck !== true) {
+        if ($contentcheck !== true) {
             return $this->errorJson('文字内容违规', ['status' => 87014]);
         }
 
@@ -941,5 +942,69 @@ class PostsController extends ApiController
         return $this->successJson('删除成功', [
             'nums' => $replyNums,
         ]);
+    }
+
+    public function postInfo()
+    {
+        $postId = intval(\YunShop::request()->post_id);
+        if ($postId <= 0) {
+            return $this->errorJson('帖子id不存在');
+        }
+
+        $postRs = PostModel::where([
+            'uniacid' => \YunShop::app()->uniacid,
+            'id' => $postId,
+        ])->first();
+        if (!isset($postRs->id)) {
+            return $this->errorJson('未找到此帖子');
+        }
+
+        $userRs = UserModel::select('id', 'ajy_uid', 'nickname', 'avatarurl')
+            ->where('ajy_uid', $postRs->user_id)->first();
+        if (isset($userRs->id)) {
+            $postRs->nickname = $userRs->nickname;
+            $postRs->avatarurl = $userRs->avatarurl;
+        }
+
+        $postRs->goods_id = explode(',', $postRs->goods_id);
+        $postRs->goods_id = array_values(array_filter(array_unique($postRs->goods_id)));
+        $postRs->goods = [];
+        if (isset($postRs->goods_id[0])) {
+            $postRs->goods = Goods::select('id', 'title', 'thumb', 'price', 'status', 'deleted_at')
+                ->whereIn('id', $postRs->goods_id)
+                ->where('status', 1)
+                ->whereNull('deleted_at')->get();
+        }
+
+        $postRs->time = $this->dataarticletime($postRs->create_time->timestamp);
+        $postRs->images = json_decode($postRs->images, true);
+        $postRs->video_size = json_decode($postRs->video_size, true);
+        $postRs->image_size = json_decode($postRs->image_size, true);
+        $postRs->flag = false;
+
+        $postRs->is_follow = 1;
+        $postRs->is_like = 1;
+        $memberId = \YunShop::app()->getMemberId();
+        if ($memberId > 0) {
+            $followRs = UserFollowModel::select('id')->where([
+                'uniacid' => \YunShop::app()->uniacid,
+                'user_id' => $memberId,
+                'fans_id' => $postRs->user_id,
+            ])->first();
+            if (isset($followRs->id)) {
+                $postRs->is_follow = 2;
+            }
+
+            $likeRs = PostLikeModel::select('id')->where([
+                'uniacid' => \YunShop::app()->uniacid,
+                'user_id' => $memberId,
+                'post_id' => $postRs->id,
+            ])->first();
+            if (isset($likeRs->id)) {
+                $postRs->is_like = 2;
+            }
+        }
+
+        return $this->successJson('获取帖子列表', $postRs);
     }
 }
