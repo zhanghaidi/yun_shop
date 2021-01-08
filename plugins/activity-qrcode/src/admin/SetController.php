@@ -1,6 +1,6 @@
 <?php
 
-namespace Yunshop\EnterpriseWechat\admin;
+namespace Yunshop\ActivityQrcode\admin;
 
 use app\common\components\BaseController;
 use app\common\facades\Setting;
