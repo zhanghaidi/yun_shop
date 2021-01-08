@@ -22,8 +22,8 @@ use Yunshop\MinappContent\services\WeixinMiniprogramService;
 
 class IndexController extends ApiController
 {
-    protected $publicAction = ['systemCategory', 'banner', 'systemSecond', 'systemLoginImage'];
-    protected $ignoreAction = ['systemCategory', 'banner', 'systemSecond', 'systemLoginImage'];
+    protected $publicAction = ['systemCategory', 'banner', 'systemSecond', 'systemLoginImage', 'hotSearch'];
+    protected $ignoreAction = ['systemCategory', 'banner', 'systemSecond', 'systemLoginImage', 'hotSearch'];
 
     public function systemCategory()
     {
@@ -499,5 +499,15 @@ class IndexController extends ApiController
             throw new Exception('二维码保存失败');
         }
         return $qrcode;
+    }
+
+    public function hotSearch()
+    {
+        $listRs = SearchModel::selectRaw('keywords, count(keywords) as nums')->where([
+            'uniacid' => \YunShop::app()->uniacid,
+            'is_success' => 1,
+        ])->groupBy('keywords')
+            ->orderBy('nums', 'desc')->limit(8)->get();
+        return $this->successJson('success', $listRs);
     }
 }
