@@ -3,6 +3,7 @@
 namespace Yunshop\MinappContent\api;
 
 use app\common\components\ApiController;
+use app\common\models\Goods;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Redis;
@@ -19,12 +20,13 @@ use Yunshop\MinappContent\models\ShareQrcodeModel;
 use Yunshop\MinappContent\models\SnsBoardModel;
 use Yunshop\MinappContent\models\UserFollowModel;
 use Yunshop\MinappContent\models\UserModel;
-use Yunshop\MinappContent\services\WeixinMiniprogramService;
+
+// use Yunshop\MinappContent\services\WeixinMiniprogramService;
 
 class PostsController extends ApiController
 {
-    protected $publicAction = ['hotPosts', 'snsBoard', 'posts', 'recommendPosts', 'commentLists'];
-    protected $ignoreAction = ['hotPosts', 'snsBoard', 'posts', 'recommendPosts', 'commentLists'];
+    protected $publicAction = ['hotPosts', 'snsBoard', 'posts', 'recommendPosts', 'commentLists', 'postInfo'];
+    protected $ignoreAction = ['hotPosts', 'snsBoard', 'posts', 'recommendPosts', 'commentLists', 'postInfo'];
 
     public function hotPosts()
     {
@@ -333,7 +335,7 @@ class PostsController extends ApiController
 
         $appletsliveBaseService = new AppletsliveBaseService();
         $contentcheck = $appletsliveBaseService->msgSecCheck($content);
-        if ($titlecheck !== true) {
+        if ($contentcheck !== true) {
             return $this->errorJson('文字内容违规', ['status' => 87014]);
         }
 
@@ -807,6 +809,59 @@ class PostsController extends ApiController
         }
 
         $postRs = PostModel::where('id', $postId)->first();
+        if (!isset($postRs->id)) {
+            return $this->errorJson('帖子未找到');
+        }
+
+        $qrResponse = dirname(dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))));
+        $qrResponse .= '/0.png';
+        $qrResponse = file_get_contents($qrResponse);
+
+        $qrName = md5(\YunShop::app()->uniacid . $memberId . time() . random(6) . 'qr') . '.png';
+        $fileRs = Storage::disk('image')->put($qrName, $qrResponse);
+        if ($fileRs !== true) {
+            return $this->errorJson('生成分享海报二维码写入失败');
+        }
+        $qrFileName = ATTACHMENT_ROOT . Storage::disk('image')->url($qrName);
+
+        $pluginsRoot = dirname(SHOP_ROOT) . '/plugins/minapp-content';
+
+        $backgroundImg = $pluginsRoot . '/resource/images/post_bg.png'; //帖子背景海报路径
+        $config = array(
+            //昵称文字
+            'text' => array(
+                array(
+                    'text' => $postRs->title,
+                    'left' => 70,
+                    'top' => 170,
+                    'fontPath' => $pluginsRoot . '/resource/fonts/PingFangMedium.ttf', //字体文件
+                    'fontSize' => 28, //字号
+                    'fontColor' => '24,24,24', //字体颜色
+                    'angle' => 0,
+                ),
+            ),
+            'image' => array(
+                //二维码
+                array(
+                    'url' => $qrFileName, //二维码图片资源路径
+                    'left' => 380,
+                    'top' => 570,
+                    'stream' => 0, //图片资源是否是字符串图像流
+                    'right' => 0,
+                    'bottom' => 0,
+                    'width' => 150,
+                    'height' => 150,
+                    'opacity' => 100,
+                ),
+
+            ),
+            'background' => $backgroundImg,
+        );
+        var_dump($config);
+
+        $posterName = md5(\YunShop::app()->uniacid . $memberId . time() . random(6) . 'poster') . '.png';
+
+        // TODO 该功能前端无用，暂停开发
 
         // try {
         //     $qrResponse = WeixinMiniprogramService::getCodeUnlimit($scene, $page, 430, [
@@ -828,18 +883,6 @@ class PostsController extends ApiController
         //     return $this->errorJson('生成分享海报二维码失败');
         // }
 
-        $qrResponse = dirname(dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))));
-        var_dump($qrResponse);
-        exit;
-
-        $qrName = md5(\YunShop::app()->uniacid . $userId . time() . random(6)) . '.png';
-        $fileRs = Storage::disk('image')->put($qrName, $qrResponse);
-        if ($fileRs !== true) {
-            return $this->errorJson('生成分享海报二维码写入失败');
-        }
-
-
-
         try {
             $qrcode = IndexController::qrcodeCreateUnlimit($memberId, $scene, $page, isset(\YunShop::request()->os) ? \YunShop::request()->os : '');
             if (!isset($qrcode->id) || !isset($qrcode->qrcode)) {
@@ -858,5 +901,110 @@ class PostsController extends ApiController
             'id' => $qrcode->id,
             'qrcode' => yz_tomedia($qrcode->qrcode),
         ]);
+    }
+
+    public function postCommentDelete()
+    {
+        $commentId = intval(\YunShop::request()->id);
+        if ($commentId <= 0) {
+            return $this->errorJson('请传入评论id');
+        }
+
+        $commentRs = PostCommentModel::select('id', 'user_id', 'post_id', 'is_reply')->where([
+            'id' => $commentId,
+            'uniacid' => \YunShop::app()->uniacid,
+        ])->first();
+        if (!isset($commentRs->id)) {
+            return $this->errorJson('该评论不存在或已被删除');
+        }
+
+        $memberId = \YunShop::app()->getMemberId();
+        if ($commentRs->user_id != $memberId) {
+            return $this->errorJson('不是你的评论乱删个毛线');
+        }
+
+        $replyNums = 0;
+        if ($commentRs->is_reply == 0) {
+            $replyNums = PostCommentModel::where([
+                'parent_id' => $commentId,
+                'status' => 1,
+            ])->count();
+        }
+        $replyNums += 1;
+
+        PostCommentModel::where('id', $commentRs->id)->delete();
+
+        PostCommentModel::where('parent_id', $commentRs->id)->delete();
+
+        PostCommentLikeModel::where('comment_id', $commentRs->id)->delete();
+
+        PostModel::where('id', $commentRs->post_id)->decrement('comment_nums', $replyNums);
+        return $this->successJson('删除成功', [
+            'nums' => $replyNums,
+        ]);
+    }
+
+    public function postInfo()
+    {
+        $postId = intval(\YunShop::request()->post_id);
+        if ($postId <= 0) {
+            return $this->errorJson('帖子id不存在');
+        }
+
+        $postRs = PostModel::where([
+            'uniacid' => \YunShop::app()->uniacid,
+            'id' => $postId,
+        ])->first();
+        if (!isset($postRs->id)) {
+            return $this->errorJson('未找到此帖子');
+        }
+
+        $userRs = UserModel::select('id', 'ajy_uid', 'nickname', 'avatarurl')
+            ->where('ajy_uid', $postRs->user_id)->first();
+        if (isset($userRs->id)) {
+            $postRs->nickname = $userRs->nickname;
+            $postRs->avatarurl = $userRs->avatarurl;
+        }
+
+        $postRs->goods_id = explode(',', $postRs->goods_id);
+        $postRs->goods_id = array_values(array_filter(array_unique($postRs->goods_id)));
+        $postRs->goods = [];
+        if (isset($postRs->goods_id[0])) {
+            $postRs->goods = Goods::select('id', 'title', 'thumb', 'price', 'status', 'deleted_at')
+                ->whereIn('id', $postRs->goods_id)
+                ->where('status', 1)
+                ->whereNull('deleted_at')->get();
+        }
+
+        $postRs->time = $this->dataarticletime($postRs->create_time->timestamp);
+        $postRs->images = json_decode($postRs->images, true);
+        $postRs->video_size = json_decode($postRs->video_size, true);
+        $postRs->image_size = json_decode($postRs->image_size, true);
+        $postRs->flag = false;
+
+        $postRs->is_follow = 1;
+        $postRs->is_like = 1;
+        $memberId = \YunShop::app()->getMemberId();
+        if ($memberId > 0) {
+            $followRs = UserFollowModel::select('id')->where([
+                'uniacid' => \YunShop::app()->uniacid,
+                'user_id' => $memberId,
+                'fans_id' => $postRs->user_id,
+            ])->first();
+            if (isset($followRs->id)) {
+                $postRs->is_follow = 2;
+            }
+
+            $likeRs = PostLikeModel::select('id')->where([
+                'uniacid' => \YunShop::app()->uniacid,
+                'user_id' => $memberId,
+                'post_id' => $postRs->id,
+            ])->first();
+            if (isset($likeRs->id)) {
+                $postRs->is_like = 2;
+            }
+        }
+
+        return $this->successJson('获取帖子列表', $postRs);
     }
 }

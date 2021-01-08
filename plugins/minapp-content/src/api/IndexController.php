@@ -22,8 +22,8 @@ use Yunshop\MinappContent\services\WeixinMiniprogramService;
 
 class IndexController extends ApiController
 {
-    protected $publicAction = ['systemCategory', 'banner', 'systemSecond', 'systemLoginImage'];
-    protected $ignoreAction = ['systemCategory', 'banner', 'systemSecond', 'systemLoginImage'];
+    protected $publicAction = ['systemCategory', 'banner', 'systemSecond', 'systemLoginImage', 'hotSearch'];
+    protected $ignoreAction = ['systemCategory', 'banner', 'systemSecond', 'systemLoginImage', 'hotSearch'];
 
     public function systemCategory()
     {
@@ -499,5 +499,31 @@ class IndexController extends ApiController
             throw new Exception('二维码保存失败');
         }
         return $qrcode;
+    }
+
+    public function hotSearch()
+    {
+        $listRs = SearchModel::selectRaw('keywords, count(keywords) as nums')->where([
+            'uniacid' => \YunShop::app()->uniacid,
+            'is_success' => 1,
+        ])->groupBy('keywords')
+            ->orderBy('nums', 'desc')->limit(8)->get();
+        return $this->successJson('success', $listRs);
+    }
+
+    public function yzGoods()
+    {
+        $listRs = Goods::select('id', 'title', 'thumb', 'price')
+            ->whereHas('hasManyGoodsCategory', function ($query) {
+                $query->where('category_id', '!=', 25);
+            })->where(['status' => 1])
+            ->orderBy('display_order', 'desc')
+            ->orderBy('id', 'asc')
+            ->paginate(10);
+        $return = [];
+        $return['goods'] = $listRs->items();
+        $return['total'] = $listRs->total();
+        $return['totalPage'] = $listRs->lastPage();
+        return $this->successJson('成功获取商品列表', $return);
     }
 }
