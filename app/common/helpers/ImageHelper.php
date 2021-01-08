@@ -259,6 +259,69 @@ EOF;
     }
 
     /**
+     * 【表单控件】: 音频上传与选择控件
+     * @param string $name 表单input名称
+     * @param string $value 表单input值
+     * @param string $default 默认显示的缩略图
+     * @param array $options
+     * @return string
+     */
+    public function tplFormFieldAudio($name, $value = '', $options = array())
+    {
+        if(!is_array($options)){
+            $options = array();
+        }
+
+        $options['direct'] = true;
+        $options['multi'] = false;
+        $options['type'] = 'audio';
+        $param = uploadParam();
+        $options['fileSizeLimit'] = $param['fileSizeLimitAudio'];
+
+        $s = '';
+        if (!defined('TPL_INIT_AUDIO')) {
+            $s = '
+<script type="text/javascript">
+	function showAudioDialog(elm, options) {
+	    require.config({
+            paths:{
+                "'.$param['util'].'":"'.$param['util_url'].'"
+            }
+        });
+		require(["'.$param['util'].'"], function(util){
+			var btn = $(elm);
+			var ipt = btn.parent().prev();
+			var val = ipt.val();
+			util.voice(val, function(url){
+				if(url && url.attachment && url.url){
+					btn.prev().show();
+					ipt.val(url.attachment);
+					ipt.attr("filename",url.filename);
+					ipt.attr("url",url.url);
+				}
+				if(url && url.media_id){
+					ipt.val(url.media_id);
+				}
+			}, '.json_encode($options).');
+		});
+	}
+
+</script>';
+            echo $s;
+            define('TPL_INIT_AUDIO', true);
+        }
+
+        $s .= '
+	<div class="input-group">
+		<input type="text" value="'.$value.'" name="'.$name.'" class="form-control" autocomplete="off" '.($options['extras']['text'] ? $options['extras']['text'] : '').'>
+		<span class="input-group-btn">
+			<button class="btn btn-default" type="button" onclick="showAudioDialog(this,'.str_replace('"','\'', json_encode($options)).');">选择音频文件</button>
+		</span>
+	</div>';
+        return $s;
+    }
+
+    /**
      * 前端组件上传图片
      *
      * @param $fileinput
