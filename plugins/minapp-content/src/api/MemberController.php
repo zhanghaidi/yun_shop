@@ -1,6 +1,7 @@
 <?php
 
 namespace Yunshop\MinappContent\api;
+
 use app\common\components\ApiController;
 use app\frontend\modules\member\services\factory\MemberFactory;
 use app\frontend\modules\finance\models\PointLog;
@@ -14,11 +15,13 @@ class MemberController extends ApiController
     protected $ignoreAction = ['familyInvite'];
     protected $xc_uniacid = 3;
 
-    public function index(){
+    public function index()
+    {
         $uniacid = \YunShop::app()->uniacid;
         $user_id = \YunShop::app()->getMemberId();
         return $this->successJson('success');
     }
+
     //获取用户关注公众号状态
     public function getFollow()
     {
@@ -29,9 +32,9 @@ class MemberController extends ApiController
         //粉丝是否关注养居益公众号
         $fan_user = pdo_get('mc_mapping_fans', array('uniacid' => $uniacid, 'unionid' => $service_user['unionid']));
 
-        $is_follow = $fan_user['follow'] ? $fan_user['follow'] : 0 ;
+        $is_follow = $fan_user['follow'] ? $fan_user['follow'] : 0;
 
-        return $this->successJson('success', array('is_follow'=> $is_follow));
+        return $this->successJson('success', array('is_follow' => $is_follow));
 
     }
 
@@ -48,12 +51,12 @@ class MemberController extends ApiController
 
         $user = pdo_get('diagnostic_service_user', array('ajy_uid' => $user_id), array('family_id', 'birthday', 'age', 'gender', 'telephone')); //读取本用户家庭
 
-        if($user['family_id']){
+        if ($user['family_id']) {
             return $this->errorJson('此用户已有家庭', array('family_id' => $user['family_id']));
         }
 
         $res = pdo_update('diagnostic_service_user', array('family_id' => $family_id), array('ajy_uid' => $user_id));
-        if(!$res){
+        if (!$res) {
             return $this->errorJson('加入家庭失败');
         }
         $memberData = [
@@ -134,7 +137,7 @@ class MemberController extends ApiController
         $family = pdo_get('diagnostic_service_user', array('ajy_uid' => $user_id), 'family_id');
         $family_id = $family['family_id'];
 
-        if(!$family_id){
+        if (!$family_id) {
             return $this->errorJson('用户暂未加入家庭');
         }
 
@@ -239,7 +242,7 @@ class MemberController extends ApiController
         }
 
         $res = pdo_update('diagnostic_service_user', array('family_id' => 0), array('ajy_uid' => $user_id));
-        if(!$res){
+        if (!$res) {
             return $this->errorJson('操作失败', array('status' => 0));
         }
 
@@ -248,7 +251,8 @@ class MemberController extends ApiController
     }
 
     //关注我的用户列表
-    public function followMe(){
+    public function followMe()
+    {
 
         $uniacid = \YunShop::app()->uniacid;
         $user_id = \YunShop::app()->getMemberId();
@@ -281,7 +285,8 @@ class MemberController extends ApiController
     }
 
     //我关注的用户列表
-    public function myFollow(){
+    public function myFollow()
+    {
 
         $uniacid = \YunShop::app()->uniacid;
         $user_id = \YunShop::app()->getMemberId();
@@ -642,26 +647,26 @@ class MemberController extends ApiController
         $uniacid = \YunShop::app()->uniacid;
         $user_id = \YunShop::app()->getMemberId();
 
-        $cachekey = 'joinChatStatus'.$uniacid.$user_id ;
+        $cachekey = 'joinChatStatus' . $uniacid . $user_id;
         $cache = cache_load($cachekey);
-        if($cache){
+        if ($cache) {
             $chatStatus = $cache['chat_status'];
-            return $this->successJson('ok', array('chat_status'=> $chatStatus));
+            return $this->successJson('ok', array('chat_status' => $chatStatus));
         }
 
         $chatStatus = 0;
         $qywechat_user = pdo_get('yz_member_qywechat', array('member_id' => $user_id));
-        if(!empty($qywechat_user)){
+        if (!empty($qywechat_user)) {
             $qyWechatSetting = \Setting::get('plugin.enterprise-wechat');
             if ($qyWechatSetting && $qyWechatSetting['corpid'] && $qyWechatSetting['secret']) {
-                $chatStatus = $this->chekJoinChat($qyWechatSetting['corpid'], $qyWechatSetting['secret']);
+                $chatStatus = $this->chekJoinChat($qyWechatSetting['corpid'], $qyWechatSetting['secret'], $qywechat_user);
             }
         }
-        cache_write($cachekey, array('chat_status'=> $chatStatus));
-        return $this->successJson('ok', array('chat_status'=> $chatStatus));
+        cache_write($cachekey, array('chat_status' => $chatStatus));
+        return $this->successJson('ok', array('chat_status' => $chatStatus));
     }
 
-    protected function chekJoinChat($corpId, $corpSecret)
+    protected function chekJoinChat($corpId, $corpSecret, $qywechat_user)
     {
         $chatStatus = 0;
         $accessToken = QyWeChatService::getEnterpriseAccessToken($corpId, $corpSecret);
@@ -677,17 +682,17 @@ class MemberController extends ApiController
             $info = ihttp_request($chatListUrl, json_encode($postData));
             $chatList = @json_decode($info['content'], true);
             if ($chatList['errcode'] == 0) {
-                foreach ($chatList['group_chat_list'] as $chat){
+                foreach ($chatList['group_chat_list'] as $chat) {
                     $chatInfoUrl = "https://qyapi.weixin.qq.com/cgi-bin/externalcontact/groupchat/get?access_token={$accessToken}";
                     $data = array(
                         'chat_id' => $chat['chat_id']
                     );
                     $chatInfo = ihttp_request($chatInfoUrl, json_encode($data));
-                    $chatInfo = @json_decode($chatInfo['content'],true);
+                    $chatInfo = @json_decode($chatInfo['content'], true);
                     if ($chatInfo['errcode'] == 0) {
-                        foreach ($chatInfo['group_chat']['member_list'] as $member){
-                            if($member['type'] == 2){
-                                if($member['unionid'] == $qywechat_user['unionid']){
+                        foreach ($chatInfo['group_chat']['member_list'] as $member) {
+                            if ($member['type'] == 2) {
+                                if ($member['unionid'] == $qywechat_user['unionid']) {
                                     $chatStatus = 1;
                                 }
                             }

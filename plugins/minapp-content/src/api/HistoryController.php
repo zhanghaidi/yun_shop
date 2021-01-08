@@ -7,7 +7,7 @@ use app\common\components\ApiController;
 //历史足迹控制器-wk 20210106
 class HistoryController extends ApiController
 {
-    protected $ignoreAction = [];
+    protected $ignoreAction = ['systemNotice','getVersion'];
 
     protected $user_id = 0;
     protected $uniacid = 0;
@@ -134,5 +134,63 @@ class HistoryController extends ApiController
         } else {
             return $this->errorJson('清除失败', array('status' => 0));
         }
+    }
+
+    /**
+     * 用户个人中心信息统计数
+     * @return mixed
+     */
+    public function userDataStatistics()
+    {
+        //用户收藏数、足记数、关注数、粉丝数
+        $user_id = $this->user_id;
+        $uniacid = $this->uniacid;
+        //用户收藏数量
+        $userCollectCount = pdo_fetchcolumn("SELECT COUNT(*) FROM " . tablename('diagnostic_service_collect') . " WHERE user_id = :user_id AND uniacid = :uniacid", array(':user_id' => $user_id, ':uniacid' => $uniacid));
+        $userGoodsCollectCount = pdo_fetchcolumn("SELECT COUNT(*) FROM " . tablename('yz_member_favorite') . " WHERE member_id = :user_id AND  deleted_at is null ", array(':user_id' => $user_id));
+        //用户历史记录数
+        $userHistoryCount = pdo_fetchcolumn("SELECT COUNT(*) FROM " . tablename('diagnostic_service_history') . " WHERE user_id = :user_id AND uniacid = :uniacid", array(':user_id' => $user_id, ':uniacid' => $uniacid));
+        //用户商品历史记录
+        $userHistoryGoodsCount = pdo_fetchcolumn("SELECT COUNT(*) FROM " . tablename('yz_member_history') . " WHERE member_id = :user_id AND  deleted_at is null", array(':user_id' => $user_id));
+        //用户关注数(此用户关注了那些用户）
+        $userFollowCount = pdo_fetchcolumn("SELECT COUNT(*) FROM " . tablename('diagnostic_service_user_follow') . " WHERE user_id = :user_id AND uniacid = :uniacid", array(':user_id' => $user_id, ':uniacid' => $uniacid));
+        //用户粉丝数（关注者id是此用户id)
+        $userFansCount = pdo_fetchcolumn("SELECT COUNT(*) FROM " . tablename('diagnostic_service_user_follow') . " WHERE fans_id = :user_id AND uniacid = :uniacid", array(':user_id' => $user_id, ':uniacid' => $uniacid));
+
+        $dataStatistics = array(
+            'collectCount' => intval($userCollectCount + $userGoodsCollectCount),
+            'historyCount' => intval($userHistoryCount + $userHistoryGoodsCount),
+            'followCount' => intval($userFollowCount),
+            'fansCount' => intval($userFansCount),
+        );
+
+        return $this->successJson('成功获取用户统计数据', $dataStatistics);
+    }
+
+    /**
+     *小贴士/通知
+     * @return mixed
+     */
+    public function systemNotice()
+    {
+        $uniacid = $this->uniacid;
+        $cache_key = 'ajy_system_notices' . $uniacid;
+        $notices = cache_load($cache_key);
+        if (!$notices) {
+            $notices = pdo_getall('diagnostic_service_system_notice', array('uniacid' => $uniacid, 'status' => 1), array('id', 'title', 'content', 'jumpurl', 'jumptype','appid'), '', 'list_order DESC');
+            cache_write($cache_key, $notices);
+        }
+
+        return $this->successJson('获取系统通知成功', $notices);
+    }
+
+    /**
+     * 版本号获取
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getVersion()
+    {
+        $version = '1.0.0.0';
+        return $this->successJson('获取成功',$version);
     }
 }
