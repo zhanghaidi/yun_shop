@@ -11,6 +11,7 @@ use Yunshop\CustomApp\models\CustomAppElementSortModel;
 class ElementController extends ApiController
 {
     protected $publicAction = ['article', 'index'];
+    protected $ignoreAction = ['article', 'index'];
 
     public function article()
     {
