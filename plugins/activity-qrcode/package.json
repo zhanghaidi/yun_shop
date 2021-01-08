@@ -1,0 +1,10 @@
+{
+  "name": "activity-qrcode",
+  "version": "1.0.1",
+  "title": "活码二维码",
+  "description": "微信加群二维码活码管理",
+  "author": "zhd",
+  "url": "http://www.yunzshop.com",
+  "namespace": "Yunshop\\ActivityQrcode",
+  "config": "config.tpl"
+}
