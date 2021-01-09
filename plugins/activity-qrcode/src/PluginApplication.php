@@ -56,49 +56,49 @@ class PluginApplication extends \app\common\services\PluginApplication
             'list_icon'         => 'poster',
             'parents'           => [],
             'child'             => [
-                'activity-see' => [
+                'plugin.activity-qrcode.activity_see' => [
                     'name'      => '活码列表',
                     'permit'    => 1,
                     'menu'      => 1,
                     'icon'      => '',
                     'url'       => 'plugin.activity-qrcode.admin.activity.index',
                     'url_params'=> '',
+                    'item' => 'plugin.activity-qrcode.activity_see',
                     'parents'   => ['activity-qrcode'],
-                    'child'     => []
+                    'child'     => [
+                        'plugin.activity-qrcode.activity_add' => [
+                            'name' => '添加活码',
+                            'permit' => 1,
+                            'menu' => 1,
+                            'icon' => '',
+                            'item' => 'plugin.activity-qrcode.activity_add',
+                            'url' => 'plugin.activity-qrcode.admin.activity.add',
+                            'url_params' => '',
+                            'parents' => ['activity-qrcode','plugin.activity-qrcode.activity_see'],
+                        ],
+                        'plugin.activity-qrcode.activity_edit' => [
+                            'name' => '编辑活码',
+                            'permit' => 1,
+                            'menu' => 1,
+                            'icon' => '',
+                            'item' => 'plugin.activity-qrcode.activity_edit',
+                            'url' => 'plugin.activity-qrcode.admin.activity.edit',
+                            'url_params' => '',
+                            'parents' => ['activity-qrcode','plugin.activity-qrcode.activity_see'],
+                        ],
+                        'plugin.activity-qrcode.activity_destroy' => [
+                            'name' => '活码删除',
+                            'permit' => 1,
+                            'menu' => 1,
+                            'icon' => '',
+                            'item' => 'activity_destroy',
+                            'url' => 'plugin.activity-qrcode.admin.activity.deleted',
+                            'url_params' => '',
+                            'parents' => ['activity-qrcode','plugin.activity-qrcode.activity_see'],
+                        ],
+                    ]
                 ],
-
-                'activity_add' => [
-                    'name' => '添加活码',
-                    'permit' => 1,
-                    'menu' => 1,
-                    'icon' => '',
-                    'item' => 'activity_add',
-                    'url' => 'plugin.activity-qrcode.admin.activity.add',
-                    'url_params' => '',
-                    'parents' => ['activity-qrcode'],
-                ],
-
-                'activity_edit' => [
-                    'name' => '编辑活码',
-                    'permit' => 1,
-                    'menu' => 1,
-                    'icon' => '',
-                    'item' => 'activity_edit',
-                    'url' => 'plugin.activity-qrcode.admin.activity.edit',
-                    'url_params' => '',
-                    'parents' => ['activity-qrcode','activity-see'],
-                ],
-
-                'activity_destroy' => [
-                    'name' => '活码删除',
-                    'permit' => 1,
-                    'menu' => 1,
-                    'icon' => '',
-                    'item' => 'activity_destroy',
-                    'url' => 'plugin.activity-qrcode.admin.activity.deleted',
-                    'url_params' => '',
-                    'parents' => ['activity-qrcode'],
-                ],
+                
             ],
 
             'plugin.activity-qrcode.qrcode' => [
