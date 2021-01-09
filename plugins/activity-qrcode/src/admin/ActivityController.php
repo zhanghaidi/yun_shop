@@ -27,7 +27,7 @@ class ActivityController extends BaseController
         $pager = PaginationHelper::show($recordList->total(), $recordList->currentPage(), $recordList->perPage());
 
 
-        return view('Yunshop\Article::admin.list',
+        return view('Yunshop\ActivityQrcode::admin.list',
             [
                 'pageList'    => $recordList,
                 'page'          => $pager,
