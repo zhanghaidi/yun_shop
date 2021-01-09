@@ -50,7 +50,7 @@ class AcupointController extends ApiController
                 ->select('id', 'name', 'discription', 'content', 'video', 'audio', 'image', 'start_time', 'end_time', 'recommend_course')
                 ->orderBy('list_order', 'DESC')
                 ->get();
-            if (!$meridian[0]) {
+            if (isset($meridian[0])) {
                 foreach ($meridian as &$v) {
                     if ($v['start_time'] == "00:00:00") {
                         $v['start_time'] = null;
