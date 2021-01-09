@@ -49,11 +49,12 @@ class ActivityController extends BaseController
             $validator = $activityModel->validator();
             if($validator->fails()){
                 $this->error($validator->messages());
-            }
-            if($activityModel->save()){
-                return $this->message('修改成功', Url::absoluteWeb('plugin.activity-qrcode.admin.activity.index'));
             }else{
-                $this->error('活码创建失败');
+                if($activityModel->save()){
+                    return $this->message('添加成功', Url::absoluteWeb('plugin.activity-qrcode.admin.activity.qrcode', array('id' => $activityModel->id)));
+                }else{
+                    $this->error('活码创建失败');
+                }
             }
         }
         return view('Yunshop\ActivityQrcode::admin.info',
@@ -85,7 +86,7 @@ class ActivityController extends BaseController
                 $this->error($validator->messages());
             } else {
                 if ($activityModel->save()) {
-                    return $this->message('修改成功', Url::absoluteWeb('plugin.activity-qrcode.admin.activity.index'));
+                    return $this->message('修改成功', Url::absoluteWeb('plugin.activity-qrcode.admin.activity.qrcode', array('id' => $activityModel->id)));
                 } else {
                     $this->error('活码修改失败');
                 }

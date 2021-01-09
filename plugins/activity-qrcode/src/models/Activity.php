@@ -103,8 +103,7 @@ class Activity extends BaseModel
 
     public static function deletedActivity($id)
     {
-        return self::uniacid()->where('id', $id)
-            ->delete();
+        return self::where('id', $id)->delete();
     }
 
     //活码关联二维码

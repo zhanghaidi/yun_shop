@@ -15,8 +15,8 @@
                     <input type="hidden" name="c" value="site"/>
                     <input type="hidden" name="a" value="entry"/>
                     <input type="hidden" name="m" value="yun_shop"/>
-                    {{--<input type="hidden" name="do" value="tracking" id="form_do"/>
-                    <input type="hidden" name="route" value="tracking.goods-tracking.cart" id="route"/>--}}
+                    <input type="hidden" name="do" value="plugin" id="form_do"/>
+                    <input type="hidden" name="route" value="plugin.activity-qrcode.admin.activity.index" id="route"/>
 
                     <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
                         <div class="">
@@ -25,13 +25,13 @@
                         </div>
                     </div>
 
-                    <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2 ">
+                    {{--<div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2 ">
                         <!--<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">ID</label>-->
                         <div class="">
                             <input type="text" placeholder="搜索类型" class="form-control" name="search[type]"
                                    value="{{$search['type']}}"/>
                         </div>
-                    </div>
+                    </div>--}}
 
                     <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
 
@@ -114,13 +114,12 @@
 
                                 </td>
                                 <td style="text-align: center;">
-                                    {{$list->has_many_qrcode_count}}<br>
-                                    {{$list->timeout}}
-
+                                    总数量：<span style="color: green">{{$list->has_many_qrcode_count}}</span><br>
+                                    已满：<span style="color:orange">{{$list->timeout}}</span><br>
+                                    到期：<span style="color: red">{{$list->timeout}}</span>
                                 </td>
                                 <td style="text-align: center;">
-                                    {{$list->qrcode}}<br>
-
+                                    {{$list->qrcode}}
                                 </td>
 
                                 <td style="text-align: center;">
@@ -128,12 +127,6 @@
                                     <a class='btn btn-default nav-edit' href="{{ yzWebUrl('plugin.activity-qrcode.admin.activity.edit', array('id' => $list->id)) }}"><i class="fa fa-edit"></i></a>
                                     <a class='btn btn-default nav-del' href="{{ yzWebUrl('plugin.activity-qrcode.admin.activity.deleted', array('id' => $list->id)) }}" onclick="return confirm('确认删除此活码？');return false;"><i class="fa fa-trash-o"></i></a>
                                 </td>
-                               {{-- <td style="text-align:center;">
-                                    <a href="javascript:;" data-clipboard-text="{{yzAppFullUrl('articleContent/'.$article['id'])}}" data-url="{{yzAppFullUrl('articleContent/'.$article['id'])}}" title="复制连接" class="js-clip">复制链接</a>
-                                    <a class='btn btn-default nav-edit' href="{{ yzWebUrl('plugin.article.admin.article.edit',['id' => $article['id']]) }}"><i class="fa fa-edit"></i></a>
-                                    <a class='btn btn-default nav-del' href="{{ yzWebUrl('plugin.article.admin.article.deleted',['id' => $article['id']]) }}" onclick="return confirm('确认删除此分类吗？');return false;"><i class="fa fa-trash-o"></i></a>
-                                </td>--}}
-
                             </tr>
                         @endforeach
                         </tbody>
