@@ -113,10 +113,10 @@
                                     {{$list->timeout}}
 
                                 </td>
-                                <td style="text-align: center;">
-                                    {{$list->has_many_qrcode_count}}<br>
-                                    {{$list->timeout}}
-
+                                <span style="text-align: center;">
+                                    总数量：<span style="color: green">{{$list->has_many_qrcode_count}}</span><br>
+                                    已满：<span style="color:orange ">{{$list->timeout}}</span><br>
+                                    到期：<span style="color: red">{{$list->timeout}}</span>
                                 </td>
                                 <td style="text-align: center;">
                                     {{$list->qrcode}}<br>
