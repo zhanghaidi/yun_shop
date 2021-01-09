@@ -5,8 +5,8 @@ namespace Yunshop\ActivityQrcode\admin;
 use app\common\components\BaseController;
 use app\common\facades\Setting;
 use app\common\helpers\Url;
+use app\common\helpers\PaginationHelper;
 use Yunshop\ActivityQrcode\models\Activity;
-
 
 class ActivityController extends BaseController
 {
