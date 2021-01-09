@@ -34,7 +34,7 @@ class Activity extends BaseModel
             'uniacid' => 'required|integer',
             'activity_name' => 'required|max:50',
             'title' => 'required|max:50',
-            'descriptiont_top' => 'required|max:255',
+            'description_top' => 'required|max:255',
             'description_bottom' => 'required|max:255',
             'share_title' => 'max:255',
             'share_description' => 'max:255',
