@@ -78,7 +78,7 @@ class Activity extends BaseModel
                 return $qrcode->where('end_time', '<', time());
             }])
             ->with([
-                'hasManyQrcode ' => function($qrcode){
+                'hasManyQrcode' => function($qrcode){
                     return $qrcode->with(['hasManyUser']);
                 }]);
     }
