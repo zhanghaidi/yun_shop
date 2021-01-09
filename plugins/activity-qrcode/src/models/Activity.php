@@ -87,8 +87,8 @@ class Activity extends BaseModel
     public function scopeSearch($query, array $search)
     {
         //根据用户筛选
-        if ($search['keywords']) {
-            $query = $query->where('title', 'like', '%' . $search['keywords'] . '%')->orWhere('activity_name', $search['keywords']);
+        if ($search['name']) {
+            $query = $query->where('title', 'like', '%' . $search['name'] . '%')->orWhere('activity_name', 'like', '%' . $search['name'] . '%');
         }
         //根据商品筛选
         if ($search['type']) {
