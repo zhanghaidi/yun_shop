@@ -15,7 +15,7 @@ class PluginApplication extends \app\common\services\PluginApplication
         \app\backend\modules\menu\Menu::current()->setPluginMenu(MinappContentService::get(), [
             'name' => MinappContentService::get('name'),
             'type' => 'tool',
-            'url' => 'plugin.custom-app.admin.article-sort.index', // url 可以填写http 也可以直接写路由
+            'url' => 'plugin.minapp-content.admin.acupoint.index', // url 可以填写http 也可以直接写路由
             'url_params' => '', //如果是url填写的是路由则启用参数否则不启用
             'permit' => 1, //如果不设置则不会做权限检测
             'menu' => 1, //如果不设置则不显示菜单，子菜单也将不显示
@@ -26,21 +26,63 @@ class PluginApplication extends \app\common\services\PluginApplication
             'list_icon' => 'declaration',
             'parents' => [],
             'child' => [
-                'article_sort_manage' => [
-                    'name' => '文章管理',
+                'acupoint_manage' => [
+                    'name' => '穴位管理',
                     'permit' => 1,
                     'menu' => 1,
                     'icon' => '',
-                    'url' => 'plugin.custom-app.admin.article-sort.index',
+                    'url' => 'plugin.minapp-content.admin.acupoint.index',
                     'url_params' => '',
-                    'parents' => ['custom_app'],
+                    'parents' => ['minapp_content'],
                     'child' => [
-                        'article_sort_add' => [
-                            'name' => '添加分类',
+                        'acupoint_edit' => [
+                            'name' => '编辑穴位',
                             'permit' => 1,
                             'menu' => 0,
-                            'url' => 'plugin.custom-app.admin.article-sort.add',
-                            'parents' => ['custom_app', 'article_sort_manage'],
+                            'url' => 'plugin.minapp-content.admin.acupoint.edit',
+                            'parents' => ['minapp_content', 'acupoint_manage'],
+                        ],
+                        'acupoint_del' => [
+                            'name' => '删除穴位',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.acupoint.delete',
+                            'parents' => ['minapp_content', 'acupoint_manage'],
+                        ],
+                        'meridian_manage' => [
+                            'name' => '经络管理',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.meridian.index',
+                            'parents' => ['minapp_content', 'acupoint_manage'],
+                        ],
+                        'meridian_edit' => [
+                            'name' => '编辑经络',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.meridian.edit',
+                            'parents' => ['minapp_content', 'acupoint_manage'],
+                        ],
+                        'meridian_del' => [
+                            'name' => '删除经络',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.meridian.delete',
+                            'parents' => ['minapp_content', 'acupoint_manage'],
+                        ],
+                        'course_hour' => [
+                            'name' => '经络关联课时列表',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.meridian.course-hour',
+                            'parents' => ['minapp_content', 'acupoint_manage'],
+                        ],
+                        'course_hour' => [
+                            'name' => '经络所属穴位',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.meridian.acupoints',
+                            'parents' => ['minapp_content', 'acupoint_manage'],
                         ],
                     ],
                 ],
