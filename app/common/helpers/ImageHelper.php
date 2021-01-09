@@ -244,7 +244,7 @@ EOF;
 	}
 
 </script>';
-            echo $s;
+            // echo $s;
             define('TPL_INIT_VIDEO', true);
         }
 
@@ -307,7 +307,7 @@ EOF;
 	}
 
 </script>';
-            echo $s;
+            // echo $s;
             define('TPL_INIT_AUDIO', true);
         }
 
