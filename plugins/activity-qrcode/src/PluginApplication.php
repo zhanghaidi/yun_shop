@@ -98,7 +98,7 @@ class PluginApplication extends \app\common\services\PluginApplication
                         ],
                     ]
                 ],
-                
+
             ],
 
             'plugin.activity-qrcode.qrcode' => [
