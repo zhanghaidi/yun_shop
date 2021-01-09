@@ -76,6 +76,7 @@
                         <thead class="navbar-inner">
                         <tr>
                             <th style='width:6%; text-align: center;'>创建时间</th>
+                            <th style='width:6%; text-align: center;'>活码名称</th>
                             <th style='width:6%; text-align: center;'>活码标题</th>
                             <th style='width:6%; text-align: center;'>活码类型</th>
                             <th style='width:12%; text-align: center;'>今日扫码人数</th>
@@ -91,11 +92,16 @@
                                 <td style="text-align: center;">{{ $list->created_at }}</td>
 
                                 <td style="text-align: center;">
+                                    {{ $list->activity_name }}
+                                </td>
+                                <td style="text-align: center;">
                                     {{ $list->title }}
                                 </td>
 
                                 <td style="text-align: center;">
-                                    {{ $list->type }}
+                                    @if($list->switch_type == 1) 平均切换
+                                    @else 群满切换
+                                    @endif
                                 </td>
 
                                 <td style="text-align: center;">
@@ -103,11 +109,17 @@
 
                                 </td>
                                 <td style="text-align: center;">
-
+                                    {{$list->has_many_qrcode_count}}<br>
+                                    {{$list->timeout}}
 
                                 </td>
                                 <td style="text-align: center;">
+                                    {{$list->has_many_qrcode_count}}<br>
+                                    {{$list->timeout}}
 
+                                </td>
+                                <td style="text-align: center;">
+                                    {{$list->qrcode}}<br>
 
                                 </td>
 
