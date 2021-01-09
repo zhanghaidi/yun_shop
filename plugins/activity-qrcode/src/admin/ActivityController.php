@@ -41,7 +41,7 @@ class ActivityController extends BaseController
     public function add()
     {
         $activityModel = new Activity();
-        $requestActivity = \YunShop::request()->activity;
+        $requestActivity = \YunShop::request()->info;
         if ($requestActivity) {
             $activityModel->fill($requestActivity);
             $activityModel->uniacid = \YunShop::app()->uniacid;
@@ -58,7 +58,7 @@ class ActivityController extends BaseController
         }
         return view('Yunshop\ActivityQrcode::admin.info',
             [
-                'activity' => $activityModel,
+                'info' => $activityModel,
             ]
         )->render();
 
@@ -75,7 +75,7 @@ class ActivityController extends BaseController
             return $this->error('无此记录或已被删除');
         }
 
-        $requestActivity = \YunShop::request()->activity;
+        $requestActivity = \YunShop::request()->info;
         if ($requestActivity) {
             $activityModel->fill($requestActivity);
             $activityModel->qrcode = '';
@@ -93,7 +93,7 @@ class ActivityController extends BaseController
         }
         return view('Yunshop\ActivityQrcode::admin.info',
             [
-                'activity' => $activityModel,
+                'info' => $activityModel,
             ]
         )->render();
 

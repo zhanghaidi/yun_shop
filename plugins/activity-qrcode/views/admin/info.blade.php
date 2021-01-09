@@ -16,26 +16,26 @@
                 <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-1 control-label">活码名称</label>
                     <div class="col-sm-9 col-xs-12 col-md-11">
-                        <input name="activity_name" type="text" class="form-control" value="{{ $info['activity_name'] }}" required/>
+                        <input name="info[activity_name]" type="text" class="form-control" value="{{ $info['activity_name'] }}" placeholder="请输入活码名称" required/>
                     </div>
                 </div>
                     <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-1 control-label">活码标题</label>
                         <div class="col-sm-9 col-xs-12 col-md-11">
-                            <input name="title" type="text" class="form-control" value="{{ $info['title'] }}" required/>
+                            <input name="info[title]" type="text" class="form-control" value="{{ $info['title'] }}" placeholder="请输入活码标题" required/>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-1 control-label">顶部描述</label>
                         <div class="col-sm-9 col-xs-12 col-md-11">
-                            <input name="description_top" type="text" class="form-control" value="{{ $info['description_top'] }}" required/>
+                            <input name="info[description_top]" type="text" class="form-control" value="{{ $info['description_top'] }}" placeholder="顶部描述" required/>
                         </div>
                     </div>
 
                 <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-1 control-label">底部引导文字</label>
                     <div class="col-sm-9 col-xs-12 col-md-11">
-                        <input name="description_bottom" type="text" class="form-control" value="{{ $info['description_bottom'] }}" required/>
+                        <input name="info[description_bottom]" type="text" class="form-control" value="{{ $info['description_bottom'] }}" placeholder="底部引导文字" required/>
                     </div>
                 </div>
 
@@ -43,10 +43,10 @@
                     <label class="col-xs-12 col-sm-3 col-md-1 control-label">活码切换方式</label>
                     <div class="col-sm-9 col-xs-12 col-md-11">
                         <label class="radio-inline">
-                            <input type="radio" name="switch_type" value="1" @if($info['switch_type'] == 1) checked="checked" @endif />平均切换
+                            <input type="radio" name="info[switch_type]" value="1" @if($info['switch_type'] == 1) checked="checked" @endif />平均切换
                         </label>
                         <label class="radio-inline">
-                            <input type="radio" name="switch_type" value="0" @if($info['switch_type'] == 0) checked="checked" @endif />满员切换
+                            <input type="radio" name="info[switch_type]" value="0" @if($info['switch_type'] == 0) checked="checked" @endif />满员切换
                         </label>
                     </div>
                 </div>
@@ -55,10 +55,10 @@
                     <label class="col-xs-12 col-sm-3 col-md-1 control-label">启用/关闭</label>
                     <div class="col-sm-9 col-xs-12 col-md-11">
                         <label class="radio-inline">
-                            <input type="radio" name="status" value="1" @if($info['status'] == 1) checked="checked" @endif />开启
+                            <input type="radio" name="info[status]" value="0" @if($info['status'] == 0) checked="checked" @endif />关闭
                         </label>
                         <label class="radio-inline">
-                            <input type="radio" name="status" value="0" @if($info['status'] == 0) checked="checked" @endif />关闭
+                            <input type="radio" name="info[status]" value="1" @if($info['status'] == 1) checked="checked" @endif />开启
                         </label>
                     </div>
                 </div>
@@ -89,27 +89,27 @@
                 <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-1 control-label">分享域名</label>
                     <div class="col-sm-9 col-xs-12 col-md-11">
-                        <input name="share_domain" type="text" class="form-control" value="{{ $info['share_domain'] }}" required/>
+                        <input name="info[share_domain]" type="text" class="form-control" value="{{ $info['share_domain'] }}" required/>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-1 control-label">分享标题</label>
                     <div class="col-sm-9 col-xs-12 col-md-11">
-                        <input name="share_title" type="text" class="form-control" value="{{ $info['share_title'] }}" />
+                        <input name="info[share_title]" type="text" class="form-control" value="{{ $info['share_title'] }}" />
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-1 control-label">分享描述</label>
                     <div class="col-sm-9 col-xs-12 col-md-11">
-                        <input name="share_description" type="text" class="form-control" value="{{ $info['share_description'] }}" />
+                        <input name="info[share_description]" type="text" class="form-control" value="{{ $info['share_description'] }}" />
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-1 control-label">分享图片</label>
                     <div class="col-sm-9 col-xs-12 col-md-6">
-                        {!! app\common\helpers\ImageHelper::tplFormFieldImage('share_img', $info['share_img']) !!}
+                        {!! app\common\helpers\ImageHelper::tplFormFieldImage('info[share_img]', $info['share_img']) !!}
                         <span class="help-block">分享图片 5:4</span>
                     </div>
                 </div>
