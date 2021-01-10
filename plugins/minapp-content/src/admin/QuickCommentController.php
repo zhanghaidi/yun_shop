@@ -45,4 +45,52 @@ class QuickCommentController extends BaseController
             'request' => $input,
         ]);
     }
+
+    /**
+     * 添加快捷评语
+     */
+    public function add()
+    {
+        $uniacid = \YunShop::app()->uniacid;
+        $id = intval(request()->input('id'));
+        if ($id > 0) {
+            $info = DB::table('diagnostic_service_quick_comment')->where(['id' => $id])->first();
+            if (empty($info)) {
+                return $this->message('快评不存在或已被删除', '', 'danger');
+            }
+        }
+        if (request()->isMethod('post')) {
+            $param = request()->all();
+            $content = trim($param['content']);
+            if (empty($content)) {
+                return $this->message('内容不能为空', '', 'danger');
+            }
+            $type = intval($param['type']);
+            if (!$type) {
+                return $this->message('内容不能为空', '', 'danger');
+            }
+            $data = array(
+                'uniacid' => $uniacid,
+                'content' => $content,
+                'status' => intval($param['status']),
+                'type' => $type,   //快捷语类型
+                'create_time' => TIMESTAMP
+            );
+            if ($id > 0) {
+                $res = DB::table('diagnostic_service_quick_comment')->where('id', $id)->update($data);;
+            } else {
+                $res = DB::table('diagnostic_service_quick_comment')->insert($data);
+            }
+            if ($res) {
+                return $this->message('修改成功', Url::absoluteWeb('plugin.minapp-content.admin.quick-comment.index'));
+            } else {
+                return $this->message('修改失败', '', 'danger');
+            }
+        }
+
+        return view('Yunshop\MinappContent::admin.quick_comment.edit', [
+            'pluginName' => MinappContentService::get('name'),
+            'info' => $info,
+        ]);
+    }
 }

@@ -11,7 +11,7 @@
                 <form id="form1" role="form" class="form-horizontal form" method="post" action="">
                     <div class="form-group">
                         <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2">
-                            <select name='search[search_time]' class='form-control'>
+                            <select name='search[status]' class='form-control'>
                                 <option value='0' @if($request['search']['status']==0) selected @endif>选择快评类型
                                 </option>
                                 <option value='1' @if($request['search']['status']==1) selected @endif>穴位快评
@@ -38,7 +38,7 @@
                     </div>
                 </form>
                 <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                    <a href="{{ yzWebUrl('plugin.minapp-content.admin.acupoint.edit') }}" class="btn btn-info">添加快捷评语</a>
+                    <a href="{{ yzWebUrl('plugin.minapp-content.admin.quick-comment.add') }}" class="btn btn-info">添加快捷评语</a>
                 </div>
             </div>
 
