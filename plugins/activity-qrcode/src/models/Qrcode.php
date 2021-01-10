@@ -89,13 +89,19 @@ class Qrcode extends BaseModel
     }
 
     //
-   /* public function getStatusAttribute()
+    public function getStatusAttribute()
     {
         if($this->attributes['end_time'] < time() ){
-
-            return 1;
-        }elseif ($this->attributes['switch_limit'] > $ )
-    }*/
+            $status = -1;
+        }else{
+            if($this->attributes['switch_limit'] < $this->hasManyUser()->count()){
+               $status = 2;
+            }else{
+                $status = 1;
+            }
+        }
+        return $status;
+    }
 
     //删除二维码
     public static function deletedQrcode($id)
