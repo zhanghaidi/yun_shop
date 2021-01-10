@@ -89,8 +89,8 @@
                                 </td>
 
                                 <td style="text-align: center;">
-                                    <a class='btn btn-default nav-edit' href="{{ yzWebUrl('plugin.activity-qrcode.admin.qrcode.edit', array('id' => $list->id)) }}"><i class="fa fa-edit"></i></a>
-                                    <a class='btn btn-default nav-del' href="{{ yzWebUrl('plugin.activity-qrcode.admin.qrcode.deleted', array('id' => $list->id)) }}" onclick="return confirm('确认删除此二维码？');return false;"><i class="fa fa-trash-o"></i></a>
+                                    <a class='btn btn-default nav-edit' href="{{ yzWebUrl('plugin.activity-qrcode.admin.qrcode.edit', array('id' => $activityId,'qrcode_id' => $list->id)) }}"><i class="fa fa-edit"></i></a>
+                                    <a class='btn btn-default nav-del' href="{{ yzWebUrl('plugin.activity-qrcode.admin.qrcode.deleted', array('id' => $activityId,'qrcode_id' => $list->id)) }}" onclick="return confirm('确认删除此二维码？');return false;"><i class="fa fa-trash-o"></i></a>
                                 </td>
                             </tr>
                         @endforeach
