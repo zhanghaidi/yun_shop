@@ -86,7 +86,7 @@ class Qrcode extends BaseModel
         if($this->attributes['end_time'] < time() ){
             $status = -1;
         }else{
-            if($this->attributes['switch_limit'] < $this->hasManyUser()->count()){
+            if($this->attributes['switch_limit'] <= $this->hasManyUser()->count()){
                $status = 2;
             }else{
                 $status = 1;
