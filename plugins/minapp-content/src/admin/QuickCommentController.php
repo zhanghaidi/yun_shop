@@ -5,8 +5,6 @@ namespace Yunshop\MinappContent\admin;
 use app\common\components\BaseController;
 use app\common\helpers\PaginationHelper;
 use app\common\helpers\Url;
-use Yunshop\MinappContent\models\AcupointMerModel;
-use Yunshop\MinappContent\models\AcupointModel;
 use Yunshop\MinappContent\services\MinappContentService;
 use Illuminate\Support\Facades\DB;
 
