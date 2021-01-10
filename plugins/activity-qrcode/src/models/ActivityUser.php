@@ -9,7 +9,7 @@ class ActivityUser extends BaseModel
 {
 
     use SoftDeletes;
-    public $table = 'yz_activity_user';
+    public $table = 'yz_activity_code_user';
     public $timestamps = true;
     protected $guarded = [''];
 
