@@ -95,6 +95,7 @@ class QrcodeController extends BaseController
         }
         $requestQrcode = \YunShop::request()->info;
         if ($requestQrcode) {
+            $requestQrcode['end_time'] = strtotime($requestQrcode['end_time']);
             $qrcodeModel->fill($requestQrcode);
 
             $validator = $qrcodeModel->validator();
