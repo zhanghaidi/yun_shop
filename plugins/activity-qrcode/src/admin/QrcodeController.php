@@ -69,7 +69,7 @@ class QrcodeController extends BaseController
                 $this->error($validator->messages());
             }else{
                 if($qrcodeModel->save()){
-                    return $this->message('添加成功', Url::absoluteWeb('plugin.activity-qrcode.admin.activity.qrcode', array('id' => $this->activityId)));
+                    return $this->message('添加成功', Url::absoluteWeb('plugin.activity-qrcode.admin.activity.qrcode.index', array('id' => $this->activityId)));
                 }else{
                     $this->error('二维码创建失败');
                 }
@@ -101,7 +101,7 @@ class QrcodeController extends BaseController
                 $this->error($validator->messages());
             } else {
                 if ($qrcodeModel->save()) {
-                    return $this->message('修改成功', Url::absoluteWeb('plugin.activity-qrcode.admin.activity.qrcode', array('id' => $this->activityId)));
+                    return $this->message('修改成功', Url::absoluteWeb('plugin.activity-qrcode.admin.activity.qrcode.index', array('id' => $this->activityId)));
                 } else {
                     $this->error('修改失败');
                 }
@@ -126,7 +126,7 @@ class QrcodeController extends BaseController
         }
 
         if(Qrcode::deletedQrcode($qrcodeId)){
-            return $this->message('删除成功', Url::absoluteWeb('plugin.activity-qrcode.admin.activity.qrcode',  array('id' => $this->activityId)));
+            return $this->message('删除成功', Url::absoluteWeb('plugin.activity-qrcode.admin.activity.qrcode.index',  array('id' => $this->activityId)));
         }
 
     }
