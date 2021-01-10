@@ -57,6 +57,40 @@ class Qrcode extends BaseModel
             ->first();
     }
 
+    /**
+     * @param $query
+     * @return mixed
+     */
+    public function scopeRecords($query)
+    {
+        return $query->withCount([
+            'hasManyUser',
+            /*'hasManyQrcode as timeout' => function($qrcode){
+                return $qrcode->where('end_time', '<', time());
+            }*/])
+            ->with([
+                'hasManyUser'
+            ]);
+    }
+
+    //搜索条件
+    public function scopeSearch($query, array $search)
+    {
+        //根据用户筛选
+        if ($search['name']) {
+            $query = $query->where('title', 'like', '%' . $search['name'] . '%')->orWhere('activity_name', 'like', '%' . $search['name'] . '%');
+        }
+        //根据商品筛选
+        if ($search['type']) {
+            $query = $query->where('type', $search['type']);
+        }
+        //根据时间筛选
+        if ($search['search_time'] == 1) {
+            $query = $query->whereBetween('created_at', [strtotime($search['time']['start']),strtotime($search['time']['end'])]);
+        }
+        return $query;
+    }
+
     //删除二维码
     public static function deletedQrcode($id)
     {
