@@ -53,7 +53,7 @@ class ActivityController extends BaseController
                 if($activityModel->save()){
                     return $this->message('添加成功', Url::absoluteWeb('plugin.activity-qrcode.admin.activity.qrcode.index', array('id' => $activityModel->id)));
                 }else{
-                    $this->error('活码创建失败');
+                    $this->message('活码创建失败','','error');
                 }
             }
         }
@@ -73,7 +73,7 @@ class ActivityController extends BaseController
 
         $activityModel = Activity::getActivity($activityId);
         if(!$activityModel){
-            return $this->error('无此记录或已被删除');
+            return $this->message('无此记录或已被删除','','error');
         }
 
         $requestActivity = \YunShop::request()->info;
@@ -88,7 +88,7 @@ class ActivityController extends BaseController
                 if ($activityModel->save()) {
                     return $this->message('修改成功', Url::absoluteWeb('plugin.activity-qrcode.admin.activity.qrcode.index', array('id' => $activityModel->id)));
                 } else {
-                    $this->error('活码修改失败');
+                    $this->message('活码修改失败','','error');
                 }
             }
         }
@@ -107,7 +107,7 @@ class ActivityController extends BaseController
         $id = \YunShop::request()->id;
 
         if (!Activity::getActivity($id)) {
-            return $this->error('没有此活码或已被删除');
+            return $this->message('没有此活码或已被删除','','error');
         }
 
         if(Activity::deletedActivity($id)){

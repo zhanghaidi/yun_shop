@@ -99,7 +99,7 @@ class QrcodeController extends BaseController
         $qrcodeId = \YunShop::request()->qrcode_id;
         $qrList = Qrcode::where('code_id', $this->activityId)->where('id', '<>', $qrcodeId)->get()->toArray();
         $sortArr = array_column($qrList, 'sort');
-        
+
         $qrcodeModel = Qrcode::getInfo($qrcodeId);
         if(!$qrcodeModel){
             return $this->message('二维码不存在或已被删除','','error');
