@@ -1,5 +1,4 @@
 @extends('layouts.base')
-@section('title','二维码列表')
 
 @section('content')
     <div id="member-blade" class="rightlist">
@@ -45,7 +44,7 @@
         </div>
         <div class="clearfix">
             <div class="panel panel-default">
-                <a class='btn btn-info' href="{{ yzWebUrl('plugin.activity-qrcode.admin.activity.add') }}" style="margin-bottom: 2px"> 上传二维码 </a>&nbsp;&nbsp;&nbsp;&nbsp;
+                <a class='btn btn-info' href="{{ yzWebUrl('plugin.activity-qrcode.admin.qrcode.add') }}" style="margin-bottom: 2px"> 上传二维码 </a>&nbsp;&nbsp;&nbsp;&nbsp;
 
                 <div class="panel-heading">记录总数：{{ $pageList->total() }}</div>
                 <div class="panel-body">

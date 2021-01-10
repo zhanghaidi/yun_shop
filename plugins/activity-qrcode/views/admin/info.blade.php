@@ -1,5 +1,4 @@
 @extends('layouts.base')
-@section('title', trans('活码编辑'))
 @section('content')
 
     <div class='panel panel-default'>
@@ -117,7 +116,7 @@
                 <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
                     <div class="col-sm-9 col-xs-12">
-                        <input type="submit" name="submit" value="提交上传二维码" class="btn btn-success"/>
+                        <input type="submit" name="submit" value="提交" class="btn btn-success"/>
                     </div>
                 </div>
 
