@@ -61,7 +61,7 @@
                 <div class="form-group">
                     <label class="ol-xs-12 col-sm-3 col-md-1 control-label">二维码失效时间</label>
                     <div class="col-sm-9 col-xs-12 col-md-11">
-                        {!! tpl_form_field_date('info[end_time]', $info['end_time'], date('Y-m-d', strtotime("+1 week"))) !!}
+                        {!! tpl_form_field_date('info[end_time]', $info['end_time'], false) !!}
 
                         <span class="help-block">二维码失效时间</span>
                     </div>
