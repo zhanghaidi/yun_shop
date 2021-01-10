@@ -86,7 +86,58 @@ class PluginApplication extends \app\common\services\PluginApplication
                         ],
                     ],
                 ],
+                'sport_clock' => [
+                    'name' => '运动打卡管理',
+                    'permit' => 1,
+                    'menu' => 1,
+                    'icon' => '',
+                    'url' => 'plugin.minapp-content.admin.sport-clock.step',
+                    'url_params' => '',
+                    'parents' => ['minapp_content'],
+                    'child' => [
+                        'step_exchange_list' => [
+                            'name' => '兑换步数列表',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.sport-clock.step-exchange-list',
+                            'parents' => ['minapp_content', 'sport_clock'],
+                        ],
 
+                    ],
+                ],
+                'quick_comment_list' => [
+                    'name' => '快捷评语管理',
+                    'permit' => 1,
+                    'menu' => 1,
+                    'icon' => '',
+                    'url' => 'plugin.minapp-content.admin.quick-comment.index',
+                    'url_params' => '',
+                    'parents' => ['minapp_content'],
+                    'child' => [
+                        'quick_comment_add' => [
+                            'name' => '添加快捷评语',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.quick-comment.add',
+                            'parents' => ['minapp_content', 'sport_clock'],
+                        ],
+                        'quick_comment_edit' => [
+                            'name' => '编辑快捷评语',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.quick-comment.edit',
+                            'parents' => ['minapp_content', 'sport_clock'],
+                        ],
+                        'quick_comment_delete' => [
+                            'name' => '删除快捷评语',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.quick-comment.delete',
+                            'parents' => ['minapp_content', 'sport_clock'],
+                        ],
+
+                    ],
+                ],
             ],
         ]);
     }
