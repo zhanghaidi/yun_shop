@@ -47,6 +47,25 @@
                     </div>
                 </div>
 
+                {{--<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">二维码失效时间</label>
+                    <div class="col-sm-9 col-xs-12">
+                        {!! app\common\helpers\DateRange::tplFormFieldDateRange('info[end_time]', [
+                       'starttime'=>$live['start_time'] ? $live['start_time'] : date('Y-m-d H:i:s') ,
+                       'endtime'=>$live['end_time']  ? $live['end_time'] : date('Y-m-d H:i:s', time() + 86400),
+                       'start'=> 0,
+                       'end'=> 0
+                       ], true) !!}
+                    </div>
+                </div>--}}
+                <div class="form-group">
+                    <label class="ol-xs-12 col-sm-3 col-md-1 control-label">二维码失效时间</label>
+                    <div class="col-sm-9 col-xs-12 col-md-11">
+                        {!! tpl_form_field_date('end_time', date('Y-m-d'), false) !!}
+                        <span class="help-block">二维码失效时间</span>
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
                     <div class="col-sm-9 col-xs-12">
