@@ -105,7 +105,7 @@ class QrcodeController extends BaseController
         if ($requestQrcode) {
             $requestQrcode['end_time'] = strtotime($requestQrcode['end_time']);
 
-            $qrList = Qrcode::where('code_id', $this->activityId)->whereNotIn('id', [$qrcodeId])->get()->toArray();
+            $qrList = Qrcode::where('code_id', $this->activityId)->where('id', '<>', $qrcodeId)->get()->toArray();
             $sortArr = array_column($this->qrList, 'sort');
             if(in_array($requestQrcode['sort'], $sortArr)){
                 return $this->message('排序已存在','','error');
