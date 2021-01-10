@@ -51,7 +51,7 @@ class ActivityController extends BaseController
                 $this->error($validator->messages());
             }else{
                 if($activityModel->save()){
-                    return $this->message('添加成功', Url::absoluteWeb('plugin.activity-qrcode.admin.activity.qrcode', array('id' => $activityModel->id)));
+                    return $this->message('添加成功', Url::absoluteWeb('plugin.activity-qrcode.admin.activity.qrcode.index', array('id' => $activityModel->id)));
                 }else{
                     $this->error('活码创建失败');
                 }
@@ -86,7 +86,7 @@ class ActivityController extends BaseController
                 $this->error($validator->messages());
             } else {
                 if ($activityModel->save()) {
-                    return $this->message('修改成功', Url::absoluteWeb('plugin.activity-qrcode.admin.activity.qrcode', array('id' => $activityModel->id)));
+                    return $this->message('修改成功', Url::absoluteWeb('plugin.activity-qrcode.admin.activity.qrcode.index', array('id' => $activityModel->id)));
                 } else {
                     $this->error('活码修改失败');
                 }

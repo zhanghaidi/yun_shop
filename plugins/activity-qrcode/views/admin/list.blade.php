@@ -123,7 +123,7 @@
                                 </td>
 
                                 <td style="text-align: center;">
-                                    <a class='btn btn-default' href="{{ yzWebUrl('plugin.activity-qrcode.admin.qrcode', array('id' => $list->id)) }}" style="margin-bottom: 2px">二维码管理</a>
+                                    <a class='btn btn-default' href="{{ yzWebUrl('plugin.activity-qrcode.admin.qrcode.index', array('id' => $list->id)) }}" style="margin-bottom: 2px">二维码管理</a>
                                     <a class='btn btn-default nav-edit' href="{{ yzWebUrl('plugin.activity-qrcode.admin.activity.edit', array('id' => $list->id)) }}"><i class="fa fa-edit"></i></a>
                                     <a class='btn btn-default nav-del' href="{{ yzWebUrl('plugin.activity-qrcode.admin.activity.deleted', array('id' => $list->id)) }}" onclick="return confirm('确认删除此活码？');return false;"><i class="fa fa-trash-o"></i></a>
                                 </td>
