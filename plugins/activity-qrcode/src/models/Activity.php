@@ -56,10 +56,10 @@ class Activity extends BaseModel
         return self::withCount([
                 'hasManyQrcode',
                 'hasManyQrcode as timeout' => function($qrcode){
-                    return $qrcode->where('end_time', '<', time());
+                    return $qrcode->where('status', -1);
                 },
                 'hasManyQrcode as full' => function($qrcode){
-                    return $qrcode->where('status', -1);
+                    return $qrcode->where('status', 2);
                 }
             ])
             /*->with([
