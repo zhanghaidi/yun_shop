@@ -1,5 +1,4 @@
 @extends('layouts.base')
-@section('title','活码列表')
 
 @section('content')
     <div id="member-blade" class="rightlist">
