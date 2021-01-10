@@ -48,7 +48,7 @@ class Qrcode extends BaseModel
             'qr_img' => 'string',
             'switch_limit' => 'required|integer',
             'sort' => 'required|integer',
-            'end_time' => 'required|integer',
+            //'end_time' => 'required|integer',
         ];
     }
 
