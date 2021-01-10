@@ -84,54 +84,54 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'url_params' => '',
                             'parents' => ['activity-qrcode','plugin.activity-qrcode.activity_see'],
                         ],
+                        'plugin.activity-qrcode.qrcode_see' => [
+                            'name' => '二维码列表',
+                            'permit' => 1,
+                            'menu' => 1,
+                            'icon' => '',
+                            'item' => 'plugin.activity-qrcode.qrcode_see',
+                            'url' => 'plugin.activity-qrcode.admin.qrcode.index',
+                            'url_params' => '',
+                            'parents' => ['activity-qrcode'],
+                            'child' =>[
+                                'plugin.activity-qrcode.qrcode_add' => [
+                                    'name' => '二维码添加',
+                                    'permit' => 1,
+                                    'menu' => 1,
+                                    'icon' => '',
+                                    'item' => 'plugin.activity-qrcode.qrcode_add',
+                                    'url' => 'plugin.activity-qrcode.admin.qrcode.add',
+                                    'url_params' => '',
+                                    'parents' => ['activity-qrcode','plugin.activity-qrcode.activity_see','plugin.activity-qrcode.qrcode_see'],
+                                ],
+                                'plugin.activity-qrcode.qrcode_edit' => [
+                                    'name' => '二维码编辑',
+                                    'permit' => 1,
+                                    'menu' => 1,
+                                    'icon' => '',
+                                    'item' => 'plugin.activity-qrcode.qrcode_edit',
+                                    'url' => 'plugin.activity-qrcode.admin.qrcode.edit',
+                                    'url_params' => '',
+                                    'parents' => ['activity-qrcode','plugin.activity-qrcode.activity_see','plugin.activity-qrcode.qrcode_see'],
+                                ],
+                                'plugin.activity-qrcode.qrcode_destroy' => [
+                                    'name' => '二维码删除',
+                                    'permit' => 1,
+                                    'menu' => 1,
+                                    'icon' => '',
+                                    'item' => 'plugin.activity-qrcode.qrcode_destroy',
+                                    'url' => 'plugin.activity-qrcode.admin.qrcode.deleted',
+                                    'url_params' => '',
+                                    'parents' => ['activity-qrcode','plugin.activity-qrcode.activity_see','plugin.activity-qrcode.qrcode_see'],
+                                ],
+                            ]
+                        ],
 
                     ]
                 ],
 
             ],
 
-            'plugin.activity-qrcode.qrcode_see' => [
-                'name' => '二维码列表',
-                'permit' => 1,
-                'menu' => 1,
-                'icon' => '',
-                'item' => 'plugin.activity-qrcode.qrcode_see',
-                'url' => 'plugin.activity-qrcode.admin.qrcode.index',
-                'url_params' => '',
-                'parents' => ['activity-qrcode'],
-                'child' =>[
-                    'plugin.activity-qrcode.qrcode_add' => [
-                        'name' => '二维码添加',
-                        'permit' => 1,
-                        'menu' => 1,
-                        'icon' => '',
-                        'item' => 'plugin.activity-qrcode.qrcode_add',
-                        'url' => 'plugin.activity-qrcode.admin.qrcode.add',
-                        'url_params' => '',
-                        'parents' => ['activity-qrcode','plugin.activity-qrcode.qrcode_see'],
-                    ],
-                    'plugin.activity-qrcode.qrcode_edit' => [
-                        'name' => '二维码编辑',
-                        'permit' => 1,
-                        'menu' => 1,
-                        'icon' => '',
-                        'item' => 'plugin.activity-qrcode.qrcode_edit',
-                        'url' => 'plugin.activity-qrcode.admin.qrcode.edit',
-                        'url_params' => '',
-                        'parents' => ['activity-qrcode','plugin.activity-qrcode.qrcode_see'],
-                    ],
-                    'plugin.activity-qrcode.qrcode_destroy' => [
-                        'name' => '二维码删除',
-                        'permit' => 1,
-                        'menu' => 1,
-                        'icon' => '',
-                        'item' => 'plugin.activity-qrcode.qrcode_destroy',
-                        'url' => 'plugin.activity-qrcode.admin.qrcode.deleted',
-                        'url_params' => '',
-                        'parents' => ['activity-qrcode','plugin.activity-qrcode.qrcode_see'],
-                    ],
-                ]
-            ],
 
         ]);
     }
