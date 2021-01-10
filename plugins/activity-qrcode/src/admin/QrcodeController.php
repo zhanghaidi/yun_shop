@@ -44,6 +44,7 @@ class QrcodeController extends BaseController
 
         return view('Yunshop\ActivityQrcode::admin.qrcodeList',
             [
+                'activityId' => $this->activityId,
                 'pageList'    => $recordList,
                 'page'          => $pager,
                 'search'        => $search
