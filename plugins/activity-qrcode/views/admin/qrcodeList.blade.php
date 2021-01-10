@@ -82,9 +82,11 @@
                                 </td>
 
                                 <td style="text-align: center;">
-                                    @if($list->status == 1)<span class="label label-success">{{$list->status}}</span>
-                                        @elseif($list->status == 2)<span class="label label-warning">{{$list->status}}</span>
-                                        @else <span class="label label-danger">{{$list->status}}</span>
+                                    @if($list->switch_limit <= $list->has_many_user_count)<span class="label label-danger">已满</span>
+                                    @else
+                                        @if($list->end_time <= time())<span class="label label-warning">已过期</span>
+                                            @else  <span class="label label-warning">正常</span>
+                                        @endif
                                     @endif
                                 </td>
 
