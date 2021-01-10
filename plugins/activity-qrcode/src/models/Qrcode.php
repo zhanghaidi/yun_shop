@@ -50,10 +50,6 @@ class Qrcode extends BaseModel
             /*'hasManyQrcode as timeout' => function($qrcode){
                 return $qrcode->where('end_time', '<', time());
             }*/])
-            ->with([
-                'belongsToActivity ' => function($activity){
-                    return $activity->select('id','title');
-                }])
             ->where('id', $id)
             ->first();
     }
