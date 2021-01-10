@@ -114,15 +114,8 @@ class PluginApplication extends \app\common\services\PluginApplication
                     'url_params' => '',
                     'parents' => ['minapp_content'],
                     'child' => [
-                        'quick_comment_add' => [
-                            'name' => '添加快捷评语',
-                            'permit' => 1,
-                            'menu' => 0,
-                            'url' => 'plugin.minapp-content.admin.quick-comment.add',
-                            'parents' => ['minapp_content', 'sport_clock'],
-                        ],
                         'quick_comment_edit' => [
-                            'name' => '编辑快捷评语',
+                            'name' => '编辑|添加快捷评语',
                             'permit' => 1,
                             'menu' => 0,
                             'url' => 'plugin.minapp-content.admin.quick-comment.edit',
@@ -135,7 +128,13 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'url' => 'plugin.minapp-content.admin.quick-comment.delete',
                             'parents' => ['minapp_content', 'sport_clock'],
                         ],
-
+                        'quick_comment_display' => [
+                            'name' => '快捷评语显示|隐藏',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.quick-comment.display',
+                            'parents' => ['minapp_content', 'sport_clock'],
+                        ],
                     ],
                 ],
             ],

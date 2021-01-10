@@ -38,7 +38,7 @@
                     </div>
                 </form>
                 <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                    <a href="{{ yzWebUrl('plugin.minapp-content.admin.quick-comment.add') }}" class="btn btn-info">添加快捷评语</a>
+                    <a href="{{ yzWebUrl('plugin.minapp-content.admin.quick-comment.edit') }}" class="btn btn-info">添加快捷评语</a>
                 </div>
             </div>
 
@@ -83,7 +83,7 @@
                                 </td>
                                 <td>
                                     <a class="update-status"
-                                       href="{{ yzWebUrl('plugin.minapp-content.admin.acupoint.edit', ['action' => 'display', 'id' => $value['id']]) }}"
+                                       href="{{ yzWebUrl('plugin.minapp-content.admin.quick-comment.display', ['id' => $value['id']]) }}"
                                        data-status="{{ $value['status'] }}">
                                         @if ($value['status'] == 1)
                                             <span class="label label-primary">开启</span>
@@ -96,9 +96,9 @@
                                     {{ date('Y-m-d H:i:s', $value['create_time']) }}
                                 </td>
                                 <td>
-                                    <a href="{{ yzWebUrl('plugin.minapp-content.admin.acupoint.edit', ['id' => $value['id']]) }}"
+                                    <a href="{{ yzWebUrl('plugin.minapp-content.admin.quick-comment.edit', ['id' => $value['id']]) }}"
                                        title="编辑"><i class="fa fa-edit"></i></a> &nbsp;
-                                    <a href="{{ yzWebUrl('plugin.minapp-content.admin.acupoint.delete', ['id' => $value['id']]) }}"
+                                    <a href="{{ yzWebUrl('plugin.minapp-content.admin.quick-comment.delete', ['id' => $value['id']]) }}"
                                        onclick="return confirm('确认删除该记录吗？');return false;" title="删除"><i
                                                 class="fa fa-trash-o"></i></a>
                                 </td>
@@ -112,4 +112,51 @@
         </div>
     </div>
 </div>
+<script language="JavaScript">
+    require(["{{yz_tomedia('/images/ajy/js/layer/laydate/laydate.js')}}"], function (laydate) {
+        laydate.render({
+            elem: '#start_time'
+            , type: 'time'
+            , format: 'HH:mm'
+        });
+        laydate.render({
+            elem: '#end_time'
+            , type: 'time'
+            , format: 'HH:mm'
+        });
+    })
+    //显示隐藏
+    $('.update-status').click(function (e) {
+        e.preventDefault();
+        var _this = $(this);
+        var url = _this.attr('href');
+        var status = _this.attr('data-status')
+        var label = _this.find('.label')
+        var icon1 = '开启';
+        var icon2 = '关闭';
+        var span = _this.find('.btn');
+        $.getJSON(url, {status: status}, function (data) {
+            if (data.errno == 0) {
+                if (label.hasClass('label-primary')) {
+                    label
+                        .removeClass('label-primary')
+                        .addClass('label-default')
+                        .text(icon2)
+                    _this.attr('data-status', 0)
+                    util.message(data.msg, '', 'error');
+                } else {
+                    label
+                        .removeClass('label-default')
+                        .addClass('label-primary')
+                        .text(icon1)
+                    _this.attr('data-status', 1)
+                    util.message(data.msg, '', 'success');
+                }
+            } else {
+                util.message(data.msg, '', 'error');
+            }
+        });
+    });
+</script>
+
 @endsection
