@@ -13,7 +13,7 @@ class Qrcode extends BaseModel
     public $table = 'yz_activity_code_qrcode';
     public $timestamps = true;
     protected $guarded = [''];
-
+    //protected $appends=['status'];
 
     public static function boot()
     {
@@ -87,6 +87,15 @@ class Qrcode extends BaseModel
         }
         return $query;
     }
+
+    //
+   /* public function getStatusAttribute()
+    {
+        if($this->attributes['end_time'] < time() ){
+
+            return 1;
+        }elseif ($this->attributes['switch_limit'] > $ )
+    }*/
 
     //删除二维码
     public static function deletedQrcode($id)
