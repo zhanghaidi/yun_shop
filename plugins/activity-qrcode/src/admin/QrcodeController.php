@@ -17,7 +17,6 @@ class QrcodeController extends BaseController
     public function __construct()
     {
         $this->activityId =  \YunShop::request()->id;
-
         $activityModel = Activity::getActivity($this->activityId);
         if(!$activityModel){
 
@@ -57,13 +56,14 @@ class QrcodeController extends BaseController
     //新增
     public function add()
     {
+        $qrList = Qrcode::where('code_id', $this->activityId)->get()->toArray();
+        $sortArr = array_column($qrList, 'sort');
+
         $qrcodeModel = new Qrcode();
         $requestQrcode = \YunShop::request()->info;
         if ($requestQrcode) {
             $requestQrcode['end_time'] = strtotime($requestQrcode['end_time']);
 
-            $qrList = Qrcode::where('code_id', $this->activityId)->get()->toArray();
-            $sortArr = array_column($this->qrList, 'sort');
             if(in_array($requestQrcode['sort'], $sortArr)){
                 return $this->message('排序已存在','','error');
             }
@@ -95,8 +95,11 @@ class QrcodeController extends BaseController
     //编辑
     public function edit()
     {
-        $qrSort = array_column($this->qrcodeList,'sort');
+
         $qrcodeId = \YunShop::request()->qrcode_id;
+        $qrList = Qrcode::where('code_id', $this->activityId)->where('id', '<>', $qrcodeId)->get()->toArray();
+        $sortArr = array_column($qrList, 'sort');
+        
         $qrcodeModel = Qrcode::getInfo($qrcodeId);
         if(!$qrcodeModel){
             return $this->message('二维码不存在或已被删除','','error');
@@ -105,8 +108,6 @@ class QrcodeController extends BaseController
         if ($requestQrcode) {
             $requestQrcode['end_time'] = strtotime($requestQrcode['end_time']);
 
-            $qrList = Qrcode::where('code_id', $this->activityId)->where('id', '<>', $qrcodeId)->get()->toArray();
-            $sortArr = array_column($this->qrList, 'sort');
             if(in_array($requestQrcode['sort'], $sortArr)){
                 return $this->message('排序已存在','','error');
             }
