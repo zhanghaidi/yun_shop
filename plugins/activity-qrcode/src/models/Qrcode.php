@@ -13,7 +13,7 @@ class Qrcode extends BaseModel
     public $table = 'yz_activity_code_qrcode';
     public $timestamps = true;
     protected $guarded = [''];
-    //protected $appends=['status'];
+    protected $appends=['status'];
 
     public static function boot()
     {
@@ -45,11 +45,7 @@ class Qrcode extends BaseModel
      */
     public static function getInfo($id)
     {
-        return self::withCount([
-            'hasManyUser',
-            /*'hasManyQrcode as timeout' => function($qrcode){
-                return $qrcode->where('end_time', '<', time());
-            }*/])
+        return self::withCount('hasManyUser')
             ->where('id', $id)
             ->first();
     }
@@ -60,11 +56,7 @@ class Qrcode extends BaseModel
      */
     public function scopeRecords($query)
     {
-        return $query->withCount([
-            'hasManyUser',
-            /*'hasManyQrcode as timeout' => function($qrcode){
-                return $qrcode->where('end_time', '<', time());
-            }*/])
+        return $query->withCount('hasManyUser')
             ->with([
                 'hasManyUser'
             ]);
