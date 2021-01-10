@@ -31,7 +31,7 @@ class Qrcode extends BaseModel
         return [
             'uniacid' => 'required|integer',
             'name' => 'required|max:50',
-            'qr_img' => 'string',
+            'qr_img' => 'required|string',
             'switch_limit' => 'required|integer',
             'sort' => 'required|integer',
             'end_time' => 'required|integer',
