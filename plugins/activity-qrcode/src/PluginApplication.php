@@ -21,21 +21,9 @@ class PluginApplication extends \app\common\services\PluginApplication
         /**
          * 设置菜单 config
          */
-        //Config::set('plugins.sign.set_tabs', \Yunshop\Sign\Common\Config\SetTabsHook::getSetTabs());
 
     }
 
-   /* public function getTemplateItems()
-    {
-        return ['sign_success_notice' => [
-            'title' => trans('Yunshop\EnterpriseWechat::sign.plugin_name') . '通知',
-            'subtitle' => '企业微信签到通知',
-            'value' => 'sign_notice',
-            'param' => [
-                '昵称', '签到时间', '连签天数', '签到奖励',
-            ]
-        ]];
-    }*/
 
     protected function setMenuConfig()
     {
@@ -97,60 +85,53 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'parents' => ['activity-qrcode','plugin.activity-qrcode.activity_see'],
                         ],
 
-                        'plugin.activity-qrcode.qrcode_see' => [
-                            'name' => '二维码列表',
-                            'permit' => 1,
-                            'menu' => 1,
-                            'icon' => '',
-                            'item' => 'plugin.activity-qrcode.qrcode_see',
-                            'url' => 'plugin.activity-qrcode.admin.qrcode.index',
-                            'url_params' => '',
-                            'parents' => ['activity-qrcode','plugin.activity-qrcode.activity_see'],
-                        ],
-                        'plugin.activity-qrcode.qrcode_add' => [
-                            'name' => '二维码添加',
-                            'permit' => 1,
-                            'menu' => 1,
-                            'icon' => '',
-                            'item' => 'plugin.activity-qrcode.qrcode_add',
-                            'url' => 'plugin.activity-qrcode.admin.qrcode.add',
-                            'url_params' => '',
-                            'parents' => ['activity-qrcode','plugin.activity-qrcode.activity_see'],
-                        ],
-                        'plugin.activity-qrcode.qrcode_edit' => [
-                            'name' => '二维码编辑',
-                            'permit' => 1,
-                            'menu' => 1,
-                            'icon' => '',
-                            'item' => 'plugin.activity-qrcode.qrcode_edit',
-                            'url' => 'plugin.activity-qrcode.admin.qrcode.edit',
-                            'url_params' => '',
-                            'parents' => ['activity-qrcode','plugin.activity-qrcode.activity_see'],
-                        ],
-                        'plugin.activity-qrcode.qrcode_destroy' => [
-                            'name' => '二维码删除',
-                            'permit' => 1,
-                            'menu' => 1,
-                            'icon' => '',
-                            'item' => 'plugin.activity-qrcode.qrcode_destroy',
-                            'url' => 'plugin.activity-qrcode.admin.qrcode.deleted',
-                            'url_params' => '',
-                            'parents' => ['activity-qrcode','plugin.activity-qrcode.activity_see'],
-                        ],
                     ]
                 ],
 
             ],
 
-            /*'plugin.activity-qrcode.qrcode' => [
-                'name' => '二维码管理',
+            'plugin.activity-qrcode.qrcode_see' => [
+                'name' => '二维码列表',
                 'permit' => 1,
                 'menu' => 1,
                 'icon' => '',
-                'url' => 'plugin.activity-qrcode.admin.qrcode',
+                'item' => 'plugin.activity-qrcode.qrcode_see',
+                'url' => 'plugin.activity-qrcode.admin.qrcode.index',
                 'url_params' => '',
                 'parents' => ['activity-qrcode'],
-            ],*/
+                'child' =>[
+                    'plugin.activity-qrcode.qrcode_add' => [
+                        'name' => '二维码添加',
+                        'permit' => 1,
+                        'menu' => 1,
+                        'icon' => '',
+                        'item' => 'plugin.activity-qrcode.qrcode_add',
+                        'url' => 'plugin.activity-qrcode.admin.qrcode.add',
+                        'url_params' => '',
+                        'parents' => ['activity-qrcode','plugin.activity-qrcode.qrcode_see'],
+                    ],
+                    'plugin.activity-qrcode.qrcode_edit' => [
+                        'name' => '二维码编辑',
+                        'permit' => 1,
+                        'menu' => 1,
+                        'icon' => '',
+                        'item' => 'plugin.activity-qrcode.qrcode_edit',
+                        'url' => 'plugin.activity-qrcode.admin.qrcode.edit',
+                        'url_params' => '',
+                        'parents' => ['activity-qrcode','plugin.activity-qrcode.qrcode_see'],
+                    ],
+                    'plugin.activity-qrcode.qrcode_destroy' => [
+                        'name' => '二维码删除',
+                        'permit' => 1,
+                        'menu' => 1,
+                        'icon' => '',
+                        'item' => 'plugin.activity-qrcode.qrcode_destroy',
+                        'url' => 'plugin.activity-qrcode.admin.qrcode.deleted',
+                        'url_params' => '',
+                        'parents' => ['activity-qrcode','plugin.activity-qrcode.qrcode_see'],
+                    ],
+                ]
+            ],
 
         ]);
     }
