@@ -21,6 +21,21 @@ class Qrcode extends BaseModel
         self::addGlobalScope(new UniacidScope());
     }
 
+    //const CREATED_AT = 'date_time_start';
+    //const UPDATED_AT = 'date_time_end';
+
+    public function setEndTimeAttribute($value)
+    {
+        //$this->attributes['end_time'] = strtotime($value);
+        return strtotime($value);
+    }
+
+
+    public function  getDateTimeStartAttribute($value){
+        return date('Y-m-d', $value);
+    }
+
+
     /**
      * 字段规则
      * @return array
