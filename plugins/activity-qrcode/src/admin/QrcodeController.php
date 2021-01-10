@@ -74,11 +74,11 @@ class QrcodeController extends BaseController
                 }
             }
         }
-       /* return view('Yunshop\ActivityQrcode::admin.qrcodeList',
+        return view('Yunshop\ActivityQrcode::admin.qrcodeInfo',
             [
-                'info' => $activityModel,
+                'info' => $qrcodeModel,
             ]
-        )->render();*/
+        )->render();
 
     }
 
@@ -106,11 +106,11 @@ class QrcodeController extends BaseController
                 }
             }
         }
-        /*return view('Yunshop\ActivityQrcode::admin.info',
+        return view('Yunshop\ActivityQrcode::admin.qrcodeInfo',
             [
-                'info' => $activityModel,
+                'info' => $qrcodeModel,
             ]
-        )->render();*/
+        )->render();
 
     }
 
