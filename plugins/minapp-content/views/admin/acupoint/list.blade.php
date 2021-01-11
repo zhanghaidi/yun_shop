@@ -91,7 +91,7 @@
                             <a href="{{tomedia($value['video'])}}" target="_blank"><video width="150px" height="60px"> <source src="{{tomedia($value['video'])}}"> </video></a>
                         </td>
                         <td width="50">
-                            <a class="btn-link" href="{{ yzWebUrl('plugin.minapp-content.admin.examination.status', ['id' => $value['id'], 'action' => 'stop']) }}"><i class="fa fa-comment-o"></i> {{$value['comment_nums']}} </a>
+                            <a class="btn-link" href="{{ yzWebUrl('plugin.minapp-content.admin.acupoint-replys.index', ['id' => $value['id']]) }}"><i class="fa fa-comment-o"></i> {{$value['comment_nums']}} </a>
                         </td>
                         <td>
                             <a href="{{ yzWebUrl('plugin.minapp-content.admin.acupoint.edit', ['id' => $value['id']]) }}" title="编辑"><i class="fa fa-edit"></i></a> &nbsp; 
