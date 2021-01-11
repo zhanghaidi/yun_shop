@@ -27,7 +27,7 @@ class QrcodeController extends ApiController
    //扫码识别页面
     public function scan()
     {
-        return $this->successJson('scan');
+        return $this->successJson('ok-scan');
     }
 
 }
