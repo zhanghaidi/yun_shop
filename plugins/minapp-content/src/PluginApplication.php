@@ -121,6 +121,31 @@ class PluginApplication extends \app\common\services\PluginApplication
                         ],
                     ],
                 ],
+                'feedback_manage' => [
+                    'name' => '用户反馈',
+                    'permit' => 1,
+                    'menu' => 1,
+                    'icon' => '',
+                    'url' => 'plugin.minapp-content.admin.feedback.index',
+                    'url_params' => '',
+                    'parents' => ['minapp_content'],
+                    'child' => [
+                        'feedback_detail' => [
+                            'name' => '反馈详情列表',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.feedback.msg',
+                            'parents' => ['minapp_content', 'feedback_manage'],
+                        ],
+                        'feedback_delete' => [
+                            'name' => '删除反馈详情',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.feedback.delete',
+                            'parents' => ['minapp_content', 'feedback_manage'],
+                        ],
+                    ],
+                ],
                 'banner' => [
                     'name' => '轮播图管理',
                     'permit' => 1,
