@@ -24,11 +24,14 @@ class QrcodeController extends ApiController
     public function index()
     {
 
-        $activityId =  \YunShop::request()->id;
+        $activityId =  intval(\YunShop::request()->id);
+        if(!$activityId){
+            return $this->errorJson('参数不合法');
+        }
 
         $activityModel = Activity::getActivity($activityId);
         if(!$activityModel){
-            return $this->message('无此记录或已被删除','','error');
+            return $this->errorJson('活码不存在或已失效');
         }
 
         return $this->successJson('ok', $activityModel);
