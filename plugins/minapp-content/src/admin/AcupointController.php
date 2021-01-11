@@ -156,6 +156,25 @@ class AcupointController extends BaseController
             return $this->message('修改成功', Url::absoluteWeb('plugin.minapp-content.admin.acupoint.index'));
         }
 
+        $zhData = \YunShop::request()->zh_data;
+        if (isset($zhData[0]['id'])) {
+            foreach ($zhData as $v) {
+                if (!isset($v['id']) || $v['id'] <= 0 ||
+                    !isset($v['zh']) || !isset($v['zh'][0])
+                ) {
+                    continue;
+                }
+                $v['zh'] = trim($v['zh']);
+                AcupointModel::where([
+                    'id' => $v['id'],
+                    'uniacid' => \YunShop::app()->uniacid,
+                ])->limit(1)->update([
+                    'zh' => $v['zh'],
+                ]);
+            }
+            return $this->successJson('拼音更新成功！');
+        }
+
         $id = (int) \YunShop::request()->id;
         if ($id > 0) {
             $acupointInfo = AcupointModel::where([
@@ -207,7 +226,7 @@ class AcupointController extends BaseController
             'uniacid' => \YunShop::app()->uniacid,
             'acupoint_id' => $id,
         ])->delete();
-        
+
         return $this->message('删除成功');
     }
 }
