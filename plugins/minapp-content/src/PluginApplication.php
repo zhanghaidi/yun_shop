@@ -146,6 +146,38 @@ class PluginApplication extends \app\common\services\PluginApplication
                         ],
                     ],
                 ],
+                'article_manage' => [
+                    'name' => '文章管理',
+                    'permit' => 1,
+                    'menu' => 1,
+                    'icon' => '',
+                    'url' => 'plugin.minapp-content.admin.article-category.index',
+                    'url_params' => '',
+                    'parents' => ['minapp_content'],
+                    'child' => [
+                        'article_category_manage' => [
+                            'name' => '文章分类管理',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.article-category.index',
+                            'parents' => ['minapp_content', 'article_manage'],
+                        ],
+                        'article_category_edit' => [
+                            'name' => '编辑文章分类',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.article-category.edit',
+                            'parents' => ['minapp_content', 'article_manage'],
+                        ],
+                        'article_category_del' => [
+                            'name' => '删除文章分类',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.article-category.delete',
+                            'parents' => ['minapp_content', 'article_manage'],
+                        ],
+                    ],
+                ],
                 'banner' => [
                     'name' => '轮播图管理',
                     'permit' => 1,
