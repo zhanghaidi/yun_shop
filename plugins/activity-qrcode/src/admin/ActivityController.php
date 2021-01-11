@@ -46,13 +46,14 @@ class ActivityController extends BaseController
         if ($requestActivity) {
             $activityModel->fill($requestActivity);
             $activityModel->uniacid = \YunShop::app()->uniacid;
-            $activityModel->qrcode = ActivityQrcodeService::getQrCode($activityModel->id);
 
             $validator = $activityModel->validator();
             if($validator->fails()){
                 $this->error($validator->messages());
             }else{
                 if($activityModel->save()){
+                    $activityModel->qrcode = ActivityQrcodeService::getQrCode($activityModel->id);
+                    $activityModel->save();
                     return $this->message('添加成功', Url::absoluteWeb('plugin.activity-qrcode.admin.activity.qrcode.index', array('id' => $activityModel->id)));
                 }else{
                     $this->message('活码创建失败','','error');
