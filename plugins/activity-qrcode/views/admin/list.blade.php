@@ -118,12 +118,12 @@
                                     到期：<span style="color: red">{{$list->timeout_count}}</span>
                                 </td>
                                 <td style="text-align: center;">
-                                    <img src="$list->qrcode" width="80px" height="80px">
+                                    <img src="{{$list->qrcode}}" width="80px" height="80px">
                                     <h6><a href="javascript:;" data-clipboard-text="{!! yzAppFullUrl('home') !!}" data-url="{!! yzAppFullUrl('home') !!}" class="js-clip" title="复制链接">复制链接</a></h6>
                                 </td>
 
                                 <td style="text-align: center;">
-                                    <a class='btn btn-default' title="二维码管理" href="{{ yzWebUrl('plugin.activity-qrcode.admin.qrcode.index', array('id' => $list->id)) }}" style="margin-bottom: 2px"><i class="fa fa-qrcode"></a>
+                                    <a class='btn btn-default' title="二维码管理" href="{{ yzWebUrl('plugin.activity-qrcode.admin.qrcode.index', array('id' => $list->id)) }}" style="margin-bottom: 2px"><i class="fa fa-qrcode"></i></a>
                                     <a class='btn btn-default nav-edit' title="编辑活码" href="{{ yzWebUrl('plugin.activity-qrcode.admin.activity.edit', array('id' => $list->id)) }}"><i class="fa fa-edit"></i></a>
                                     <a class='btn btn-default nav-del' title="删除活码" href="{{ yzWebUrl('plugin.activity-qrcode.admin.activity.deleted', array('id' => $list->id)) }}" onclick="return confirm('确认删除此活码？');return false;"><i class="fa fa-trash-o"></i></a>
                                 </td>
