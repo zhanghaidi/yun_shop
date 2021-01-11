@@ -33,7 +33,8 @@
                     @foreach($data as $value)
                     <tr>
                         <td>
-                            <input type='text' value="{{$value['sort']}}" name="sort[{{$value['id']}}]" class="form-control " style="width: 80px"/>
+                            <input type='text' value="{{$value['sort']}}" name="sort[{{$value['id']}}]" class="form-control sortinput" style="width: 80px"/>
+                            <input type='hidden' value="{{$value['sort']}}" name="sortold[{{$value['id']}}]" class="form-control" />
                         </td>
                         <td>{{$value['chart']}}</td>
                         <td>
@@ -52,8 +53,45 @@
                 </tbody>
             </table>
         </div>
+        <div class="panel-footer">
+            <button class="btn btn-warning" type="submit" id="updatesort">更新排序</button>
+        </div>
         {!! $pager !!}
     </div>
 </div>
+
+<script language="JavaScript">
+$(function () {
+    $('#updatesort').on('click', function(){
+        _data = [];
+        $('.sortinput').each(function(){
+            _val = $(this).val();
+            _source = $(this).next().val();
+            if (_val == _source) {
+                return;
+            }
+
+            _id = $(this).attr('name');
+            _id = _id.replace('sort[','');
+            _id = _id.replace(']','');
+            if (_id <= 0){
+                return;
+            }
+            _data.push({id:_id, sort:_val})
+        });
+
+        if (_data.length == 0) {
+            return ;
+        }
+
+        _url = "{{ yzWebUrl('plugin.minapp-content.admin.meridian.acupoints') }}";
+        _url = _url.replace(/&amp;/g, '&');
+        $.post(_url, {sort_data:_data}, function(res) {
+            alert(res.msg);
+            location.reload();
+        });
+    });
+});
+</script>
 @endsection
 
