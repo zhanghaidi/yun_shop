@@ -88,7 +88,7 @@ class QrcodeController extends ApiController
             'ip' => $_W['clientip'],
             'container' => $_W['container'],
             'os' => $_W['os'],
-            'openid' => $_W['openid']
+            'openid' => $_W['openid'] ? $_W['openid'] : ''
         ];
         ActivityUser::firstOrCreate($params, $data);
 
