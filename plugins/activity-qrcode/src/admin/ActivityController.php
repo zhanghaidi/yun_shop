@@ -22,7 +22,7 @@ class ActivityController extends BaseController
 
         }
 
-        $recordList = $records->orderBy('sort', 'desc')->paginate();
+        $recordList = $records->orderBy('id', 'desc')->paginate();
 
         $pager = PaginationHelper::show($recordList->total(), $recordList->currentPage(), $recordList->perPage());
 
