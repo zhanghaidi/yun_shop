@@ -1,0 +1,19 @@
+<?php
+
+namespace Yunshop\ActivityQrcode\services;
+
+use Ixudra\Curl\Facades\Curl;
+use app\common\exceptions\AppException;
+use Yunshop\RechargeCode\common\services\QrCode;
+
+
+class ActivityQrcodeService
+{
+    //获取二维码
+    public static function getQrCode($code_key, $uid)
+    {
+        $url = yzAppFullUrl('rechargeCodeByQrCode/' . $code_key, ['mid' => $uid]);
+        return (new QrCode($url, 'app/public/qr/recharge'))->url();
+    }
+
+}
