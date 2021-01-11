@@ -24,6 +24,14 @@
                             <input name="info[title]" type="text" class="form-control" value="{{ $info['title'] }}" placeholder="请输入活码标题" required/>
                         </div>
                     </div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-1 control-label">顶部图标</label>
+                    <div class="col-sm-9 col-xs-12 col-md-6">
+                        {!! app\common\helpers\ImageHelper::tplFormFieldImage('info[logo]', $info['logo']) !!}
+                        <span class="help-block">活码图标 20X20</span>
+                    </div>
+                </div>
                     <div class="form-group">
                         <label class="col-xs-12 col-sm-3 col-md-1 control-label">顶部描述</label>
                         <div class="col-sm-9 col-xs-12 col-md-11">
@@ -49,6 +57,8 @@
                         </label>
                     </div>
                 </div>
+
+
 
                 <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-1 control-label">启用/关闭</label>
