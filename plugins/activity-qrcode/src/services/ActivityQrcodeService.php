@@ -10,10 +10,10 @@ use Yunshop\RechargeCode\common\services\QrCode;
 class ActivityQrcodeService
 {
     //获取二维码
-    public static function getQrCode($code_key, $uid)
+    public static function getQrCode($id)
     {
-        $url = yzAppFullUrl('rechargeCodeByQrCode/' . $code_key, ['mid' => $uid]);
-        return (new QrCode($url, 'app/public/qr/recharge'))->url();
+        $url = yzAppFullUrl('plugin.activity-qrcode.api.qrcode.index/' . $id);
+        return (new QrCode($url, 'app/public/qr/activity'))->url();
     }
 
 }
