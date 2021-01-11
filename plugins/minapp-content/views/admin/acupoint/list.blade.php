@@ -74,7 +74,8 @@
                         </td>
                         <td width="80">{{$value['name']}}</td>
                         <td width="100">
-                            <input type="text" value="{{$value['zh']}}" name="zh[{{$value['id']}}]" class="form-control">
+                            <input type="text" value="{{$value['zh']}}" name="zh[{{$value['id']}}]" class="form-control zhinput">
+                            <input type="hidden" value="{{$value['zh']}}" name="zhold[{{$value['id']}}]" class="form-control">
                         </td>
                         <td width="200">{{$value['jingluo']}}</td>
                         <td width="100"><a class="label label-primary btn js-clip"  data-clipboard-text="{{$value['page']}}">点击复制</a></td>
@@ -90,7 +91,7 @@
                             <a href="{{tomedia($value['video'])}}" target="_blank"><video width="150px" height="60px"> <source src="{{tomedia($value['video'])}}"> </video></a>
                         </td>
                         <td width="50">
-                            <a class="btn-link" href="{{ yzWebUrl('plugin.minapp-content.admin.examination.status', ['id' => $value['id'], 'action' => 'stop']) }}"><i class="fa fa-comment-o"></i> {{$value['comment_nums']}} </a>
+                            <a class="btn-link" href="{{ yzWebUrl('plugin.minapp-content.admin.acupoint-replys.index', ['id' => $value['id']]) }}"><i class="fa fa-comment-o"></i> {{$value['comment_nums']}} </a>
                         </td>
                         <td>
                             <a href="{{ yzWebUrl('plugin.minapp-content.admin.acupoint.edit', ['id' => $value['id']]) }}" title="编辑"><i class="fa fa-edit"></i></a> &nbsp; 
@@ -101,8 +102,45 @@
                 </tbody>
             </table>
         </div>
+        <div class="panel-footer">
+            <button class="btn btn-warning" type="submit" id="updatezh">更新拼音</button>
+        </div>
         {!! $pager !!}
     </div>
 </div>
+
+<script language="JavaScript">
+$(function () {
+    $('#updatezh').on('click', function(){
+        _data = [];
+        $('.zhinput').each(function(){
+            _val = $(this).val();
+            _source = $(this).next().val();
+            if (_val == _source) {
+                return;
+            }
+
+            _id = $(this).attr('name');
+            _id = _id.replace('zh[','');
+            _id = _id.replace(']','');
+            if (_id <= 0){
+                return;
+            }
+            _data.push({id:_id,zh:_val})
+        });
+
+        if (_data.length == 0) {
+            return ;
+        }
+
+        _url = "{{ yzWebUrl('plugin.minapp-content.admin.acupoint.edit') }}";
+        _url = _url.replace(/&amp;/g, '&');
+        $.post(_url, {zh_data:_data}, function(res) {
+            alert(res.msg);
+            location.reload();
+        });
+    });
+});
+</script>
 @endsection
 

@@ -139,6 +139,25 @@ class MeridianController extends BaseController
     {
         $id = (int) \YunShop::request()->id;
 
+        $sortData = \YunShop::request()->sort_data;
+        if (isset($sortData[0]['id'])) {
+            foreach ($sortData as $v) {
+                if (!isset($v['id']) || $v['id'] <= 0 ||
+                    !isset($v['sort']) || $v['sort'][0] < 0
+                ) {
+                    continue;
+                }
+                $v['sort'] = intval($v['sort']);
+                AcupointMerModel::where([
+                    'id' => $v['id'],
+                    'uniacid' => \YunShop::app()->uniacid,
+                ])->limit(1)->update([
+                    'sort' => $v['sort'],
+                ]);
+            }
+            return $this->successJson('排序更新成功！');
+        }
+
         $infoRs = MeridianModel::where([
             'id' => $id,
             'uniacid' => \YunShop::app()->uniacid,
