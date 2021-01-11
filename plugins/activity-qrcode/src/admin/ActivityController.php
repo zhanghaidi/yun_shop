@@ -46,8 +46,7 @@ class ActivityController extends BaseController
         if ($requestActivity) {
             $activityModel->fill($requestActivity);
             $activityModel->uniacid = \YunShop::app()->uniacid;
-            $activityModel->qr_code = ActivityQrcodeService::getQrCode(1,1);
-            var_dump($activityModel->qr_code);die;
+            $activityModel->qr_code = ActivityQrcodeService::getQrCode($activityModel->id);
 
             $validator = $activityModel->validator();
             if($validator->fails()){
