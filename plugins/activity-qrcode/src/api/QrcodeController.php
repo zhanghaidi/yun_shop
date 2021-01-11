@@ -90,7 +90,7 @@ class QrcodeController extends ApiController
             'os' => $_W['os'],
             'openid' => $_W['openid']
         ];
-        XiaoeClockUser::firstOrCreate($params, $data);
+        ActivityUser::firstOrCreate($params, $data);
 
     }
 
