@@ -5,6 +5,7 @@ namespace Yunshop\ActivityQrcode\api;
 use app\common\components\ApiController;
 use app\common\facades\Setting;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 use Yunshop\ActivityQrcode\models\Activity;
 use Yunshop\ActivityQrcode\models\Qrcode;
 use Yunshop\ActivityQrcode\models\ActivityUser;
@@ -20,17 +21,31 @@ class QrcodeController extends ApiController
     protected $publicAction = ['index', 'scan'];
     protected $ignoreAction = ['index', 'scan'];
 
+    protected $activityId;
 
-    //活码维码展示页面
-    public function index()
+    protected $ip;
+
+    public function __construct()
     {
+        global $_W;
+
         $activityId =  intval(\YunShop::request()->id);
         if(!$activityId){
             return $this->errorJson('参数错误', [
                 'status' => 0
             ]);
         }
-        $activityModel = Activity::getActivity($activityId);
+        $this->activityId = $activityId;
+
+        //搜集新加入此页面的用户
+        $this->userJoin($activityId, $_W);
+    }
+
+    //活码维码展示页面
+    public function index()
+    {
+
+        $activityModel = Activity::getActivity($this->activityId);
         if(!$activityModel){
             return $this->errorJson('活码不存在或已失效');
         }
@@ -44,6 +59,39 @@ class QrcodeController extends ApiController
     {
 
         return $this->successJson('ok-scan');
+    }
+
+
+    //参与扫码记录
+    protected function userJoin($activity_id, $_W)
+    {
+        $params = array(
+            'uniacid' => \YunShop::app()->uniacid,
+            'code_id' => $activity_id,
+            'ip' => $_W['clientip'],
+            //'container' => $_W['container'],
+            //'os' => $_W['os'],
+            //'openid' => $_W['openid']
+        );
+
+        $lockCacheKey = 'userJoin' . \YunShop::app()->uniacid . $activity_id . $_W['clientip'] . date('Y-m-d H:i:s');
+
+        $lockCacheRs = Redis::setnx($lockCacheKey, 1);
+        if ($lockCacheRs != 1) {
+            return false;
+        }
+        Redis::expire($lockCacheKey, 5);
+
+        $data = [
+            'uniacid' => \YunShop::app()->uniacid,
+            'code_id' => $activity_id,
+            'ip' => $_W['clientip'],
+            'container' => $_W['container'],
+            'os' => $_W['os'],
+            'openid' => $_W['openid']
+        ];
+        XiaoeClockUser::firstOrCreate($params, $data);
+
     }
 
 }
