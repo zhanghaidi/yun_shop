@@ -81,7 +81,6 @@
                             <th style='width:12%; text-align: center;'>今日扫码人数</th>
                             <th style='width:12%; text-align: center;'>累计扫码人数</th>
                             <th style='width:12%; text-align: center;'>二维码状态</th>
-                            <th style='width:12%; text-align: center;'>活码</th>
                             <th style='width:12%; text-align: center;'>操作</th>
                         </tr>
                         </thead>
@@ -117,16 +116,13 @@
                                     已满：<span style="color:orange">{{$list->full_count}}</span><br>
                                     到期：<span style="color: red">{{$list->timeout_count}}</span>
                                 </td>
-                                <td style="text-align: center;">
-                                        <p class="p1">商城首页</p>
-                                        <img id='home'>
-                                        <input type="hidden" >
-                                        <h5><a href="javascript:;" data-clipboard-text="{!! yzAppFullUrl('home') !!}" data-url="{!! yzAppFullUrl('home') !!}" class="js-clip" title="复制链接">复制链接</a></h5>
-                                   {{-- <img id='home'>
-                                    {{$list->qrcode}}--}}
-                                </td>
 
                                 <td style="text-align: center;">
+                                    <a class='btn btn-default clock_link' href="javascript:;"
+                                       data-clock_link="{{ $list->clock_link }}"
+                                       title='分享'><i class='fa fa-share'></i>&nbsp;&nbsp;分享
+                                    </a>
+
                                     <a class='btn btn-default' href="{{ yzWebUrl('plugin.activity-qrcode.admin.qrcode.index', array('id' => $list->id)) }}" style="margin-bottom: 2px">二维码管理</a>
                                     <a class='btn btn-default nav-edit' href="{{ yzWebUrl('plugin.activity-qrcode.admin.activity.edit', array('id' => $list->id)) }}"><i class="fa fa-edit"></i></a>
                                     <a class='btn btn-default nav-del' href="{{ yzWebUrl('plugin.activity-qrcode.admin.activity.deleted', array('id' => $list->id)) }}" onclick="return confirm('确认删除此活码？');return false;"><i class="fa fa-trash-o"></i></a>
@@ -141,11 +137,16 @@
                 </div>
             </div>
         </div>
+        <div style="width:100%;height:150px;"></div>
+        <div id="qrcode" ref="qrcode" style="display:none;"></div>
+        <img id='clock_qr'>
 
         <script src="{{resource_get('static/js/qrcode.min.js')}}"></script>
-        <script>
+        <script type="text/javascript">
 
-            qrcodeScan("{!! yzAppFullUrl('home') !!}",'home');
+            $('.clock_link').click(function (e) {
+                qrcodeScan(e.target.dataset.clock_link, 'clock_qr')
+            })
 
             function qrcodeScan(url, name) {//生成二维码
 
@@ -164,6 +165,43 @@
                 alertMask($("canvas")[$("canvas").length - 1].toDataURL(),url)
                 // this.img = data;
             }
+            //分享弹出框  复制功能
+            function alertMask(imgUrl,clock_link) {
+                let template = `<div id="my_mask" style="position: fixed;left: 0;right: 0;top: 0;bottom: 0;background: rgba(0,0,0,0.7);">
+                   <div class="centent" style="display: flex;flex-direction: column;justify-content: center;align-items: center; width: 500px;height: 600px;position: absolute;left: 50%;top: 50%;transform: translate(-50%,-50%);background: #fff;">
+                    <img src="${imgUrl}" style="width: 450px;height: 450px;margin-top: 30px;font-size: 28px;" alt="">
+                    <span class="btn btn-default copy_links" style="margin-top: 25px;" title="复制链接">复制链接</span>
+                   </div>
+                </div>`
+                $('body').append(template);
+                $('#my_mask').click(function () {
+                    $('#my_mask').remove();
+                })
+                $('.copy_links').click(function (e) {
+                    e.preventDefault();//阻止浏览器的默认行为
+                    e.stopPropagation();
+                    copy(clock_link);
+                })
+                function copy(val) {
+                    const input = document.createElement('input');
+                    document.body.appendChild(input);
+                    input.setAttribute('value', val);
+                    input.select();
+                    if (document.execCommand('copy')) {
+                        document.execCommand('copy');
+                        alert('复制成功');
+                        $('#my_mask').remove();
+                    }
+                    document.body.removeChild(input);
+                }
+            }
+            // 查看课程封面大图
+            $('.show-cover-img-big').on('mouseover', function () {
+                $(this).find('.img-big').show();
+            });
+            $('.show-cover-img-big').on('mouseout', function () {
+                $(this).find('.img-big').hide();
+            });
         </script>
 
 @endsection('content')
