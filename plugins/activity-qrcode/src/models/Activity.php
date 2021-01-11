@@ -126,7 +126,7 @@ class Activity extends BaseModel
 
     public function hasQrcode()
     {
-        return $this->hasOne('Yunshop\ActivityQrcode\models\Qrcode', 'code_id', 'id')->where('is_full', 0)->where('end_time' ,'>', time());
+        return $this->hasOne('Yunshop\ActivityQrcode\models\Qrcode', 'code_id', 'id')->where('is_full', 0)->where('end_time' ,'>', time())->orderBy('sort');
     }
 
 

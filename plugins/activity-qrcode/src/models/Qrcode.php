@@ -62,6 +62,10 @@ class Qrcode extends BaseModel
             ]);
     }
 
+    public function getQrcodeAttribute($value){
+        return yz_tomedia($value);
+    }
+
     //搜索条件
     public function scopeSearch($query, array $search)
     {
