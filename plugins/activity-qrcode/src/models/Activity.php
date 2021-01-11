@@ -63,7 +63,11 @@ class Activity extends BaseModel
                     return $qrcode->where('is_full', 1);
                 }
             ])
-            ->with('hasQrcode')
+            ->with([
+                'hasQrcode' => function($qr){
+                    return $qr->select('id','sort','code_id','qr_img','qr_path','end_time','switch_limit','is_full')->orderBy('sort')->first();
+                }
+            ])
             ->where('id', $id)
             ->first();
     }
@@ -126,7 +130,7 @@ class Activity extends BaseModel
 
     public function hasQrcode()
     {
-        return $this->hasOne('Yunshop\ActivityQrcode\models\Qrcode', 'code_id', 'id')->where('is_full', 0)->where('end_time' ,'>', time())->orderBy('sort');
+        return $this->hasMany('Yunshop\ActivityQrcode\models\Qrcode', 'code_id', 'id')->where('is_full', 0)->where('end_time' ,'>', time());
     }
 
 

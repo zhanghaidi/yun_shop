@@ -62,7 +62,7 @@ class Qrcode extends BaseModel
             ]);
     }
 
-    public function getQrcodeAttribute($value){
+    public function getQrImgAttribute($value){
         return yz_tomedia($value);
     }
 
