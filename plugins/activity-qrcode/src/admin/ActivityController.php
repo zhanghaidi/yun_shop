@@ -7,6 +7,7 @@ use app\common\facades\Setting;
 use app\common\helpers\Url;
 use app\common\helpers\PaginationHelper;
 use Yunshop\ActivityQrcode\models\Activity;
+use Yunshop\ActivityQrcode\services\ActivityQrcodeService;
 
 class ActivityController extends BaseController
 {
@@ -45,6 +46,8 @@ class ActivityController extends BaseController
         if ($requestActivity) {
             $activityModel->fill($requestActivity);
             $activityModel->uniacid = \YunShop::app()->uniacid;
+            $activityModel->qr_code = ActivityQrcodeService::getQrCode(1,1);
+            var_dump($activityModel->qr_code);die;
 
             $validator = $activityModel->validator();
             if($validator->fails()){

@@ -123,9 +123,9 @@
                                        title='分享'><i class='fa fa-share'></i>&nbsp;&nbsp;分享
                                     </a>
 
-                                    <a class='btn btn-default' href="{{ yzWebUrl('plugin.activity-qrcode.admin.qrcode.index', array('id' => $list->id)) }}" style="margin-bottom: 2px">二维码管理</a>
-                                    <a class='btn btn-default nav-edit' href="{{ yzWebUrl('plugin.activity-qrcode.admin.activity.edit', array('id' => $list->id)) }}"><i class="fa fa-edit"></i></a>
-                                    <a class='btn btn-default nav-del' href="{{ yzWebUrl('plugin.activity-qrcode.admin.activity.deleted', array('id' => $list->id)) }}" onclick="return confirm('确认删除此活码？');return false;"><i class="fa fa-trash-o"></i></a>
+                                    <a class='btn btn-default' title="二维码管理" href="{{ yzWebUrl('plugin.activity-qrcode.admin.qrcode.index', array('id' => $list->id)) }}" style="margin-bottom: 2px"><i class="fa fa-qrcode"></a>
+                                    <a class='btn btn-default nav-edit' title="编辑活码" href="{{ yzWebUrl('plugin.activity-qrcode.admin.activity.edit', array('id' => $list->id)) }}"><i class="fa fa-edit"></i></a>
+                                    <a class='btn btn-default nav-del' title="删除活码" href="{{ yzWebUrl('plugin.activity-qrcode.admin.activity.deleted', array('id' => $list->id)) }}" onclick="return confirm('确认删除此活码？');return false;"><i class="fa fa-trash-o"></i></a>
                                 </td>
                             </tr>
                         @endforeach
