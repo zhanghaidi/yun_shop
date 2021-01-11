@@ -54,6 +54,7 @@ class Activity extends BaseModel
     public static function getActivity($id)
     {
         return self::withCount([
+                'hasManyUser',
                 'hasManyQrcode',
                 'hasManyQrcode as timeout' => function($qrcode){
                     return $qrcode->where('end_time', '<', time());
