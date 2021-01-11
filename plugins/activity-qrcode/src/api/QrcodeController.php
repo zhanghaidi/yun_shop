@@ -20,15 +20,16 @@ class QrcodeController extends ApiController
     protected $publicAction = ['index', 'scan'];
     protected $ignoreAction = ['index', 'scan'];
 
+
     //活码维码展示页面
     public function index()
     {
-
         $activityId =  intval(\YunShop::request()->id);
         if(!$activityId){
-            return $this->errorJson('参数不合法');
+            return $this->errorJson('参数错误', [
+                'status' => 0
+            ]);
         }
-
         $activityModel = Activity::getActivity($activityId);
         if(!$activityModel){
             return $this->errorJson('活码不存在或已失效');
