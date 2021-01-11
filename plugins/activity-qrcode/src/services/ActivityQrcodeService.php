@@ -13,7 +13,7 @@ class ActivityQrcodeService
     public static function getQrCode($code_key, $uid)
     {
         $url = yzAppFullUrl('rechargeCodeByQrCode/' . $code_key, ['mid' => $uid]);
-        return (new QrCode($url, 'app/public/qr/recharge'))->url();
+        return (new QrCode($url, 'app/public/qr/activity'))->url();
     }
 
 }
