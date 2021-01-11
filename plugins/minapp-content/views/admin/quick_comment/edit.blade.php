@@ -4,6 +4,13 @@
 @section('title', trans($pluginName))
 
 <div class="rightlist">
+    <!-- 新增加右侧顶部三级菜单 -->
+    <div class="right-titpos">
+        <ul class="add-snav">
+            <li class="active"><a href="#">快捷评语</a></li>
+        </ul>
+    </div>
+    <!-- 新增加右侧顶部三级菜单结束 -->
     <div class="panel panel-default">
         <div class="panel-body">
 
