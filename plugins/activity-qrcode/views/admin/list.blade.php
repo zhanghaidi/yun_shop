@@ -118,7 +118,12 @@
                                     到期：<span style="color: red">{{$list->timeout_count}}</span>
                                 </td>
                                 <td style="text-align: center;">
-                                    {{$list->qrcode}}
+                                        <p class="p1">商城首页</p>
+                                        <img id='home'>
+                                        <input type="hidden" >
+                                        <h5><a href="javascript:;" data-clipboard-text="{!! yzAppFullUrl('home') !!}" data-url="{!! yzAppFullUrl('home') !!}" class="js-clip" title="复制链接">复制链接</a></h5>
+                                   {{-- <img id='home'>
+                                    {{$list->qrcode}}--}}
                                 </td>
 
                                 <td style="text-align: center;">
@@ -137,5 +142,28 @@
             </div>
         </div>
 
+        <script src="{{resource_get('static/js/qrcode.min.js')}}"></script>
+        <script>
+
+            qrcodeScan("{!! yzAppFullUrl('home') !!}",'home');
+
+            function qrcodeScan(url, name) {//生成二维码
+
+                try {
+                    let qrcode = new QRCode('qrcode', {
+                        width: 200,  // 二维码宽度
+                        height: 200, // 二维码高度
+                        render: 'image',
+                        text: url
+                    });
+                } catch (e) {
+                    console.log('报错了')
+                }
+                var data = $("canvas")[$("canvas").length - 1].toDataURL().replace("image/png", "image/octet-stream;");
+                // $('#' + name + '').attr('src', data);
+                alertMask($("canvas")[$("canvas").length - 1].toDataURL(),url)
+                // this.img = data;
+            }
+        </script>
 
 @endsection('content')
