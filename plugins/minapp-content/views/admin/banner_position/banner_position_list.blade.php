@@ -19,7 +19,7 @@
 
             <div class="panel-body">
                 <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                    <a href="{{ yzWebUrl('plugin.minapp-content.admin.banner-position.add') }}" class="btn btn-info">添加轮播位</a>
+                    <a href="{{ yzWebUrl('plugin.minapp-content.admin.banner-position.edit') }}" class="btn btn-info">添加轮播位</a>
                 </div>
             </div>
 
@@ -39,9 +39,9 @@
                                 <td>{{$value['id']}}</td>
                                 <td>{{$value['name']}}</td>
                                 <td>
-                                    <a href="{{ yzWebUrl('plugin.minapp-content.admin.quick-comment.edit', ['id' => $value['id']]) }}"
+                                    <a href="{{ yzWebUrl('plugin.minapp-content.admin.banner-position.edit', ['id' => $value['id']]) }}"
                                        title="编辑"><i class="fa fa-edit"></i></a> &nbsp;
-                                    <a href="{{ yzWebUrl('plugin.minapp-content.admin.quick-comment.delete', ['id' => $value['id']]) }}"
+                                    <a href="{{ yzWebUrl('plugin.minapp-content.admin.banner-position.delete', ['id' => $value['id']]) }}"
                                        onclick="return confirm('确认删除该记录吗？');return false;" title="删除"><i
                                                 class="fa fa-trash-o"></i></a>
                                 </td>
