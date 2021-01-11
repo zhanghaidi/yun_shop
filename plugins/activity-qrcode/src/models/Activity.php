@@ -42,7 +42,7 @@ class Activity extends BaseModel
             'share_domain' => 'required',
             'status' => 'required|digits_between:0,1',
             'switch_type' => 'required|digits_between:0,1',
-            //'type' => 'required|digits_between:0,1',
+            'logo' => 'required|string',
         ];
     }
 
