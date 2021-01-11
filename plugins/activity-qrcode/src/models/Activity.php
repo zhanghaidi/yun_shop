@@ -55,6 +55,7 @@ class Activity extends BaseModel
     {
         return self::withCount([
                 'hasManyUser',
+                'hasQrcode',
                 'hasManyQrcode',
                 'hasManyQrcode as timeout' => function($qrcode){
                     return $qrcode->where('end_time', '<', time());
@@ -63,10 +64,7 @@ class Activity extends BaseModel
                     return $qrcode->where('is_full', 1);
                 }
             ])
-            /*->with([
-                'hasManyQrcode ' => function($qrcode){
-                    return $qrcode->with(['hasManyUser']);
-                }])*/
+            ->with('hasQrcode')
             ->where('id', $id)
             ->first();
     }
@@ -125,6 +123,11 @@ class Activity extends BaseModel
     public function hasManyUser()
     {
         return $this->hasMany('Yunshop\ActivityQrcode\models\ActivityUser', 'code_id', 'id');
+    }
+
+    public function hasQrcode()
+    {
+        return $this->hasOne('Yunshop\ActivityQrcode\models\Qrcode', 'code_id', 'id')->where(['is_full'=>0, 'end_time' ,'>', time()])->order('sort','desc');
     }
 
 
