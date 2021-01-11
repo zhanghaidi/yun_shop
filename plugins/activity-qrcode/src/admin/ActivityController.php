@@ -52,7 +52,9 @@ class ActivityController extends BaseController
                 $this->error($validator->messages());
             }else{
                 if($activityModel->save()){
-                    $activityModel->qrcode = ActivityQrcodeService::getQrCode($activityModel->id);
+                    $url = yzAppFullUrl('plugin.activity-qrcode.api.qrcode.index/' . $activityModel->id);
+                    $activityModel->qrcode = ActivityQrcodeService::getQrCode($url);
+                    $activityModel->link_path = $url;
                     $activityModel->save();
                     return $this->message('添加成功', Url::absoluteWeb('plugin.activity-qrcode.admin.activity.qrcode.index', array('id' => $activityModel->id)));
                 }else{
@@ -82,7 +84,9 @@ class ActivityController extends BaseController
         $requestActivity = \YunShop::request()->info;
         if ($requestActivity) {
             $activityModel->fill($requestActivity);
-            $activityModel->qrcode = ActivityQrcodeService::getQrCode($activityId);
+            $url = yzAppFullUrl('plugin.activity-qrcode.api.qrcode.index/' . $activityId);
+            $activityModel->qrcode = ActivityQrcodeService::getQrCode($url);
+            $activityModel->link_path = $url;
 
             $validator = $activityModel->validator();
             if ($validator->fails()) {

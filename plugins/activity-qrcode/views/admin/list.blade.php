@@ -119,7 +119,7 @@
                                 </td>
                                 <td style="text-align: center;">
                                     <img src="{{$list->qrcode}}" width="80px" height="80px">
-                                    <h6><a href="javascript:;" data-clipboard-text="{!! yzAppFullUrl('home') !!}" data-url="{!! yzAppFullUrl('home') !!}" class="js-clip" title="复制链接">复制链接</a></h6>
+                                    <h6><a href="javascript:;" data-clipboard-text="{!! $list->link_path !!}" data-url="{!!$list->link_path !!}" class="js-clip" title="复制链接">复制链接</a></h6>
                                 </td>
 
                                 <td style="text-align: center;">
