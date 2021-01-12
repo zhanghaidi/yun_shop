@@ -57,8 +57,17 @@ class QrcodeController extends ApiController
    //扫码识别页面
     public function scan()
     {
+        global $_W;
+        $qrcode_id = intval(\YunShop::request()->qrcode_id);
+        $params = array(
+            'uniacid' => \YunShop::app()->uniacid,
+            'code_id' => $this->activityId,
+            'ip' => $_W['clientip'],
+        );
 
-        return $this->successJson('ok-scan');
+        ActivityUser::where($params)->update(['qrcode_id' => $qrcode_id]);
+
+        return $this->successJson('ok');
     }
 
 
