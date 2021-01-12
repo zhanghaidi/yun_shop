@@ -46,7 +46,7 @@
                     </div>
                 </div>
 
-                <div class="form-group">
+               {{-- <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-1 control-label">活码切换方式</label>
                     <div class="col-sm-9 col-xs-12 col-md-11">
                         <label class="radio-inline">
@@ -56,11 +56,10 @@
                             <input type="radio" name="info[switch_type]" value="0" @if($info['switch_type'] == 0) checked="checked" @endif />满员切换
                         </label>
                     </div>
-                </div>
+                </div>--}}
 
 
-
-                <div class="form-group">
+                {{--<div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-1 control-label">启用/关闭</label>
                     <div class="col-sm-9 col-xs-12 col-md-11">
                         <label class="radio-inline">
@@ -70,7 +69,7 @@
                             <input type="radio" name="info[status]" value="1" @if($info['status'] == 1) checked="checked" @endif />开启
                         </label>
                     </div>
-                </div>
+                </div>--}}
 
 
 
