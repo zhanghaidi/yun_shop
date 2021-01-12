@@ -103,7 +103,7 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'item' => 'plugin.activity-qrcode.activity_user_see',
                             'url' => 'plugin.activity-qrcode.admin.activity.user',
                             'url_params' => '',
-                            'parents' => ['activity-qrcode','plugin.activity-qrcode.activity_see'],
+                            'parents' => ['activity-qrcode'],
                             'child' =>[]
                         ],
                         'plugin.activity-qrcode.qrcode_see' => [
