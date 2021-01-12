@@ -75,17 +75,17 @@
 
 
                     {{--<div class="form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">助手名称</label>
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">客服微信</label>
                         <div class="col-sm-9 col-xs-12 col-md-11">
                             <input name="helper_nickname" type="text" class="form-control" value="{{ $info['helper_nickname'] }}" required/>
                             <span class="help-block">助手设置，助手名称</span>
                         </div>
-                    </div>
+                    </div>--}}
                     <div class="form-group">
-                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">客服头像</label>
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">客服二维码</label>
                         <div class="col-sm-9 col-xs-12 col-md-6">
                             {!! app\common\helpers\ImageHelper::tplFormFieldImage('helper_avatar', $info['helper_avatar']) !!}
-                            <span class="help-block">助手设置，助手头像</span>
+                            <span class="help-block">助手设置，助手二维码</span>
                         </div>
                     </div>
                     <div class="form-group">
@@ -94,7 +94,7 @@
                             <input name="helper_wechat" type="text" class="form-control" value="{{ $info['helper_wechat'] }}" required/>
                             <span class="help-block">助手设置，助手微信</span>
                         </div>
-                    </div>--}}
+                    </div>
                 <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-1 control-label">分享域名</label>
                     <div class="col-sm-9 col-xs-12 col-md-11">
