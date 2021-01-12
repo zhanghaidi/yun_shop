@@ -37,7 +37,7 @@ class QrcodeController extends BaseController
 
         }
 
-        $recordList = $records->where('code_id', $this->activityId)->orderBy('sort', 'desc')->paginate();
+        $recordList = $records->where('code_id', $this->activityId)->orderBy('sort', 'asc')->paginate();
 
         $pager = PaginationHelper::show($recordList->total(), $recordList->currentPage(), $recordList->perPage());
 
