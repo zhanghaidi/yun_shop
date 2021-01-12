@@ -13,7 +13,7 @@
                             <div class="col-sm-9 col-xs-12">
                                 <input type="text" name="setting[host]" class="form-control" value="{{ $setting['host'] }}"/>
                                 <span class="help-text">
-                                    域名例如：https://www.aijuyi.net
+                                    基础域名：https://www.aijuyi.net
                                 </span>
                             </div>
                         </div>
@@ -22,7 +22,7 @@
                             <div class="col-sm-9 col-xs-12">
                                 <input type="text" name="setting[domain]" class="form-control" value="{{ $setting['domain'] }}"/>
                                 <span class="help-text">
-                                    域名后地址例如：/static/ajy-h5/index.html?#/pages/punch-the-lock/index/index?tid=
+                                    路由地址：/static/ajy-h5/index.html?#/pages/punch-the-lock/index/index?tid=
                                 </span>
                             </div>
                         </div>
