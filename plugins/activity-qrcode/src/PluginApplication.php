@@ -44,11 +44,22 @@ class PluginApplication extends \app\common\services\PluginApplication
             'list_icon'         => 'poster',
             'parents'           => [],
             'child'             => [
+                'recharge_code.set' => [
+                    'name' => '基础设置',
+                    'permit' => 1,
+                    'menu' => 1,
+                    'icon' => '',
+                    'url' => 'plugin.activity-qrcode.admin.set.index',
+                    'url_params' => '',
+                    'parents' => ['activity-qrcode'],
+                    'child' => [
+                    ]
+                ],
                 'plugin.activity-qrcode.activity_see' => [
                     'name'      => '活码列表',
                     'permit'    => 1,
                     'menu'      => 1,
-                    'icon'      => '',
+                    'icon'      => 'fa-clipboard',
                     'url'       => 'plugin.activity-qrcode.admin.activity.index',
                     'url_params'=> '',
                     'item' => 'plugin.activity-qrcode.activity_see',
