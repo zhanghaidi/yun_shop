@@ -39,9 +39,9 @@ class Activity extends BaseModel
             'share_title' => 'max:255',
             'share_description' => 'max:255',
             'share_img' => 'string',
-            'share_domain' => 'required',
-            'status' => 'required|digits_between:0,1',
-            'switch_type' => 'required|digits_between:0,1',
+            'share_domain' => 'string',
+            //'status' => 'required|digits_between:0,1',
+            //'switch_type' => 'required|digits_between:0,1',
             'logo' => 'required|string',
         ];
     }
