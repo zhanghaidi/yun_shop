@@ -104,12 +104,11 @@
                                 </td>
 
                                 <td style="text-align: center;">
-
+                                    {{$list->today_user_count}}
 
                                 </td>
                                 <td style="text-align: center;">
-                                    {{$list->has_many_qrcode_count}}<br>
-                                    {{$list->timeout}}
+                                    {{$list->has_many_user_count}}<br>
 
                                 </td>
                                 <td style="text-align: center;">
