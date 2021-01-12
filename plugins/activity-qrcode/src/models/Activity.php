@@ -79,6 +79,10 @@ class Activity extends BaseModel
     public function scopeRecords($query)
     {
         return $query->withCount([
+            'hasManyUser',
+            'hasManyUser as todayUser' => function($user){
+                return $user->whereBetween('created_at', [Carbon::now()->startOfDay()->timestamp, Carbon::now()->endOfDay()->timestamp]);
+            },
             'hasManyQrcode',
             'hasManyQrcode as timeout' => function($qrcode){
                 return $qrcode->where('end_time', '<', time());
@@ -88,8 +92,8 @@ class Activity extends BaseModel
             }
             ])
             ->with([
-                'hasManyQrcode' => function($qrcode){
-                    return $qrcode->with(['hasManyUser']);
+                'hasQrcode' => function($qr){
+                    return $qr->select('id','sort','code_id','qr_img','qr_path','end_time','switch_limit','is_full')->orderBy('sort')->first();
                 }]);
     }
 
