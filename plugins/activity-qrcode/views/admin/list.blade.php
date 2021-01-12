@@ -74,6 +74,7 @@
                     <table class="table table-hover" style="overflow:visible;">
                         <thead class="navbar-inner">
                         <tr>
+                            <th style='width:6%; text-align: center;'>ID</th>
                             <th style='width:6%; text-align: center;'>创建时间</th>
                             <th style='width:6%; text-align: center;'>活码名称</th>
                             <th style='width:6%; text-align: center;'>活码标题</th>
@@ -88,6 +89,7 @@
                         <tbody>
                         @foreach($pageList as $list)
                             <tr>
+                                <td style="text-align: center;">{{ $list->id }}</td>
                                 <td style="text-align: center;">{{ $list->created_at }}</td>
 
                                 <td style="text-align: center;">
