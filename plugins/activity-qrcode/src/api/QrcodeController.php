@@ -59,6 +59,9 @@ class QrcodeController extends ApiController
     {
         global $_W;
         $qrcode_id = intval(\YunShop::request()->qrcode_id);
+        if(!$qrcode_id){
+            return $this->errorJson('缺少参数');
+        }
         $params = array(
             'uniacid' => \YunShop::app()->uniacid,
             'code_id' => $this->activityId,
