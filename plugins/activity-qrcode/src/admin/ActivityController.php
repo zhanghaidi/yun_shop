@@ -7,6 +7,7 @@ use app\common\facades\Setting;
 use app\common\helpers\Url;
 use app\common\helpers\PaginationHelper;
 use Yunshop\ActivityQrcode\models\Activity;
+use Yunshop\ActivityQrcode\models\ActivityUser;
 use Yunshop\ActivityQrcode\services\ActivityQrcodeService;
 
 class ActivityController extends BaseController
@@ -43,6 +44,8 @@ class ActivityController extends BaseController
     {
         $activityModel = new Activity();
         $requestActivity = \YunShop::request()->info;
+        $activitySetting = Setting::get('plugin.activity-qrcode');
+
         if ($requestActivity) {
             $activityModel->fill($requestActivity);
             $activityModel->uniacid = \YunShop::app()->uniacid;
@@ -52,7 +55,7 @@ class ActivityController extends BaseController
                 $this->error($validator->messages());
             }else{
                 if($activityModel->save()){
-                    $url = yzAppFullUrl('plugin.activity-qrcode.api.qrcode.index/' . $activityModel->id);
+                    $url = $activitySetting['host'].$activitySetting['domain'].$activityModel->id;
                     $activityModel->qrcode = ActivityQrcodeService::getQrCode($url);
                     $activityModel->link_path = $url;
                     $activityModel->save();
@@ -75,7 +78,7 @@ class ActivityController extends BaseController
     public function edit()
     {
         $activityId =  \YunShop::request()->id;
-
+        $activitySetting = Setting::get('plugin.activity-qrcode');
         $activityModel = Activity::getActivity($activityId);
         if(!$activityModel){
             return $this->message('无此记录或已被删除','','error');
@@ -84,7 +87,8 @@ class ActivityController extends BaseController
         $requestActivity = \YunShop::request()->info;
         if ($requestActivity) {
             $activityModel->fill($requestActivity);
-            $url = yzAppFullUrl('plugin.activity-qrcode.api.qrcode.index/' . $activityId);
+            $url = $activitySetting['host'].$activitySetting['domain'].$activityId;
+
             $activityModel->qrcode = ActivityQrcodeService::getQrCode($url);
             $activityModel->link_path = $url;
 
@@ -120,6 +124,27 @@ class ActivityController extends BaseController
         if(Activity::deletedActivity($id)){
             return $this->message('删除成功', Url::absoluteWeb('plugin.activity-qrcode.admin.activity.index'));
         }
+
+    }
+
+    public function user()
+    {
+        $activityId =  \YunShop::request()->id;
+        $activityModel = Activity::getActivity($activityId);
+        if(!$activityModel){
+            return $this->message('无此记录或已被删除','','error');
+        }
+
+        $userList = ActivityUser::uniacid()->where('code_id', $activityId)->with('belongsToQrcode')->orderBy('id', 'desc')->paginate();
+
+        $pager = PaginationHelper::show($userList->total(), $userList->currentPage(), $userList->perPage());
+
+        return view('Yunshop\ActivityQrcode::admin.user',
+            [
+                'pageList'    => $userList,
+                'page'          => $pager,
+            ]
+        )->render();
 
     }
 

@@ -110,7 +110,7 @@
 
                                 </td>
                                 <td style="text-align: center;">
-                                    {{$list->has_many_user_count}}<br>
+                                    <a class="btn btn-info" href="{{ yzWebUrl('plugin.activity-qrcode.admin.activity.user', array('id' => $list->id)) }}">{{$list->has_many_user_count}}</a>
 
                                 </td>
                                 <td style="text-align: center;">
