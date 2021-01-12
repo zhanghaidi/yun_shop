@@ -54,6 +54,12 @@ class QrcodeController extends ApiController
 
     }
 
+    //助手接口
+    public function helper(){
+        $activitySetting = Setting::get('plugin.activity-qrcode');
+        return $this->successJson('ok', $activitySetting);
+    }
+
    //扫码识别页面
     public function scan()
     {
