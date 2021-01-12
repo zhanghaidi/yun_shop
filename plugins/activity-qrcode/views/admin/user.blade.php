@@ -7,7 +7,7 @@
         </div>
         <!-- 新增加右侧顶部三级菜单结束 -->
         <div class="panel panel-info">
-            <div class="panel-heading">扫码记录</div>
+            <div class="panel-heading">识别记录</div>
 
            {{-- <div class="panel-body">
                 <form action="" method="get" class="form-horizontal" role="form" id="form">
