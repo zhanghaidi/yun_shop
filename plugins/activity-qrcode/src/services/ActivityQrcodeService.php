@@ -18,6 +18,9 @@ class ActivityQrcodeService
     //解析二维码内容
     public static function parseQrCode($path){
 
+        $QRCodeReader = new Libern\QRCodeReader\QRCodeReader();
+        $qrcode_text = $QRCodeReader->decode($path);
+        echo $qrcode_text;
     }
 
 
