@@ -95,6 +95,17 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'url_params' => '',
                             'parents' => ['activity-qrcode','plugin.activity-qrcode.activity_see'],
                         ],
+                        'plugin.activity-qrcode.activity_user_see' => [
+                            'name' => '扫码记录列表',
+                            'permit' => 1,
+                            'menu' => 1,
+                            'icon' => '',
+                            'item' => 'plugin.activity-qrcode.activity_user_see',
+                            'url' => 'plugin.activity-qrcode.admin.activity.user',
+                            'url_params' => '',
+                            'parents' => ['activity-qrcode','plugin.activity-qrcode.activity_see'],
+                            'child' =>[]
+                        ],
                         'plugin.activity-qrcode.qrcode_see' => [
                             'name' => '二维码列表',
                             'permit' => 1,
@@ -138,17 +149,6 @@ class PluginApplication extends \app\common\services\PluginApplication
                             ]
                         ],
 
-                        'plugin.activity-qrcode.activity_user_see' => [
-                            'name' => '扫码记录列表',
-                            'permit' => 1,
-                            'menu' => 1,
-                            'icon' => '',
-                            'item' => 'plugin.activity-qrcode.activity_user_see',
-                            'url' => 'plugin.activity-qrcode.admin.activity.user',
-                            'url_params' => '',
-                            'parents' => ['activity-qrcode'],
-                            'child' =>[]
-                        ],
 
                     ]
                 ],
