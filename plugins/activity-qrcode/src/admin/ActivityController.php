@@ -135,7 +135,7 @@ class ActivityController extends BaseController
             return $this->message('无此记录或已被删除','','error');
         }
 
-        $userList = ActivityUser::uniacid()->where('code_id', $activityId)->with('belongsToQrcode')->orderBy('id', 'desc')->paginate();
+        $userList = ActivityUser::where('code_id', $activityId)->with('belongsToQrcode')->orderBy('id', 'desc')->paginate();
 
         $pager = PaginationHelper::show($userList->total(), $userList->currentPage(), $userList->perPage());
 

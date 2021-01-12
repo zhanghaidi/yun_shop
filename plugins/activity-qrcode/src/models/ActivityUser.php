@@ -3,6 +3,7 @@
 namespace Yunshop\ActivityQrcode\models;
 use app\common\models\BaseModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use app\common\scopes\UniacidScope;
 use Carbon\Carbon;
 
 class ActivityUser extends BaseModel
@@ -13,7 +14,11 @@ class ActivityUser extends BaseModel
     public $timestamps = true;
     protected $guarded = [''];
 
-
+    public static function boot()
+    {
+        parent::boot();
+        self::addGlobalScope(new UniacidScope());
+    }
 
     //关联活码
     public function belongsToActivity()
