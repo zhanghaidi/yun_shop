@@ -7,6 +7,7 @@ use app\common\facades\Setting;
 use app\common\helpers\Url;
 use app\common\helpers\PaginationHelper;
 use Yunshop\ActivityQrcode\models\Activity;
+use Yunshop\ActivityQrcode\models\ActivityUser;
 use Yunshop\ActivityQrcode\services\ActivityQrcodeService;
 
 class ActivityController extends BaseController
@@ -123,6 +124,27 @@ class ActivityController extends BaseController
         if(Activity::deletedActivity($id)){
             return $this->message('删除成功', Url::absoluteWeb('plugin.activity-qrcode.admin.activity.index'));
         }
+
+    }
+
+    public function user()
+    {
+        $activityId =  \YunShop::request()->id;
+        $activityModel = Activity::getActivity($activityId);
+        if(!$activityModel){
+            return $this->message('无此记录或已被删除','','error');
+        }
+
+        $userList = ActivityUser::uniacid()->where('code_id', $activityId)->with('belongsToQrcode')->orderBy('id', 'desc')->paginate();
+
+        $pager = PaginationHelper::show($userList->total(), $userList->currentPage(), $userList->perPage());
+
+        return view('Yunshop\ActivityQrcode::admin.user',
+            [
+                'pageList'    => $userList,
+                'page'          => $pager,
+            ]
+        )->render();
 
     }
 
