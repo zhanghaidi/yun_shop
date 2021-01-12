@@ -44,7 +44,7 @@ class PluginApplication extends \app\common\services\PluginApplication
             'list_icon'         => 'poster',
             'parents'           => [],
             'child'             => [
-                'recharge_code.set' => [
+                'activity-qrcode.set' => [
                     'name' => '基础设置',
                     'permit' => 1,
                     'menu' => 1,
