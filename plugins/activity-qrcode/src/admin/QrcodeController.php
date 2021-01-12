@@ -8,6 +8,7 @@ use app\common\helpers\Url;
 use app\common\helpers\PaginationHelper;
 use Yunshop\ActivityQrcode\models\Activity;
 use Yunshop\ActivityQrcode\models\Qrcode;
+use Yunshop\ActivityQrcode\services\ActivityQrcodeService;
 
 class QrcodeController extends BaseController
 {
@@ -71,6 +72,9 @@ class QrcodeController extends BaseController
             $qrcodeModel->fill($requestQrcode);
             $qrcodeModel->uniacid = \YunShop::app()->uniacid;
             $qrcodeModel->code_id = $this->activityId;
+            //解析二维码内容
+            $qrcodeModel->qr_path = ActivityQrcodeService::parseQrCode($qrcodeModel->qr_img);
+            var_dump($qrcodeModel->qr_path);die;
 
             $validator = $qrcodeModel->validator();
             if($validator->fails()){

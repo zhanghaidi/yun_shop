@@ -31,7 +31,6 @@ target/
 .DS_Store
 Thumbs.db
 
-vendor/
 storage/
 bootstrap/cache
 .env
