@@ -32,13 +32,15 @@
                         <div class="form-group mt-1">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">客服助手二维码</label>
                             <div class="col-sm-9 col-xs-12">
-                                <input type="text" name="setting[helper_avatar]" class="form-control" value="{{ $setting['helper_avatar'] }}"/>
+                                {!! app\common\helpers\ImageHelper::tplFormFieldImage('setting[helper_avatar]', $setting['helper_avatar']) !!}
+                                <span class="help-block">客服助手二维码</span>
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">客服助手微信</label>
                             <div class="col-sm-9 col-xs-12">
                                 <input type="text" name="setting[helper_wechat]" class="form-control" value="{{ $setting['helper_wechat'] }}"/>
+                                <span class="help-block">客服助手微信用以客户联系</span>
                             </div>
                         </div>
 
