@@ -74,9 +74,14 @@ class QrcodeController extends ApiController
             'ip' => $_W['clientip'],
         );
 
-        ActivityUser::where($params)->update(['qrcode_id' => $qrcode_id]);
+        $res = ActivityUser::where($params)->update(['qrcode_id' => $qrcode_id]);
 
-        return $this->successJson('ok');
+        if(!$res){
+            return $this->errorJson('更新失败');
+        }else{
+            return $this->successJson('ok');
+        }
+
     }
 
 
