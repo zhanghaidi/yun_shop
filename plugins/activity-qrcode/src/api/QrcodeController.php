@@ -39,7 +39,6 @@ class QrcodeController extends ApiController
 
         //搜集新加入此页面的用户
         $this->userJoin($activityId, $_W);
-        $this->updateQrcode();
     }
 
     //活码维码展示页面
