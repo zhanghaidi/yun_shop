@@ -36,13 +36,13 @@
                                 <span class="help-block">客服助手二维码</span>
                             </div>
                         </div>
-                        <div class="form-group">
+                        {{--<div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">客服助手微信</label>
                             <div class="col-sm-9 col-xs-12">
                                 <input type="text" name="setting[helper_wechat]" class="form-control" value="{{ $setting['helper_wechat'] }}"/>
                                 <span class="help-block">客服助手微信用以客户联系</span>
                             </div>
-                        </div>
+                        </div>--}}
 
                     </div>
 
