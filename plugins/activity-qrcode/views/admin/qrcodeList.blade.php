@@ -73,7 +73,7 @@
                                 </td>
 
                                 <td style="text-align: center;">
-                                    <span style="color: green"> 0</span>/{{$list->switch_limit}}
+                                    <span style="color: green"> {{$list->has_many_user_count}}</span>/{{$list->switch_limit}}
                                 </td>
 
                                 <td style="text-align: center;">
