@@ -15,8 +15,8 @@ class QrCode
     private $patch;
     private $url;
     private $fileName;
-    private $size = 240;
-    private $margin = 10;
+    private $size = 450;
+    private $margin = 2;
 
     function __construct($url, $patch, $size, $margin)
     {
