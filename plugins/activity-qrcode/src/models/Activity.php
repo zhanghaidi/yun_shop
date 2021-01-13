@@ -65,7 +65,7 @@ class Activity extends BaseModel
             ])
             ->with([
                 'hasQrcode' => function($qr){
-                    return $qr->select('id','sort','code_id','qr_img','qr_path','end_time','switch_limit','is_full')->orderBy('sort')->first();
+                    return $qr->select('id','sort','code_id','qr_img','qr_path','qr_code','end_time','switch_limit','is_full')->orderBy('sort')->first();
                 }
             ])
             ->where('id', $id)
@@ -93,7 +93,7 @@ class Activity extends BaseModel
             ])
             ->with([
                 'hasQrcode' => function($qr){
-                    return $qr->select('id','sort','code_id','qr_img','qr_path','end_time','switch_limit','is_full')->orderBy('sort')->first();
+                    return $qr->select('id','sort','code_id','qr_img','qr_path','qr_code','end_time','switch_limit','is_full')->orderBy('sort')->first();
                 }]);
     }
 

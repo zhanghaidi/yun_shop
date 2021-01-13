@@ -78,7 +78,7 @@
                             <th style='width:6%; text-align: center;'>创建时间</th>
                             <th style='width:6%; text-align: center;'>活码名称</th>
                             <th style='width:6%; text-align: center;'>活码标题</th>
-                            <th style='width:6%; text-align: center;'>活码类型</th>
+                           {{-- <th style='width:6%; text-align: center;'>活码类型</th>--}}
                             <th style='width:12%; text-align: center;'>今日扫码人数</th>
                             <th style='width:12%; text-align: center;'>累计扫码人数</th>
                             <th style='width:12%; text-align: center;'>二维码状态</th>
@@ -99,11 +99,11 @@
                                     {{ $list->title }}
                                 </td>
 
-                                <td style="text-align: center;">
+                               {{-- <td style="text-align: center;">
                                     @if($list->switch_type == 1) 平均切换
                                     @else 群满切换
                                     @endif
-                                </td>
+                                </td>--}}
 
                                 <td style="text-align: center;">
                                     {{$list->today_user_count}}

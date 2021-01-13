@@ -77,6 +77,7 @@ class QrcodeController extends ApiController
         ActivityUser::where($params)->update(['qrcode_id' => $qrcode_id]);
 
         return $this->successJson('ok');
+
     }
 
 

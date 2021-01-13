@@ -73,9 +73,8 @@ class QrcodeController extends BaseController
             $qrcodeModel->uniacid = \YunShop::app()->uniacid;
             $qrcodeModel->code_id = $this->activityId;
             //解析二维码内容
-            //$qrcodeModel->qr_path = ActivityQrcodeService::parseQrCode($qrcodeModel->qr_img);
-            //var_dump($qrcodeModel->qr_path);die;
-
+            $qrcodeModel->qr_path = ActivityQrcodeService::parseQrCode($qrcodeModel->qr_img);
+            $qrcodeModel->qr_code = ActivityQrcodeService::getQrCode($qrcodeModel->qr_path,850,0);
             $validator = $qrcodeModel->validator();
             if($validator->fails()){
                 $this->error($validator->messages());
@@ -117,7 +116,9 @@ class QrcodeController extends BaseController
             }
 
             $qrcodeModel->fill($requestQrcode);
-
+            //解析二维码内容
+            $qrcodeModel->qr_path = ActivityQrcodeService::parseQrCode($qrcodeModel->qr_img);
+            $qrcodeModel->qr_code = ActivityQrcodeService::getQrCode($qrcodeModel->qr_path,850,0);
             $validator = $qrcodeModel->validator();
             if ($validator->fails()) {
                 $this->error($validator->messages());
