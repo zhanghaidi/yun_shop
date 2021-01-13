@@ -61,10 +61,7 @@ class ComplaintController extends ApiController
         }
         unset($v1);
         $listRs = array_values($listRs);
-        var_dump($listRs);exit;
-
-        $return['question'] = $paperQuestionRs;
-        return $this->successJson('成功', $return);
+        return $this->successJson('成功', $listRs);
     }
 
     public function submit()
