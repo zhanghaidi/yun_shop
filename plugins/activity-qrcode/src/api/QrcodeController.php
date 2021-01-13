@@ -39,6 +39,7 @@ class QrcodeController extends ApiController
 
         //搜集新加入此页面的用户
         $this->userJoin($activityId, $_W);
+        $this->updateQrcode();
     }
 
     //活码维码展示页面
@@ -75,6 +76,12 @@ class QrcodeController extends ApiController
         );
 
         ActivityUser::where($params)->update(['qrcode_id' => $qrcode_id]);
+
+        $qrcodeModel = Qrcode::getInfo($qrcode_id);
+        if($qrcodeModel->hasManyUserCount >= $qrcodeModel->switch_limit){
+            $qrcodeModel->is_full = 1;
+            $qrcodeModel->save();
+        }
 
         return $this->successJson('ok');
 
