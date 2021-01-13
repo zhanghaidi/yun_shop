@@ -18,8 +18,8 @@ use Yunshop\ActivityQrcode\models\ActivityUser;
 class QrcodeController extends ApiController
 {
     protected $publicController = ['Qrcode'];
-    protected $publicAction = ['index', 'scan'];
-    protected $ignoreAction = ['index', 'scan'];
+    protected $publicAction = ['index', 'scan', 'helper'];
+    protected $ignoreAction = ['index', 'scan', 'helper'];
 
     protected $activityId;
 
