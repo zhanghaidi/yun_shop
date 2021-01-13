@@ -12,14 +12,14 @@ class ComplaintController extends ApiController
 {
     public function options()
     {
-        $memberId = (int) \YunShop::app()->getMemberId();
-        if ($memberId <= 0) {
-            return $this->errorJson('用户未授权登录', ['status' => 1]);
-        }
-
         $id = (int) \YunShop::request()->id;
         if ($id <= 0) {
             return $this->errorJson('参数错误', ['status' => 1]);
+        }
+
+        $itemId = (int) \YunShop::request()->item_id;
+        if ($itemId < 0) {
+            return $this->errorJson('参数错误.', ['status' => 1]);
         }
 
         $projectRs = ComplaintProjectModel::where([
@@ -30,36 +30,86 @@ class ComplaintController extends ApiController
             return $this->errorJson('投诉功能已失效', ['status' => 1]);
         }
 
-        $listRs = (new ComplaintItemModel)->getOrderList(\YunShop::app()->uniacid);
+        $cacheKey = 'AJYWXCOMPLAINT:OPTIONS:' . $id;
+        $cacheRs = Redis::get($cacheKey);
+        if ($cacheRs !== false && $cacheRs !== null) {
+            $listRs = json_decode($cacheRs, true);
+        } else {
+            $listRs = (new ComplaintItemModel)->getOrderList(\YunShop::app()->uniacid);
 
-        foreach ($listRs as &$v1) {
-            unset($v1['uniacid'], $v1['type'], $v1['submit_mode'], $v1['order'], $v1['created_at'], $v1['updated_at'], $v1['deleted_at']);
-            if (!isset($v1['children']) || !is_array($v1['children'])) {
-                unset($v1['children']);
-                continue;
-            }
-
-            foreach ($v1['children'] as &$v2) {
-                unset($v2['uniacid'], $v2['type'], $v2['submit_mode'], $v2['order'], $v2['created_at'], $v2['updated_at'], $v2['deleted_at']);
-                if (!isset($v2['children']) || !is_array($v2['children'])) {
-                    unset($v2['children']);
+            foreach ($listRs as &$v1) {
+                unset($v1['uniacid'], $v1['type'], $v1['submit_mode'], $v1['order']);
+                unset($v1['created_at'], $v1['updated_at'], $v1['deleted_at'], $v1['pid']);
+                if (!isset($v1['children']) || !is_array($v1['children'])) {
+                    unset($v1['children']);
                     continue;
                 }
 
-                foreach ($v2['children'] as &$v3) {
-                    unset($v3['uniacid'], $v3['type'], $v3['submit_mode'], $v3['order'], $v3['created_at'], $v3['updated_at'], $v3['deleted_at']);
-                    unset($v3['children']);
-                }
-                unset($v3);
+                foreach ($v1['children'] as &$v2) {
+                    unset($v2['uniacid'], $v2['type'], $v2['submit_mode'], $v2['order']);
+                    unset($v2['created_at'], $v2['updated_at'], $v2['deleted_at'], $v2['pid']);
+                    if (!isset($v2['children']) || !is_array($v2['children'])) {
+                        unset($v2['children']);
+                        continue;
+                    }
 
-                $v2['children'] = array_values($v2['children']);
+                    foreach ($v2['children'] as &$v3) {
+                        unset($v3['uniacid'], $v3['type'], $v3['submit_mode'], $v3['order'], $v3['pid']);
+                        unset($v3['created_at'], $v3['updated_at'], $v3['deleted_at'], $v3['children']);
+                    }
+                    unset($v3);
+
+                    // $v2['children'] = array_values($v2['children']);
+                }
+                unset($v2);
+                // $v1['children'] = array_values($v1['children']);
             }
-            unset($v2);
-            $v1['children'] = array_values($v1['children']);
+            unset($v1);
+            // $listRs = array_values($listRs);
+
+            Redis::setex($cacheKey, mt_rand(300, 600), json_encode($listRs));
         }
-        unset($v1);
-        $listRs = array_values($listRs);
-        return $this->successJson('成功', $listRs);
+
+        $return = [];
+        if ($itemId > 0) {
+            if (isset($listRs[$itemId])) {
+                $return = isset($listRs[$itemId]['children']) ? $listRs[$itemId]['children'] : [];
+            } else {
+                foreach ($listRs as $v1) {
+                    if (!isset($v1['children'])) {
+                        continue;
+                    }
+
+                    if (isset($v1['children'][$itemId])) {
+                        $return = isset($v1['children'][$itemId]['children']) ? $v1['children'][$itemId]['children'] : [];
+                        break;
+                    }
+
+                    foreach ($v1['children'] as $v2) {
+                        if (!isset($v2['children'])) {
+                            continue;
+                        }
+
+                        if (isset($v2['children'][$itemId])) {
+                            $return = isset($v2['children'][$itemId]['children']) ? $v2['children'][$itemId]['children'] : [];
+                            break 2;
+                        }
+                    }
+                }
+            }
+        } else {
+            $return = $listRs;
+        }
+        $return = array_values($return);
+        foreach ($return as &$v) {
+            if (!isset($v['id'])) {
+                continue;
+            }
+            unset($v['children']);
+        }
+        unset($v);
+
+        return $this->successJson('成功', $return);
     }
 
     public function submit()
