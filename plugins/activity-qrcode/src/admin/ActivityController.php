@@ -56,7 +56,7 @@ class ActivityController extends BaseController
             }else{
                 if($activityModel->save()){
                     $url = $activitySetting['host'].$activitySetting['domain'].$activityModel->id;
-                    $activityModel->qrcode = ActivityQrcodeService::getQrCode($url);
+                    $activityModel->qrcode = ActivityQrcodeService::getQrCode($url,250,5);
                     $activityModel->link_path = $url;
                     $activityModel->save();
                     return $this->message('添加成功', Url::absoluteWeb('plugin.activity-qrcode.admin.activity.qrcode.index', array('id' => $activityModel->id)));
@@ -89,7 +89,7 @@ class ActivityController extends BaseController
             $activityModel->fill($requestActivity);
             $url = $activitySetting['host'].$activitySetting['domain'].$activityId;
 
-            $activityModel->qrcode = ActivityQrcodeService::getQrCode($url);
+            $activityModel->qrcode = ActivityQrcodeService::getQrCode($url,250,5);
             $activityModel->link_path = $url;
 
             $validator = $activityModel->validator();
