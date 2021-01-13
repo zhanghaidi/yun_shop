@@ -47,7 +47,7 @@ class QrCode
             unlink(storage_path($this->patch . "/{$name}.png"));
             // 注意:format方法必须先调用,否则后续方法不生效
 
-            \QrCode::format('png')->size($this->size)->margin($this->margin)->generate($this->url, storage_path($this->patch . "/{$name}.png"));
+            \QrCode::format('png')->size($this->size)->margin($this->margin)->errorCorrection('H')->generate($this->url, storage_path($this->patch . "/{$name}.png"));
         }
         if (!file_exists(storage_path($this->patch . "/{$name}.png"))) {
             throw new ShopException('生成二维码失败');

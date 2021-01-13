@@ -24,13 +24,12 @@
                         <input name="info[name]" type="text" class="form-control" value="{{ $info['name'] }}" placeholder="请输二维码名称" required/>
                     </div>
                 </div>
-                <div class="form-group">
+                {{--<div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-1 control-label">二维码路径</label>
                     <div class="col-sm-9 col-xs-12 col-md-11">
                         <input name="info[qr_path]" type="text" class="form-control" value="{{ $info['qr_path'] }}" placeholder="请输二维码路径地址" required/>
                     </div>
-                </div>
-
+                </div>--}}
 
                 <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-1 control-label">切换频率</label>
