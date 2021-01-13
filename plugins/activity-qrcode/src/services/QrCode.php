@@ -34,7 +34,7 @@ class QrCode
 
     private function getFileName()
     {
-        $name = md5($this->url);
+        $name = md5($this->url.time());
         if (!is_dir(storage_path($this->patch))) {
             self::directory(storage_path($this->patch));
             mkdir(storage_path($this->patch), 0777);
