@@ -5778,7 +5778,7 @@ return array(
     'zgldh\\UploadManager\\UploadStrategyInterface' => $vendorDir . '/zgldh/laravel-upload-manager/src/UploadStrategyInterface.php',
     'zgldh\\UploadManager\\UploadValidator' => $vendorDir . '/zgldh/laravel-upload-manager/src/UploadValidator.php',
 
-    'QrReader' => $vendorDir . '/libern/qr-code-reader/src/lib/QrReader.php',
+    'Zxing\\QrReader' => $vendorDir . '/libern/qr-code-reader/src/lib/QrReader.php',
     'Zxing\\Binarizer' => $vendorDir . '/libern/qr-code-reader/src/lib/Binarizer.php',
     'Zxing\\BinaryBitmap' => $vendorDir . '/libern/qr-code-reader/src/lib/BinaryBitmap.php',
     'Zxing\\ChecksumException' => $vendorDir . '/libern/qr-code-reader/src/lib/ChecksumException.php',
