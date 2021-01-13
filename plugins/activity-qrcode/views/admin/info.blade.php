@@ -97,7 +97,7 @@
                 <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-1 control-label">分享域名</label>
                     <div class="col-sm-9 col-xs-12 col-md-11">
-                        <input name="info[share_domain]" type="text" class="form-control" value="{{ $info['share_domain'] }}" required/>
+                        <input name="info[share_domain]" type="text" class="form-control" value="{{ $info['share_domain'] }}" />
                     </div>
                 </div>
                 <div class="form-group">
