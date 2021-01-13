@@ -6362,7 +6362,7 @@ class ComposerStaticInit6ac7e407dbe4f822d88e09d36c276934
         'zgldh\\UploadManager\\UploadValidator' => __DIR__ . '/..' . '/zgldh/laravel-upload-manager/src/UploadValidator.php',
 
 
-        'QrReader' => __DIR__ . '/..' . '/libern/qr-code-reader/src/lib/QrReader.php',
+        'Zxing\\QrReader' => __DIR__ . '/..' . '/libern/qr-code-reader/src/lib/QrReader.php',
         'Zxing\\Binarizer' => __DIR__ . '/..' . '/libern/qr-code-reader/src/lib/Binarizer.php',
         'Zxing\\BinaryBitmap' => __DIR__ . '/..' . '/libern/qr-code-reader/src/lib/BinaryBitmap.php',
         'Zxing\\ChecksumException' => __DIR__ . '/..' . '/libern/qr-code-reader/src/lib/ChecksumException.php',
