@@ -77,7 +77,7 @@ class QrcodeController extends ApiController
         ActivityUser::where($params)->update(['qrcode_id' => $qrcode_id]);
 
         $qrcodeModel = Qrcode::getInfo($qrcode_id);
-        if($qrcodeModel->hasManyUserCount >= $qrcodeModel->switch_limit){
+        if($qrcodeModel->has_many_user_count >= $qrcodeModel->switch_limit){
             $qrcodeModel->is_full = 1;
             $qrcodeModel->save();
         }
