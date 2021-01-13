@@ -59,8 +59,8 @@ class ArticleCategoryController extends BaseController
             $category->name = $data['name'];
             $category->list_order = isset($data['list_order']) ? $data['list_order'] : 0;
             $category->image = isset($data['image']) ? trim($data['image']) : '';
-            $category->status = isset($data['status']) ? intval($data['status']) : '';
-            $category->type = isset($data['type']) ? intval($data['type']) : '';
+            $category->status = isset($data['status']) ? intval($data['status']) : 0;
+            $category->type = isset($data['type']) ? intval($data['type']) : 0;
             $category->save();
             if (!isset($category->id) || $category->id <= 0) {
                 return $this->message('修改失败', '', 'danger');
