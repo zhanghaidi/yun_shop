@@ -44,10 +44,34 @@ class QrcodeController extends ApiController
     //活码维码展示页面
     public function index()
     {
+        global $_W;
 
         $activityModel = Activity::getActivity($this->activityId);
+
         if(!$activityModel){
             return $this->errorJson('活码不存在或已失效');
+        }
+
+        $params = array(
+            'uniacid' => \YunShop::app()->uniacid,
+            'code_id' => $this->activityId,
+            'ip' => $_W['clientip'],
+        );
+        $joinUser = ActivityUser::where($params)->first();
+        $joinQrId = $joinUser['qrcode_id'];
+
+        if($activityModel->switch_type == 1 && $joinQrId > 0){
+            $activityModel->load([
+                'hasQrcode' => function($qr) use ($joinQrId){
+                    return $qr->select('id','sort','code_id','qr_img','qr_path','qr_code','end_time','switch_limit','is_full')->where('id', $joinQrId)->first();
+                }
+            ]);
+        }else{
+            $activityModel->load([
+                'hasQrcode' => function($qr){
+                    return $qr->select('id','sort','code_id','qr_img','qr_path','qr_code','end_time','switch_limit','is_full')->where('is_full', 0)->where('end_time' ,'>', time())->orderBy('sort')->first();
+                }
+            ]);
         }
 
         return $this->successJson('ok', $activityModel);
@@ -75,6 +99,12 @@ class QrcodeController extends ApiController
         );
 
         ActivityUser::where($params)->update(['qrcode_id' => $qrcode_id]);
+
+        $qrcodeModel = Qrcode::getInfo($qrcode_id);
+        if($qrcodeModel->has_many_user_count >= $qrcodeModel->switch_limit){
+            $qrcodeModel->is_full = 1;
+            $qrcodeModel->save();
+        }
 
         return $this->successJson('ok');
 
