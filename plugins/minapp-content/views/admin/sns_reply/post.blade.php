@@ -9,8 +9,8 @@
         
             <div class="top" style="margin-bottom:20px">
                 <ul class="add-shopnav" id="myTab">
-                    <li class="active"><a href="{{yzWebUrl('plugin.minapp-content.admin.article.index')}}">文章列表</a></li>
-                    <li><a href="{{yzWebUrl('plugin.minapp-content.admin.article-category.index')}}">文章分类</a></li>
+                    <li class="active"><a href="{{yzWebUrl('plugin.minapp-content.admin.post.index')}}">话题管理</a></li>
+                    <li><a href="{{yzWebUrl('plugin.minapp-content.admin.sns-board.index')}}">话题版块</a></li>
                 </ul>
             </div>
 
@@ -44,7 +44,7 @@
                         <td>{{$value['content']}}</td>
                         <td>{{$value['create_time']}}</td>
                         <td class="text-right">
-                            <a href="{{ yzWebUrl('plugin.minapp-content.admin.article-replys.delete', ['id' => $value['id']]) }}" onclick="return confirm('确认删除该记录吗？');return false;"  class="btn btn-default" title="删除"><i class="fa fa-trash-o"></i></a>
+                            <a href="{{ yzWebUrl('plugin.minapp-content.admin.sns-replys.delete', ['id' => $value['id']]) }}" onclick="return confirm('确认删除该记录吗？');return false;"  class="btn btn-default" title="删除"><i class="fa fa-trash-o"></i></a>
                         </td>
                     </tr>
                     @endforeach

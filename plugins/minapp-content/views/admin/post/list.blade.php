@@ -170,7 +170,7 @@
                         <td style="text-align: center;">{{$value['view_nums']}}</td>
                         <td style="text-align: center;">{{$value['like_nums']}}</td>
                         <td style="text-align: center;">
-                            <a href="{{ yzWebUrl('plugin.minapp-content.admin.post-replys.index', ['id' => $value['id']]) }}">
+                            <a href="{{ yzWebUrl('plugin.minapp-content.admin.sns-replys.index', ['id' => $value['id']]) }}">
                                 <i class="fa fa-comment-o"></i> {{$value['comment_nums']}}
                             </a>
                         </td>
