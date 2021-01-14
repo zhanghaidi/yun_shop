@@ -46,17 +46,18 @@
                     </div>
                 </div>
 
-               {{-- <div class="form-group">
-                    <label class="col-xs-12 col-sm-3 col-md-1 control-label">活码切换方式</label>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-1 control-label">是否锁定二维码</label>
                     <div class="col-sm-9 col-xs-12 col-md-11">
                         <label class="radio-inline">
-                            <input type="radio" name="info[switch_type]" value="1" @if($info['switch_type'] == 1) checked="checked" @endif />平均切换
+                            <input type="radio" name="info[switch_type]" value="1" @if($info['switch_type'] == 1) checked="checked" @endif />锁定
                         </label>
                         <label class="radio-inline">
-                            <input type="radio" name="info[switch_type]" value="0" @if($info['switch_type'] == 0) checked="checked" @endif />满员切换
+                            <input type="radio" name="info[switch_type]" value="0" @if($info['switch_type'] == 0) checked="checked" @endif />不锁定
                         </label>
                     </div>
-                </div>--}}
+                    <span class="help-block">如果选择锁定,已入群的用户将直接展现入群二维码,不管这个群码是否有效</span>
+                </div>
 
 
                 {{--<div class="form-group">
@@ -68,6 +69,7 @@
                         <label class="radio-inline">
                             <input type="radio" name="info[status]" value="1" @if($info['status'] == 1) checked="checked" @endif />开启
                         </label>
+                        <span class="help-block">助手设置，助手名称</span>
                     </div>
                 </div>--}}
 
