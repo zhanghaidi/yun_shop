@@ -55,8 +55,9 @@
                         <label class="radio-inline">
                             <input type="radio" name="info[switch_type]" value="0" @if($info['switch_type'] == 0) checked="checked" @endif />不锁定
                         </label>
+                        <span class="help-block">如果选择锁定,已入群的用户将直接展现入群二维码,不管这个群码是否有效</span>
                     </div>
-                    <span class="help-block">如果选择锁定,已入群的用户将直接展现入群二维码,不管这个群码是否有效</span>
+
                 </div>
 
 
