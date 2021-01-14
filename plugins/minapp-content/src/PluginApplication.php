@@ -327,6 +327,20 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'url' => 'plugin.minapp-content.admin.sns-filter.category',
                             'parents' => ['minapp_content', 'sns_manage'],
                         ],
+                        'sns_upload_filter_manage' => [
+                            'name' => '敏感图用户管理',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.sns-upload-filter.index',
+                            'parents' => ['minapp_content', 'sns_manage'],
+                        ],
+                        'sns_upload_filter_del' => [
+                            'name' => '敏感图用户管理',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.sns-upload-filter.delete',
+                            'parents' => ['minapp_content', 'sns_manage'],
+                        ],
                     ],
                 ],
                 'banner' => [
