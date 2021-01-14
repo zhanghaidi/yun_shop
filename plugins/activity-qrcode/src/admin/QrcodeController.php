@@ -119,6 +119,11 @@ class QrcodeController extends BaseController
             //解析二维码内容
             $qrcodeModel->qr_path = ActivityQrcodeService::parseQrCode($qrcodeModel->qr_img);
             $qrcodeModel->qr_code = ActivityQrcodeService::getQrCode($qrcodeModel->qr_path,850,0);
+            //更新是否满群状态
+            if($qrcodeModel->has_many_user_count < $requestQrcode['switch_limit']){
+                $qrcodeModel->is_full = 0;
+            }
+
             $validator = $qrcodeModel->validator();
             if ($validator->fails()) {
                 $this->error($validator->messages());
