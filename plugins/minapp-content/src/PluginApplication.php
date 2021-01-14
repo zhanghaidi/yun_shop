@@ -313,6 +313,20 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'url' => 'plugin.minapp-content.admin.sns-replys.delete',
                             'parents' => ['minapp_content', 'sns_manage'],
                         ],
+                        'sns_filter_post' => [
+                            'name' => '敏感词库管理',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.sns-filter.post',
+                            'parents' => ['minapp_content', 'sns_manage'],
+                        ],
+                        'sns_filter_category' => [
+                            'name' => '添加敏感词库类目',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.sns-filter.category',
+                            'parents' => ['minapp_content', 'sns_manage'],
+                        ],
                     ],
                 ],
                 'banner' => [
