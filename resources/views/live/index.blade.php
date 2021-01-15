@@ -43,10 +43,9 @@
                     <tr>
                         <th style='width:5%; text-align: center;'>ID</th>
                         <th style='width:5%; text-align: center;'>排序</th>
-                        <th style='width:5%; text-align: center;'>主播</th>
+                        <th style='width:5%; text-align: center;'>主播信息</th>
                         <th style='width:8%; text-align: center;'>直播间名称</th>
-                        <th style='width:8%; text-align: center;'>封面图片</th>
-                        <th style='width:8%; text-align: center;'>分享图片</th>
+                        <th style='width:8%; text-align: center;'>直播间封面图</th>
                         <th style='width:15%; text-align: center;'>推流URL</th>
                         <th style='width:15%; text-align: center;'>拉流URL</th>
                         <th style='width:8%; text-align: center;'>直播开始时间</th>
@@ -62,16 +61,26 @@
                         <tr style="text-align: center;">
                             <td>{{ $list->id }}</td>
                             <td>{{ $list->sort }}</td>
-                            <td>{{ $list->anchor_name }}</td>
+                            <td>
+                                <a href='{{yz_tomedia($list->header_img)}}' target='_blank'><img src="{{yz_tomedia($list->header_img)}}" style='width:50px;border:1px solid #ccc;padding:1px' /></a><br>
+                                {{ $list->anchor_name }}
+                            </td>
                             <td>{{ $list->name }}</td>
                             <td>
                                 <a href='{{yz_tomedia($list->picture)}}' target='_blank'><img src="{{yz_tomedia($list->cover_img)}}" style='width:100px;border:1px solid #ccc;padding:1px' /></a>
                             </td>
-                            <td>
+                            {{--<td>
                                 <a href='{{yz_tomedia($list->picture)}}' target='_blank'><img src="{{yz_tomedia($list->share_img)}}" style='width:100px;border:1px solid #ccc;padding:1px' /></a>
+                            </td>--}}
+                            <td title="{{ $list->push_url }}">
+                                {{ $list->push_url }}<br>
+                               {{-- <a style="margin-bottom: 2px" href="javascript:;" data-url="{{ $list->push_url }}" class="btn btn-default copy_push">复制推流</a>--}}
+                                <h6><a href="javascript:;" data-clipboard-text="{!! $list->push_url !!}" data-url="{!! $list->push_url !!}" class="js-clip" title="复制推流地址">复制推流地址</a></h6>
                             </td>
-                            <td title="{{ $list->push_url }}">{{ $list->push_url }}</td>
-                            <td title="{{ $list->pull_url }}">{{ $list->pull_url }}</td>
+                            <td title="{{ $list->pull_url }}">
+                                {{ $list->pull_url }}
+                                <h6><a href="javascript:;" data-clipboard-text="{!! $list->pull_url !!}" data-url="{!! $list->pull_url !!}" class="js-clip" title="复制拉流地址">复制拉流地址</a></h6>
+                            </td>
                             <td title="{{ $list->start_time }}">{{ $list->start_time }}</td>
                             <td title="{{ $list->end_time }}">{{ $list->end_time }}</td>
                             <td><label class="label label-info">{{ $list->status_parse }}</label></td>
@@ -83,7 +92,6 @@
                                 @endif
                                 <a class='btn btn-default' href="{{ yzWebUrl('live.live-room.edit', array('id' => $list->id)) }}" style="margin-bottom: 2px">编辑</a>
 
-                                    <a style="margin-bottom: 2px" href="javascript:;" data-url="{{ $list->push_url }}" class="btn btn-default copy_push">复制推流</a>
                             </td>
                         </tr>
                     @endforeach
