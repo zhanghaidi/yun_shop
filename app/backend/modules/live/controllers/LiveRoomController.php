@@ -32,10 +32,7 @@ class LiveRoomController extends BaseController
             $room = $room->search($search);
         }
 
-        //$roomList = $room->orderBy('sort','desc')->orderBy('id','desc')->paginate(static::PAGE_SIZE);
-
-        $roomList = $room->orderBy(['sort' => 'desc', 'id' => 'desc'])->paginate();
-
+        $roomList = $room->orderBy('sort','desc')->orderBy('id','desc')->paginate(static::PAGE_SIZE);
         $page = PaginationHelper::show($roomList->total(),$roomList->currentPage(),$roomList->perPage());
 
         return view('live.index',[
