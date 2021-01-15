@@ -17,9 +17,6 @@ use app\common\models\live\CloudLiveRoomMessage;
 class LiveRoomController extends BaseController
 {
 
-    const PAGE_SIZE = 20;
-
-
     /**
      * 查看云直播房间列表
      */
@@ -32,7 +29,7 @@ class LiveRoomController extends BaseController
             $room = $room->search($search);
         }
 
-        $roomList = $room->orderBy('sort','desc')->orderBy('id','desc')->paginate(static::PAGE_SIZE);
+        $roomList = $room->orderBy('sort','desc')->orderBy('id','desc')->paginate();
         $page = PaginationHelper::show($roomList->total(),$roomList->currentPage(),$roomList->perPage());
 
         return view('live.index',[
@@ -56,7 +53,7 @@ class LiveRoomController extends BaseController
             }else{
                 if($liveModel->save()){
                     $liveModel->stream_name = LiveSetService::getSetting('stream_name_pre') .$liveModel->id;
-                    $liveModel->push_url = LiveService::getPushUrl($liveModel->id, $liveRequest['time']['end']);
+                    $liveModel->push_url = LiveService::getPushUrl($liveModel->id, \YunShop::request()->live['time']['end']);
                     $liveModel->pull_url = LiveService::getPullUrl($liveModel->id);
 
                     //创建直播对应的群聊IM群组
@@ -102,7 +99,7 @@ class LiveRoomController extends BaseController
             } else {
                 if ($liveModel->save()) {
                     $liveModel->stream_name = LiveSetService::getSetting('stream_name_pre') .$liveModel->id;
-                    $liveModel->push_url = LiveService::getPushUrl($liveModel->id, $liveRequest['time']['end']);
+                    $liveModel->push_url = LiveService::getPushUrl($liveModel->id, \YunShop::request()->live['time']['end']);
                     $liveModel->pull_url = LiveService::getPullUrl($liveModel->id);
                     //创建直播对应的群聊IM群组
                     if(empty($liveModel->group_id)){
