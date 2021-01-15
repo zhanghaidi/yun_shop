@@ -82,7 +82,7 @@ class ArticleReplysController extends BaseController
 
         $pager = PaginationHelper::show($list['total'], $list['current_page'], $this->pageSize);
 
-        return view('Yunshop\MinappContent::admin.article-reply.list', [
+        return view('Yunshop\MinappContent::admin.article_reply.list', [
             'pluginName' => MinappContentService::get('name'),
             'info' => $infoRs,
             'data' => $list['data'],
@@ -134,7 +134,7 @@ class ArticleReplysController extends BaseController
             unset($v1);
         }
 
-        return view('Yunshop\MinappContent::admin.article-reply.post', [
+        return view('Yunshop\MinappContent::admin.article_reply.post', [
             'pluginName' => MinappContentService::get('name'),
             'info' => $infoRs,
             'data' => $list,
