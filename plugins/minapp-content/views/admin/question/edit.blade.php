@@ -10,8 +10,8 @@
             <div class="top" style="margin-bottom:20px">
                 <ul class="add-shopnav" id="myTab">
                     <li><a href="{{yzWebUrl('plugin.minapp-content.admin.somato-type.index')}}">体质管理</a></li>
-                    <li class="active"><a href="{{yzWebUrl('plugin.minapp-content.admin.label.index')}}">症状标签</a></li>
-                    <li><a href="{{yzWebUrl('plugin.minapp-content.admin.question.index')}}">测评题库</a></li>
+                    <li><a href="{{yzWebUrl('plugin.minapp-content.admin.label.index')}}">症状标签</a></li>
+                    <li class="active"><a href="{{yzWebUrl('plugin.minapp-content.admin.question.index')}}">测评题库</a></li>
                     <li><a href="{{yzWebUrl('plugin.minapp-content.admin.answer.index')}}">用户测评</a></li>
                 </ul>
             </div>
@@ -20,31 +20,27 @@
             <input type="hidden" name="data[id]" value="{{$info['id']}}">
 
             <div class="form-group">
-                <label class="col-xs-12 col-sm-3 col-md-2 control-label">标签名称*</label>
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label">排序：</label>
                 <div class="col-xs-12 col-sm-9 col-md-10">
-                    <input type="text" name="data[name]" class="form-control" value="{{$info['name']}}">
-                    <span class="help-block">请输入标签名称</span>
+                    <input type="text" name="data[list_order]" class="form-control" value="{{$info['list_order']}}" placeholder="排序按数字由小到大排序">
                 </div>
             </div>
 
             <div class="form-group">
-                <label class="col-xs-12 col-sm-3 col-md-2 control-label">排序</label>
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label">题目：*</label>
                 <div class="col-xs-12 col-sm-9 col-md-10">
-                    <input type="text" name="data[list_order]" class="form-control" value="{{$info['list_order']}}">
-                    <span class="help-block">显示顺序，越大则越靠前</span>
+                    <input type="text" name="data[title]" class="form-control" value="{{$info['title']}}" placeholder="输入题目">
                 </div>
             </div>
 
             <div class="form-group">
-                <label class="col-xs-12 col-sm-3 col-md-2 control-label">状态</label>
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label">题目所属体质：</label>
                 <div class="col-xs-12 col-sm-9 col-md-10">
-                    <label class="radio-inline">
-                        <input type="radio" name="data[status]" value="1" @if($info['status'] === 1) checked="checked" @endif /> 显示
-                    </label>
-                    <label class="radio-inline">
-                        <input type="radio" name="data[status]" value="0" @if($info['status'] === 0) checked="checked" @endif /> 隐藏
-                    </label>
-                    <span class="help-block">是否显示</span>
+                    <select name="data[somato_type_id][]" data-placeholder="选择题目所属体质" class="form-control select2" multiple>
+                        @foreach($type as $item)
+                        <option value="{{$item['id']}}"@if(in_array($item['id'], $info['somato_type_id'])) selected @endif>{{$item['name']}}</option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
 
@@ -58,4 +54,10 @@
         </div>
     </div>
 </div>
+
+<script language="JavaScript">
+$(function () {
+    $('.select2').select2();
+});
+</script>
 @endsection

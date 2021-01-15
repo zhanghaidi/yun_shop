@@ -11,7 +11,7 @@
                 <ul class="add-shopnav" id="myTab">
                     <li class="active"><a href="{{yzWebUrl('plugin.minapp-content.admin.somato-type.index')}}">体质管理</a></li>
                     <li><a href="{{yzWebUrl('plugin.minapp-content.admin.label.index')}}">症状标签</a></li>
-                    <li><a href="{{yzWebUrl('plugin.minapp-content.admin.question.post')}}">测评题库</a></li>
+                    <li><a href="{{yzWebUrl('plugin.minapp-content.admin.question.index')}}">测评题库</a></li>
                     <li><a href="{{yzWebUrl('plugin.minapp-content.admin.answer.index')}}">用户测评</a></li>
                 </ul>
             </div>
@@ -43,7 +43,7 @@
                     <option value="{{$item['id']}}"@if(in_array($item['id'], $info['symptom'])) selected @endif>{{$item['name']}}</option>
                     @endforeach
                     </select>
-                    <span class="help-block"><a href="{{ yzWebUrl('plugin.minapp-content.admin.somato-type.edit') }}" target="_blank"><i class="fa fa-plus-circle"></i> 添加症状标签</a></span>
+                    <span class="help-block"><a href="{{ yzWebUrl('plugin.minapp-content.admin.label.edit') }}" target="_blank"><i class="fa fa-plus-circle"></i> 添加症状标签</a></span>
                 </div>
             </div>
 

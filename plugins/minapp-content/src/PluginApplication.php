@@ -433,6 +433,27 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'url' => 'plugin.minapp-content.admin.label.delete',
                             'parents' => ['minapp_content', 'somato_manage'],
                         ],
+                        'question_manage' => [
+                            'name' => '测评题库管理',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.question.index',
+                            'parents' => ['minapp_content', 'somato_manage'],
+                        ],
+                        'question_edit' => [
+                            'name' => '测评题库编辑',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.question.edit',
+                            'parents' => ['minapp_content', 'somato_manage'],
+                        ],
+                        'question_del' => [
+                            'name' => '删除测评题库',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.question.delete',
+                            'parents' => ['minapp_content', 'somato_manage'],
+                        ],
                     ],
                 ],
                 'banner' => [

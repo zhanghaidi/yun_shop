@@ -11,7 +11,7 @@
                 <ul class="add-shopnav" id="myTab">
                     <li><a href="{{yzWebUrl('plugin.minapp-content.admin.somato-type.index')}}">体质管理</a></li>
                     <li class="active"><a href="{{yzWebUrl('plugin.minapp-content.admin.label.index')}}">症状标签</a></li>
-                    <li><a href="{{yzWebUrl('plugin.minapp-content.admin.question.post')}}">测评题库</a></li>
+                    <li><a href="{{yzWebUrl('plugin.minapp-content.admin.question.index')}}">测评题库</a></li>
                     <li><a href="{{yzWebUrl('plugin.minapp-content.admin.answer.index')}}">用户测评</a></li>
                 </ul>
             </div>
