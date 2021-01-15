@@ -506,6 +506,7 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'menu' => 0,
                             'url' => 'plugin.minapp-content.admin.banner.display',
                             'parents' => ['minapp_content', 'banner_manage'],
+                        ],
                         'banner_list' => [
                             'name' => '轮播图列表',
                             'permit' => 1,
