@@ -10,7 +10,7 @@
             <div class="top" style="margin-bottom:20px">
                 <ul class="add-shopnav" id="myTab">
                     <li class="active"><a href="{{yzWebUrl('plugin.minapp-content.admin.banner.index')}}">轮播图列表</a></li>
-                    <li><a href="{{yzWebUrl('plugin.minapp-content.admin.sport-clock.step-exchange-list')}}">轮播位</a>
+                    <li><a href="{{yzWebUrl('plugin.minapp-content.admin.banner-position.index')}}">轮播位</a>
                     </li>
                 </ul>
             </div>
