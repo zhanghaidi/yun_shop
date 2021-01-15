@@ -4,6 +4,7 @@ namespace Yunshop\MinappContent\admin;
 
 use app\common\components\BaseController;
 use app\common\helpers\PaginationHelper;
+use app\common\helpers\Url;
 use Illuminate\Support\Facades\DB;
 use Yunshop\MinappContent\services\MinappContentService;
 
@@ -64,7 +65,7 @@ class BannerController extends BaseController
                 'jumptype' => $param['jumptype'],
                 'type' => $param['type'],
                 'status' => $param['status'],
-                'add_time' => time()
+                'add_time' => time(),
             );
             if (empty($data['position_id'])) {
                 return $this->message('请选择轮播图位置', '', 'danger');
@@ -81,15 +82,14 @@ class BannerController extends BaseController
             }
         }
 
-        $minapp_list = DB::table('account_wxapp')->select('uniacid', 'key', 'name')->orderBy('uniacid','DESC')->get();
-        $bannerPosition = DB::table('diagnostic_service_banner_position')->where('uniacid',$uniacid)->get();
+        $minapp_list = DB::table('account_wxapp')->select('uniacid', 'key', 'name')->orderBy('uniacid', 'DESC')->get();
+        $bannerPosition = DB::table('diagnostic_service_banner_position')->where('uniacid', $uniacid)->get();
 
         return view('Yunshop\MinappContent::admin.banner.edit', [
             'pluginName' => MinappContentService::get('name'),
-            'type' => 'banner',
             'info' => $info,
             'bannerPosition' => $bannerPosition,
-            'minappList'=>$minapp_list
+            'minappList' => $minapp_list,
         ]);
     }
 
