@@ -66,7 +66,7 @@ class LiveRoomController extends BaseController
                         $this->message('创建直播群聊失败','','error');
                     }
                     $liveModel->group_id = $im_res->GroupId;
-                    $liveModel->group_name = $liveModel->name.'群聊';
+                    $liveModel->group_name =  $im_res->Name;
                     $liveModel->save();
 
                     return $this->message('添加成功', Url::absoluteWeb('live.live-room.index'));
@@ -113,7 +113,7 @@ class LiveRoomController extends BaseController
                             $this->message('创建直播群聊失败','','error');
                         }
                         $liveModel->group_id = $im_res->GroupId;
-                        $liveModel->group_name = $liveModel->name.'群聊';
+                        $liveModel->group_name = $im_res->Name;
                     }
 
                     $liveModel->save();
