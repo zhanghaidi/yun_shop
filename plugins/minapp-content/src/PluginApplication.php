@@ -27,7 +27,7 @@ class PluginApplication extends \app\common\services\PluginApplication
             'parents' => [],
             'child' => [
                 'acupoint_manage' => [
-                    'name' => '穴位管理',
+                    'name' => '穴位图',
                     'permit' => 1,
                     'menu' => 1,
                     'icon' => '',
@@ -368,6 +368,24 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'menu' => 0,
                             'url' => 'plugin.minapp-content.admin.cos-video.delete',
                             'parents' => ['minapp_content', 'sns_manage'],
+                        ],
+                    ],
+                ],
+                'search_manage' => [
+                    'name' => '搜索关键词',
+                    'permit' => 1,
+                    'menu' => 1,
+                    'icon' => '',
+                    'url' => 'plugin.minapp-content.admin.search.index',
+                    'url_params' => '',
+                    'parents' => ['minapp_content'],
+                    'child' => [
+                        'search_lists' => [
+                            'name' => '搜索关键词查看',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.search.lists',
+                            'parents' => ['minapp_content', 'search_manage'],
                         ],
                     ],
                 ],
