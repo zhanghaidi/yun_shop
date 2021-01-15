@@ -17,6 +17,9 @@ use app\common\models\live\CloudLiveRoomMessage;
 class LiveRoomController extends BaseController
 {
 
+    const PAGE_SIZE = 20;
+
+
     /**
      * 查看云直播房间列表
      */
@@ -29,7 +32,7 @@ class LiveRoomController extends BaseController
             $room = $room->search($search);
         }
 
-        $roomList = $room->orderBy('sort','desc')->orderBy('id','desc')->paginate();
+        $roomList = $room->orderBy('sort','desc')->orderBy('id','desc')->paginate(static::PAGE_SIZE);
         $page = PaginationHelper::show($roomList->total(),$roomList->currentPage(),$roomList->perPage());
 
         return view('live.index',[
