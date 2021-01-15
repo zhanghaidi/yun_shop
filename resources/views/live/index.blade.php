@@ -41,20 +41,20 @@
                 <table class="table table-hover">
                     <thead class="navbar-inner">
                     <tr>
-                        <th style='width:5%; text-align: center;'>ID</th>
-                        <th style='width:5%; text-align: center;'>排序</th>
-                        <th style='width:5%; text-align: center;'>主播信息</th>
-                        <th style='width:8%; text-align: center;'>直播间名称</th>
-                        <th style='width:8%; text-align: center;'>直播间封面图</th>
-                        <th style='width:15%; text-align: center;'>推流URL</th>
-                        <th style='width:15%; text-align: center;'>拉流URL</th>
-                        <th style='width:8%; text-align: center;'>直播开始时间</th>
-                        <th style='width:8%; text-align: center;'>直播结束时间</th>
-                        <th style='width:8%; text-align: center;'>直播状态</th>
-                        <th style='width:8%; text-align: center;'>虚拟人数</th>
-                        <th style='width:8%; text-align: center;'>虚拟倍数</th>
-                        <th style='width:8%; text-align: center;'>添加时间</th>
-                        <th style='width:15%; text-align: center;'>操作</th>
+                        <th style=' text-align: center;'>ID</th>
+                        <th style=' text-align: center;'>排序</th>
+                        <th style='text-align: center;'>主播信息</th>
+                        <th style='text-align: center;'>直播间名称</th>
+                        <th style='text-align: center;'>直播间封面图</th>
+                        <th style='text-align: center;'>推流URL</th>
+                        <th style='text-align: center;'>拉流URL</th>
+                        <th style=' text-align: center;'>直播开始时间</th>
+                        <th style=' text-align: center;'>直播结束时间</th>
+                        <th style=' text-align: center;'>直播状态</th>
+                        <th style=' text-align: center;'>虚拟人数</th>
+                        <th style=' text-align: center;'>虚拟倍数</th>
+                        <th style=' text-align: center;'>添加时间</th>
+                        <th style=' text-align: center;'>操作</th>
                     </tr>
                     </thead>
                     @foreach($roomList as $list)
@@ -62,12 +62,12 @@
                             <td>{{ $list->id }}</td>
                             <td>{{ $list->sort }}</td>
                             <td>
-                                <a href='{{yz_tomedia($list->header_img)}}' target='_blank'><img src="{{yz_tomedia($list->header_img)}}" style='width:50px;border:1px solid #ccc;padding:1px' /></a><br>
+                                <a href='{{yz_tomedia($list->header_img)}}' target='_blank'><img src="{{yz_tomedia($list->header_img)}}" style='width:50px; height:50px; border:1px solid #ccc;padding:1px' /></a><br>
                                 {{ $list->anchor_name }}
                             </td>
                             <td>{{ $list->name }}</td>
                             <td>
-                                <a href='{{yz_tomedia($list->picture)}}' target='_blank'><img src="{{yz_tomedia($list->cover_img)}}" style='width:100px;border:1px solid #ccc;padding:1px' /></a>
+                                <a href='{{yz_tomedia($list->picture)}}' target='_blank'><img src="{{yz_tomedia($list->cover_img)}}" style='width:100px; height:100px; border:1px solid #ccc;padding:1px' /></a>
                             </td>
                             {{--<td>
                                 <a href='{{yz_tomedia($list->picture)}}' target='_blank'><img src="{{yz_tomedia($list->share_img)}}" style='width:100px;border:1px solid #ccc;padding:1px' /></a>
