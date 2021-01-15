@@ -17,7 +17,6 @@ var keywords =[{name:'足三里',value:1}];
 _url = "{{ yzWebUrl('plugin.minapp-content.admin.search.lists') }}";
 _url = _url.replace(/&amp;/g, '&');
 $.get(_url, function(res){
-    console.log(res);
     if (('result' in res) && res.result == 1) {
         keywords = res.data;
         $(function(){

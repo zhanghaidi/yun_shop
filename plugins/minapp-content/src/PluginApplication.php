@@ -389,6 +389,31 @@ class PluginApplication extends \app\common\services\PluginApplication
                         ],
                     ],
                 ],
+                'somato_manage' => [
+                    'name' => '体质管理',
+                    'permit' => 1,
+                    'menu' => 1,
+                    'icon' => '',
+                    'url' => 'plugin.minapp-content.admin.somato-type.index',
+                    'url_params' => '',
+                    'parents' => ['minapp_content'],
+                    'child' => [
+                        'somato_type_edit' => [
+                            'name' => '体质类型编辑',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.somato-type.edit',
+                            'parents' => ['minapp_content', 'somato_manage'],
+                        ],
+                        'somato_type_del' => [
+                            'name' => '删除体质类型',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.somato-type.delete',
+                            'parents' => ['minapp_content', 'somato_manage'],
+                        ],
+                    ],
+                ],
                 'banner' => [
                     'name' => '轮播图管理',
                     'permit' => 1,
