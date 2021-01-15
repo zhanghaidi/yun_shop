@@ -82,7 +82,7 @@
                             </td>
                             <td title="开始时间：{{ $list->start_time }} .<br>.结束时间：{{ $list->end_time }}">
                                 <span class="label label-info">{{ $list->start_time }}</span><br>
-                                <div class="mb-1">↓</div>
+                                <div class="mb-3">↓</div>
                                 <span class="label label-info">{{ $list->end_time }}</span>
                             </td>
                             <td>
@@ -94,9 +94,10 @@
                             <td>{{ $list->virtual_num }}</td>
                             <td>{{ $list->created_at }}</td>
                             <td>
+                                <a class='btn btn-default' href="{{ yzWebUrl('live.live-room.edit', array('id' => $list->id)) }}" style="margin-bottom: 2px" title="编辑"><i class="fa fa-edit"></i></a>
+
                                 @if( $list->live_status == 101 ) <a class='btn btn-default' href="{{ yzWebUrl('live.live-room.stop', array('id' => $list->id)) }}" style="margin-bottom: 2px">结束直播</a>                                          @elseif($list->end_time > date('Y-m-d H:i:s')) <a class='btn btn-default' href="{{ yzWebUrl('live.live-room.start', array('id' => $list->id)) }}" style="margin-bottom: 2px">开始直播</a>
                                 @endif
-                                <a class='btn btn-default' href="{{ yzWebUrl('live.live-room.edit', array('id' => $list->id)) }}" style="margin-bottom: 2px" title="编辑"><i class="fa fa-edit"></i></a>
 
                             </td>
                         </tr>
