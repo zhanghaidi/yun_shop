@@ -4,9 +4,8 @@ namespace Yunshop\MinappContent\admin;
 
 use app\common\components\BaseController;
 use app\common\helpers\PaginationHelper;
-use app\common\helpers\Url;
-use Yunshop\MinappContent\services\MinappContentService;
 use Illuminate\Support\Facades\DB;
+use Yunshop\MinappContent\services\MinappContentService;
 
 class BannerController extends BaseController
 {
@@ -17,7 +16,6 @@ class BannerController extends BaseController
      */
     public function index()
     {
-        $input = \YunShop::request();
         $uniacid = \YunShop::app()->uniacid;
 
         $where[] = ['diagnostic_service_banner.uniacid', '=', $uniacid];
@@ -33,19 +31,11 @@ class BannerController extends BaseController
 
         return view('Yunshop\MinappContent::admin.banner.banner_list', [
             'pluginName' => MinappContentService::get('name'),
-            'type' => 'banner',
             'banner' => $banner,
             'pager' => $pager,
-            'request' => $input,
         ]);
     }
-    /**
-     * 添加|轮播图
-     */
-    public function add()
-    {
 
-    }
     /**
      * 编辑轮播图
      */
@@ -73,36 +63,36 @@ class BannerController extends BaseController
         $status = intval($param['status']);
         if ($id > 0) {
             if ($status == 1) {
-                $res = pdo_update('diagnostic_service_banner',array('status' => 0), array('id' => $id));
-                if($res){
+                $res = pdo_update('diagnostic_service_banner', array('status' => 0), array('id' => $id));
+                if ($res) {
                     $data = array(
                         'errno' => 0,
                         'msg' => '关闭成功',
-                        'data' => ''
+                        'data' => '',
                     );
                     exit(json_encode($data));
-                }else{
+                } else {
                     $data = array(
                         'errno' => 1,
                         'msg' => '关闭失败',
-                        'data' => ''
+                        'data' => '',
                     );
                     exit(json_encode($data));
                 }
-            }else{
-                $res = pdo_update('diagnostic_service_banner',array('status' => 1), array('id' => $id));
-                if($res){
+            } else {
+                $res = pdo_update('diagnostic_service_banner', array('status' => 1), array('id' => $id));
+                if ($res) {
                     $data = array(
                         'errno' => 0,
                         'msg' => '开启成功',
-                        'data' => ''
+                        'data' => '',
                     );
                     exit(json_encode($data));
-                }else{
+                } else {
                     $data = array(
                         'errno' => 1,
                         'msg' => '开启失败',
-                        'data' => ''
+                        'data' => '',
                     );
                     exit(json_encode($data));
                 }

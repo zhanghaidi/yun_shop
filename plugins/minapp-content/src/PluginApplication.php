@@ -477,7 +477,7 @@ class PluginApplication extends \app\common\services\PluginApplication
                         ],
                     ],
                 ],
-                'banner' => [
+                'banner_manage' => [
                     'name' => '轮播图管理',
                     'permit' => 1,
                     'menu' => 1,
@@ -486,19 +486,26 @@ class PluginApplication extends \app\common\services\PluginApplication
                     'url_params' => '',
                     'parents' => ['minapp_content'],
                     'child' => [
-                        'custom_share_add' => [
-                            'name' => '添加',
-                            'permit' => 1,
-                            'menu' => 0,
-                            'url' => 'plugin.minapp-content.admin.banner.add',
-                            'parents' => ['minapp_content', 'custom_share_list'],
-                        ],
-                        'custom_share_edit' => [
-                            'name' => '编辑',
+                        'banner_edit' => [
+                            'name' => '轮播图编辑',
                             'permit' => 1,
                             'menu' => 0,
                             'url' => 'plugin.minapp-content.admin.banner.edit',
-                            'parents' => ['minapp_content', 'custom_share_list'],
+                            'parents' => ['minapp_content', 'banner_manage'],
+                        ],
+                        'banner_del' => [
+                            'name' => '删除轮播图',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.banner.delete',
+                            'parents' => ['minapp_content', 'banner_manage'],
+                        ],
+                        'banner_display' => [
+                            'name' => '轮播图状态管理',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.banner.display',
+                            'parents' => ['minapp_content', 'banner_manage'],
                         ],
                     ],
                 ],
