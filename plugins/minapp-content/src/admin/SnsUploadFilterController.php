@@ -46,7 +46,7 @@ class SnsUploadFilterController extends BaseController
             unset($v1);
         }
 
-        return view('Yunshop\MinappContent::admin.sns-upload-filter.list', [
+        return view('Yunshop\MinappContent::admin.sns_upload_filter.list', [
             'pluginName' => MinappContentService::get('name'),
             'search' => $searchData,
             'data' => $list['data'],

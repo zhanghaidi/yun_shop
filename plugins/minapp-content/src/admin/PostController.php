@@ -47,6 +47,9 @@ class PostController extends BaseController
         ) {
             $list = $list->where('diagnostic_service_post.create_time', '>', strtotime($searchData['datelimit']['start']))
                 ->where('diagnostic_service_post.create_time', '<', strtotime($searchData['datelimit']['end']) + 86400);
+        } else {
+            $searchData['datelimit']['start'] = date('Y-m-d H:i:s', strtotime('-1 year'));
+            $searchData['datelimit']['end'] = date('Y-m-d H:i:s');
         }
         if (isset($searchData['board_id']) && intval($searchData['board_id']) > 0) {
             $list = $list->where('diagnostic_service_post.board_id', intval($searchData['board_id']));
