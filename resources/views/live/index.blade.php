@@ -82,21 +82,21 @@
                             </td>
                             <td title="开始时间：{{ $list->start_time }} .<br>.结束时间：{{ $list->end_time }}">
                                 <span class="label label-info">{{ $list->start_time }}</span><br>
-                                <div class="">↓</div>
+                                <div class="mb-1">↓</div>
                                 <span class="label label-info">{{ $list->end_time }}</span>
                             </td>
-                            <td> @if( $list->live_status == 101 ) <label class="label label-success">{{ $list->status_parse }}</label>
-                                     @elseif($list->live_status == 0)<label class="label label-default">{{ $list->status_parse }}</label>
-                                     @else <label class="label label-warning">{{ $list->status_parse }}</label>
-                                @endif
-                            </td>
+                            <td>
+                                @if( $list->live_status == 101 ) <label class="label label-success">{{ $list->status_parse }}</label>
+                                @elseif($list->live_status == 0)<label class="label label-default">{{ $list->status_parse }}</label>
+                                @else <label class="label label-warning">{{ $list->status_parse }}</label>
+                                @endif</td>
                             <td>{{ $list->virtual_people }}</td>
                             <td>{{ $list->virtual_num }}</td>
                             <td>{{ $list->created_at }}</td>
                             <td>
                                 @if( $list->live_status == 101 ) <a class='btn btn-default' href="{{ yzWebUrl('live.live-room.stop', array('id' => $list->id)) }}" style="margin-bottom: 2px">结束直播</a>                                          @elseif($list->end_time > date('Y-m-d H:i:s')) <a class='btn btn-default' href="{{ yzWebUrl('live.live-room.start', array('id' => $list->id)) }}" style="margin-bottom: 2px">开始直播</a>
                                 @endif
-                                <a class='btn btn-default' href="{{ yzWebUrl('live.live-room.edit', array('id' => $list->id)) }}" style="margin-bottom: 2px">编辑</a>
+                                <a class='btn btn-default' href="{{ yzWebUrl('live.live-room.edit', array('id' => $list->id)) }}" style="margin-bottom: 2px" title="编辑"><i class="fa fa-edit"></i></a>
 
                             </td>
                         </tr>
@@ -106,20 +106,5 @@
             </div>
         </div>
     </div>
-    <script type="text/javascript">
-        $(document).ready(function(){
-            $('.copy_push').click(function(){
-                var input = document.createElement('input');
-                document.body.appendChild(input);
-                input.setAttribute('value', this.dataset.url);
-                input.select();
-                if (document.execCommand('copy')) {
-                    document.execCommand('copy');
-                    alert('复制成功');
-                }
-                document.body.removeChild(input);
-            });
-        });
-    </script>
 
 @endsection
