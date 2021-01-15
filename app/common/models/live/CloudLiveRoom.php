@@ -40,11 +40,11 @@ class CloudLiveRoom extends BaseModel
     use SoftDeletes;
 
     public $table = "yz_cloud_live_room";
-    public $timestamps = false;
-    public $dates = ['deleted_at'];
+    //public $timestamps = false;
+    //public $dates = ['deleted_at'];
     protected $guarded = [''];
     protected $mediaFields = ['cover_img', 'share_img', 'header_img'];
-    protected $casts = ['start_time' => 'date', 'end_time' => 'date', 'updated_at' => 'date', 'created_at' => 'date'];
+    protected $casts = ['start_time' => 'date', 'end_time' => 'date'];
     protected $appends = ['status_parse'];
 
     protected static $liveStatus = [0 => '关闭', 101 => '直播中', 102 => '未开始', 103 => '已结束', 104 => '禁播', 105 => '暂停', 106 => '异常', 107 => '已过期'];
@@ -136,29 +136,16 @@ class CloudLiveRoom extends BaseModel
         return $model;
     }
 
-    public static function handleArray($data, $id)
+    public static function handleArray($data)
     {
         $data['uniacid'] = \YunShop::app()->uniacid;
-
-        if ($id) {
-            $data['id'] = $id;
-            $data['updated_at'] = time();
-        } else {
-            $data['created_at'] = time();
-        }
-
-        if($data['goods_ids']){
-            $data['goods_ids'] = implode(',',$data['goods_ids']);
-        }else{
-            $data['goods_ids'] = '';
-        }
 
         if (!empty($data['time']) && $data['time']['start'] != '请选择' && $data['time']['end'] != '请选择') {
             $data['start_time'] = strtotime($data['time']['start']);
             $data['end_time'] = strtotime($data['time']['end']);
         }
 
-        return array_except($data, ['time','goods_names']);
+        return $data;
     }
 
     public function goods($need_all = true){
@@ -184,7 +171,7 @@ class CloudLiveRoom extends BaseModel
 
     public function getRoomById($id)
     {
-        return self::uniacid()->where(id, $id);
+        return self::uniacid()->where('id', $id)->first();
     }
 
     public function parseStatus($status)

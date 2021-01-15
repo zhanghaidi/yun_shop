@@ -19,8 +19,7 @@ class LiveRoomController extends BaseController
 
     const PAGE_SIZE = 20;
 
-    protected $room_model;
-    
+
     /**
      * 查看云直播房间列表
      */
@@ -45,12 +44,42 @@ class LiveRoomController extends BaseController
 
     public function create()
     {
+        $liveModel = new CloudLiveRoom();
         //获取表单提交的值
         $liveRequest = \YunShop::request()->live;
-        //if($_POST)
         if($liveRequest){
-            //todo
+            $liveRequest = CloudLiveRoom::handleArray($liveRequest);
+            $liveModel->fill($liveRequest);
+            $validator = $liveModel->validator();
+            if($validator->fails()){
+                $this->error($validator->messages());
+            }else{
+                if($liveModel->save()){
+                    $liveModel->stream_name = LiveSetService::getSetting('stream_name_pre') .$liveModel->id;
+                    $liveModel->push_url = LiveService::getPushUrl($liveModel->id, $liveRequest['time']['end']);
+                    $liveModel->pull_url = LiveService::getPullUrl($liveModel->id);
+
+                    //创建直播对应的群聊IM群组
+                    $im_service = new IMService();
+                    $im_res = $im_service->createGroup($liveModel->id, $liveModel->name);
+                    if($im_res->ErrorCode != 0){
+                        $this->message('创建直播群聊失败','','error');
+                    }
+                    $liveModel->group_id = $im_res->GroupId;
+                    $liveModel->group_name = $liveModel->name.'群聊';
+                    $liveModel->save();
+
+                    return $this->message('添加成功', Url::absoluteWeb('live.live-room.index'));
+
+                }else{
+                    $this->message('活码创建失败','','error');
+                }
+            }
         }
+
+        return view('live.edit', [
+            'live' => $liveModel
+        ])->render();
     }
 
     /*
@@ -58,156 +87,87 @@ class LiveRoomController extends BaseController
      */
     public function edit()
     {
-        $id = intval(request()->id);
+        $id = intval(\YunShop::request()->id);
 
-        if($id){
-            $this->verifyRoom($id);
-        }else{
-            $this->room_model = new CloudLiveRoom();
-        }
+        $liveModel = $this->verifyRoom($id);
 
-        if (request()->live) {
-            $request_data = request()->live;
+        $liveRequest = \YunShop::request()->live;
+        if ($liveRequest) {
+            $liveRequest = CloudLiveRoom::handleArray($liveRequest);
 
-            $goods_sort = $request_data['goods_sort'];
-            unset($request_data['goods_sort']);
-            $this->room_model = $this->room_model->fill(CloudLiveRoom::handleArray($request_data, $id));
-            $validator = $this->room_model->validator();
+            $liveModel->fill($liveRequest);
+            $validator = $liveModel->validator();
             if ($validator->fails()) {
                 $this->error($validator->messages());
             } else {
-                if (is_array($this->room_model['goods_sort'])) {
-                    unset($this->room_model['goods_sort']);
-                }
-                $ret = $this->room_model->save();
-                if (!$ret) {
-                    return $this->message('保存直播间失败', Url::absoluteWeb('live.live-room.edit',['id'=>$id]), 'error');
-                }
-
-//                fixBy-wk-20201217 云直播管理商品自定义排序
-                if (!empty($this->room_model->goods_ids)) {
-                    $cloud_live_room_goods = new CloudLiveRoomGoods();
-                    $goods_id = explode(',',$this->room_model->goods_ids);
-                    foreach ($goods_id as $k => $value) {
-                        $updata_live_room_goods = [
-                            'uniacid' => $this->room_model->uniacid,
-                            'room_id' => $this->room_model->id,
-                            'goods_ids' => $value,
-                            'sort' => $goods_sort[$k]
-                        ];
-
-                        $live_room_goods_model = $cloud_live_room_goods::where([
-                            'uniacid' => $this->room_model->uniacid,
-                            'room_id' => $this->room_model->id,
-                            'goods_ids' => $value,
-                        ])->first();
-                        if (!$live_room_goods_model) { //没有数据，新增
-                            $updata_live_room_goods['created_at'] = time();
-                            $cloud_live_room_goods::create($updata_live_room_goods);
-                        } else { // 有数据 更新
-                            $updata_live_room_goods['updated_at'] = time();
-                            $cloud_live_room_goods::where('id', $live_room_goods_model->id)->update($updata_live_room_goods);
-                        }
-                    }
-                }
-
-                if($this->room_model->id){//编辑更新
-                    $upd_data = [
-                        'stream_name' => LiveSetService::getSetting('stream_name_pre') . $this->room_model->id,
-                        'push_url' => LiveService::getPushUrl($this->room_model->id,request()->live['time']['end']),
-                        'pull_url' => LiveService::getPullUrl($this->room_model->id),
-                    ];
+                if ($liveModel->save()) {
+                    $liveModel->stream_name = LiveSetService::getSetting('stream_name_pre') .$liveModel->id;
+                    $liveModel->push_url = LiveService::getPushUrl($liveModel->id, $liveRequest['time']['end']);
+                    $liveModel->pull_url = LiveService::getPullUrl($liveModel->id);
                     //创建直播对应的群聊IM群组
-                    if(empty($this->room_model->group_id)){
+                    if(empty($liveModel->group_id)){
+                        //创建直播对应的群聊IM群组
                         $im_service = new IMService();
-                        $res = $im_service->createGroup($this->room_model->id,$this->room_model->name);
-                        if($res->ErrorCode == 0){
-                            $upd_data['group_id'] = $res->GroupId;
-                            $upd_data['group_name'] = $this->room_model->name;
+                        $im_res = $im_service->createGroup($liveModel->id, $liveModel->name);
+                        if($im_res->ErrorCode != 0){
+                            $this->message('创建直播群聊失败','','error');
                         }
+                        $liveModel->group_id = $im_res->GroupId;
+                        $liveModel->group_name = $liveModel->name.'群聊';
                     }
-                    CloudLiveRoom::where('id',$this->room_model->id)->update($upd_data);
+
+                    $liveModel->save();
+                    return $this->message('保存直播间成功', Url::absoluteWeb('live.live-room.index'));
+                }else{
+                    return $this->message('保存直播间失败','', 'error');
                 }
-                return $this->message('保存直播间成功', Url::absoluteWeb('live.live-room.index'));
             }
         }
+
         return view('live.edit', [
-            'live' => $this->room_model
+            'live' => $liveModel
         ])->render();
     }
 
     public function start(){
         $id = intval(request()->id);
-        if($id){
-            $this->verifyRoom($id);
-            $this->room_model->live_status = 101;
-            if (is_array($this->room_model['goods_sort'])) {
-                unset($this->room_model['goods_sort']);
-            }
-            if($this->room_model->save() !== $this->room_model){
-                (new LiveService())->resumeLiveStream($this->room_model->stream_name);
-                return $this->message('开始直播成功', Url::absoluteWeb('live.live-room.index'));
-            }else{
-                return $this->message('开始直播失败', Url::absoluteWeb('live.live-room.index'));
-            }
+        $liveModel = $this->verifyRoom($id);
+        $liveModel->live_status = 101;
+        if($liveModel->save()){
+            (new LiveService())->resumeLiveStream($liveModel->stream_name);
+            return $this->message('开始直播成功', Url::absoluteWeb('live.live-room.index'));
         }else{
-            return $this->message('直播间id为空', Url::absoluteWeb('live.live-room.index'));
+            return $this->message('开始直播失败,请检查状态', '','error');
         }
     }
 
     public function stop(){
+
         $id = intval(request()->id);
-        if($id){
-            $this->verifyRoom($id);
-            $this->room_model->live_status = 103;
-            if (is_array($this->room_model['goods_sort'])) {
-                unset($this->room_model['goods_sort']);
+        $liveModel = $this->verifyRoom($id);
+        $liveModel->live_status = 103;
+
+        if($liveModel->save()){
+            $live_service = new LiveService();
+            if($live_service->getDescribeLiveStreamState($liveModel->stream_name) == 'active'){
+                $live_service->dropLiveStream($liveModel->stream_name);
             }
-            if($this->room_model->save() !== false){
-                $live_service = new LiveService();
-                if($live_service->getDescribeLiveStreamState($this->room_model->stream_name) == 'active'){
-                    $live_service->dropLiveStream($this->room_model->stream_name);
-                }
-                return $this->message('结束直播成功', Url::absoluteWeb('live.live-room.index'));
-            }else{
-                return $this->message('结束直播失败', Url::absoluteWeb('live.live-room.index'));
-            }
+            return $this->message('结束直播成功', Url::absoluteWeb('live.live-room.index'));
         }else{
-            return $this->message('直播间id为空', Url::absoluteWeb('live.live-room.index'));
+            return $this->message('结束直播失败', '','error');
         }
     }
 
     private function verifyRoom($id)
     {
         if (!$id) {
-            return $this->message('参数错误', Url::absoluteWeb('live.live-room.index'), 'error');
+            return $this->message('直播间id不能为空', '', 'error');
         }
-        $room_model = CloudLiveRoom::getRoomById($id)->first();
-        if (!$room_model) {
-            return $this->message('未找到数据', Url::absoluteWeb('live.live-room.index'), 'error');
+        $liveModel = CloudLiveRoom::getRoomById($id);
+        if (!$liveModel) {
+            return $this->message('未找到直播间数据', '', 'error');
         }
-
-//        fixBy-wk-20201217 管理商品自定义排序
-        $goods_sort = [];
-        if (!empty($room_model->goods_ids)) {
-            $cloud_live_room_goods = new CloudLiveRoomGoods();
-            $goods_id = explode(',',$room_model->goods_ids);
-            foreach ($goods_id as $k => $value) {
-                $live_room_goods_model = $cloud_live_room_goods::where([
-                    'uniacid' => $room_model['uniacid'],
-                    'room_id' => $room_model['id'],
-                    'goods_ids' => $value,
-                ])->first();
-                if (!$live_room_goods_model) { //没有数据，默认值0
-                    $goods_sort[$k] = 0;
-                } else { // 有数据 更新
-                    $goods_sort[$k] = $live_room_goods_model['sort'];
-                }
-            }
-        }
-        $room_model['goods_sort'] = $goods_sort;
-
-        $this->room_model = $room_model;
+        return $liveModel;
     }
 
 
