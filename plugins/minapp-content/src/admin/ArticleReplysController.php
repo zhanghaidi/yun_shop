@@ -4,12 +4,12 @@ namespace Yunshop\MinappContent\admin;
 
 use app\common\components\BaseController;
 use app\common\helpers\PaginationHelper;
-use Yunshop\MinappContent\models\AcupointCommentModel;
-use Yunshop\MinappContent\models\AcupointModel;
+use Yunshop\MinappContent\models\ArticleCommentModel;
+use Yunshop\MinappContent\models\ArticleModel;
 use Yunshop\MinappContent\models\UserModel;
 use Yunshop\MinappContent\services\MinappContentService;
 
-class AcupointReplysController extends BaseController
+class ArticleReplysController extends BaseController
 {
     private $pageSize = 30;
 
@@ -20,17 +20,17 @@ class AcupointReplysController extends BaseController
             return $this->message('参数ID错误', '', 'danger');
         }
 
-        $infoRs = AcupointModel::where([
+        $infoRs = ArticleModel::where([
             'id' => $id,
             'uniacid' => \YunShop::app()->uniacid,
         ])->first();
         if (!isset($infoRs->id)) {
-            return $this->message('穴位ID不存在', '', 'danger');
+            return $this->message('文章ID不存在', '', 'danger');
         }
 
-        $list = AcupointCommentModel::where([
+        $list = ArticleCommentModel::where([
             'uniacid' => \YunShop::app()->uniacid,
-            'acupoint_id' => $id,
+            'article_id' => $id,
             'is_reply' => 0,
         ])->orderBy('display_order', 'desc')
             ->orderBy('create_time', 'desc')
@@ -42,7 +42,7 @@ class AcupointReplysController extends BaseController
         }
         $userIds = array_values(array_unique(array_filter($userIds)));
         if (isset($ids[0])) {
-            $replyRs = AcupointCommentModel::selectRaw('parent_id,count(1) as countNum')->where([
+            $replyRs = ArticleCommentModel::selectRaw('parent_id,count(1) as countNum')->where([
                 'uniacid' => \YunShop::app()->uniacid,
                 'is_reply' => 1,
             ])->whereIn('parent_id', $ids)
@@ -82,7 +82,7 @@ class AcupointReplysController extends BaseController
 
         $pager = PaginationHelper::show($list['total'], $list['current_page'], $this->pageSize);
 
-        return view('Yunshop\MinappContent::admin.acupoint_reply.list', [
+        return view('Yunshop\MinappContent::admin.article_reply.list', [
             'pluginName' => MinappContentService::get('name'),
             'info' => $infoRs,
             'data' => $list['data'],
@@ -97,7 +97,7 @@ class AcupointReplysController extends BaseController
             return $this->message('参数ID错误', '', 'danger');
         }
 
-        $infoRs = AcupointCommentModel::where([
+        $infoRs = ArticleCommentModel::where([
             'id' => $id,
             'uniacid' => \YunShop::app()->uniacid,
         ])->first();
@@ -105,7 +105,7 @@ class AcupointReplysController extends BaseController
             return $this->message('主评不存在或已被删除', '', 'danger');
         }
 
-        $list = AcupointCommentModel::where([
+        $list = ArticleCommentModel::where([
             'uniacid' => \YunShop::app()->uniacid,
             'parent_id' => $id,
             'is_reply' => 1,
@@ -134,7 +134,7 @@ class AcupointReplysController extends BaseController
             unset($v1);
         }
 
-        return view('Yunshop\MinappContent::admin.acupoint_reply.post', [
+        return view('Yunshop\MinappContent::admin.article_reply.post', [
             'pluginName' => MinappContentService::get('name'),
             'info' => $infoRs,
             'data' => $list,
@@ -149,7 +149,7 @@ class AcupointReplysController extends BaseController
         }
         $flag = \YunShop::request()->flag;
         if (isset($flag) && $flag == 1) {
-            $infoRs = AcupointCommentModel::where([
+            $infoRs = ArticleCommentModel::where([
                 'id' => $id,
                 'uniacid' => \YunShop::app()->uniacid,
                 'is_reply' => 0,
@@ -172,7 +172,7 @@ class AcupointReplysController extends BaseController
 
         $check = \YunShop::request()->check;
         if (in_array($check, [1, -1])) {
-            $infoRs = AcupointCommentModel::where([
+            $infoRs = ArticleCommentModel::where([
                 'id' => $id,
                 'uniacid' => \YunShop::app()->uniacid,
                 'is_reply' => 0,
@@ -184,7 +184,7 @@ class AcupointReplysController extends BaseController
             if ($check == 1) {
                 $infoRs->status = 1;
 
-                AcupointModel::where([
+                ArticleModel::where([
                     'id' => $infoRs->acupoint_id,
                     'uniacid' => \YunShop::app()->uniacid,
                 ])->limit(1)->increment('comment_nums');
@@ -205,7 +205,7 @@ class AcupointReplysController extends BaseController
             return $this->message('ID参数错误', '', 'danger');
         }
 
-        $infoRs = AcupointCommentModel::where([
+        $infoRs = ArticleCommentModel::where([
             'id' => $id,
             'uniacid' => \YunShop::app()->uniacid,
         ])->first();
@@ -215,7 +215,7 @@ class AcupointReplysController extends BaseController
 
         $replyNums = 0;
         if ($infoRs->is_reply == 0) {
-            $numsRs = AcupointCommentModel::where([
+            $numsRs = ArticleCommentModel::where([
                 'parent_id' => $id,
                 'uniacid' => \YunShop::app()->uniacid,
                 'status' => 1,
@@ -227,17 +227,17 @@ class AcupointReplysController extends BaseController
             $replyNums += 1;
         }
 
-        AcupointCommentModel::where([
+        ArticleCommentModel::where([
             'parent_id' => $id,
             'uniacid' => \YunShop::app()->uniacid,
         ])->delete();
 
-        AcupointModel::where([
+        ArticleModel::where([
             'id' => $infoRs->acupoint_id,
             'uniacid' => \YunShop::app()->uniacid,
         ])->limit(1)->decrement('comment_nums', $replyNums);
 
-        AcupointCommentModel::where('id', $infoRs->id)->limit(1)->delete();
+        ArticleCommentModel::where('id', $infoRs->id)->limit(1)->delete();
 
         return $this->message('删除成功');
     }

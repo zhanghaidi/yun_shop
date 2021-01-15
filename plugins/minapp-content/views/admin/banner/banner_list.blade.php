@@ -9,18 +9,14 @@
 
             <div class="top" style="margin-bottom:20px">
                 <ul class="add-shopnav" id="myTab">
-                    <li @if($type=='banner') class="active" @endif><a
-                                href="{{yzWebUrl('plugin.minapp-content.admin.banner.index')}}">轮播图列表</a></li>
-                    <li @if($type=='banner_position') class="active" @endif><a
-                                href="{{yzWebUrl('plugin.minapp-content.admin.banner-position.index')}}">轮播位</a>
+                    <li class="active"><a href="{{yzWebUrl('plugin.minapp-content.admin.banner.index')}}">轮播图列表</a></li>
+                    <li><a href="{{yzWebUrl('plugin.minapp-content.admin.banner-position.index')}}">轮播位</a>
                     </li>
                 </ul>
             </div>
 
-            <div class="panel-body">
-                <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                    <a href="{{ yzWebUrl('plugin.minapp-content.admin.banner.edit') }}" class="btn btn-info">添加轮播图</a>
-                </div>
+            <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                <a href="{{ yzWebUrl('plugin.minapp-content.admin.banner.edit') }}" class="btn btn-info">添加轮播图</a>
             </div>
 
             <div class="panel panel-defualt">
@@ -37,7 +33,6 @@
                             <th>跳转类型</th>
                             <th>显示状态</th>
                             <th>模板类型</th>
-                            <th>添加时间</th>
                             <th>操作</th>
                         </tr>
                         </thead>
@@ -49,7 +44,7 @@
                                 <td>{{$value['title']}}</td>
                                 <td>
                                     <a href="{{ tomedia($value['image']) }}" target="_blank">
-                                        <img src="{{tomedia($value['image'])}}" width="60">
+                                        <img src="{{tomedia($value['image'])}}" @if($value['type'] == 1) width="150" @eleif($value['type'] == 2) width="50" @endif>
                                     </a>
                                 </td>
                                 <td>
@@ -92,9 +87,6 @@
                                     @endif
                                 </td>
                                 <td>
-                                    {{ date('Y-m-d H:i:s', $value['add_time']) }}
-                                </td>
-                                <td>
                                     <a href="{{ yzWebUrl('plugin.minapp-content.admin.banner.edit', ['id' => $value['id']]) }}"
                                        title="编辑"><i class="fa fa-edit"></i></a> &nbsp;
                                     <a href="{{ yzWebUrl('plugin.minapp-content.admin.banner.delete', ['id' => $value['id']]) }}"
@@ -112,18 +104,6 @@
     </div>
 </div>
 <script language="JavaScript">
-    require(["{{yz_tomedia('/images/ajy/js/layer/laydate/laydate.js')}}"], function (laydate) {
-        laydate.render({
-            elem: '#start_time'
-            , type: 'time'
-            , format: 'HH:mm'
-        });
-        laydate.render({
-            elem: '#end_time'
-            , type: 'time'
-            , format: 'HH:mm'
-        });
-    })
     //显示隐藏
     $('.update-status').click(function (e) {
         e.preventDefault();

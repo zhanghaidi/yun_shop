@@ -10,4 +10,14 @@ class ArticleModel extends BaseModel
     const UPDATED_AT = null;
 
     public $table = 'diagnostic_service_article';
+
+    public static function getImageFromHtml(string $content)
+    {
+        $pattern = "/<img.*?src=[\'|\"](.*?)[\'|\"].*?[\/]?>/";
+        preg_match_all($pattern, htmlspecialchars_decode($content), $match);
+        if (!empty($match[1])) {
+            return $match[1];
+        }
+        return [];
+    }
 }
