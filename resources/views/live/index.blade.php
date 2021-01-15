@@ -41,20 +41,20 @@
                 <table class="table table-hover">
                     <thead class="navbar-inner">
                     <tr>
-                        <th style=' text-align: center;'>ID</th>
-                        <th style=' text-align: center;'>排序</th>
-                        <th style='text-align: center;'>主播信息</th>
-                        <th style='text-align: center;'>直播间名称</th>
-                        <th style='text-align: center;'>直播间封面图</th>
-                        <th style='text-align: center;'>推流URL</th>
-                        <th style='text-align: center;'>拉流URL</th>
-                        <th style=' text-align: center;'>直播开始时间</th>
-                        <th style=' text-align: center;'>直播结束时间</th>
-                        <th style=' text-align: center;'>直播状态</th>
-                        <th style=' text-align: center;'>虚拟人数</th>
-                        <th style=' text-align: center;'>虚拟倍数</th>
-                        <th style=' text-align: center;'>添加时间</th>
-                        <th style=' text-align: center;'>操作</th>
+                        <th style='width:3%; text-align: center;'>ID</th>
+                        <th style='width:3%; text-align: center;'>排序</th>
+                        <th style='width:5%; text-align: center;'>主播信息</th>
+                        <th style='width:5%; text-align: center;'>直播间名称</th>
+                        <th style='width:8%; text-align: center;'>直播间封面图</th>
+                        <th style='width:20%; text-align: center;'>推流URL</th>
+                        <th style='width:15%; text-align: center;'>拉流URL</th>
+                        <th style='width:5%; text-align: center;'>直播开始时间</th>
+                        <th style='width:5%; text-align: center;'>直播结束时间</th>
+                        <th style='width:3%; text-align: center;'>直播状态</th>
+                        <th style='width:3%; text-align: center;'>虚拟人数</th>
+                        <th style='width:3%; text-align: center;'>虚拟倍数</th>
+                        <th style='width:5%; text-align: center;'>添加时间</th>
+                        <th style='width:8%; text-align: center;'>操作</th>
                     </tr>
                     </thead>
                     @foreach($roomList as $list)
