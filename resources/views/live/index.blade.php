@@ -82,7 +82,7 @@
                             </td>
                             <td title="开始时间：{{ $list->start_time }} .<br>.结束时间：{{ $list->end_time }}">
                                 <span class="label label-info">{{ $list->start_time }}</span><br>
-                                <span>↓</span>
+                                <span>↓</span><br>
                                 <span class="label label-info">{{ $list->end_time }}</span>
                             </td>
                             <td>
