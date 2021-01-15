@@ -46,15 +46,14 @@
                         <th style='width:5%; text-align: center;'>主播信息</th>
                         <th style='width:5%; text-align: center;'>直播间名称</th>
                         <th style='width:8%; text-align: center;'>直播间封面图</th>
-                        <th style='width:20%; text-align: center;'>推流URL</th>
+                        <th style='width:18%; text-align: center;'>推流URL</th>
                         <th style='width:15%; text-align: center;'>拉流URL</th>
-                        <th style='width:5%; text-align: center;'>直播开始时间</th>
-                        <th style='width:5%; text-align: center;'>直播结束时间</th>
+                        <th style='width:8%; text-align: center;'>直播开始-结束时间</th>
                         <th style='width:3%; text-align: center;'>直播状态</th>
                         <th style='width:3%; text-align: center;'>虚拟人数</th>
                         <th style='width:3%; text-align: center;'>虚拟倍数</th>
-                        <th style='width:5%; text-align: center;'>添加时间</th>
-                        <th style='width:8%; text-align: center;'>操作</th>
+                        <th style='width:8%; text-align: center;'>添加时间</th>
+                        <th style='width:10%; text-align: center;'>操作</th>
                     </tr>
                     </thead>
                     @foreach($roomList as $list)
@@ -81,12 +80,15 @@
                                 {{ $list->pull_url }}
                                 <h6><a href="javascript:;" data-clipboard-text="{!! $list->pull_url !!}" data-url="{!! $list->pull_url !!}" class="js-clip" title="复制拉流地址">复制拉流地址</a></h6>
                             </td>
-                            <td title="{{ $list->start_time }}">{{ $list->start_time }}</td>
-                            <td title="{{ $list->end_time }}">{{ $list->end_time }}</td>
+                            <td title="开始时间：{{ $list->start_time }} .<br>.结束时间：{{ $list->end_time }}">
+                                <span class="label label-info">{{ $list->start_time }}</span><br>
+
+                                <span class="label label-info">{{ $list->end_time }}</span>
+                            </td>
                             <td><label class="label label-info">{{ $list->status_parse }}</label></td>
                             <td>{{ $list->virtual_people }}</td>
                             <td>{{ $list->virtual_num }}</td>
-                            <td><span class='label label-default'>{{ $list->created_at }}</span></td>
+                            <td>{{ $list->created_at }}</td>
                             <td>
                                 @if( $list->live_status == 101 ) <a class='btn btn-default' href="{{ yzWebUrl('live.live-room.stop', array('id' => $list->id)) }}" style="margin-bottom: 2px">结束直播</a>                                          @elseif($list->end_time > date('Y-m-d H:i:s')) <a class='btn btn-default' href="{{ yzWebUrl('live.live-room.start', array('id' => $list->id)) }}" style="margin-bottom: 2px">开始直播</a>
                                 @endif
