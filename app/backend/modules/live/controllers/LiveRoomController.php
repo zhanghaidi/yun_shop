@@ -43,6 +43,16 @@ class LiveRoomController extends BaseController
         ])->render();
     }
 
+    public function create()
+    {
+        //获取表单提交的值
+        $liveRequest = \YunShop::request()->live;
+        //if($_POST)
+        if($liveRequest){
+            //todo
+        }
+    }
+
     /*
      * 编辑直播间
      */
