@@ -11,51 +11,42 @@
                 </ul>
             </div>
             <!-- 新增加右侧顶部三级菜单结束 -->
-            <form action="{{yzWebUrl('live.live-room.edit',['id'=>$live['id']])}}" method='post' class='form-horizontal'>
-                <input type="hidden" name="op" value="index">
-                <input type="hidden" name="c" value="site"/>
-                <input type="hidden" name="a" value="entry"/>
-                <input type="hidden" name="m" value="yun_shop"/>
-                <input type="hidden" name="do" value="live"/>
+            <form action="" method='post' class='form-horizontal' enctype="multipart/form-data">
                 <div class='panel panel-default'>
                     <div class='panel-body'>
                         <div class="form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span >*</span>直播间名称</label>
-                            <div class="col-sm-9 col-xs-12"><input type="text" name="live[name]" class="form-control" value="{{$live['name']}}" placeholder="请输入直播间名称"/></div>
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">排序</label>
+                            <div class="col-sm-9 col-xs-12"><input type="text" name="live[sort]" class="form-control" value="{{$live['sort'] ? $live['sort'] : 0}}" placeholder="请输入排序字段" /></div>
                         </div>
 
                         <div class="form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span >*</span>主播名称</label>
-                            <div class="col-sm-9 col-xs-12"><input type="text" name="live[anchor_name]" class="form-control" value="{{$live['anchor_name']}}" placeholder="请输入主播名称"/></div>
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">直播间名称： <span style="color:red;">*</span></label>
+                            <div class="col-sm-9 col-xs-12"><input type="text" name="live[name]" class="form-control" value="{{$live['name']}}" placeholder="请输入直播间名称" required/></div>
                         </div>
-
                         <div class="form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span >*</span>主播头像</label>
-                            <div class="col-sm-9 col-xs-12 col-md-6 detail-logo">
-                                {!! app\common\helpers\ImageHelper::tplFormFieldImage('live[header_img]', $live['header_img']) !!}
-                                <span class="help-block">建议正方形图片</span>
-                                @if (!empty($live['header_img']))
-                                    <a href='{{yz_tomedia($live['header_img'])}}' target='_blank'>
-                                        <img src="{{yz_tomedia($live['header_img'])}}" style='width:100px;border:1px solid #ccc;padding:1px' />
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span >*</span>封面图片</label>
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">直播间封面图片 <span style="color:red;">*</span></label>
                             <div class="col-sm-9 col-xs-12 col-md-6 detail-logo">
                                 {!! app\common\helpers\ImageHelper::tplFormFieldImage('live[cover_img]', $live['cover_img']) !!}
                                 <span class="help-block">建议图片宽高比例为9:16</span>
-                                @if (!empty($live['cover_img']))
-                                    <a href='{{yz_tomedia($live['cover_img'])}}' target='_blank'>
-                                        <img src="{{yz_tomedia($live['cover_img'])}}" style='width:100px;border:1px solid #ccc;padding:1px' />
-                                    </a>
-                                @endif
                             </div>
                         </div>
 
                         <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">主播昵称： <span style="color:red;">*</span></label>
+                            <div class="col-sm-9 col-xs-12"><input type="text" name="live[anchor_name]" class="form-control" value="{{$live['anchor_name']}}" placeholder="请输入主播昵称" required/></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">主播头像 <span style="color:red;">*</span></label>
+                            <div class="col-sm-9 col-xs-12 col-md-6 detail-logo">
+                                {!! app\common\helpers\ImageHelper::tplFormFieldImage('live[header_img]', $live['header_img']) !!}
+                                <span class="help-block">建议正方形图片200*200</span>
+
+                            </div>
+                        </div>
+
+
+                       {{-- <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">关联商品</label>
                             <div class="col-sm-9 col-xs-12">
                                 <table class="table">
@@ -114,29 +105,24 @@
                                     </tbody>
                                 </table>
                             </div>
+                        </div>--}}
+
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">分享标题：<span style="color:red;">*</span></label>
+                            <div class="col-sm-9 col-xs-12"><input type="text" name="live[share_title]" class="form-control" value="{{$live['share_title']}}" placeholder="请输入分享标题" required/></div>
                         </div>
 
                         <div class="form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span >*</span>分享标题</label>
-                            <div class="col-sm-9 col-xs-12"><input type="text" name="live[share_title]" class="form-control" value="{{$live['share_title']}}" placeholder="请输入分享标题"/></div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span >*</span>分享图片</label>
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">分享图片 <span style="color:red;">*</span></label>
                             <div class="col-sm-9 col-xs-12 col-md-6 detail-logo">
                                 {!! app\common\helpers\ImageHelper::tplFormFieldImage('live[share_img]', $live['share_img']) !!}
                                 <span class="help-block">建议图片宽高比例为5:4</span>
-                                @if (!empty($live['share_img']))
-                                    <a href='{{yz_tomedia($live['share_img'])}}' target='_blank'>
-                                        <img src="{{yz_tomedia($live['share_img'])}}" style='width:100px;border:1px solid #ccc;padding:1px' />
-                                    </a>
-                                @endif
                             </div>
                         </div>
 
 
                         <div class="form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">有效期</label>
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">直播间有效期</label>
                             <div class="col-sm-9 col-xs-12">
                                 {!! app\common\helpers\DateRange::tplFormFieldDateRange('live[time]', [
                                'starttime'=>$live['start_time'] ? $live['start_time'] : date('Y-m-d H:i:s') ,
@@ -148,15 +134,11 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">排序</label>
-                            <div class="col-sm-9 col-xs-12"><input type="text" name="live[sort]" class="form-control" value="{{$live['sort'] ? $live['sort'] : 0}}" placeholder="请输入排序字段"/></div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">虚拟人数</label>
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">直播间虚拟人数</label>
                             <div class="col-sm-9 col-xs-12"><input type="text" name="live[virtual_people]" class="form-control" value="{{$live['virtual_people'] ? $live['virtual_people'] : 0}}" placeholder="请输入直播间虚拟人数"/></div>
                         </div>
                         <div class="form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">虚拟倍数</label>
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">虚拟人数倍数</label>
                             <div class="col-sm-9 col-xs-12"><input type="text" name="live[virtual_num]" class="form-control" value="{{$live['virtual_num'] ? $live['virtual_num'] : 1}}" placeholder="请输入直播间虚拟倍数最低为1"/></div>
                         </div>
 
@@ -182,7 +164,7 @@
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
                             <div class="col-sm-9 col-xs-12">
                                 <input type="submit"  name="submit" value="提交" class="btn btn-success"/>
-                                <input type="hidden" name="live[id]" value="{{$live['id']}}"/>
+                                {{--<input type="hidden" name="live[id]" value="{{$live['id']}}"/>--}}
                                 <input type="button" class="btn btn-default" name="submit" onclick="history.go(-1)" value="返回" style='margin-left:10px;'/>
                             </div>
                         </div>
@@ -190,7 +172,7 @@
                 </div>
             </form>
 
-            <div id="modal-module-menus-goods" class="modal fade" tabindex="-1"> {{--搜索商品的弹窗--}}
+           {{-- <div id="modal-module-menus-goods" class="modal fade" tabindex="-1"> --}}{{--搜索商品的弹窗--}}{{--
                 <div class="modal-dialog" style='width: 920px;'>
                     <div class="modal-content">
                         <div class="modal-header">
@@ -213,11 +195,11 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>--}}
         </div>
     </div>
 
-    <script>
+   {{-- <script>
         function addParam(type) {
             var data = '<tr>' +
                 '<td style="text-align: center;width: 40px">' +
@@ -245,7 +227,7 @@
             $(o).parent().parent().remove();
         }
 
-        {{--搜索商品--}}
+        --}}{{--搜索商品--}}{{--
         function search_goods() {
             if ($.trim($('#search-kwd-goods').val()) == '') {
                 Tip.focus('#search-kwd-goods', '请输入关键词');
@@ -266,5 +248,5 @@
             $(".focusgood").removeClass("focusgood");
             $("#modal-module-menus-goods .close").click();
         }
-    </script>
+    </script>--}}
 @endsection

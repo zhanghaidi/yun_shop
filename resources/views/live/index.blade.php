@@ -36,7 +36,7 @@
             </div>
         </div>
         <div class="panel panel-default">
-            <div class="panel-heading">总数：{{ $roomList->total() }}&nbsp;&nbsp;&nbsp;&nbsp;<a class='btn btn-info' href="{{ yzWebUrl('live.live-room.edit') }}" style="margin-bottom: 2px">添加直播间</a>&nbsp;&nbsp;&nbsp;&nbsp;</div>
+            <div class="panel-heading">总数：{{ $roomList->total() }}&nbsp;&nbsp;&nbsp;&nbsp;<a class='btn btn-info' href="{{ yzWebUrl('live.live-room.create') }}" style="margin-bottom: 2px">添加直播间</a>&nbsp;&nbsp;&nbsp;&nbsp;</div>
             <div class="panel-body ">
                 <table class="table table-hover">
                     <thead class="navbar-inner">
