@@ -412,6 +412,27 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'url' => 'plugin.minapp-content.admin.somato-type.delete',
                             'parents' => ['minapp_content', 'somato_manage'],
                         ],
+                        'label_manage' => [
+                            'name' => '症状标签管理',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.label.index',
+                            'parents' => ['minapp_content', 'somato_manage'],
+                        ],
+                        'label_edit' => [
+                            'name' => '症状标签编辑',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.label.edit',
+                            'parents' => ['minapp_content', 'somato_manage'],
+                        ],
+                        'label_del' => [
+                            'name' => '删除症状标签',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.label.delete',
+                            'parents' => ['minapp_content', 'somato_manage'],
+                        ],
                     ],
                 ],
                 'banner' => [
