@@ -145,7 +145,7 @@ class CloudLiveRoom extends BaseModel
             $data['end_time'] = strtotime($data['time']['end']);
         }
 
-        return $data;
+        return array_except($data, ['time']);
     }
 
     public function goods($need_all = true){
