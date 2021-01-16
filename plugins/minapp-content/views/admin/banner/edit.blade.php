@@ -4,21 +4,24 @@
 @section('title', trans($pluginName))
 
 <div class="rightlist">
-    <!-- 新增加右侧顶部三级菜单 -->
-    <div class="right-titpos">
-        <ul class="add-snav">
-            <li class="active"><a href="#">轮播图管理</a></li>
-        </ul>
-    </div>
-    <!-- 新增加右侧顶部三级菜单结束 -->
     <div class="panel panel-default">
         <div class="panel-body">
+
+            <div class="top" style="margin-bottom:20px">
+                <ul class="add-shopnav" id="myTab">
+                    <li class="active"><a href="{{yzWebUrl('plugin.minapp-content.admin.banner.index')}}">轮播图列表</a></li>
+                    <li><a href="{{yzWebUrl('plugin.minapp-content.admin.banner-position.index')}}">轮播位</a>
+                    <li><a href="{{yzWebUrl('plugin.minapp-content.admin.system-category.index')}}">首页功能区分类</a>
+                    <li><a href="{{yzWebUrl('plugin.minapp-content.admin.system-image.index')}}">系统图片</a>
+                    </li>
+                </ul>
+            </div>
 
             <form id="form" action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
                 <input type="hidden" name="id" value="{{$info['id']}}">
 
                 <div class="form-group">
-                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">轮播图排序*</label>
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">轮播图排序</label>
                     <div class="col-xs-12 col-sm-9 col-md-10">
                         <input type="text" name="list_order" class="form-control" value="{{$info['list_order']}}"
                                placeholder="排序按数字由大到小排序">
@@ -86,7 +89,7 @@
                         <input type="radio" id="is_display-1" name="jumptype" value="1"
                                @if($info['jumptype']==1) checked @endif >
                         <label class="radio-inline" for="is_display-1">普通页面</label>
-                        <input type="radio" name="jumptype" id="is_display-0" value="0"
+                        <input type="radio" name="jumptype" id="is_display-0" value="2"
                                @if($info['jumptype']==2) checked @endif >
                         <label class="radio-inline" for="is_display-0"> 底部导航</label>
                     </div>
@@ -108,9 +111,9 @@
                         <input type="radio" id="is_display-1" name="type" value="1"
                                @if($info['type']==1) checked @endif >
                         <label class="radio-inline" for="is_display-1">banner图</label>
-                        <input type="radio" name="type" id="is_display-0" value="0"
+                        <input type="radio" name="type" id="is_display-2" value="2"
                                @if($info['type']==2) checked @endif >
-                        <label class="radio-inline" for="is_display-0">功能导航</label>
+                        <label class="radio-inline" for="is_display-2">功能导航</label>
                     </div>
                 </div>
                 <div class="form-group">

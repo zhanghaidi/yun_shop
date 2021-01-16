@@ -5,8 +5,8 @@ namespace Yunshop\MinappContent\admin;
 use app\common\components\BaseController;
 use app\common\helpers\PaginationHelper;
 use app\common\helpers\Url;
-use Yunshop\MinappContent\services\MinappContentService;
 use Illuminate\Support\Facades\DB;
+use Yunshop\MinappContent\services\MinappContentService;
 
 class BannerPositionController extends BaseController
 {
@@ -17,7 +17,6 @@ class BannerPositionController extends BaseController
      */
     public function index()
     {
-        $input = \YunShop::request();
         $uniacid = \YunShop::app()->uniacid;
 
         $bannerPosition = DB::table('diagnostic_service_banner_position')
@@ -28,10 +27,8 @@ class BannerPositionController extends BaseController
 
         return view('Yunshop\MinappContent::admin.banner_position.banner_position_list', [
             'pluginName' => MinappContentService::get('name'),
-            'type' => 'banner_position',
             'bannerPosition' => $bannerPosition,
             'pager' => $pager,
-            'request' => $input,
         ]);
     }
 
@@ -54,7 +51,7 @@ class BannerPositionController extends BaseController
             $data = [
                 'uniacid' => $uniacid,
                 'name' => $name,
-                'add_time' => time()
+                'add_time' => time(),
             ];
             if (empty($data['name'])) {
                 return $this->message('位置名不能为空', '', 'danger');
@@ -72,7 +69,6 @@ class BannerPositionController extends BaseController
         }
         return view('Yunshop\MinappContent::admin.banner_position.edit', [
             'pluginName' => MinappContentService::get('name'),
-            'type' => 'banner_position',
             'info' => $info,
         ]);
     }
@@ -88,8 +84,8 @@ class BannerPositionController extends BaseController
         if ($id <= 0) {
             return $this->message('ID参数错误', '', 'danger');
         }
-        $banners = DB::table('diagnostic_service_banner')->where(['position_id' => $id,'uniacid' => $uniacid])->first();
-        if($banners){
+        $banners = DB::table('diagnostic_service_banner')->where(['position_id' => $id, 'uniacid' => $uniacid])->first();
+        if ($banners) {
             $this->message('此轮播位下面有轮播图，无法删除', '', 'danger');
         }
         DB::table('diagnostic_service_banner_position')->where([

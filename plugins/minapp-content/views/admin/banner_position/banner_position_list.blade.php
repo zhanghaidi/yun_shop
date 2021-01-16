@@ -9,11 +9,11 @@
 
             <div class="top" style="margin-bottom:20px">
                 <ul class="add-shopnav" id="myTab">
-                    <li @if($type=='banner') class="active" @endif><a
-                                href="{{yzWebUrl('plugin.minapp-content.admin.banner.index')}}">轮播图列表</a></li>
-                    <li @if($type=='banner_position') class="active" @endif><a
-                                href="{{yzWebUrl('plugin.minapp-content.admin.banner-position.index')}}">轮播位</a>
+                    <li><a href="{{yzWebUrl('plugin.minapp-content.admin.banner.index')}}">轮播图列表</a></li>
+                    <li class="active"><a href="{{yzWebUrl('plugin.minapp-content.admin.banner-position.index')}}">轮播位</a>
                     </li>
+                    <li><a href="{{yzWebUrl('plugin.minapp-content.admin.system-category.index')}}">首页功能区分类</a>
+                    <li><a href="{{yzWebUrl('plugin.minapp-content.admin.system-image.index')}}">系统图片</a>
                 </ul>
             </div>
 
@@ -55,19 +55,4 @@
         </div>
     </div>
 </div>
-<script language="JavaScript">
-    require(["{{yz_tomedia('/images/ajy/js/layer/laydate/laydate.js')}}"], function (laydate) {
-        laydate.render({
-            elem: '#start_time'
-            , type: 'time'
-            , format: 'HH:mm'
-        });
-        laydate.render({
-            elem: '#end_time'
-            , type: 'time'
-            , format: 'HH:mm'
-        });
-    })
-</script>
-
 @endsection

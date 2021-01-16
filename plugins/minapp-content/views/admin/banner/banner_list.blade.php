@@ -11,6 +11,8 @@
                 <ul class="add-shopnav" id="myTab">
                     <li class="active"><a href="{{yzWebUrl('plugin.minapp-content.admin.banner.index')}}">轮播图列表</a></li>
                     <li><a href="{{yzWebUrl('plugin.minapp-content.admin.banner-position.index')}}">轮播位</a>
+                    <li><a href="{{yzWebUrl('plugin.minapp-content.admin.system-category.index')}}">首页功能区分类</a>
+                    <li><a href="{{yzWebUrl('plugin.minapp-content.admin.system-image.index')}}">系统图片</a>
                     </li>
                 </ul>
             </div>
@@ -24,12 +26,12 @@
                     <table class="table">
                         <thead>
                         <tr>
-                            <th>排序</th>
+                            <th width="50">排序</th>
                             <th>轮播图位置</th>
-                            <th>轮播图标题</th>
+                            <th width="400">轮播图标题</th>
                             <th>轮播图</th>
                             <th>是否外链</th>
-                            <th>跳转地址</th>
+                            <th width="400">跳转地址</th>
                             <th>跳转类型</th>
                             <th>显示状态</th>
                             <th>模板类型</th>
@@ -44,13 +46,13 @@
                                 <td>{{$value['title']}}</td>
                                 <td>
                                     <a href="{{ tomedia($value['image']) }}" target="_blank">
-                                        <img src="{{tomedia($value['image'])}}" @if($value['type'] == 1) width="150" @eleif($value['type'] == 2) width="50" @endif>
+                                        <img src="{{tomedia($value['image'])}}" @if($value['type'] == 1) width="150" @elseif($value['type'] == 2) width="50" @endif>
                                     </a>
                                 </td>
                                 <td>
                                     @if ($value['is_href'] == 0)
                                         否
-                                    @elseif ($value['type'] == 1)
+                                    @elseif ($value['is_href'] == 1)
                                         是
                                     @else
                                         未知
