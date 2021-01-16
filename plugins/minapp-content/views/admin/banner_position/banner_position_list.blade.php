@@ -12,6 +12,9 @@
                     <li><a href="{{yzWebUrl('plugin.minapp-content.admin.banner.index')}}">轮播图列表</a></li>
                     <li class="active"><a href="{{yzWebUrl('plugin.minapp-content.admin.banner-position.index')}}">轮播位</a>
                     </li>
+                    <li><a href="{{yzWebUrl('plugin.minapp-content.admin.system-category.index')}}">首页功能区分类</a>
+                    <li><a href="{{yzWebUrl('plugin.minapp-content.admin.system-image.index')}}">系统图片</a>
+                    <li><a href="{{yzWebUrl('plugin.minapp-content.admin.system-notice.index')}}">系统通知</a>
                 </ul>
             </div>
 

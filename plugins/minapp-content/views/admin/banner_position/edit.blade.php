@@ -4,15 +4,19 @@
 @section('title', trans($pluginName))
 
 <div class="rightlist">
-    <!-- 新增加右侧顶部三级菜单 -->
-    <div class="right-titpos">
-        <ul class="add-snav">
-            <li class="active"><a href="#">轮播位管理</a></li>
-        </ul>
-    </div>
-    <!-- 新增加右侧顶部三级菜单结束 -->
     <div class="panel panel-default">
         <div class="panel-body">
+
+            <div class="top" style="margin-bottom:20px">
+                <ul class="add-shopnav" id="myTab">
+                    <li><a href="{{yzWebUrl('plugin.minapp-content.admin.banner.index')}}">轮播图列表</a></li>
+                    <li class="active"><a href="{{yzWebUrl('plugin.minapp-content.admin.banner-position.index')}}">轮播位</a>
+                    </li>
+                    <li><a href="{{yzWebUrl('plugin.minapp-content.admin.system-category.index')}}">首页功能区分类</a>
+                    <li><a href="{{yzWebUrl('plugin.minapp-content.admin.system-image.index')}}">系统图片</a>
+                    <li><a href="{{yzWebUrl('plugin.minapp-content.admin.system-notice.index')}}">系统通知</a>
+                </ul>
+            </div>
 
             <form id="form" action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
                 <input type="hidden" name="id" value="{{ $info['id'] }}">
