@@ -12,8 +12,8 @@
                     <li><a href="{{yzWebUrl('plugin.minapp-content.admin.banner.index')}}">轮播图列表</a></li>
                     <li><a href="{{yzWebUrl('plugin.minapp-content.admin.banner-position.index')}}">轮播位</a>
                     </li>
-                    <li class="active"><a href="{{yzWebUrl('plugin.minapp-content.admin.system-category.index')}}">首页功能区分类</a>
-                    <li><a href="{{yzWebUrl('plugin.minapp-content.admin.system-image.index')}}">系统图片</a>
+                    <li><a href="{{yzWebUrl('plugin.minapp-content.admin.system-category.index')}}">首页功能区分类</a>
+                    <li class="active"><a href="{{yzWebUrl('plugin.minapp-content.admin.system-image.index')}}">系统图片</a>
                     <li><a href="{{yzWebUrl('plugin.minapp-content.admin.system-notice.index')}}">系统通知</a>
                 </ul>
             </div>
@@ -22,10 +22,22 @@
             <input type="hidden" name="data[id]" value="{{$info['id']}}">
 
             <div class="form-group">
-                <label class="col-xs-12 col-sm-3 col-md-2 control-label">栏目名称</label>
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label">名称</label>
                 <div class="col-xs-12 col-sm-9 col-md-10">
                     <input type="text" name="data[name]" class="form-control" value="{{$info['name']}}">
-                    <span class="help-block">请填写首页栏目名称</span>
+                    <span class="help-block">请填写名称</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label">位置</label>
+                <div class="col-xs-12 col-sm-9 col-md-10">
+                    <select name="data[cid]" class="form-control">
+                    <option value="">选择图片位置</option>
+                    @foreach($position as $item)
+                    <option value="{{$item['id']}}"@if($item['id'] == $info['cid']) selected @endif>{{$item['name']}}</option>
+                    @endforeach
+                    </select>
                 </div>
             </div>
 
@@ -38,9 +50,17 @@
             </div>
 
             <div class="form-group">
-                <label class="col-xs-12 col-sm-3 col-md-2 control-label">栏目图标</label>
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label">图片</label>
                 <div class="col-xs-12 col-sm-9 col-md-10">
                     {!! app\common\helpers\ImageHelper::tplFormFieldImage('data[image]', $info['image'])!!}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label">描述</label>
+                <div class="col-xs-12 col-sm-9 col-md-10">
+                    <input type="text" name="data[description]" class="form-control" value="{{$info['description']}}">
+                    <span class="help-block">请填写描述</span>
                 </div>
             </div>
 
@@ -65,7 +85,6 @@
                 </div>
             </div>
 
-
             <div class="form-group">
                 <label class="col-xs-12 col-sm-3 col-md-2 control-label">跳转小程序</label>
                 <div class="col-xs-12 col-sm-9 col-md-10">
@@ -88,6 +107,19 @@
                         <input type="radio" name="data[jumptype]" value="2" @if($info['jumptype'] === 2) checked="checked" @endif /> 导航跳转
                     </label>
                     <span class="help-block">跳转类型</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label">所属平台</label>
+                <div class="col-xs-12 col-sm-9 col-md-10">
+                    <label class="radio-inline">
+                        <input type="radio" name="data[aid]" value="3" @if($info['aid'] === 3) checked="checked" @endif /> 仙草公众号
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="data[aid]" value="45" @if($info['aid'] === 45) checked="checked" @endif /> 艾居益小程序
+                    </label>
+                    <span class="help-block">所属平台</span>
                 </div>
             </div>
 
