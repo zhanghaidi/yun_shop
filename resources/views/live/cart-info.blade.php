@@ -135,12 +135,12 @@
                         </div>--}}
 
                         <div class="form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">挂件价格</label>
-                            <div class="col-sm-9 col-xs-12"><input type="text" name="info[price]" class="form-control" value="{{$info['price'] ? $info['price'] : '0.00'}}" placeholder="请输入价钱"/></div>
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">挂件价格 <span style="color:red;">*</span></label>
+                            <div class="col-sm-9 col-xs-12"><input type="text" name="info[price]" class="form-control" value="{{$info['price'] ? $info['price'] : '0.00'}}" placeholder="请输入价钱" required/></div>
                         </div>
                         <div class="form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">挂件路径</label>
-                            <div class="col-sm-9 col-xs-12"><input type="text" name="info[page_path]" class="form-control" value="{{$info['page_path']}}" placeholder="请输入路径"/></div>
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">挂件路径 <span style="color:red;">*</span></label>
+                            <div class="col-sm-9 col-xs-12"><input type="text" name="info[pagepath]" class="form-control" value="{{$info['pagepath']}}" placeholder="请输入跳转路径" required/></div>
                         </div>
 
                     </div>
