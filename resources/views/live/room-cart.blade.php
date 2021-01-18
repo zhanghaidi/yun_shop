@@ -93,11 +93,11 @@
                                 <td style="text-align: center;">{{$list->title}}</td>
                                 <td style="text-align: center;">{{$list->description}}</td>
                                 <td style="text-align: center;">
-                                    <a href="yz_tomedia({{$list->thumb}})" target="_blank">
-                                        <img src='yz_tomedia({{$list->thumb}})' style='width:30px;height:30px;padding:1px;border:1px solid #ccc'/>
+                                    <a href="{{yz_tomedia($list->thumb)}}" target="_blank">
+                                        <img src="{{yz_tomedia($list->thumb)}}" style='width:45px;height:45px;padding:1px;border:1px solid #ccc' />
                                     </a>
                                 </td>
-                                <td style="text-align: center;white-space: normal;word-break: break-all;">{{$list->page_path}}</td>
+                                <td style="text-align: center;white-space: normal;word-break: break-all;">{{$list->pagepath}}</td>
                                 <td style="text-align: center;">{{$list->created_at}}</td>
                                 <td>
                                     <a class='btn btn-default' href="{{ yzWebUrl('live.live-room.cart-edit', array('id' => $list->id, 'room_id' => $list->room_id)) }}" style="margin-bottom: 2px" title="编辑"><i class="fa fa-edit"></i></a>
