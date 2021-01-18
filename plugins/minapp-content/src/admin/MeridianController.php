@@ -66,7 +66,7 @@ class MeridianController extends BaseController
             $meridian->recommend_course = isset($data['recommend_course']) ? $data['recommend_course'] : '';
             $meridian->save();
 
-            return $this->message('保存成功', Url::absoluteWeb('plugin.minapp-content.admin.meridian.list'));
+            return $this->message('保存成功', Url::absoluteWeb('plugin.minapp-content.admin.meridian.index'));
         }
 
         $id = (int) \YunShop::request()->id;

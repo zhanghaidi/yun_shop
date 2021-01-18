@@ -130,7 +130,7 @@ class AcupointController extends BaseController
                     AcupointMerModel::whereIn('id', $delIds)->delete();
                 }
 
-                $listRs = array_column($list, 'meridian_id');
+                $listRs = array_column($listRs, 'meridian_id');
                 foreach ($data['meridian_id'] as $k => $v) {
                     if (in_array($v, $listRs)) {
                         unset($data['meridian_id'][$k]);
@@ -175,7 +175,7 @@ class AcupointController extends BaseController
             return $this->successJson('拼音更新成功！');
         }
 
-        $id = (int) \YunShop::request()->id;
+        $id = (int)\YunShop::request()->id;
         if ($id > 0) {
             $acupointInfo = AcupointModel::where([
                 'id' => $id,
@@ -212,7 +212,7 @@ class AcupointController extends BaseController
 
     public function delete()
     {
-        $id = (int) \YunShop::request()->id;
+        $id = (int)\YunShop::request()->id;
         if ($id <= 0) {
             return $this->message('ID参数错误', '', 'danger');
         }

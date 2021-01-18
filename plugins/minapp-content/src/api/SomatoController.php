@@ -39,6 +39,7 @@ class SomatoController extends ApiController
             'id', 'list_order', 'title', 'option1_score', 'option2_score',
             'option3_score', 'option4_score', 'option5_score', 'options', 'somato_type_id'
         )->whereIn('gender', [0, $gender])
+            ->where('uniacid', \YunShop::app()->uniacid)
             ->orderBy('list_order', 'asc')->get()->toArray();
         foreach ($questionRs as &$v) {
             $tempType = explode(',', $v['somato_type_id']);
@@ -47,7 +48,8 @@ class SomatoController extends ApiController
             } else {
                 $v['somato_type'] = SomatoQuestionModel::select('somato_type_id', 'question_id', 'score_sort')
                     ->whereIn('somato_type_id', $tempType)
-                    ->where('question_id', $v['id'])->get()->toArray();
+                    ->where('question_id', $v['id'])
+                    ->where('uniacid', \YunShop::app()->uniacid)->get()->toArray();
             }
 
             $v['options'] = [
@@ -309,7 +311,7 @@ class SomatoController extends ApiController
 
         $typeRs = SomatoTypeModel::select('id', 'title', 'name', 'description', 'symptom', 'disease')->where([
             'id' => $answer->ture_somato_type_id,
-            // 'uniacid' => \YunShop::app()->uniacid,
+            'uniacid' => \YunShop::app()->uniacid,
         ])->first();
         if (isset($typeRs->id)) {
             $return['title'] = $typeRs->title;
@@ -351,7 +353,7 @@ class SomatoController extends ApiController
             'id', 'name', 'content', 'recommend_goods', 'recommend_article', 'recommend_acupotion'
         )->where([
             'id' => $answer->ture_somato_type_id,
-            // 'uniacid' => \YunShop::app()->uniacid,
+            'uniacid' => \YunShop::app()->uniacid,
         ])->first();
         if (!isset($somatoTypeRs->id)) {
             return $this->errorJson('用户测评数据错误', ['answerStatus' => 0]);
@@ -367,17 +369,20 @@ class SomatoController extends ApiController
         $somatoTypeRs->articles = [];
         if (isset($somatoTypeRs->recommend_acupotion[0])) {
             $somatoTypeRs->acupotions = AcupointModel::select('id', 'name', 'get_position', 'image')
-                ->whereIn('id', $somatoTypeRs->recommend_acupotion)->get();
+                ->whereIn('id', $somatoTypeRs->recommend_acupotion)
+                ->where('uniacid', \YunShop::app()->uniacid)->get();
         }
         if (isset($somatoTypeRs->recommend_goods[0])) {
             $somatoTypeRs->goods = Goods::select('id', 'title', 'thumb', 'status', 'deleted_at')
                 ->whereIn('id', $somatoTypeRs->recommend_goods)
+                ->where('uniacid', \YunShop::app()->uniacid)
                 ->where('status', 1)
                 ->whereNull('deleted_at')->get();
         }
         if (isset($somatoTypeRs->recommend_article[0])) {
             $somatoTypeRs->articles = ArticleModel::select('id', 'title', 'description', 'thumb')
-                ->whereIn('id', $somatoTypeRs->recommend_article)->get();
+                ->whereIn('id', $somatoTypeRs->recommend_article)
+                ->where('uniacid', \YunShop::app()->uniacid)->get();
             foreach ($somatoTypeRs->articles as &$v) {
                 $v->thumb = explode(',', $v->thumb);
                 $v->image = isset($v->thumb[0]) ? $v->thumb[0] : '';
