@@ -26,6 +26,7 @@ use app\common\models\Goods;
 use app\common\models\live\CloudLiveRoomLike;
 use app\common\models\live\CloudLiveRoomSubscription;
 use app\common\models\live\CloudLiveRoomMessage;
+use app\common\models\live\CloudLiveRoomGoods;
 
 class LiveRoomController extends ApiController
 {
@@ -122,7 +123,7 @@ class LiveRoomController extends ApiController
             $_model->is_like = 1;
         }
         $_model->now_time = time();
-        $_model->goods = $_model->goods(false);
+        $_model->goods = CloudLiveRoomGoods::uniacid()->where('room_id',$_model->id)->orderBy('sort','desc')->get()->toArray();
         $_model->quick_comment = array_column(DB::table('diagnostic_service_quick_comment')->select('content')->where([['type','=',7],['status','=',1]])->orderby('id','desc')->get()->toArray(),'content');
 
         return $this->successJson('获取直播间信息成功！',$_model->toArray());
