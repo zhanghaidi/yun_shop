@@ -63,9 +63,10 @@
         </div>
         <div class="clearfix">
             <div class="panel panel-default">
-                <div class="panel-heading"><a class='btn btn-info' href="{{ yzWebUrl('live.live-room.cart-add') }}" style="margin-bottom: 2px">添加购物车挂件</a> &nbsp;&nbsp;&nbsp;&nbsp; 记录总数：{{ $pageList->total() }}</div>
+                <div class="panel-heading"><a class='btn btn-info' href="{{ yzWebUrl('live.live-room.cart-add',['room_id' => $room_id]) }}" style="margin-bottom: 2px">添加购物车挂件</a> &nbsp;&nbsp;&nbsp;&nbsp; 记录总数：{{ $pageList->total() }}</div>
                 <div class="panel-body">
-                    <table class="table table-hover" style="overflow:visible;">
+                    <form action="" method="post" class="form-horizontal" role="form" id="form">
+                        <table class="table table-hover" style="overflow:visible;">
                         <thead class="navbar-inner">
                         <tr>
                             <th style='text-align: center;'>ID</th>
@@ -94,8 +95,8 @@
                                 <td style="text-align: center;">{{$list->created_at}}</td>
                                 <td>
                                     <a class='btn btn-default' href="{{ yzWebUrl('live.live-room.cart-edit', array('id' => $list->id, 'room_id' => $list->room_id)) }}" style="margin-bottom: 2px" title="编辑"><i class="fa fa-edit"></i></a>
-                                    <a class='btn btn-danger'
-                                       href="{{yzWebUrl('live.live-room.cart-del', ['id' => $list->id, 'room_id' => $list->room_id])}}"
+                                    <a class='btn btn-default'
+                                       href="{{yzWebUrl('live.live-room.cart-del', ['id' => $list->id, 'room_id' => $list->room_id])}}" style="margin-bottom: 2px"
                                        onclick="return confirm('确认删除此记录吗？');return false;"><i class="fa fa-remove"></i>
                                     </a>
                                 </td>
@@ -103,6 +104,10 @@
                         @endforeach
                         </tbody>
                     </table>
+                    </form>
+                    <div>
+                        <a class='btn btn-info' href="{{ yzWebUrl('live.live-room.cart-sort',['room_id' => $room_id]) }}" style="margin-bottom: 2px">更新排序</a>
+                    </div>
 
                     {!! $page !!}
 

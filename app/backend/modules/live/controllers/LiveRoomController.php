@@ -226,6 +226,7 @@ class LiveRoomController extends BaseController
         return view('live.room-cart', [
             'pageList'    => $goods,
             'page'          => $pager,
+            'room_id' => $room_id,
 
         ])->render();
 
@@ -260,8 +261,9 @@ class LiveRoomController extends BaseController
             }
         }
 
-        return view('live.goods_info', [
-            'info' => $roomGoodsModel
+        return view('live.cart-info', [
+            'info' => $roomGoodsModel,
+            'room_id' => $room_id
         ])->render();
 
     }
@@ -298,8 +300,9 @@ class LiveRoomController extends BaseController
             }
         }
 
-        return view('live.goods_info', [
-            'info' => $roomGoodsModel
+        return view('live.cart-info', [
+            'info' => $roomGoodsModel,
+            'room_id' => $room_id
         ])->render();
 
     }
