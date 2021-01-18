@@ -245,7 +245,8 @@ class LiveRoomController extends BaseController
         //获取表单提交的值
         $roomGoodsRequest = \YunShop::request()->info;
         if($roomGoodsRequest){
-
+            $roomGoodsModel->uniacid = \YunShop::app()->uniacid;
+            $roomGoodsModel->room_id = $room_id;
             $roomGoodsModel->fill($roomGoodsRequest);
             $validator = $roomGoodsModel->validator();
             if($validator->fails()){
@@ -284,7 +285,7 @@ class LiveRoomController extends BaseController
         //获取表单提交的值
         $roomGoodsRequest = \YunShop::request()->info;
         if($roomGoodsRequest){
-
+            $roomGoodsModel->room_id = $room_id;
             $roomGoodsModel->fill($roomGoodsRequest);
             $validator = $roomGoodsModel->validator();
             if($validator->fails()){

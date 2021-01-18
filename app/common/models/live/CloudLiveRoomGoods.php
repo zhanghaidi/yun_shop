@@ -51,7 +51,7 @@ class CloudLiveRoomGoods extends BaseModel
             'description' => 'string',
             'thumb' => 'required|string',
             'price' => 'required',
-            'pagepath' => 'required'
+            'pagepath' => 'required',
         ];
     }
 
