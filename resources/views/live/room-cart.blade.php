@@ -3,10 +3,16 @@
 
 @section('content')
     <div id="member-blade" class="rightlist">
-        <div class="right-titpos">
+        {{--<div class="right-titpos">
             @include('layouts.tabs')
-        </div>
+        </div>--}}
         <!-- 新增加右侧顶部三级菜单结束 -->
+        <div class="right-titpos">
+            <ul class="add-snav">
+                <li class="active"><a href="{{yzWebUrl('live.live-room.index')}}">直播间列表</a></li>
+                <li><a href="#">&nbsp;<i class="fa fa-angle-double-right"></i> &nbsp;直播挂件</a></li>
+            </ul>
+        </div>
         <div class="panel panel-info">
             {{-- <div class="panel-heading">聊天记录筛选</div>
 
@@ -104,10 +110,9 @@
                         @endforeach
                         </tbody>
                     </table>
+                        <button type="button" class='btn btn-info' href="{{ yzWebUrl('live.live-room.cart-sort',['room_id' => $room_id]) }}" style="margin-bottom: 2px">更新排序</button>
                     </form>
-                    <div>
-                        <a class='btn btn-info' href="{{ yzWebUrl('live.live-room.cart-sort',['room_id' => $room_id]) }}" style="margin-bottom: 2px">更新排序</a>
-                    </div>
+
 
                     {!! $page !!}
 
