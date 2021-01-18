@@ -36,6 +36,7 @@
                         <th width="20%">元素名称</th>
                         <th width="20%">唯一标识</th>
                         <th width="20%">元素值</th>
+                        <th width="20%">元素值类型</th>
                         <th width="10%">创建时间</th>
                         <th width="10%">最后修改时间</th>
                         <th width="10%">操作</th>
@@ -47,6 +48,7 @@
                         <td>{{$value['id']}}</td>
                         <td>{{$value['name']}}</td>
                         <td>{{$value['label']}}</td>
+                        <td>{{$value['content']}}</td>
                         <td>@if($value['type'] == 1) 文本
                         @elseif($value['type'] == 2) 图片URL
                         @elseif($value['type'] == 3) 文本数组

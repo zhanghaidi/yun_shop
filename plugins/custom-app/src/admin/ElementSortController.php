@@ -26,7 +26,7 @@ class ElementSortController extends BaseController
         $listRs = $listRs->paginate($this->pageSize)->toArray();
         $sortIds = array_column($listRs['data'], 'id');
         if (isset($sortIds[0])) {
-            $elementRs = CustomAppElementModel::select('id', 'sort_id', 'updated_at')
+            $elementRs = CustomAppElementModel::select('id', 'sort_id', 'content', 'updated_at')
                 ->whereIn('sort_id', $sortIds)
                 ->where('uniacid', \YunShop::app()->uniacid)->get()->toArray();
             foreach ($listRs['data'] as $k1 => $v1) {
@@ -34,6 +34,7 @@ class ElementSortController extends BaseController
                     if ($v1['id'] != $v2['sort_id']) {
                         continue;
                     }
+                    $listRs['data'][$k1]['content'] = $v2['content'];
                     $listRs['data'][$k1]['updated_at'] = $v2['updated_at'];
                     break;
                 }
