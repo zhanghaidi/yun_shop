@@ -6,6 +6,7 @@
             <!-- 新增加右侧顶部三级菜单 -->
             <div class="right-titpos">
                 <ul class="add-snav">
+                    <li class="active"><a href="{{yzWebUrl('live.live-room.index')}}">直播间列表</a></li>
                     <li><a href="#">&nbsp;<i class="fa fa-angle-double-right"></i> &nbsp;挂件管理</a></li>
                 </ul>
             </div>
@@ -15,34 +16,35 @@
                     <div class='panel-body'>
                         <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">排序</label>
-                            <div class="col-sm-9 col-xs-12"><input type="text" name="live[sort]" class="form-control" value="{{$live['sort'] ? $live['sort'] : 0}}" placeholder="请输入排序字段" /></div>
+                            <div class="col-sm-9 col-xs-12"><input type="text" name="info[sort]" class="form-control" value="{{$info['sort'] ? $info['sort'] : 0}}" placeholder="请输入排序" /></div>
                         </div>
 
                         <div class="form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">直播间名称： <span style="color:red;">*</span></label>
-                            <div class="col-sm-9 col-xs-12"><input type="text" name="live[name]" class="form-control" value="{{$live['name']}}" placeholder="请输入直播间名称" required/></div>
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">名称： <span style="color:red;">*</span></label>
+                            <div class="col-sm-9 col-xs-12"><input type="text" name="info[title]" class="form-control" value="{{$info['title']}}" placeholder="请输入挂件名称" required/></div>
                         </div>
                         <div class="form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">直播间封面图片 <span style="color:red;">*</span></label>
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">封面图片 <span style="color:red;">*</span></label>
                             <div class="col-sm-9 col-xs-12 col-md-6 detail-logo">
-                                {!! app\common\helpers\ImageHelper::tplFormFieldImage('live[cover_img]', $live['cover_img']) !!}
-                                <span class="help-block">建议图片宽高比例为9:16</span>
+                                {!! app\common\helpers\ImageHelper::tplFormFieldImage('info[thumb]', $info['thumb']) !!}
+                                <span class="help-block">建议图片宽高比例为5:4</span>
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">主播昵称： <span style="color:red;">*</span></label>
-                            <div class="col-sm-9 col-xs-12"><input type="text" name="live[anchor_name]" class="form-control" value="{{$live['anchor_name']}}" placeholder="请输入主播昵称" required/></div>
+                       <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">描述： <span style="color:red;">*</span></label>
+                            <div class="col-sm-9 col-xs-12"><input type="text" name="info[description]" class="form-control" value="{{$info['description']}}" placeholder="请输入挂件描述" required/></div>
                         </div>
 
-                        <div class="form-group">
+
+                       {{--  <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">主播头像 <span style="color:red;">*</span></label>
                             <div class="col-sm-9 col-xs-12 col-md-6 detail-logo">
                                 {!! app\common\helpers\ImageHelper::tplFormFieldImage('live[header_img]', $live['header_img']) !!}
                                 <span class="help-block">建议正方形图片200*200</span>
 
                             </div>
-                        </div>
+                        </div>--}}
 
 
                         {{-- <div class="form-group">
@@ -106,7 +108,7 @@
                              </div>
                          </div>--}}
 
-                        <div class="form-group">
+                       {{-- <div class="form-group">
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label">分享标题：<span style="color:red;">*</span></label>
                             <div class="col-sm-9 col-xs-12"><input type="text" name="live[share_title]" class="form-control" value="{{$live['share_title']}}" placeholder="请输入分享标题" required/></div>
                         </div>
@@ -130,30 +132,11 @@
                                'end'=> 0
                                ], true) !!}
                             </div>
-                        </div>
+                        </div>--}}
 
                         <div class="form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">直播间虚拟人数</label>
-                            <div class="col-sm-9 col-xs-12"><input type="text" name="live[virtual_people]" class="form-control" value="{{$live['virtual_people'] ? $live['virtual_people'] : 0}}" placeholder="请输入直播间虚拟人数"/></div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">虚拟人数倍数</label>
-                            <div class="col-sm-9 col-xs-12"><input type="text" name="live[virtual_num]" class="form-control" value="{{$live['virtual_num'] ? $live['virtual_num'] : 1}}" placeholder="请输入直播间虚拟倍数最低为1"/></div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">直播间状态</label>
-                            <div class="col-sm-9 col-xs-12">
-                                <label class='radio-inline'><input type='radio' name='live[live_status]' value='0' @if (!$live['id'] || $live['live_status'] == 0) checked @endif />关闭</label>
-                                <label class='radio-inline'><input type='radio' name='live[live_status]' value='101' @if ($live['live_status'] == 101) checked @endif/>直播中</label>
-                                <label class='radio-inline'><input type='radio' name='live[live_status]' value='102' @if ($live['live_status'] == 102) checked @endif/>未开始</label>
-                                <label class='radio-inline'><input type='radio' name='live[live_status]' value='103' @if ($live['live_status'] == 103) checked @endif/>已结束</label>
-                                <label class='radio-inline'><input type='radio' name='live[live_status]' value='104' @if ($live['live_status'] == 104) checked @endif/>禁播</label>
-                                <label class='radio-inline'><input type='radio' name='live[live_status]' value='105' @if ($live['live_status'] == 105) checked @endif/>暂停</label>
-                                <label class='radio-inline'><input type='radio' name='live[live_status]' value='106' @if ($live['live_status'] == 106) checked @endif/>异常</label>
-                                <label class='radio-inline'><input type='radio' name='live[live_status]' value='107' @if ($live['live_status'] == 107) checked @endif/>已过期</label>
-
-                            </div>
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">价格</label>
+                            <div class="col-sm-9 col-xs-12"><input type="text" name="info[price]" class="form-control" value="{{$info['price'] ? $info['price'] : 0.00}}" placeholder="请输入价钱"/></div>
                         </div>
 
                     </div>
