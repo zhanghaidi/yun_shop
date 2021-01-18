@@ -338,9 +338,9 @@ class LiveRoomController extends BaseController
         if($sorts){
             foreach ($sorts as $k => $v) {
 
-                CloudLiveRoomGoods::where('id', $k)->update('sort', $v);
-                //$update = array('sort' => $v);
-                //pdo_update('diagnostic_service_mer_acupoint', $update, array('id' => $k));
+                //CloudLiveRoomGoods::where('id', $k)->update('sort', $v);
+                $update = array('sort' => $v);
+                pdo_update('diagnostic_service_mer_acupoint', $update, array('id' => $k));
             }
             return  $this->message('排序更新成功！', Url::absoluteWeb('live.live-room.cart', ['room_id' => $room_id]));
         }
