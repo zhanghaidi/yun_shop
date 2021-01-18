@@ -34,7 +34,7 @@
                 <div class="col-xs-12 col-sm-9 col-md-10">
                     <select name="data[user_id]" data-placeholder="请选择用户" class="form-control select2">
                     @foreach($user as $item)
-                    <option value="{{$item['ajy_uid']}}"@if(in_array($item['ajy_uid'], $info['user_id'])) selected @endif>{{$item['nickname']}}</option>
+                    <option value="{{$item['ajy_uid']}}"@if($item['ajy_uid'] == $info['user_id']) selected @endif>{{$item['nickname']}}</option>
                     @endforeach
                     </select>
                 </div>
