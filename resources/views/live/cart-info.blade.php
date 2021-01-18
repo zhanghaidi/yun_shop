@@ -7,7 +7,7 @@
             <div class="right-titpos">
                 <ul class="add-snav">
                     <li class="active"><a href="{{yzWebUrl('live.live-room.index')}}">直播间列表</a></li>
-                    <li><a href="#">&nbsp;<i class="fa fa-angle-double-right"></i> &nbsp;挂件管理</a></li>
+                    <li><a href="#">&nbsp;<i class="fa fa-angle-double-right"></i> 购物车挂件管理</a></li>
                 </ul>
             </div>
             <!-- 新增加右侧顶部三级菜单结束 -->
@@ -15,12 +15,12 @@
                 <div class='panel panel-default'>
                     <div class='panel-body'>
                         <div class="form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">排序</label>
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">挂件排序</label>
                             <div class="col-sm-9 col-xs-12"><input type="text" name="info[sort]" class="form-control" value="{{$info['sort'] ? $info['sort'] : 0}}" placeholder="请输入排序" /></div>
                         </div>
 
                         <div class="form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">名称： <span style="color:red;">*</span></label>
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">挂件名称： <span style="color:red;">*</span></label>
                             <div class="col-sm-9 col-xs-12"><input type="text" name="info[title]" class="form-control" value="{{$info['title']}}" placeholder="请输入挂件名称" required/></div>
                         </div>
                         <div class="form-group">
@@ -32,7 +32,7 @@
                         </div>
 
                        <div class="form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">描述： <span style="color:red;">*</span></label>
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">挂件描述： <span style="color:red;">*</span></label>
                             <div class="col-sm-9 col-xs-12"><input type="text" name="info[description]" class="form-control" value="{{$info['description']}}" placeholder="请输入挂件描述" required/></div>
                         </div>
 
@@ -135,8 +135,12 @@
                         </div>--}}
 
                         <div class="form-group">
-                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">价格</label>
-                            <div class="col-sm-9 col-xs-12"><input type="text" name="info[price]" class="form-control" value="{{$info['price'] ? $info['price'] : 0.00}}" placeholder="请输入价钱"/></div>
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">挂件价格</label>
+                            <div class="col-sm-9 col-xs-12"><input type="text" name="info[price]" class="form-control" value="{{$info['price'] ? $info['price'] : '0.00'}}" placeholder="请输入价钱"/></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">挂件路径</label>
+                            <div class="col-sm-9 col-xs-12"><input type="text" name="info[page_path]" class="form-control" value="{{$info['page_path']}}" placeholder="请输入路径"/></div>
                         </div>
 
                     </div>
