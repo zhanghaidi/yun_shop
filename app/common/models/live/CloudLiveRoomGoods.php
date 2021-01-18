@@ -36,10 +36,22 @@ class CloudLiveRoomGoods extends BaseModel
     use SoftDeletes;
 
     public $table = "yz_cloud_live_room_goods";
-    public $timestamps = false;
-    public $dates = ['deleted_at'];
+
     protected $guarded = [''];
 
-    protected $casts = ['updated_at' => 'date', 'created_at' => 'date'];
-    protected $fillable = ['uniacid','room_id','goods_ids','sort','created_at','updated_at'];
+    /**
+     * 字段规则
+     * @return array
+     */
+    public function rules()
+    {
+        return [
+            'uniacid' => 'required|integer',
+            'title' => 'required|string',
+            'description' => 'string',
+            'thumb' => 'required|string',
+            'price' => 'required|float',
+        ];
+    }
+
 }

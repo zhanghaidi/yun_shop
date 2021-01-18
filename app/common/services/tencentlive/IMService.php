@@ -68,7 +68,7 @@ class IMService
         $data = json_encode([
             "Type" => 'AVChatRoom',
             "GroupId" => LiveSetService::getIMSetting('group_pre') . '-' . $room_id,
-            "Name" => $name
+            "Name" => $name.'群组'
         ]);
         return json_decode($this->curl_post($url, $data));
     }

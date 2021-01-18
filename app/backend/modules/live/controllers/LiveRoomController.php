@@ -66,13 +66,13 @@ class LiveRoomController extends BaseController
                         $this->message('创建直播群聊失败','','error');
                     }
                     $liveModel->group_id = $im_res->GroupId;
-                    $liveModel->group_name = $liveModel->name.'群聊';
+                    $liveModel->group_name =  $im_res->Name;
                     $liveModel->save();
 
                     return $this->message('添加成功', Url::absoluteWeb('live.live-room.index'));
 
                 }else{
-                    $this->message('活码创建失败','','error');
+                    $this->message('创建失败','','error');
                 }
             }
         }
@@ -113,7 +113,7 @@ class LiveRoomController extends BaseController
                             $this->message('创建直播群聊失败','','error');
                         }
                         $liveModel->group_id = $im_res->GroupId;
-                        $liveModel->group_name = $liveModel->name.'群聊';
+                        $liveModel->group_name = $im_res->Name;
                     }
 
                     $liveModel->save();
@@ -209,6 +209,139 @@ class LiveRoomController extends BaseController
         }
 
         return $this->message('删除成功', Url::absoluteWeb('live.live-room.room-message'));
+    }
+
+    //直播间挂件
+    public function cart()
+    {
+        $room_id = (int)\YunShop::request()->room_id;
+        if(!$room_id){
+            return $this->message('直播间ID不存在', '', 'error');
+        }
+
+        $goods = CloudLiveRoomGoods::uniacid()->where('room_id', $room_id)->orderBy('sort','desc')->paginate();
+
+        $pager = PaginationHelper::show($goods->total(), $goods->currentPage(), $goods->perPage());
+
+        return view('live.room-cart', [
+            'pageList'    => $goods,
+            'page'          => $pager,
+
+        ])->render();
+
+
+    }
+
+    //直播间挂件添加
+    public function cartAdd(){
+
+        $room_id = (int)\YunShop::request()->room_id;
+        if(!$room_id){
+            return $this->message('直播间ID不存在', '', 'error');
+        }
+
+        $roomGoodsModel = new CloudLiveRoomGoods();
+        //获取表单提交的值
+        $roomGoodsRequest = \YunShop::request()->info;
+        if($roomGoodsRequest){
+
+            $roomGoodsModel->fill($roomGoodsRequest);
+            $validator = $roomGoodsModel->validator();
+            if($validator->fails()){
+                $this->error($validator->messages());
+            }else{
+                if($roomGoodsModel->save()){
+
+                    return $this->message('添加成功', Url::absoluteWeb('live.live-room.cart', ['room_id' => $room_id]));
+
+                }else{
+                    $this->message('添加失败','','error');
+                }
+            }
+        }
+
+        return view('live.goods_info', [
+            'info' => $roomGoodsModel
+        ])->render();
+
+    }
+
+    //直播间挂件修改
+    public function cartEdit(){
+
+        $room_id = (int)\YunShop::request()->room_id;
+        if(!$room_id){
+            return $this->message('直播间ID不存在', '', 'error');
+        }
+
+        $id =  (int)\YunShop::request()->id;
+        $roomGoodsModel = CloudLiveRoomGoods::uniacid()->where('id',$id)->first();
+        if(!$roomGoodsModel){
+            return $this->message('购物车挂件不存在', '', 'error');
+        }
+        //获取表单提交的值
+        $roomGoodsRequest = \YunShop::request()->info;
+        if($roomGoodsRequest){
+
+            $roomGoodsModel->fill($roomGoodsRequest);
+            $validator = $roomGoodsModel->validator();
+            if($validator->fails()){
+                $this->error($validator->messages());
+            }else{
+                if($roomGoodsModel->save()){
+
+                    return $this->message('修改成功', Url::absoluteWeb('live.live-room.cart', ['room_id' => $room_id]));
+
+                }else{
+                    $this->message('修改失败','','error');
+                }
+            }
+        }
+
+        return view('live.goods_info', [
+            'info' => $roomGoodsModel
+        ])->render();
+
+    }
+
+    //直播间挂件移除
+    public function cartDel(){
+        $room_id = (int)\YunShop::request()->room_id;
+        if(!$room_id){
+            return $this->message('直播间ID不存在', '', 'error');
+        }
+        $id = (int)\YunShop::request()->id;
+        if(empty($id)){
+            return $this->message('Id不能为空', '', 'error');
+        }
+        $res = CloudLiveRoomGoods::destroy($id);
+
+        if(!$res){
+            return $this->message('删除失败', '', 'error');
+        }
+
+        return $this->message('删除成功', Url::absoluteWeb('live.live-room.cart', ['room_id' => $room_id]));
+
+    }
+
+    //挂件排序
+    public function cartSort(){
+        $room_id = (int)\YunShop::request()->room_id;
+        if(!$room_id){
+            return $this->message('直播间ID不存在', '', 'error');
+        }
+        //更新排序
+        $sorts = \YunShop::request()->sort;
+        if($sorts){
+            foreach ($sorts as $k => $v) {
+
+                CloudLiveRoomGoods::where('id', $k)->update('sort', $v);
+                //$update = array('sort' => $v);
+                //pdo_update('diagnostic_service_mer_acupoint', $update, array('id' => $k));
+            }
+            return  $this->message('排序更新成功！', Url::absoluteWeb('live.live-room.cart', ['room_id' => $room_id]));
+        }
+
     }
     
 }
