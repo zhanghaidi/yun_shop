@@ -71,7 +71,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading"><a class='btn btn-info' href="{{ yzWebUrl('live.live-room.cart-add',['room_id' => $room_id]) }}" style="margin-bottom: 2px">添加购物车挂件</a> &nbsp;&nbsp;&nbsp;&nbsp; 记录总数：{{ $pageList->total() }}</div>
                 <div class="panel-body">
-                    <form action="" method="post" class="form-horizontal" role="form" id="form">
+                    <form action="{{ yzWebUrl('live.live-room.cart-sort',['room_id' => $room_id]) }}" method="post" class="form-horizontal" role="form" id="form">
                         <table class="table table-hover" style="overflow:visible;">
                         <thead class="navbar-inner">
                         <tr>
@@ -110,7 +110,8 @@
                         @endforeach
                         </tbody>
                     </table>
-                        <button type="button" class='btn btn-info' href="{{ yzWebUrl('live.live-room.cart-sort',['room_id' => $room_id]) }}" style="margin-bottom: 2px">更新排序</button>
+                        {{--<input type="submit"  name="submit" value="提交" class="btn btn-success"/>--}}
+                        <button type="submit" class='btn btn-success' style="margin-bottom: 2px">更新排序</button>
                     </form>
 
 
