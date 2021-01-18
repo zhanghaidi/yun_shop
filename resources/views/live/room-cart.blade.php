@@ -89,7 +89,7 @@
                         @foreach($pageList as $list)
                             <tr>
                                 <td style="text-align: center;">{{ $list->id }}</td>
-                                <td style="text-align: center;"><input type='text' value="{{ $list->sort }}" name="sort[{$item['id']}]" class="form-control " style="width: 80px"/></td>
+                                <td style="text-align: center;"><input type='text' value="{{ $list->sort }}" name="sort[{{$list->id}}]" class="form-control " style="width: 80px"/></td>
                                 <td style="text-align: center;">{{$list->title}}</td>
                                 <td style="text-align: center;">{{$list->description}}</td>
                                 <td style="text-align: center;">
