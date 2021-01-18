@@ -192,6 +192,12 @@ class CloudLiveRoom extends BaseModel
         return $this->hasMany('app\common\models\live\CloudLiveRoomSubscription', 'room_id', 'id');
     }
 
+    //关联商品挂件
+    public function hasManyGoods()
+    {
+        return $this->hasMany('app\common\models\live\CloudLiveRoomGoods', 'room_id', 'id');
+    }
+
 
 
 }

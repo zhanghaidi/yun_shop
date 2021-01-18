@@ -94,7 +94,10 @@
                             <td>{{ $list->virtual_num }}</td>
                             <td>{{ $list->created_at }}</td>
                             <td>
-                                @if( $list->live_status == 101 ) <a class='btn btn-default' href="{{ yzWebUrl('live.live-room.stop', array('id' => $list->id)) }}" style="margin-bottom: 2px">结束直播</a>                                          @elseif($list->end_time > date('Y-m-d H:i:s')) <a class='btn btn-default' href="{{ yzWebUrl('live.live-room.start', array('id' => $list->id)) }}" style="margin-bottom: 2px">开始直播</a>
+                                <a class='btn btn-default' href="{{ yzWebUrl('live.live-room.cart', array('room_id' => $list->id)) }}" style="margin-bottom: 2px"><i class="fa fa-shopping-cart"></i></a>
+
+                                @if( $list->live_status == 101 ) <a class='btn btn-default' href="{{ yzWebUrl('live.live-room.stop', array('id' => $list->id)) }}" style="margin-bottom: 2px">结束</a>
+                                @elseif($list->end_time > date('Y-m-d H:i:s')) <a class='btn btn-default' href="{{ yzWebUrl('live.live-room.start', array('id' => $list->id)) }}" style="margin-bottom: 2px">开始</a>
                                 @endif
                                 <a class='btn btn-default' href="{{ yzWebUrl('live.live-room.edit', array('id' => $list->id)) }}" style="margin-bottom: 2px" title="编辑"><i class="fa fa-edit"></i></a>
 
