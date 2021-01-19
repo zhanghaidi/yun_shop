@@ -153,7 +153,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group news_link-div" @if($info['jump_type'] == 1) style="display: none" @endif>
+                        <div class="form-group news_link-div" @if($info['jump_type'] == 1 || empty($info['jump_type'])) style="display: none" @endif>
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label" >跳转链接地址</label>
                             <div class="col-sm-9 col-xs-12">
                                 <div class="input-group ">
