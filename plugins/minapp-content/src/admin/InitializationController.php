@@ -39,6 +39,12 @@ class InitializationController extends BaseController
         if (\YunShop::app()->uniacid == $this->sourceAppid) {
             return $this->errorJson('养居益自身项目数据，无需同步');
         }
+        $update = (int) \YunShop::request()->update;
+        if ($update === 1) {
+            $update = true;
+        } else {
+            $update = false;
+        }
 
         // 经络信息迁移
         $sourceRs = MeridianModel::where('uniacid', $this->sourceAppid)->get()->toArray();
@@ -62,6 +68,30 @@ class InitializationController extends BaseController
             }
 
             if ($tempId > 0) {
+                if ($update == true) {
+                    MeridianModel::where([
+                        'id' => $tempId,
+                        'uniacid' => \YunShop::app()->uniacid,
+                    ])->limit(1)->update([
+                        'name' => $v['name'],
+                        'discription' => $v['discription'],
+                        'image' => $v['image'],
+                        'type_id' => $v['type_id'],
+                        'list_order' => $v['list_order'],
+                        'start_time' => $v['start_time'],
+                        'end_time' => $v['end_time'],
+                        'status' => $v['status'],
+                        'content' => $v['content'],
+                        'video' => $v['video'],
+                        'audio' => $v['audio'],
+                        'is_hot' => $v['is_hot'],
+                        'video_image_f' => $v['video_image_f'],
+                        'video_image_s' => $v['video_image_s'],
+                        'notice' => $v['notice'],
+                        'audio_play_time' => $v['audio_play_time'],
+                    ]);
+                }
+
                 continue;
             }
             $insertData[] = [
@@ -126,9 +156,6 @@ class InitializationController extends BaseController
                 $tempId = $v1['id'];
                 break;
             }
-            if ($tempId > 0) {
-                continue;
-            }
 
             $v['meridian_id'] = explode('、', $v['meridian_id']);
             $newMeridian = [];
@@ -138,6 +165,33 @@ class InitializationController extends BaseController
                 }
 
                 $newMeridian[] = $meridianRelationRs[$v2];
+            }
+
+            if ($tempId > 0) {
+                if ($update == true) {
+                    AcupointModel::where([
+                        'id' => $tempId,
+                        'uniacid' => \YunShop::app()->uniacid,
+                    ])->limit(1)->update([
+                        'name' => $v['name'],
+                        'meridian_id' => implode('、', $newMeridian),
+                        'type' => $v['type'],
+                        'get_position' => $v['get_position'],
+                        'effect' => $v['effect'],
+                        'image' => $v['image'],
+                        'video' => $v['video'],
+                        'audio' => $v['audio'],
+                        'zh' => $v['zh'],
+                        'jingluo' => $v['jingluo'],
+                        'is_hot' => $v['is_hot'],
+                        'chart' => $v['chart'],
+                        'video_image_f' => $v['video_image_f'],
+                        'video_image_s' => $v['video_image_s'],
+                        'to_type_id' => $v['to_type_id'],
+                        'status' => $v['status'],
+                    ]);
+                }
+                continue;
             }
 
             $insertData[] = [
@@ -178,8 +232,15 @@ class InitializationController extends BaseController
                 break;
             }
         }
+        if (count($sourceRs) != count($acupointRelationRs)) {
+            return $this->errorJson('穴位信息迁移出错了');
+        }
 
         $sourceRs = AcupointMerModel::where('uniacid', $this->sourceAppid)->get()->toArray();
+
+        if ($update == true) {
+            AcupointMerModel::where('uniacid', \YunShop::app()->uniacid)->delete();
+        }
 
         $nowRs = AcupointMerModel::select('id', 'meridian_id', 'acupoint_id', 'acupoint_name')
             ->where('uniacid', \YunShop::app()->uniacid)->get()->toArray();
@@ -227,6 +288,5 @@ class InitializationController extends BaseController
         }
 
         return $this->successJson('经络、穴位信息迁移完成了');
-
     }
 }
