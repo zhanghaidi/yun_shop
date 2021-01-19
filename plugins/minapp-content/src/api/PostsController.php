@@ -169,7 +169,7 @@ class PostsController extends ApiController
         }
 
         $contentcheck = $appletsliveBaseService->msgSecCheck($content);
-        if ($titlecheck !== true) {
+        if ($contentcheck !== true) {
             return $this->errorJson('文字内容违规', ['status' => 87014]);
         }
 

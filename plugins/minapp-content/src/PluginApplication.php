@@ -26,6 +26,24 @@ class PluginApplication extends \app\common\services\PluginApplication
             'list_icon' => 'declaration',
             'parents' => [],
             'child' => [
+                'initialization_manage'=>[
+                    'name' => '内容数据初始化',
+                    'permit' => 1,
+                    'menu' => 1,
+                    'icon' => '',
+                    'url' => 'plugin.minapp-content.admin.initialization.index',
+                    'url_params' => '',
+                    'parents' => ['minapp_content'],
+                    'child' => [
+                        'custom_share_edit' => [
+                            'name' => '编辑|添加自定义分享',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.initialization.edit',
+                            'parents' => ['minapp_content', 'initialization_manage'],
+                        ],
+                    ],
+                ],
                 'acupoint_manage' => [
                     'name' => '穴位图',
                     'permit' => 1,
@@ -679,7 +697,7 @@ class PluginApplication extends \app\common\services\PluginApplication
                     'icon' => '',
                     'url' => 'plugin.minapp-content.admin.custom-share.index',
                     'url_params' => '',
-                    'parents' => ['minapp_content', 'custom_share_list'],
+                    'parents' => ['minapp_content'],
                     'child' => [
                         'custom_share_edit' => [
                             'name' => '编辑|添加自定义分享',

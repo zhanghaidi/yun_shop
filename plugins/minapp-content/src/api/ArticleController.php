@@ -9,7 +9,7 @@ use Yunshop\Appletslive\common\services\BaseService;
 //文章控制器-wk 20210106
 class ArticleController extends ApiController
 {
-    protected $ignoreAction = ['articleCategory', 'articles', 'articleInfo'];
+    protected $ignoreAction = ['articleCategory', 'articles', 'articleInfo', 'articleInfoComments'];
 
     protected $user_id = 0;
     protected $uniacid = 0;
