@@ -169,8 +169,9 @@
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label" >小程序APPID</label>
                             <div class="col-sm-9 col-xs-12">
                                 <select name="info[appid]" class="form-control">
+                                    <option  value=""> == 请选择小程序 == </option>
                                     @foreach(Illuminate\Support\Facades\DB::table('account_wxapp')->select('uniacid','key','name')->orderBy('uniacid','desc')->get() as $item)
-                                        <option @if((empty($temp['appid']) && $item['uniacid'] == 45) || (!empty($temp['appid']) && $temp['appid'] == $item['key'])) selected @endif value="{{$item['key']}}">{{$item['name']}}</option>
+                                        <option @if(!empty($info['appid']) && $info['appid'] == $item['key']) selected @endif value="{{$item['key']}}">{{$item['name']}}</option>
                                     @endforeach
                                 </select>
                             </div>
