@@ -17,6 +17,7 @@
                         <input type="text" placeholder="本程序" value="{{$acupoint['new']}}" name="new[acupoint]" class="form-control" disabled>
                     </div>
                     <span class="help-block">1、经络关联的课程，需重新设置； 点击进入<a href="{{ yzWebUrl('plugin.minapp-content.admin.meridian.index') }}" target="_blank">经络列表</a></span>
+                    <span class="help-block">2、穴位关联的文章、商品，需重新设置； 点击进入<a href="{{ yzWebUrl('plugin.minapp-content.admin.acupoint.index') }}" target="_blank">穴位列表</a></span>
                 </div>
                 <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
                     <div class="input-group">
