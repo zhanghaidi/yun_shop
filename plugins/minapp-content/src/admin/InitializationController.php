@@ -5,8 +5,12 @@ namespace Yunshop\MinappContent\admin;
 use app\common\components\BaseController;
 use Yunshop\MinappContent\models\AcupointMerModel;
 use Yunshop\MinappContent\models\AcupointModel;
+use Yunshop\MinappContent\models\ArticleCategoryModel;
+use Yunshop\MinappContent\models\ArticleModel;
+use Yunshop\MinappContent\models\LabelModel;
 use Yunshop\MinappContent\models\MeridianModel;
 use Yunshop\MinappContent\models\QuestionBankModel;
+use Yunshop\MinappContent\models\SomatoTypeModel;
 use Yunshop\MinappContent\services\MinappContentService;
 
 class InitializationController extends BaseController
@@ -15,17 +19,52 @@ class InitializationController extends BaseController
 
     public function index()
     {
+        $oldMeridian = MeridianModel::where('uniacid', $this->sourceAppid)->count();
+        $newMeridian = MeridianModel::where('uniacid', \YunShop::app()->uniacid)->count();
+
         $oldAcupoint = AcupointModel::where('uniacid', $this->sourceAppid)->count();
         $newAcupoint = AcupointModel::where('uniacid', \YunShop::app()->uniacid)->count();
+
+        $oldArticleCategory = ArticleCategoryModel::where('uniacid', $this->sourceAppid)->count();
+        $newArticleCategory = ArticleCategoryModel::where('uniacid', \YunShop::app()->uniacid)->count();
+
+        $oldArticle = ArticleModel::where('uniacid', $this->sourceAppid)->count();
+        $newArticle = ArticleModel::where('uniacid', \YunShop::app()->uniacid)->count();
+
+        $oldLabel = LabelModel::where('uniacid', $this->sourceAppid)->count();
+        $newLabel = LabelModel::where('uniacid', \YunShop::app()->uniacid)->count();
+
+        $oldSomato = SomatoTypeModel::where('uniacid', $this->sourceAppid)->count();
+        $newSomato = SomatoTypeModel::where('uniacid', \YunShop::app()->uniacid)->count();
 
         $oldQuestion = QuestionBankModel::where('uniacid', $this->sourceAppid)->count();
         $newQuestion = QuestionBankModel::where('uniacid', \YunShop::app()->uniacid)->count();
 
         return view('Yunshop\MinappContent::admin.init.index', [
             'pluginName' => MinappContentService::get('name'),
+            'meridian' => [
+                'old' => $oldMeridian,
+                'new' => $newMeridian,
+            ],
             'acupoint' => [
                 'old' => $oldAcupoint,
                 'new' => $newAcupoint,
+            ],
+            'article_category' => [
+                'old' => $oldArticleCategory,
+                'new' => $newArticleCategory,
+            ],
+            'article' => [
+                'old' => $oldArticle,
+                'new' => $newArticle,
+            ],
+            'label' => [
+                'old' => $oldLabel,
+                'new' => $newLabel,
+            ],
+            'somato' => [
+                'old' => $oldSomato,
+                'new' => $newSomato,
             ],
             'question' => [
                 'old' => $oldQuestion,
@@ -288,5 +327,205 @@ class InitializationController extends BaseController
         }
 
         return $this->successJson('经络、穴位信息迁移完成了');
+    }
+
+    public function article()
+    {
+        if (\YunShop::app()->uniacid == $this->sourceAppid) {
+            return $this->errorJson('养居益自身项目数据，无需同步');
+        }
+        $update = (int) \YunShop::request()->update;
+        if ($update === 1) {
+            $update = true;
+        } else {
+            $update = false;
+        }
+
+        // 文章分类信息迁移
+        $sourceRs = ArticleCategoryModel::where('uniacid', $this->sourceAppid)->get()->toArray();
+
+        $nowRs = ArticleCategoryModel::select('id', 'name')
+            ->where('uniacid', \YunShop::app()->uniacid)->get()->toArray();
+
+        $insertData = [];
+        $nowTime = time();
+        foreach ($sourceRs as $v) {
+            $tempId = 0;
+            foreach ($nowRs as $v1) {
+                if ($v['name'] != $v1['name']) {
+                    continue;
+                }
+                $tempId = $v1['id'];
+                break;
+            }
+
+            if ($tempId > 0) {
+                if ($update == true) {
+                    ArticleCategoryModel::where([
+                        'id' => $tempId,
+                        'uniacid' => \YunShop::app()->uniacid,
+                    ])->limit(1)->update([
+                        'name' => $v['name'],
+                        'image' => $v['image'],
+                        'jumpurl' => $v['jumpurl'],
+                        'status' => $v['status'],
+                        'list_order' => $v['list_order'],
+                        'is_href' => $v['is_href'],
+                        'type' => $v['type'],
+                    ]);
+                }
+
+                continue;
+            }
+            $insertData[] = [
+                'uniacid' => \YunShop::app()->uniacid,
+                'name' => $v['name'],
+                'image' => $v['image'],
+                'jumpurl' => $v['jumpurl'],
+                'status' => $v['status'],
+                'list_order' => $v['list_order'],
+                'is_href' => $v['is_href'],
+                'create_time' => $nowTime,
+                'type' => $v['type'],
+            ];
+        }
+        if (isset($insertData[0])) {
+            ArticleCategoryModel::insert($insertData);
+        }
+
+        // 文章分类ID对照关系
+        $nowRs = ArticleCategoryModel::select('id', 'name')
+            ->where('uniacid', \YunShop::app()->uniacid)->get()->toArray();
+        $categoryRelationRs = [];
+        foreach ($sourceRs as $v1) {
+            foreach ($nowRs as $v2) {
+                if ($v1['name'] != $v2['name']) {
+                    continue;
+                }
+                $categoryRelationRs[$v1['id']] = $v2['id'];
+                break;
+            }
+        }
+        if (count($sourceRs) != count($categoryRelationRs)) {
+            return $this->errorJson('文章分类信息迁移出错了');
+        }
+
+        // 穴位ID对照关系
+        $sourceRs = AcupointModel::where('uniacid', $this->sourceAppid)->get()->toArray();
+
+        $nowRs = AcupointModel::select('id', 'name')
+            ->where('uniacid', \YunShop::app()->uniacid)->get()->toArray();
+        $acupointRelationRs = [];
+        foreach ($sourceRs as $v1) {
+            foreach ($nowRs as $v2) {
+                if ($v1['name'] != $v2['name']) {
+                    continue;
+                }
+                $acupointRelationRs[$v1['id']] = $v2['id'];
+                break;
+            }
+        }
+        if (count($sourceRs) != count($acupointRelationRs)) {
+            return $this->errorJson('穴位信息迁移出错了');
+        }
+
+        // 文章信息迁移
+        $sourceRs = ArticleModel::where('uniacid', $this->sourceAppid)->get()->toArray();
+
+        $nowRs = ArticleModel::select('id', 'title', 'description')
+            ->where('uniacid', \YunShop::app()->uniacid)->get()->toArray();
+
+        $insertData = [];
+        $nowTime = time();
+        foreach ($sourceRs as $v) {
+            $tempId = 0;
+            foreach ($nowRs as $v1) {
+                if ($v['name'] != $v1['name']) {
+                    continue;
+                }
+                if ($v['description'] != $v1['description']) {
+                    continue;
+                }
+                $tempId = $v1['id'];
+                break;
+            }
+
+            if (!isset($categoryRelationRs[$v['cateid']])) {
+                continue;
+            }
+
+            $v['recommend_acupotion'] = explode(',', $v['recommend_acupotion']);
+            $v['recommend_acupotion'] = array_values(array_unique(array_filter($v['recommend_acupotion'])));
+            $newAcupoint = [];
+            foreach ($v['recommend_acupotion'] as $v2) {
+                if (!isset($acupointRelationRs[$v2])) {
+                    continue 2;
+                }
+
+                $newAcupoint[] = $acupointRelationRs[$v2];
+            }
+
+            if ($tempId > 0) {
+                if ($update == true) {
+                    ArticleModel::where([
+                        'id' => $tempId,
+                        'uniacid' => \YunShop::app()->uniacid,
+                    ])->limit(1)->update([
+                        'cateid' => $categoryRelationRs[$v['cateid']],
+                        'title' => $v['title'],
+                        'description' => $v['description'],
+                        'share_img' => $v['share_img'],
+                        'content' => $v['content'],
+                        'thumb' => $v['thumb'],
+                        'images' => $v['images'],
+                        'author' => $v['author'],
+                        'list_order' => $v['list_order'],
+                        'status' => $v['status'],
+                        'video' => $v['video'],
+                        'is_discuss' => $v['is_discuss'],
+                        'ture_option' => $v['ture_option'],
+                        'discuss_title' => $v['discuss_title'],
+                        'discuss_answer_description' => $v['discuss_answer_description'],
+                        'discuss_start' => $v['discuss_start'],
+                        'end_time' => $v['end_time'],
+                        'to_type_id' => $v['to_type_id'],
+                        'recommend_acupotion' => implode(',', $newAcupoint),
+                        'is_hot' => $v['is_hot'],
+                    ]);
+                }
+
+                continue;
+            }
+            $insertData[] = [
+                'cateid' => $categoryRelationRs[$v['cateid']],
+                'uniacid' => \YunShop::app()->uniacid,
+                'title' => $v['title'],
+                'description' => $v['description'],
+                'share_img' => $v['share_img'],
+                'content' => $v['content'],
+                'thumb' => $v['thumb'],
+                'images' => $v['images'],
+                'uid' => $v['uid'],
+                'author' => $v['author'],
+                'list_order' => $v['list_order'],
+                'status' => $v['status'],
+                'create_time' => $nowTime,
+                'video' => $v['video'],
+                'is_discuss' => $v['is_discuss'],
+                'ture_option' => $v['ture_option'],
+                'discuss_title' => $v['discuss_title'],
+                'discuss_answer_description' => $v['discuss_answer_description'],
+                'discuss_start' => $v['discuss_start'],
+                'end_time' => $v['end_time'],
+                'to_type_id' => $v['to_type_id'],
+                'recommend_acupotion' => implode(',', $newAcupoint),
+                'is_hot' => $v['is_hot'],
+            ];
+        }
+        if (isset($insertData[0])) {
+            ArticleModel::insert($insertData);
+        }
+
+        return $this->successJson('文章、分类信息迁移完成了');
     }
 }
