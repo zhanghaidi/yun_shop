@@ -461,18 +461,20 @@ class OrderService
                 print curl_error($ch);
             }
             curl_close($ch);
-            \Log::info('----聚水潭'.$type.'请求success---'.$url, $data);
+            \Log::info('----聚水潭'.$type.'请求信息---'.$url, $data);
 
-            DB::table('yz_order_jushuitan_log')->insert(
+            $res = DB::table('yz_order_jushuitan_log')->insert(
                 ['order_sn' => $data[0]['so_id'], 'post_params' => $post_data, 'action' => $action, 'type' => $type, 'status' =>1,'res_content' => $result, 'create_time' => date('Y-m-d H:i:s', time())]
             );
+            \Log::info('---请求返回结果----'.$res, $result);
             return json_decode($result, true);
 
         } catch (Exception $e) {
-            \Log::info('----聚水潭'.$type.'请求失败---', $e);
-            DB::table('yz_order_jushuitan_log')->insert(
+
+            $res = DB::table('yz_order_jushuitan_log')->insert(
                 ['order_sn' => $data[0]['so_id'], 'post_params' => $post_data, 'action' => $action, 'type' => $type, 'status' => -1,'res_content' => $e, 'create_time' => date('Y-m-d H:i:s', time())]
             );
+            \Log::info('----聚水潭'.$type.'请求失败---'.$res, $e);
             return null;
         }
     }
