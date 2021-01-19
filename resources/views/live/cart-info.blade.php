@@ -148,12 +148,12 @@
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label" >跳转H5或者小程序</label>
                             <div class="col-sm-9 col-xs-12">
                                 <select name="info[jump_type]" class="form-control" id="sel_h5_mini">
-                                    <option @if(!empty($info['appid'])) selected @endif value="1" >小程序</option>
-                                    <option @if(empty($info['appid'])) selected @endif value="2" >H5网页</option>
+                                    <option @if($info['jump_type'] == 1) selected @endif value="1" >小程序</option>
+                                    <option @if($info['jump_type'] == 2) selected @endif value="2" >H5网页</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group news_link-div" @if(!empty($info['appid'])) style="display: none" @endif>
+                        <div class="form-group news_link-div" @if($info['jump_type'] == 1) style="display: none" @endif>
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label" >跳转链接地址</label>
                             <div class="col-sm-9 col-xs-12">
                                 <div class="input-group ">
@@ -165,17 +165,18 @@
                                 {{--<input type="text"  id="title" name="temp[link]"  class="form-control" value="{{$temp['link']}}" placeholder="模版名称，例：订单完成模板（自定义）" data-rule-required='true' />--}}
                             </div>
                         </div>
-                        <div class="form-group miniprogram-div" @if(empty($info['appid'])) style="display: none" @endif>
+                        <div class="form-group miniprogram-div" @if($info['jump_type'] == 2) style="display: none" @endif>
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label" >小程序APPID</label>
                             <div class="col-sm-9 col-xs-12">
                                 <select name="info[appid]" class="form-control">
+                                    <option  value=""> == 请选择小程序 == </option>
                                     @foreach(Illuminate\Support\Facades\DB::table('account_wxapp')->select('uniacid','key','name')->orderBy('uniacid','desc')->get() as $item)
-                                        <option @if((empty($temp['appid']) && $item['uniacid'] == 45) || (!empty($temp['appid']) && $temp['appid'] == $item['key'])) selected @endif value="{{$item['key']}}">{{$item['name']}}</option>
+                                        <option @if(!empty($info['appid']) && $info['appid'] == $item['key']) selected @endif value="{{$item['key']}}">{{$item['name']}}</option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group miniprogram-div" @if(empty($info['appid'])) style="display: none" @endif>
+                        <div class="form-group miniprogram-div" @if($info['jump_type'] == 2) style="display: none" @endif>
                             <label class="col-xs-12 col-sm-3 col-md-2 control-label" >小程序页面路径</label>
                             <div class="col-sm-9 col-xs-12">
                                 <input class="form-control" type="text" data-id="PAL-00012" placeholder="请填写小程序页面路径" value="{{ $info['pagepath'] }}" name="info[pagepath]">
