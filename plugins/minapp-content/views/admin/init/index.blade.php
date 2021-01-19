@@ -11,7 +11,7 @@
             <div class="row">
                 <div class="form-group col-xs-12 col-sm-4 col-md-3 col-lg-3">
                     <div class="input-group">
-                        <div class="input-group-addon">经络、穴位</div>
+                        <div class="input-group-addon">穴位</div>
                         <input type="text" placeholder="养居益" value="{{$acupoint['old']}}" name="old[acupoint]" class="form-control" disabled>
                         <div class="input-group-addon"> VS </div>
                         <input type="text" placeholder="本程序" value="{{$acupoint['new']}}" name="new[acupoint]" class="form-control" disabled>
