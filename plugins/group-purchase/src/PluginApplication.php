@@ -19,7 +19,7 @@ class PluginApplication extends \app\common\services\PluginApplication
 
     protected function setMenuConfig()
     {
-        Menu::current()->setPluginMenu('plugins_menu.group_purchase', [
+        Menu::current()->setPluginMenu('group-purchase', [
             'name'              => '拼团',
             'type'              => 'api',
             'url'               => 'plugin.group-purchase.admin.purchase-set.edit',
