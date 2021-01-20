@@ -1,0 +1,10 @@
+{
+  "name": "help-user-buying",
+  "version": "1.0.3",
+  "title": "代客下单",
+  "description": "帮助用户下单",
+  "author": "blank",
+  "url": "https://www.yunzshop.com/",
+  "namespace": "Yunshop\\HelpUserBuying",
+  "config": "config.tpl"
+}

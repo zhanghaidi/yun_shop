@@ -1,0 +1,10 @@
+{
+  "name": "lease-toy",
+  "version": "1.0.11",
+  "title": "租赁",
+  "description": "租赁插件平台可设置多样租赁商品，自定义租赁规则",
+  "author": "blank",
+  "url": "http://www.yunzshop.com",
+  "namespace": "Yunshop\\LeaseToy",
+  "config": "config.tpl"
+}

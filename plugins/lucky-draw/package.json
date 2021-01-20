@@ -1,0 +1,10 @@
+{
+  "name": "lucky-draw",
+  "version": "1.0.4",
+  "title": "幸运大抽奖",
+  "description": "幸运大抽奖",
+  "author": "",
+  "url": "",
+  "namespace": "Yunshop\\LuckyDraw",
+  "config": "config.tpl"
+}

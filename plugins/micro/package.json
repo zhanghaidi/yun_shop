@@ -1,0 +1,10 @@
+{
+  "name": "micro",
+  "version": "1.0.68",
+  "title": "微店",
+  "description": "会员购买店主等级获得店主身份，选择商品生成专属微店，店主分享其微店链接，消费者进入购买，店主即可获得对应等级的分红奖励。",
+  "author": "芸众",
+  "url": "",
+  "namespace": "Yunshop\\Micro",
+  "config": "config.tpl"
+}

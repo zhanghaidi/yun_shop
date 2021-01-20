@@ -1,0 +1,10 @@
+{
+  "name": "goods-package",
+  "version": "1.0.3",
+  "title": "商品套餐",
+  "description": "商品套餐插件",
+  "author": "芸众",
+  "url": "http://www.yunzshop.com",
+  "namespace": "Yunshop\\GoodsPackage",
+  "config": "config.tpl"
+}
