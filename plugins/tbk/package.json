@@ -1,0 +1,10 @@
+{
+  "name": "tbk",
+  "version": "1.0.1",
+  "title": "淘宝客",
+  "description": "淘宝客",
+  "author": "芸众",
+  "url": "http://www.yunzshop.com",
+  "namespace": "Yunshop\\Tbk",
+  "config": "config.tpl"
+}
