@@ -5,7 +5,9 @@
 
 <div class="rightlist">
     <div class="panel panel-default">
-        <div class="panel-heading">养居益内容数据导入本程序</div>
+        <div class="panel-heading">
+            <h3>养居益内容数据导入本程序<small>第二次及以后导入，建议勾选“覆盖更新”，该操作不会覆盖手工设置的关联数据</small></h3>
+        </div>
         <div class="panel-body">
 
             <div class="row">
@@ -111,7 +113,7 @@
                     </div>
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                    <span class="help-block">1、经络关联的课程，需手工设置； 点击进入<a href="{{ yzWebUrl('plugin.minapp-content.admin.meridian.index') }}" target="_blank">经络列表</a></span>
+                    <span class="help-block">1、体质关联的商品，需手工设置； 点击进入<a href="{{ yzWebUrl('plugin.minapp-content.admin.somato-type.index') }}" target="_blank">体质列表</a></span>
                 </div>
             </div>
 
@@ -196,6 +198,46 @@ $(function () {
         $.get(_url, function(res) {
             if (res.result == 1) {
                 util.message('文章分类、文章数据同步成功', '', 'success');
+            } else {
+                util.message(res.msg, '', 'warning');
+            }
+        });
+    });
+
+    $('#question').on('click', function(){
+        $('#question').attr('disabled', true);
+        setTimeout(function(){
+            $('#question').attr('disabled', false);
+        }, 1000);
+
+        _update = $('input[name="update[question]"]').is(":checked");
+        if (_update == true && !confirm('选中覆盖更新，将会把艾居益应用中，关于体质的最新更改，同步入本应用，是否确认？')) {
+            util.message('数据同步被中止', '', 'warning');
+            return false;
+        }
+
+        _old = $('input[name="old[acupoint]"]').val();
+        _new = $('input[name="new[acupoint]"]').val();
+        if (_new < _old) {
+            util.message('穴位数据尚未同步，请先同步经络穴位', '', 'warning');
+            return false;
+        }
+
+        _old = $('input[name="old[article]"]').val();
+        _new = $('input[name="new[article]"]').val();
+        if (_new < _old / 2) {
+            util.message('文章数据尚未同步，请先同步文章及其分类', '', 'warning');
+            return false;
+        }
+
+        _url = "{{ yzWebUrl('plugin.minapp-content.admin.initialization.question') }}";
+        _url = _url.replace(/&amp;/g, '&');
+        if (_update == true) {
+            _url += '&update=1';
+        }
+        $.get(_url, function(res) {
+            if (res.result == 1) {
+                util.message('症状、体质、题库数据同步成功', '', 'success');
             } else {
                 util.message(res.msg, '', 'warning');
             }
