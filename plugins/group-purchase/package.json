@@ -1,0 +1,10 @@
+{
+  "name": "group-purchase",
+  "version": "1.0.7",
+  "title": "拼团",
+  "description": "拼团插件，对接拼团平台，接收拼团平台的数据",
+  "author": "芸众",
+  "url": "http://www.yunzshop.com/",
+  "namespace": "Yunshop\\GroupPurchase",
+  "config": "config.tpl"
+}

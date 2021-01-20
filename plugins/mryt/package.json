@@ -1,0 +1,10 @@
+{
+  "name": "mryt",
+  "version": "1.0.37",
+  "title": "mryt",
+  "description": "mryt",
+  "author": "芸众",
+  "url": "https://www.yunzshop.com/",
+  "namespace": "Yunshop\\Mryt",
+  "config": "config.tpl"
+}

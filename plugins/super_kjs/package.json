@@ -1,0 +1,10 @@
+{
+  "name": "super_kjs",
+  "version": "1.0.7",
+  "title": "超级砍价",
+  "description": "做最优质、最好的超级砍价商城！",
+  "author": "芸众",
+  "url": "http://www.yunzshop.com/",
+  "namespace": "Yunshop\\SuperKjs",
+  "config": "config.tpl"
+}

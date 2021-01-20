@@ -1,0 +1,10 @@
+{
+  "name": "material-center",
+  "version": "1.0.6",
+  "title": "素材中心",
+  "description": "",
+  "author": "",
+  "url": "",
+  "namespace": "Yunshop\\MaterialCenter",
+  "config": "config.tpl"
+}

@@ -1,0 +1,10 @@
+{
+  "name": "fx_activity",
+  "version": "1.0.2",
+  "title": "活动报名",
+  "description": "",
+  "author": "芸众",
+  "url": "http://www.yunzshop.com/",
+  "namespace": "Yunshop\\FxActivity",
+  "config": "config.tpl"
+}

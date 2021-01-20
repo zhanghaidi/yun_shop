@@ -1,0 +1,10 @@
+{
+  "name": "community",
+  "version": "1.0.4",
+  "title": "圈子社区",
+  "description": "同步会员等级到圈子社区中",
+  "author": "芸众",
+  "url": "http://www.yunzshop.com",
+  "namespace": "Yunshop\\Community",
+  "config": "config.tpl"
+}
