@@ -16,6 +16,7 @@ class CreateImsYzFxActivitySettingTable extends Migration
         if (!Schema::hasTable('yz_fx_activity_setting')) {
             Schema::create('yz_fx_activity_setting', function (Blueprint $table) {
                 $table->increments('id');
+                $table->integer('uniacid')->default(0);
                 $table->integer('goods_id')->nullable();
                 $table->integer('is_open')->nullable();
                 $table->integer('settlememt_day')->nullable();
