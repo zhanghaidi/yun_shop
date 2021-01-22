@@ -10,8 +10,16 @@ namespace app\backend\modules\tracking\models;
 
 use Illuminate\Database\Eloquent\Model;
 
+use app\common\scopes\UniacidScope;
+
 class AppletsliveReplay extends Model
 {
+    public static function boot()
+    {
+        parent::boot();
+        self::addGlobalScope(new UniacidScope);
+    }
+
     //小程序直播插件 课程课时表
     protected $table = 'yz_appletslive_replay';
 

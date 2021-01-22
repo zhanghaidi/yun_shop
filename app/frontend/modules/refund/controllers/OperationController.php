@@ -17,6 +17,7 @@ use app\frontend\modules\refund\services\RefundMessageService;
 use app\frontend\modules\refund\services\RefundOperationService;
 use Illuminate\Support\Facades\DB;
 use app\frontend\modules\order\services\OrderService;
+use app\common\facades\Setting;
 
 class OperationController extends ApiController
 {
@@ -39,6 +40,12 @@ class OperationController extends ApiController
         RefundOperationService::refundSend();
 
         if (!empty($request['refund_id'])) {
+            $jushuitanSetRs = Setting::get('shop.order');
+            $jushuitanSetRs = array_filter($jushuitanSetRs);
+            if (!isset($jushuitanSetRs['jushuitan_shop_id'])){
+                return $this->errorJson('配置错误');
+            }
+
             $data = Db::table('yz_order_refund')->where(['id' => $request['refund_id']])->first();
             $order_data = Db::table('yz_order')->where(['id' => $data['order_id']])->first();
             $array[] =
@@ -50,7 +57,7 @@ class OperationController extends ApiController
                 ];
             $params = array(
                 [
-                    "shop_id" => 10820686,
+                    "shop_id" => $jushuitanSetRs['jushuitan_shop_id'],
                     "outer_as_id" => $data['refund_sn'],
                     "so_id" => $order_data['order_sn'],
                     "type" => '普通退货',

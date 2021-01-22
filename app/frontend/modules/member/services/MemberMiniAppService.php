@@ -55,14 +55,9 @@ class MemberMiniAppService extends MemberService
            
         
         $data = '';  //json
+        $pc = new \WXBizDataCrypt($min_set['key'], $user_info['session_key']);
+        $errCode = $pc->decryptData($para['encryptedData'], $para['iv'], $data);
 
-        if (!empty($para['info'])) {
-            
-            $json_data = json_decode($para['info'], true);
-
-            $pc = new \WXBizDataCrypt($min_set['key'], $user_info['session_key']);
-            $errCode = $pc->decryptData($json_data['encryptedData'], $json_data['iv'], $data);
-        }
         \Log::debug('-------------min errcode-------', [$errCode]);
         if ($errCode == 0) {
             $json_user = json_decode($data, true);
@@ -257,5 +252,132 @@ class MemberMiniAppService extends MemberService
         );
 
         MemberMiniAppModel::where('mini_app_id', $fan->mini_app_id)->update($record);
+    }
+
+
+
+
+
+
+
+
+    //fixby-zhd-改写小程序登录接口 至此以下方法全部为改写
+    //code 获取sessionkey接口
+
+    public function wxCode2SessionKey($code, $app_type)
+    {
+        $uniacid = \YunShop::app()->uniacid;
+        $min_set = \Setting::get('plugin.min_app');
+        if (is_null($min_set) || 0 == $min_set['switch']) {
+
+            $data = array(
+                'errno' => 1,
+                'msg' => '未开启小程序'
+            );
+            return $data;
+
+        }
+
+        if($app_type == 'shop' ){
+            if(empty($min_set['shop_key'] || $min_set['shop_secret'])){
+                $data = array(
+                    'errno' => 1,
+                    'msg' => '商城小程序未开启'
+                );
+                return $data;
+
+            }
+
+            $postData = array(
+                'appid' => $min_set['shop_key'],
+                'secret' => $min_set['shop_secret'],
+                'js_code' => $code,
+                'grant_type' => 'authorization_code',
+            );
+        }else{
+            $postData = array(
+                'appid' => $min_set['key'],
+                'secret' => $min_set['secret'],
+                'js_code' => $code,
+                'grant_type' => 'authorization_code',
+            );
+        }
+
+        $url = 'https://api.weixin.qq.com/sns/jscode2session'; //根据code 调用微信jscode2session接口获取用户session_key // https://api.weixin.qq.com/sns/jscode2session?appid=APPID&secret=SECRET&js_code=JSCODE&grant_type=authorization_code
+        $res = \Curl::to($url)
+            ->withData($postData)
+            ->asJsonResponse(true)
+            ->get();
+
+        if (empty($res)) {
+            //返回数据失败
+            $data = array(
+                'errno' => 1,
+                'msg' => 'wx服务器内部错误'
+            );
+            return $data;
+        }
+
+        //是否有错误码
+        $loginFail = array_key_exists('errcode', $res);
+        if ($loginFail) {
+            \Log::debug('-------------min sessionkeyerrcode-------', [$res]);
+            $data = array(
+                'errno' => 1,
+                'msg' => 'error:' . $res['errmsg']
+            );
+            return $data;
+        }
+
+        $data = array(
+            'errno' => 0,
+            'msg' => 'success',
+            'res' => $res
+        );
+        return $data;
+    }
+
+
+    //解密用户信息
+    public function wxDecodeInfo($session_key, $encryptedData, $iv, $app_type)
+    {
+        include dirname(__FILE__ ) . "/../vendors/wechat/wxBizDataCrypt.php";
+
+        $min_set = \Setting::get('plugin.min_app');
+
+        //解密信息
+        if($app_type == 'shop' ){
+            $appid = $min_set['shop_key']; //商城小程序appid
+        }else{
+            $appid = $min_set['key']; //养居益小程序
+        }
+
+
+        $data = ''; //json
+        $pc = new \WXBizDataCrypt($appid, $session_key);
+        $errCode = $pc->decryptData($encryptedData, $iv, $data);
+        \Log::debug('-------------min errcode-------', [$errCode]);
+
+        $data = json_decode($data, true);
+
+        //解密成功
+        if ($errCode == 0) {
+            $data = array(
+                'errno' => 0,
+                'msg' => '解密成功',
+                'res' => $data
+            );
+            return $data;
+        } else {
+            $data = array(
+                'errno' => 1,
+                'msg' => '解密用户信息失败',
+                'res' => [
+                    'errCode' => $errCode,
+                    'data' => $data
+                ]
+            );
+            return $data;
+        }
     }
 }

@@ -1,0 +1,11 @@
+{
+  "name": "minapp-content",
+  "version": "1.0.0",
+  "title": "小程序内容管理",
+  "description": "管理原主小程序的内容:穴位、文章、社区等",
+  "author": "芸众",
+  "url": "http://www.yunzshop.com",
+  "namespace": "Yunshop\\MinappContent",
+  "config": "config.tpl"
+
+}

@@ -30,7 +30,7 @@ use Illuminate\Support\Facades\Cache;
  */
 class CacheService
 {
-    protected static $uniacid = 45;
+    protected static $uniacid;
 
     public static $cache_keys = [
         'recorded.roomlist' => 'appletslive_api_recorded_roomlist',
@@ -76,17 +76,21 @@ class CacheService
      */
     public static function setRecordedRoomList($page, $limit)
     {
+        $uniacid = \YunShop::app()->uniacid;
+
         $page_key = "$limit|$page";
         $cache_key = self::$cache_keys['recorded.roomlist'];
         $cache_val = Cache::get($cache_key);
 
         $offset = ($page - 1) * $limit;
         $total = DB::table('yz_appletslive_room')
+            ->where('uniacid', $uniacid)
             ->where('type', 1)
             ->where('delete_time', 0)
             ->count();
         $list = DB::table('yz_appletslive_room')
             ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag', 'buy_type', 'goods_id' ,'ios_open', 'ios_goods_id','expire_time', 'display_type')
+            ->where('uniacid', $uniacid)
             ->where('type', 1)
             ->where('delete_time', 0)
             ->whereIn('display_type', [1, 2])
@@ -131,10 +135,13 @@ class CacheService
      */
     public static function setRoomInfo($room_id)
     {
+        $uniacid = \YunShop::app()->uniacid;
+
         $cache_key = self::$cache_keys['recorded.roominfo'];
         $cache_val = Cache::get($cache_key);
         $info = DB::table('yz_appletslive_room')
             ->select('id', 'type', 'roomid', 'name', 'anchor_name', 'cover_img', 'start_time', 'end_time','live_status', 'desc', 'buy_type', 'goods_id' ,'ios_open', 'ios_goods_id','expire_time', 'display_type')
+            ->where('uniacid', $uniacid)
             ->where('id', $room_id)
             ->first();
         if (!$cache_val) {
@@ -194,17 +201,19 @@ class CacheService
      */
     public static function setRoomNum($room_id, $field = null, $is_dec = false)
     {
+        $uniacid = \YunShop::app()->uniacid;
+
         if (is_array($room_id)) {
-            $record = DB::table('yz_appletslive_room')->whereIn('id', $room_id)->get();
+            $record = DB::table('yz_appletslive_room') ->where('uniacid', $uniacid)->whereIn('id', $room_id)->get();
         } else {
             if ($field !== null) {
                 if ($is_dec) {
-                    DB::table('yz_appletslive_room')->where('id', $room_id)->decrement($field);
+                    DB::table('yz_appletslive_room')->where('uniacid', $uniacid)->where('id', $room_id)->decrement($field);
                 } else {
-                    DB::table('yz_appletslive_room')->where('id', $room_id)->increment($field);
+                    DB::table('yz_appletslive_room')->where('uniacid', $uniacid)->where('id', $room_id)->increment($field);
                 }
             }
-            $record = DB::table('yz_appletslive_room')->where('id', $room_id)->first();
+            $record = DB::table('yz_appletslive_room')->where('uniacid', $uniacid)->where('id', $room_id)->first();
         }
 
         $cache_key = 'api_live_room_num';
@@ -267,13 +276,15 @@ class CacheService
      */
     public static function setRoomSubscription($room_id, $user_id = 0)
     {
+        $uniacid = \YunShop::app()->uniacid;
+
         $cache_key = "api_live_room_subscription|$room_id";
         $cache_val = Cache::get($cache_key);
         $cache_refresh = false;
         if (!$cache_val) {
             $cache_refresh = true;
             $cache_val = DB::table('yz_appletslive_room_subscription')
-                ->where('uniacid', self::$uniacid)
+                ->where('uniacid', $uniacid)
                 ->where('room_id', $room_id)
                 ->where('status', 1) // 0 取消订阅 1 订阅 fixby-wk-20201005 订阅状态
                 ->orderBy('id', 'desc')
@@ -329,13 +340,15 @@ class CacheService
      */
     public static function setUserSubscription($user_id, $room_id = 0)
     {
+        $uniacid = \YunShop::app()->uniacid;
+
         $cache_key = "api_live_user_subscription|$user_id";
         $cache_val = Cache::get($cache_key);
         $cache_refresh = false;
         if (!$cache_val) {
             $cache_refresh = true;
             $cache_val = DB::table('yz_appletslive_room_subscription')
-                ->where('uniacid', self::$uniacid)
+                ->where('uniacid', $uniacid)
                 ->where('user_id', $user_id)
                 ->where('type', 1)
                 ->where('status', 1) //0 取消订阅 1 订阅 fixby-wk-20201005 订阅状态
@@ -374,10 +387,12 @@ class CacheService
      */
     public static function setRoomComment($room_id)
     {
+        $uniacid = \YunShop::app()->uniacid;
+
         $cache_key = "api_live_room_comment|$room_id";
         $comment = DB::table('yz_appletslive_room_comment')
             ->select('id', 'user_id', 'content', 'create_time', 'parent_id', 'is_reply')
-            ->where('uniacid', self::$uniacid)
+            ->where('uniacid', $uniacid)
             ->where('room_id', $room_id)
             ->where('del_sta', 0)
             ->orderBy('id', 'desc')
@@ -452,10 +467,13 @@ class CacheService
      */
     public static function setRoomReplays($room_id)
     {
+        $uniacid = \YunShop::app()->uniacid;
+
         $cache_key = self::$cache_keys['recorded.roomreplays'];
         $cache_val = Cache::get($cache_key);
         $list = DB::table('yz_appletslive_replay')
             ->select('id', 'type', 'title', 'cover_img', 'publish_time', 'media_url', 'time_long')
+            ->where('uniacid', $uniacid)
             ->where('rid', $room_id)
             ->where('delete_time', 0)
             ->orderBy('sort', 'desc')
@@ -502,10 +520,13 @@ class CacheService
      */
     public function setReplayInfo($replay_id)
     {
+        $uniacid = \YunShop::app()->uniacid;
+
         $cache_key = self::$cache_keys['recorded.roomreplayinfo'];
         $cache_val = Cache::get($cache_key);
         $info = DB::table('yz_appletslive_replay')
             ->select('id', 'rid', 'type', 'title', 'intro', 'cover_img', 'media_url', 'publish_time', 'time_long')
+            ->where('uniacid', $uniacid)
             ->where('id', $replay_id)
             ->first();
         $info['minute'] = floor($info['time_long'] / 60);
@@ -570,12 +591,15 @@ class CacheService
      */
     public static function setReplayNum($replay_id, $field = null, $user_id = 0, $is_dec = false)
     {
+        $uniacid = \YunShop::app()->uniacid;
+
         $watch_num = 0;
         $num_table = 'yz_appletslive_replay';
         if (is_array($replay_id)) {
-            $num_record = DB::table($num_table)->whereIn('id', $replay_id)->get();
+            $num_record = DB::table($num_table)->where('uniacid',$uniacid)->whereIn('id', $replay_id)->get();
             $watch_record = DB::table('yz_appletslive_replay_watch')
                 ->select('replay_id', DB::raw('COUNT(user_id) as watch_num'))
+                ->where('uniacid',$uniacid)
                 ->whereIn('replay_id', $replay_id)
                 ->groupBy('replay_id')
                 ->get()->toArray();
@@ -583,9 +607,9 @@ class CacheService
             $watch_table = 'yz_appletslive_replay_watch';
             if ($field !== null) {
                 if ($field == 'watch_num') {
-                    if (!DB::table($watch_table)->where('replay_id', $replay_id)->where('user_id', $user_id)->first()) {
+                    if (!DB::table($watch_table)->where('uniacid',$uniacid)->where('replay_id', $replay_id)->where('user_id', $user_id)->first()) {
                         DB::table($watch_table)->insert([
-                            'uniacid' => self::$uniacid,
+                            'uniacid' => $uniacid,
                             'replay_id' => $replay_id,
                             'user_id' => $user_id,
                             'create_time' => time(),
@@ -593,14 +617,14 @@ class CacheService
                     }
                 } else {
                     if ($is_dec) {
-                        DB::table($num_table)->where('id', $replay_id)->decrement($field);
+                        DB::table($num_table)->where('uniacid',$uniacid)->where('id', $replay_id)->decrement($field);
                     } else {
-                        DB::table($num_table)->where('id', $replay_id)->increment($field);
+                        DB::table($num_table)->where('uniacid',$uniacid)->where('id', $replay_id)->increment($field);
                     }
                 }
             }
-            $num_record = DB::table($num_table)->where('id', $replay_id)->first();
-            $watch_num = DB::table($watch_table)->where('replay_id', $replay_id)->count();
+            $num_record = DB::table($num_table)->where('uniacid',$uniacid)->where('id', $replay_id)->first();
+            $watch_num = DB::table($watch_table)->where('uniacid',$uniacid)->where('replay_id', $replay_id)->count();
         }
 
         $cache_key = 'api_live_replay_num';
@@ -668,13 +692,15 @@ class CacheService
      */
     public static function setUserWatch($user_id, $replay_id = 0)
     {
+        $uniacid = \YunShop::app()->uniacid;
+
         $cache_key = "api_live_user_watch|$user_id";
         $cache_val = Cache::get($cache_key);
         $cache_refresh = false;
         if (!$cache_val) {
             $cache_refresh = true;
             $cache_val = DB::table('yz_appletslive_replay_watch')
-                ->where('uniacid', self::$uniacid)
+                ->where('uniacid', $uniacid)
                 ->where('user_id', $user_id)
                 ->pluck('replay_id')->toArray();
         } else {
@@ -711,10 +737,12 @@ class CacheService
      */
     public static function setReplayComment($replay_id)
     {
+        $uniacid = \YunShop::app()->uniacid;
+
         $cache_key = "api_live_replay_comment|$replay_id";
         $comment = DB::table('yz_appletslive_replay_comment')
             ->select('id', 'user_id', 'content', 'create_time', 'parent_id', 'is_reply')
-            ->where('uniacid', self::$uniacid)
+            ->where('uniacid', $uniacid)
             ->where('replay_id', $replay_id)
             ->where('del_sta', 0)
             ->orderBy('id', 'desc')
@@ -797,17 +825,21 @@ class CacheService
      */
     public static function setBrandSaleAlbumList($page, $limit)
     {
+        $uniacid = \YunShop::app()->uniacid;
+
         $page_key = "$limit|$page";
         $cache_key = self::$cache_keys['brandsale.albumlist'];
         $cache_val = Cache::get($cache_key);
 
         $offset = ($page - 1) * $limit;
         $total = DB::table('yz_appletslive_room')
+            ->where('uniacid', $uniacid)
             ->where('type', 2)
             ->where('delete_time', 0)
             ->count();
         $list = DB::table('yz_appletslive_room')
             ->select('id', 'name', 'cover_img', 'subscription_num', 'view_num', 'comment_num')
+            ->where('uniacid', $uniacid)
             ->where('type', 2)
             ->where('delete_time', 0)
             ->orderBy('sort', 'desc')
@@ -856,10 +888,13 @@ class CacheService
      */
     public static function setBrandSaleAlbumInfo($album_id)
     {
+        $uniacid = \YunShop::app()->uniacid;
+
         $cache_key = self::$cache_keys['brandsale.albuminfo'];
         $cache_val = Cache::get($cache_key);
         $info = DB::table('yz_appletslive_room')
             ->select('id', 'name', 'desc', 'cover_img', 'subscription_num', 'view_num', 'comment_num')
+            ->where('uniacid', $uniacid)
             ->where('id', $album_id)
             ->first();
         $liverooms = self::getBrandSaleAlbumLiveRooms($album_id);
@@ -925,12 +960,15 @@ class CacheService
      */
     public static function setBrandSaleAlbumLiveRooms($album_id)
     {
+        $uniacid = \YunShop::app()->uniacid;
+
         $cache_key = self::$cache_keys['brandsale.albumliverooms'];
         $cache_val = Cache::get($cache_key);
         $replay_list = DB::table('yz_appletslive_replay')
             ->join('yz_appletslive_liveroom', 'yz_appletslive_replay.room_id', '=', 'yz_appletslive_liveroom.id')
             ->select('yz_appletslive_replay.id', 'yz_appletslive_replay.room_id', 'yz_appletslive_replay.view_num')
             ->where('yz_appletslive_replay.rid', $album_id)
+            ->where('yz_appletslive_replay.uniacid', $uniacid)
             ->where('yz_appletslive_replay.delete_time', 0)
             ->whereIn('yz_appletslive_liveroom.live_status', [101, 102, 103, 105, 107])
             ->orderBy('yz_appletslive_liveroom.start_time', 'desc')
@@ -938,6 +976,7 @@ class CacheService
             ->get()->toArray();
         if (!empty($replay_list)) {
             $liverooms = DB::table('yz_appletslive_liveroom')
+                ->where('uniacid', $uniacid)
                 ->whereIn('id', array_column($replay_list, 'room_id'))
                 ->get()->toArray();
             foreach ($replay_list as $rk => $rv) {
@@ -1024,17 +1063,19 @@ class CacheService
      */
     public static function setBrandSaleAlbumNum($album_id, $field = null, $is_dec = false)
     {
+        $uniacid = \YunShop::app()->uniacid;
+
         if (is_array($album_id)) {
-            $record = DB::table('yz_appletslive_room')->whereIn('id', $album_id)->get();
+            $record = DB::table('yz_appletslive_room')->where('uniacid', $uniacid)->whereIn('id', $album_id)->get();
         } else {
             if ($field !== null) {
                 if ($is_dec) {
-                    DB::table('yz_appletslive_room')->where('id', $album_id)->decrement($field);
+                    DB::table('yz_appletslive_room')->where('uniacid', $uniacid)->where('id', $album_id)->decrement($field);
                 } else {
-                    DB::table('yz_appletslive_room')->where('id', $album_id)->increment($field);
+                    DB::table('yz_appletslive_room')->where('uniacid', $uniacid)->where('id', $album_id)->increment($field);
                 }
             }
-            $record = DB::table('yz_appletslive_room')->where('id', $album_id)->first();
+            $record = DB::table('yz_appletslive_room')->where('uniacid', $uniacid)->where('id', $album_id)->first();
         }
 
         $cache_key = self::$cache_keys['brandsale.albumnum'];
@@ -1099,6 +1140,8 @@ class CacheService
      */
     public static function setBrandSaleAlbumSubscription($album_id, $user_id = 0)
     {
+        $uniacid = \YunShop::app()->uniacid;
+
         $cache_key = self::$cache_keys['brandsale.albumsubscription'];
         $cache_val = Cache::get($cache_key);
         $cache_refresh = false;
@@ -1107,7 +1150,7 @@ class CacheService
                 $cache_val = [];
             }
             $list = DB::table('yz_appletslive_room_subscription')
-                ->where('uniacid', self::$uniacid)
+                ->where('uniacid', $uniacid)
                 ->where('room_id', $album_id)
                 ->where('status', 1) //0 取消订阅 1 订阅 fixby-wk-20201005 订阅状态
                 ->orderBy('id', 'desc')
@@ -1167,6 +1210,8 @@ class CacheService
      */
     public static function setUserBrandSaleAlbumSubscription($user_id, $album_id = 0)
     {
+        $uniacid = \YunShop::app()->uniacid;
+
         $cache_key = self::$cache_keys['brandsale.albumusersubscription'];
         $cache_val = Cache::get($cache_key);
         $cache_refresh = false;
@@ -1175,7 +1220,7 @@ class CacheService
                 $cache_val = [];
             }
             $list = DB::table('yz_appletslive_room_subscription')
-                ->where('uniacid', self::$uniacid)
+                ->where('uniacid', $uniacid)
                 ->where('user_id', $user_id)
                 ->where('type', 2)
                 ->where('status', 1) // 0 取消订阅 1 订阅 fixby-wk-20201005 订阅状态
@@ -1219,12 +1264,14 @@ class CacheService
      */
     public static function setBrandSaleAlbumComment($album_id)
     {
+        $uniacid = \YunShop::app()->uniacid;
+
         $cache_key = self::$cache_keys['brandsale.albumcomment'];
         $cache_val = Cache::get($cache_key);
 
         $comment = DB::table('yz_appletslive_room_comment')
             ->select('id', 'user_id', 'content', 'create_time', 'parent_id', 'is_reply')
-            ->where('uniacid', self::$uniacid)
+            ->where('uniacid', $uniacid)
             ->where('room_id', $album_id)
             ->where('del_sta', 0)
             ->orderBy('id', 'desc')
@@ -1334,14 +1381,16 @@ class CacheService
      */
     public static function setBrandSaleLiveRoomNum($live_room_id, $field = null)
     {
+        $uniacid = \YunShop::app()->uniacid;
+
         $num_table = 'yz_appletslive_replay';
         if (is_array($live_room_id)) {
-            $num_record = DB::table($num_table)->whereIn('id', $live_room_id)->get();
+            $num_record = DB::table($num_table)->where('uniacid',$uniacid)->whereIn('id', $live_room_id)->get();
         } else {
             if ($field !== null) {
-                DB::table($num_table)->where('id', $live_room_id)->increment($field);
+                DB::table($num_table)->where('uniacid',$uniacid)->where('id', $live_room_id)->increment($field);
             }
-            $num_record = DB::table($num_table)->where('id', $live_room_id)->first();
+            $num_record = DB::table($num_table)->where('uniacid',$uniacid)->where('id', $live_room_id)->first();
         }
 
         $cache_key = self::$cache_keys['brandsale.albumliveroomnum'];
@@ -1397,12 +1446,14 @@ class CacheService
      */
     public static function setUserLiveRoomWatch($user_id, $live_room_id = 0)
     {
+        $uniacid = \YunShop::app()->uniacid;
+
         $cache_key = self::$cache_keys['brandsale.albumliveroomnum'];
         $cache_val = Cache::get($cache_key);
         if (!$cache_val) {
             $cache_refresh = true;
             $cache_val = DB::table('yz_appletslive_replay_watch')
-                ->where('uniacid', self::$uniacid)
+                ->where('uniacid', $uniacid)
                 ->where('user_id', $user_id)
                 ->where('type', 2)
                 ->pluck('replay_id')
@@ -1445,12 +1496,15 @@ class CacheService
      */
     public static function setRecordedSelectedRoomList($page, $limit)
     {
+        $uniacid = \YunShop::app()->uniacid;
+
         $page_key = "$limit|$page";
         $cache_key = self::$cache_keys['recorded.roomselectedlist'];
         $cache_val = Cache::get($cache_key);
 
         $offset = ($page - 1) * $limit;
         $total = DB::table('yz_appletslive_room')
+            ->where('uniacid', $uniacid)
             ->where('type', 1)
             ->where('is_selected', 1)
             ->where('delete_time', 0)
@@ -1458,6 +1512,7 @@ class CacheService
             ->count();
         $list = DB::table('yz_appletslive_room')
             ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag', 'buy_type', 'ios_open', 'ios_goods_id', 'expire_time', 'goods_id', 'display_type')
+            ->where('uniacid', $uniacid)
             ->where('type', 1)
             ->where('is_selected', 1)
             ->where('delete_time', 0)
@@ -1487,7 +1542,10 @@ class CacheService
      */
     public static function getUserSubscriptionInfo($user_id, $room_id = 0)
     {
-        $userSubscriptionInfo = DB::table('yz_appletslive_room_subscription')->where('uniacid', self::$uniacid)
+        $uniacid = \YunShop::app()->uniacid;
+
+        $userSubscriptionInfo = DB::table('yz_appletslive_room_subscription')
+            ->where('uniacid', $uniacid)
             ->where('user_id', $user_id)
             ->where('room_id', $room_id)
             ->where('type', 1)
@@ -1501,6 +1559,7 @@ class CacheService
         //获取课程信息
         $room_info = DB::table('yz_appletslive_room')
             ->select('id', 'name', 'buy_type', 'expire_time', 'goods_id', 'ios_open', 'ios_goods_id')
+            ->where('uniacid', $uniacid)
             ->where('type', 1)
             ->where('id', $room_id)
             ->where('delete_time', 0)
@@ -1515,7 +1574,8 @@ class CacheService
                 ->where([
                     ['yz_order.status', '=', '3'], //订单状态 -1关闭,0待付款,1待发货,2待收货,3已完成
                     ['yz_order_goods.goods_id', '=', $room_info['goods_id']],
-                    ['yz_order_goods.uid', '=', $user_id]
+                    ['yz_order_goods.uid', '=', $user_id],
+                    ['yz_order_goods.uniacid', '=', $uniacid]
                 ])->first();
 
             if (!empty($orders_info)) {

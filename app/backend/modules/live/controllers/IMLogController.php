@@ -28,7 +28,7 @@ class IMLogController extends BaseController
 
         }
 
-        $list = ImCallbackLog::Search($requestSearch)->orderBy('id', 'decs')->paginate(20);
+        $list = ImCallbackLog::uniacid()->Search($requestSearch)->orderBy('id', 'decs')->paginate(20);
 
         $pager = PaginationHelper::show($list->total(), $list->currentPage(), $list->perPage());
 
