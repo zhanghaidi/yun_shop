@@ -27,6 +27,13 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">轮播位置标识*</label>
+                    <div class="col-xs-12 col-sm-9 col-md-10">
+                        <input type="text" name="label" class="form-control" value="{{ $info['label'] }}"
+                               placeholder="请输入轮播位置唯一标识">
+                    </div>
+                </div>
+                <div class="form-group">
                     <label class="col-sm-2 control-label"></label>
                     <div class="col-sm-2">
                         <input type="submit" name="submit" value="提交" class="btn btn-success"
