@@ -1,0 +1,11 @@
+{
+  "name": "wechat-complaint",
+  "version": "1.0.0",
+  "title": "仿微信投诉界面",
+  "description": "模仿微信的投诉界面",
+  "author": "芸众",
+  "url": "http://www.yunzshop.com",
+  "namespace": "Yunshop\\WechatComplaint",
+  "config": "config.tpl"
+
+}

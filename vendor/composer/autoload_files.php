@@ -29,4 +29,5 @@ return array(
     'cda2d2f579338909929d3104d0afc501' => $vendorDir . '/overtrue/laravel-pinyin/src/helpers.php',
     'ffe3c45132c52e7321c676988d15cc19' => $baseDir . '/app/yunshop.php',
     '3930054c891f23c61720ed011bb5487a' => $baseDir . '/app/helpers.php',
+    '74f78b6b99713ff89d56028b614df71a' => $vendorDir . '/libern/qr-code-reader/src/lib/common/customFunctions.php',
 );
