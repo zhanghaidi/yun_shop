@@ -74,7 +74,7 @@ class FeedbackController extends BaseController
     //用户投诉类型
     public function complainType()
     {
-        $recordList = ComplainTypeModel::uniacid()->paginate();
+        $recordList = ComplainTypeModel::uniacid()->orderBy('list_order','desc')->paginate();
         $pager = PaginationHelper::show($recordList->total(), $recordList->currentPage(), $recordList->perPage());
 
         return view('Yunshop\MinappContent::admin.feedback.complain-type',
@@ -167,7 +167,13 @@ class FeedbackController extends BaseController
     //用户投诉
     public function complain()
     {
-        $recordList = ComplainModel::uniacid()->orderBy('id','desc')->paginate();
+        $recordList = ComplainModel::uniacid()->orderBy('id','desc')
+            ->with([
+                'type',
+                'user' => function($user){
+                    return $user->select('ajy_uid','nickname','avatarurl');
+                }
+            ])->paginate();
         $pager = PaginationHelper::show($recordList->total(), $recordList->currentPage(), $recordList->perPage());
 
         return view('Yunshop\MinappContent::admin.feedback.complain',

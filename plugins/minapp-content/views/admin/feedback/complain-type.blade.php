@@ -12,6 +12,9 @@
                 <li class="active"><a href="{{yzWebUrl('plugin.minapp-content.admin.feedback.complain-type')}}">投诉类型</a>
                 </li>
             </ul>
+            <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                <a href="{{ yzWebUrl('plugin.minapp-content.admin.feedback.complain-type-add') }}" class="btn btn-info">添加投诉类型</a>
+            </div>
         </div>
         <div class="panel-heading">投诉类型列表</div>
         <div class="panel-body">

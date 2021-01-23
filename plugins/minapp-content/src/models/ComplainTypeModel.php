@@ -12,4 +12,19 @@ use app\common\models\BaseModel;
 class ComplainTypeModel extends BaseModel
 {
     public $table = 'diagnostic_service_complain_type';
+    public $timestamps = false;
+    protected $casts = ['create_time' => 'date'];
+
+    /**
+     * 字段规则
+     * @return array
+     */
+    public function rules()
+    {
+        return [
+            'uniacid' => 'required|integer',
+            'name' => 'required|string',
+            'list_order' => 'integer',
+        ];
+    }
 }
