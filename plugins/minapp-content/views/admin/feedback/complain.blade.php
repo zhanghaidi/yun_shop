@@ -19,39 +19,47 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>反馈用户</th>
-                        <th>用户ID</th>
-                        <th>用户账号</th>
-                        <th>反馈内容</th>
-                        <th>反馈图片</th>
-                        <th>手机号</th>
-                        <th>反馈条数</th>
-                        <th>反馈时间</th>
+                        <th>投诉者</th>
+                        <th>投诉对象</th>
+                        <th>类型</th>
+                        <th>内容</th>
+                        <th>投诉时间</th>
+                        <th>操作</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($data as $value)
+                    @foreach($recordList as $value)
                     <tr>
-                        <td>{{$value['id']}}</td>
+                        <td>{{$value->id}}</td>
                         <td>
-                            <a href="{{ tomedia($value['avatarurl']) }}" target="_blank">
-                                <img src="{{$value['avatarurl']}}" width="50" height="50" class="img-circle">
+                            <a href="{{ $value->user->avatarurl }}" target="_blank">
+                                <img src="{{$value->user->avatarurl}}" width="50" height="50" class="img-circle">
                             </a>
-                            {{$value['nickname']}}
+                            {{$value->user->nickname}}
                         </td>
-                        <td>{{$value['user_id']}}</td>
-                        <td>{{$value['account']}}</td>
-                        <td>{{$value['content']}}</td>
+
                         <td>
-                        @foreach($value['images'] as $img)
-                            <a href="{{tomedia($img)}}" target="_blank"><img src="{{tomedia($img)}}" width="75" height="75"></a>
-                        @endforeach
+                            {{$value->info->name}}
                         </td>
-                        <td>{{$value['telephone']}}</td>
+
                         <td>
-                            <a href="{{ yzWebUrl('plugin.minapp-content.admin.feedback.msg', ['id' => $value['user_id']]) }}"><i class="fa fa-comment-o"></i> {{$value['counts']}}</a>
+                            {{$value->type->name}}
                         </td>
-                        <td>{{$value['add_time']}}</td>
+                        <td>
+                            <div>
+                                @foreach($value->images as $img)
+                                    <a href="{{tomedia($img)}}" target="_blank"><img src="{{tomedia($img)}}" width="55" height="55"></a>
+                                @endforeach
+                            </div>
+                            <div>
+                                {{$value->content}}
+                            </div>
+                        </td>
+
+                        <td>
+                            {{$value->create_time}}
+                        </td>
+                        <td><a href="{{ yzWebUrl('plugin.minapp-content.admin.complain-type-delete', ['id' => $value->id]) }}" onclick="return confirm('确定删除吗');return false;"  title="删除"><i class="fa fa-trash-o"></i></a></td>
                     </tr>
                     @endforeach
                 </tbody>

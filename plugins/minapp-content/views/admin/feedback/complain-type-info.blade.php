@@ -14,50 +14,44 @@
             </ul>
         </div>
         <div class="panel-heading">投诉类型管理</div>
-        <div class="panel-body">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>反馈用户</th>
-                        <th>用户ID</th>
-                        <th>用户账号</th>
-                        <th>反馈内容</th>
-                        <th>反馈图片</th>
-                        <th>手机号</th>
-                        <th>反馈条数</th>
-                        <th>反馈时间</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($data as $value)
-                    <tr>
-                        <td>{{$value['id']}}</td>
-                        <td>
-                            <a href="{{ tomedia($value['avatarurl']) }}" target="_blank">
-                                <img src="{{$value['avatarurl']}}" width="50" height="50" class="img-circle">
-                            </a>
-                            {{$value['nickname']}}
-                        </td>
-                        <td>{{$value['user_id']}}</td>
-                        <td>{{$value['account']}}</td>
-                        <td>{{$value['content']}}</td>
-                        <td>
-                        @foreach($value['images'] as $img)
-                            <a href="{{tomedia($img)}}" target="_blank"><img src="{{tomedia($img)}}" width="75" height="75"></a>
-                        @endforeach
-                        </td>
-                        <td>{{$value['telephone']}}</td>
-                        <td>
-                            <a href="{{ yzWebUrl('plugin.minapp-content.admin.feedback.msg', ['id' => $value['user_id']]) }}"><i class="fa fa-comment-o"></i> {{$value['counts']}}</a>
-                        </td>
-                        <td>{{$value['add_time']}}</td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-        {!! $pager !!}
+        <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-3 col-md-1 control-label">排序</label>
+                <div class="col-sm-9 col-xs-12 col-md-11">
+                    <input name="info[list_order]" type="text" class="form-control" value="{{ $info['list_order'] }}" placeholder="按倒叙排序" required/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-3 col-md-1 control-label">投诉类型名称</label>
+                <div class="col-sm-9 col-xs-12 col-md-11">
+                    <input name="info[name]" type="text" class="form-control" value="{{ $info['name'] }}" placeholder="请输入投诉类型名称" required/>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-3 col-md-1 control-label">是否显示</label>
+                <div class="col-sm-9 col-xs-12 col-md-11">
+                    <label class="radio-inline">
+                        <input type="radio" name="info[status]" value="1" @if($info['status'] == 1) checked="checked" @endif />显示
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="info[status]" value="0" @if($info['status'] == 0) checked="checked" @endif />不显示
+                    </label>
+                    <span class="help-block">小程序端显示隐藏状态</span>
+                </div>
+
+            </div>
+
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
+                <div class="col-sm-9 col-xs-12">
+                    <input type="submit" name="submit" value="提交" class="btn btn-success"/>
+                </div>
+            </div>
+
+        </form>
     </div>
 </div>
 

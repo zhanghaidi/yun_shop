@@ -22,4 +22,9 @@ class DiagnosticServiceAcupoint extends Model
     public function resource(){
         return $this->morphOne('App\backend\modules\tracking\models\GoodsTrackingModel','resource');
     }
+
+    public function info()
+    {
+        return $this->morphOne('Yunshop\MinappContent\models\ComplainModel','info');
+    }
 }
