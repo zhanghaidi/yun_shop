@@ -8,7 +8,7 @@
     <div class="panel panel-info">
         <div class="top" style="margin-bottom:20px">
             <ul class="add-shopnav" id="myTab">
-                <li class="active"><a href="{{yzWebUrl('plugin.minapp-content.admin.feedback.msg')}}">反馈列表</a></li>
+                <li class="active"><a href="{{yzWebUrl('plugin.minapp-content.admin.feedback.index')}}">反馈列表</a></li>
                 <li><a href="{{yzWebUrl('plugin.minapp-content.admin.feedback.complain')}}">投诉列表</a>
                 <li><a href="{{yzWebUrl('plugin.minapp-content.admin.feedback.complain-type')}}">投诉类型</a>
                 </li>
