@@ -162,6 +162,15 @@ class PostsController extends ApiController
             }
         }
 
+        $boardRs = SnsBoardModel::select('id', 'need_check', 'is_user_publish')
+            ->where('id', $boardId)->first();
+        if (!isset($boardRs->id)) {
+            return $this->errorJson('版块数据获取错误');
+        }
+        if ($boardRs->is_user_publish != 1) {
+            return $this->errorJson('版块不允许用户发帖');
+        }
+
         $appletsliveBaseService = new AppletsliveBaseService();
         $titlecheck = $appletsliveBaseService->msgSecCheck($title);
         if ($titlecheck !== true) {
@@ -189,7 +198,7 @@ class PostsController extends ApiController
         $post->video_size = $videoSize;
         $post->goods_id = $goodsId;
         $post->board_id = $boardId;
-        $post->status = 1;
+        $post->status = $boardRs->need_check == 1 ? 0 : 1;
         $post->type = 2;
         if ($titlecheck !== true || $contentcheck !== true) {
             $post->status = 0;
