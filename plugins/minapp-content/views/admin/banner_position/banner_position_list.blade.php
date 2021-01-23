@@ -30,6 +30,7 @@
                         <tr>
                             <th>ID</th>
                             <th>轮播位名称</th>
+                            <th>轮播位标识</th>
                             <th>操作</th>
                         </tr>
                         </thead>
@@ -38,6 +39,7 @@
                             <tr>
                                 <td>{{$value['id']}}</td>
                                 <td>{{$value['name']}}</td>
+                                <td>{{$value['label']}}</td>
                                 <td>
                                     <a href="{{ yzWebUrl('plugin.minapp-content.admin.banner-position.edit', ['id' => $value['id']]) }}"
                                        title="编辑"><i class="fa fa-edit"></i></a> &nbsp;

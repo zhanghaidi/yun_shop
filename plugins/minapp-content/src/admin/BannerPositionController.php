@@ -47,15 +47,20 @@ class BannerPositionController extends BaseController
         }
         if (request()->isMethod('post')) {
             $name = trim(request()->input('name'));
+            $label = trim(request()->input('label'));
+            if (!isset($name[0])) {
+                return $this->message('位置名不能为空', '', 'danger');
+            }
+            if (!isset($label[0])) {
+                return $this->message('位置标识不能为空', '', 'danger');
+            }
             $uniacid = \YunShop::app()->uniacid;
             $data = [
                 'uniacid' => $uniacid,
                 'name' => $name,
+                'label' => $label,
                 'add_time' => time(),
             ];
-            if (empty($data['name'])) {
-                return $this->message('位置名不能为空', '', 'danger');
-            }
             if ($id > 0) {
                 $res = DB::table('diagnostic_service_banner_position')->where('id', $id)->update($data);
             } else {

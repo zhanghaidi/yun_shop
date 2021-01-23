@@ -13,6 +13,7 @@ use Yunshop\Appletslive\common\models\Room;
 use Yunshop\MinappContent\models\AcupointModel;
 use Yunshop\MinappContent\models\ArticleModel;
 use Yunshop\MinappContent\models\BannerModel;
+use Yunshop\MinappContent\models\BannerPositionModel;
 use Yunshop\MinappContent\models\PostModel;
 use Yunshop\MinappContent\models\SearchModel;
 use Yunshop\MinappContent\models\ShareQrcodeModel;
@@ -44,19 +45,24 @@ class IndexController extends ApiController
 
     public function banner()
     {
-        $positionId = intval(\YunShop::request()->position_id);
-        if ($positionId <= 0) {
-            return $this->errorJson('position_id未发现');
+        $label = trim(\YunShop::request()->label);
+        if (!isset($label[0])) {
+            return $this->errorJson('label未发现');
         }
 
-        $cacheKey = 'AJX:MAC:A:IC:B:' . $positionId;
+        $cacheKey = 'AJX:MAC:A:IC:B:' . $label;
         $result = Redis::get($cacheKey);
         if ($result !== false && $result !== null) {
             return $this->successJson('success', json_decode($result, true));
         }
 
+        $positionRs = BannerPositionModel::select('id')->where('label', $label)->first();
+        if (!isset($positionRs->id)) {
+            return $this->errorJson('position未发现');
+        }
+
         $bannerRs = BannerModel::select('id', 'title', 'image', 'jumpurl', 'jumptype', 'appid', 'type')->where([
-            'position_id' => $positionId,
+            'position_id' => $positionRs->id,
             'uniacid' => \YunShop::app()->uniacid,
             'status' => 1,
         ])->orderBy('list_order', 'desc')->get()->toArray();
