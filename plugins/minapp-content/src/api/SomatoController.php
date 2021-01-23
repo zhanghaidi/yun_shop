@@ -113,8 +113,19 @@ class SomatoController extends ApiController
         // 偏颇体质数组
         $biased = array();
 
+        $tempTypeRs = SomatoTypeModel::select('id', 'name')
+            ->where('uniacid', \YunShop::app()->uniacid)->get()->toArray();
+        $typeRs = [];
+        foreach ($tempTypeRs as $v) {
+            $typeRs[$v['id']] = $v['name'];
+        }
+        unset($tempTypeRs);
+
         foreach ($answer as $v) {
             if (!isset($v['somato_type_id']) || !isset($v['score'])) {
+                continue;
+            }
+            if (!isset($typeRs[$v['somato_type_id']])) {
                 continue;
             }
 
@@ -130,7 +141,7 @@ class SomatoController extends ApiController
             );
             $somato[$v['somato_type_id']]['answer'][] = $v;
 
-            if ($v['somato_type_id'] == 1) {
+            if ($typeRs[$v['somato_type_id']] == '平和质') {
                 $somato[$v['somato_type_id']]['somato_type'] = '平和质';
 
                 if ($somato[$v['somato_type_id']]['derived_score'] < 60) {
@@ -145,38 +156,9 @@ class SomatoController extends ApiController
                 $gentleStatus = $somato[$v['somato_type_id']]['status'];
                 $gentleDerivedScore = $somato[$v['somato_type_id']]['derived_score'];
             } else {
-                switch ($v['somato_type_id']) {
-                    case 1:
-                        break;
-                    case 2:
-                        $somato[$v['somato_type_id']]['somato_type'] = '气虚质';
-                        break;
-                    case 3:
-                        $somato[$v['somato_type_id']]['somato_type'] = '阳虚质';
-                        break;
-                    case 4:
-                        $somato[$v['somato_type_id']]['somato_type'] = '阴虚质';
-                        break;
-                    case 5:
-                        $somato[$v['somato_type_id']]['somato_type'] = '痰湿质';
-                        break;
-                    case 6:
-                        $somato[$v['somato_type_id']]['somato_type'] = '湿热质';
-                        break;
-                    case 7:
-                        $somato[$v['somato_type_id']]['somato_type'] = '血瘀质';
-                        break;
-                    case 8:
-                        $somato[$v['somato_type_id']]['somato_type'] = '气郁质';
-                        break;
-                    case 9:
-                        $somato[$v['somato_type_id']]['somato_type'] = '特禀质';
-                        break;
-                    default:
-                        $somato[$v['somato_type_id']]['somato_type'] = '';
-                        break;
-                }
-                if ($somato[$v['somato_type_id']]['somato_type'] == '') {
+                if (in_array($typeRs[$v['somato_type_id']], ['气虚质', '阳虚质', '阴虚质', '痰湿质', '湿热质', '血瘀质', '气郁质', '特禀质'])) {
+                    $somato[$v['somato_type_id']]['somato_type'] = $typeRs[$v['somato_type_id']];
+                } else {
                     continue;
                 }
 
