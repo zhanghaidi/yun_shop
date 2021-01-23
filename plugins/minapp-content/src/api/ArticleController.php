@@ -247,7 +247,8 @@ class ArticleController extends ApiController
         $wxapp_base_service = new BaseService();
         $sensitive_check = $wxapp_base_service->msgSecCheck($content);
         if (!is_bool($sensitive_check) || $sensitive_check === false) {
-            return $this->errorJson('评论包含敏感内容', $sensitive_check);
+            // TODO 暂时屏蔽微信内容审核
+            // return $this->errorJson('评论包含敏感内容', $sensitive_check);
         }
         $content_check = $wxapp_base_service->textCheck($content);
         $data = [

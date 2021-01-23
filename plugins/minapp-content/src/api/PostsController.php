@@ -165,12 +165,14 @@ class PostsController extends ApiController
         $appletsliveBaseService = new AppletsliveBaseService();
         $titlecheck = $appletsliveBaseService->msgSecCheck($title);
         if ($titlecheck !== true) {
-            return $this->errorJson('标题内容违规', ['status' => 87014]);
+            // TODO 暂时屏蔽微信内容审核
+            // return $this->errorJson('标题内容违规', ['status' => 87014]);
         }
 
         $contentcheck = $appletsliveBaseService->msgSecCheck($content);
         if ($contentcheck !== true) {
-            return $this->errorJson('文字内容违规', ['status' => 87014]);
+            // TODO 暂时屏蔽微信内容审核
+            // return $this->errorJson('文字内容违规', ['status' => 87014]);
         }
 
         $titlecheck = $appletsliveBaseService->textCheck($title);
@@ -336,7 +338,8 @@ class PostsController extends ApiController
         $appletsliveBaseService = new AppletsliveBaseService();
         $contentcheck = $appletsliveBaseService->msgSecCheck($content);
         if ($contentcheck !== true) {
-            return $this->errorJson('文字内容违规', ['status' => 87014]);
+            // TODO 暂时屏蔽微信内容审核
+            // return $this->errorJson('文字内容违规', ['status' => 87014]);
         }
 
         $contentcheck = $appletsliveBaseService->textCheck($content);
