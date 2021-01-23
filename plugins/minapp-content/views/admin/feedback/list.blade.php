@@ -4,10 +4,17 @@
 @section('title', trans($pluginName))
 
 <div class="rightlist">
-    <div class="right-titpos">
-        @include('layouts.tabs')
-    </div>
+
     <div class="panel panel-info">
+        <div class="top" style="margin-bottom:20px">
+            <ul class="add-shopnav" id="myTab">
+                <li class="active"><a href="{{yzWebUrl('plugin.minapp-content.admin.feedback.msg')}}">反馈列表</a></li>
+                <li><a href="{{yzWebUrl('plugin.minapp-content.admin.feedback.complain')}}">投诉列表</a>
+                <li><a href="{{yzWebUrl('plugin.minapp-content.admin.feedback.complain-type')}}">投诉类型</a>
+                </li>
+            </ul>
+        </div>
+
         <div class="panel-heading">用户反馈列表</div>
         <div class="panel-body">
             <div class="panel">
