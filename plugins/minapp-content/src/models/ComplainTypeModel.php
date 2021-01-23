@@ -14,7 +14,7 @@ class ComplainTypeModel extends BaseModel
     public $table = 'diagnostic_service_complain_type';
     public $timestamps = false;
     protected $casts = ['create_time' => 'date'];
-
+    protected $guarded = [];
     /**
      * 字段规则
      * @return array

@@ -14,7 +14,7 @@ class ComplainModel extends BaseModel
     public $table = 'diagnostic_service_complain';
     public $timestamps = false;
     protected $casts = ['create_time' => 'date'];
-
+    protected $guarded = [];
 
     //关联用户
     public function user()
