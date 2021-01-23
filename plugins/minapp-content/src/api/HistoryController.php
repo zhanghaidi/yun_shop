@@ -7,6 +7,7 @@ use app\common\components\ApiController;
 //历史足迹控制器-wk 20210106
 class HistoryController extends ApiController
 {
+    protected $publicAction = ['systemNotice','getVersion'];
     protected $ignoreAction = ['systemNotice','getVersion'];
 
     protected $user_id = 0;
