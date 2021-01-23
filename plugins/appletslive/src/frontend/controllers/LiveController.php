@@ -928,6 +928,7 @@ class LiveController extends BaseController
         $wxapp_base_service = new BaseService();
         $sensitive_check = $wxapp_base_service->msgSecCheck($content);
         if (!is_bool($sensitive_check) || $sensitive_check === false) {
+            // TODO 暂时屏蔽微信内容审核
             return $this->errorJson('评论内容包含敏感词', $sensitive_check);
         }
 
