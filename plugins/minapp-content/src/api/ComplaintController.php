@@ -49,7 +49,7 @@ class ComplaintController extends ApiController
      */
     public function userComplain()
     {
-        $type = intval(request()->get('type', 0));
+        $complain_type = intval(request()->get('complain_type', 0));
         $content = trim(request()->get('content', ''));
         $info_id = intval(request()->get('info_id', 0));
         $to_type_id = intval(request()->get('to_type_id', 0));
@@ -57,7 +57,7 @@ class ComplaintController extends ApiController
         if (!$info_id) {
             return $this->errorJson('投诉对象不能为空');
         }
-        if (!$type) {
+        if (!$complain_type) {
             return $this->errorJson('请选择投诉类型');
         }
         if (empty($content)) {
@@ -70,7 +70,7 @@ class ComplaintController extends ApiController
             'uniacid' => $this->uniacid,
             'user_id' => $this->user_id,
             'images' => $images,
-            'type' => $type,
+            'type' => $complain_type,
             'info_id' => $info_id,
             'to_type_id' => $to_type_id,
             'content' => $content,
