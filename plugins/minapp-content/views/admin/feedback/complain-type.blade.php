@@ -31,14 +31,14 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($recordList as $value)
+                    @foreach($pageList as $value)
                     <tr>
                         <td>{{$value->id}}</td>
                         <td>{{$value->name}}</td>
                         <td>{{$value->list_order}}</td>
                         <td>{{$value->create_time}}</td>
                         <td>
-                            {{$value->status}}
+                            {{$value->status}} == 1 ? 显示:隐藏
                         </td>
                         <td>
                             <a href="{{ yzWebUrl('plugin.minapp-content.admin.complain-type-edit', ['id' => $value->id]) }}" title="编辑"><i class="fa fa-edit"></i></a> &nbsp;
