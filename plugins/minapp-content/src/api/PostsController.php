@@ -485,7 +485,7 @@ class PostsController extends ApiController
                 break;
             }
 
-            $v1->reply = [];
+            $v1->reply = $tempReplys = [];
             foreach ($replyRs as $v4) {
                 if ($v1->id != $v4['parent_id']) {
                     continue;
@@ -504,9 +504,10 @@ class PostsController extends ApiController
                     }
                 }
 
-                $v1->reply[] = $v4;
+                $tempReplys[] = $v4;
             }
-            $v1->reply_nums = count($v1->reply);
+            $v1->reply = $tempReplys;
+            $v1->reply_nums = count($tempReplys);
 
         }
         unset($v1);
