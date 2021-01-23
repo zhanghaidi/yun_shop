@@ -32,7 +32,7 @@ class LoginController extends ApiController
         global $_W;
         $this->w = $_W;
         $this->app_type = \YunShop::request()->app_type;
-        $this->yz_baseurl = $_W['siteroot'].'addons/yun_shop/api.php?i=39&type=2&app_type='.$this->app_type;
+        $this->yz_baseurl = $_W['siteroot'].'addons/yun_shop/api.php?i='.\YunShop::app()->uniacid.'&type=2&app_type='.$this->app_type;
     }
 
     public function index()
@@ -242,7 +242,7 @@ class LoginController extends ApiController
             $this->member_mini_app_insert($data, $user_id, $app_type);
 
             //老会员登陆进行会员同步处理
-            $synchronous_member = DB::table('diagnostic_service_user')->where(array('ajy_uid' => $user['member_id']))->first();
+            $synchronous_member = DB::table('diagnostic_service_user')->where(array('ajy_uid' => $user_id))->first();
             if ($synchronous_member['status'] == 0) {
                 \Log::info('会员状态', $synchronous_member['status']);
                 $this->member_synchronous($user_id, $mid, $fan_user['openid']);
@@ -257,26 +257,28 @@ class LoginController extends ApiController
 
             }
 
-            if ($user_id) {
-                //添加diagnostic_service_user表数据
-                $this->service_user_insert($user_id, $data, $openid_token, $app_type);
-
-                //添加yz_member_unique表数据
-                $this->member_unique_insert($data, $user_id);
-
-                //添加yz_member_mini_app表数据
-                $this->member_mini_app_insert($data, $user_id, $app_type);
-
-                //调用会员同步接口 添加芸众member子表数据
-                $this->member_synchronous($user_id, $mid, $fan_user['openid']);
+            if (!$user_id) {
+                return $this->errorJson('user_id数据异常');
             }
+
+            //添加diagnostic_service_user表数据
+            $this->service_user_insert($user_id, $data, $openid_token, $app_type);
+
+            //添加yz_member_unique表数据
+            $this->member_unique_insert($data, $user_id);
+
+            //添加yz_member_mini_app表数据
+            $this->member_mini_app_insert($data, $user_id, $app_type);
+
+            //调用会员同步接口 添加芸众member子表数据
+            $this->member_synchronous($user_id, $mid, $fan_user['openid']);
         }
 
         //企业微信信息更新
         $this->member_qy_wechat_update($data, $user_id);
 
         //与用户表连表联查
-        $user = DB::table('diagnostic_service_user')->where(array('ajy_uid' => $user['member_id']))->first();
+        $user = DB::table('diagnostic_service_user')->where(array('ajy_uid' => $user_id))->first();
         $mc_member = DB::table('mc_members')->where(array('uid' => $user_id))->select('credit1', 'credit2')->first();
         $memberLevel = DB::table('yz_member')->where(array('member_id' => $user_id))->value('level_id');
 
