@@ -140,7 +140,7 @@ class PluginApplication extends \app\common\services\PluginApplication
                     ],
                 ],
                 'feedback_manage' => [
-                    'name' => '用户反馈',
+                    'name' => '用户反馈与投诉',
                     'permit' => 1,
                     'menu' => 1,
                     'icon' => '',
@@ -162,6 +162,53 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'url' => 'plugin.minapp-content.admin.feedback.delete',
                             'parents' => ['minapp_content', 'feedback_manage'],
                         ],
+                        'complain_type' => [
+                            'name' => '投诉类型',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.complain.complain-type',
+                            'parents' => ['minapp_content', 'feedback_manage','complain_type'],
+                            'child' => [
+                                'complain_type_add' => [
+                                    'name' => '增加投诉类型',
+                                    'permit' => 1,
+                                    'menu' => 0,
+                                    'url' => 'plugin.minapp-content.admin.complain.complain-type-add',
+                                    'parents' => ['minapp_content', 'feedback_manage','complain_type'],
+                                ],
+                                'complain_type_edit' => [
+                                    'name' => '编辑投诉类型',
+                                    'permit' => 1,
+                                    'menu' => 0,
+                                    'url' => 'plugin.minapp-content.admin.complain.complain-type-edit',
+                                    'parents' => ['minapp_content', 'feedback_manage','complain_type'],
+                                ],
+                                'complain_type_delete' => [
+                                    'name' => '删除投诉类型',
+                                    'permit' => 1,
+                                    'menu' => 0,
+                                    'url' => 'plugin.minapp-content.admin.complain.complain-type-delete',
+                                    'parents' => ['minapp_content', 'feedback_manage','complain_type'],
+                                ],
+
+                            ]
+                        ],
+                        'complain' => [
+                            'name' => '用户投诉列表',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.complain.index',
+                            'parents' => ['minapp_content', 'feedback_manage'],
+                        ],
+                        'complain_delete' => [
+                            'name' => '删除用户投诉',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.complain.delete',
+                            'parents' => ['minapp_content', 'feedback_manage'],
+                        ],
+
+
                     ],
                 ],
                 'article_manage' => [
