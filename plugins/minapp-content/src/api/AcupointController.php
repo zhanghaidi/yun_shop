@@ -17,6 +17,7 @@ use app\backend\modules\tracking\models\DiagnosticServiceUser;
 //穴位|经络控制器-wk 20210105
 class AcupointController extends ApiController
 {
+    protected $publicAction = ['getMeridian', 'getSortAcupoint', 'getAcupointInfo', 'acupointCommentList'];
     protected $ignoreAction = ['getMeridian', 'getSortAcupoint', 'getAcupointInfo', 'acupointCommentList'];
 
     protected $user_id = 0;
