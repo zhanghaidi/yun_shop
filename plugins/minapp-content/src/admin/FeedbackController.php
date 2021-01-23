@@ -4,6 +4,8 @@ namespace Yunshop\MinappContent\admin;
 
 use app\common\components\BaseController;
 use app\common\helpers\PaginationHelper;
+use Yunshop\MinappContent\models\ComplainModel;
+use Yunshop\MinappContent\models\ComplainTypeModel;
 use Yunshop\MinappContent\models\FeedbackModel;
 use Yunshop\MinappContent\services\MinappContentService;
 
@@ -67,5 +69,130 @@ class FeedbackController extends BaseController
         ])->delete();
 
         return $this->message('删除成功');
+    }
+
+    //用户投诉类型
+    public function complainType()
+    {
+        $recordList = ComplainTypeModel::uniacid()->paginate();
+        $pager = PaginationHelper::show($recordList->total(), $recordList->currentPage(), $recordList->perPage());
+
+        return view('Yunshop\MinappContent::admin.feedback.complain-type',
+            [
+                'pageList'    => $recordList,
+                'page'          => $pager,
+
+            ])->render();
+
+    }
+
+    //添加投诉类型
+    public function complainTypeAdd()
+    {
+        $complainTypeModel = new ComplainTypeModel();
+        $requestComplainType = \YunShop::request()->info;
+        if ($requestComplainType) {
+
+            $complainTypeModel->fill($requestComplainType);
+            $complainTypeModel->uniacid = \YunShop::app()->uniacid;
+
+            $validator = $complainTypeModel->validator();
+            if($validator->fails()){
+                $this->error($validator->messages());
+            }else{
+                if($complainTypeModel->save()){
+                    return $this->message('添加成功', Url::absoluteWeb('plugin.minapp-content.admin.feedback.complain-type'));
+                }else{
+                    return $this->message('添加失败','','error');
+                }
+            }
+        }
+        return view('Yunshop\MinappContent::admin.feedback.complain-type-info',
+            [
+                'info' => $complainTypeModel,
+            ]
+        )->render();
+
+    }
+
+    //编辑投诉类型
+
+    public function complainTypeEdit()
+    {
+        $id = (int) \YunShop::request()->id;
+        $complainTypeModel = ComplainTypeModel::uniacid()->where('id',$id)->first();
+        $requestComplainType = \YunShop::request()->info;
+        if ($requestComplainType) {
+
+            $complainTypeModel->fill($requestComplainType);
+            //$complainTypeModel->uniacid = \YunShop::app()->uniacid;
+
+            $validator = $complainTypeModel->validator();
+            if($validator->fails()){
+                $this->error($validator->messages());
+            }else{
+                if($complainTypeModel->save()){
+                    return $this->message('修改成功', Url::absoluteWeb('plugin.minapp-content.admin.feedback.complain-type'));
+                }else{
+                    return $this->message('修改失败','','error');
+                }
+            }
+        }
+        return view('Yunshop\MinappContent::admin.feedback.complain-type-info',
+            [
+                'info' => $complainTypeModel,
+            ]
+        )->render();
+
+    }
+
+    //删除投诉类型
+    public function complainTypeDelete()
+    {
+        $id = (int) \YunShop::request()->id;
+
+        if(!$id){
+            return $this->message('id不能为空','','error');
+
+        }
+        $res = ComplainTypeModel::where('id', $id)->forceDelete();
+        if(!$res){
+            return $this->message('删除失败','','error');
+        }
+
+        return $this->message('删除成功', Url::absoluteWeb('plugin.minapp-content.admin.feedback.complain-type'));
+
+    }
+
+    //用户投诉
+    public function complain()
+    {
+        $recordList = ComplainModel::uniacid()->orderBy('id','desc')->paginate();
+        $pager = PaginationHelper::show($recordList->total(), $recordList->currentPage(), $recordList->perPage());
+
+        return view('Yunshop\MinappContent::admin.feedback.complain',
+            [
+               'pageList' => $recordList,
+               'page' => $pager
+            ])->render();
+
+    }
+
+    //用户投诉删除
+    public function complainDelete()
+    {
+        $id = (int) \YunShop::request()->id;
+
+        if(!$id){
+            return $this->message('id不能为空','','error');
+
+        }
+        $res = ComplainModel::where('id', $id)->forceDelete();
+        if(!$res){
+            return $this->message('删除失败','','error');
+        }
+
+        return $this->message('删除成功', Url::absoluteWeb('plugin.minapp-content.admin.feedback.complain'));
+
     }
 }
