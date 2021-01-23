@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\DB;
 //用户投诉|反馈控制器
 class ComplaintController extends ApiController
 {
+    protected $publicAction = ['getComplainType'];
+    protected $ignoreAction = ['getComplainType'];
+
     protected $user_id = 0;
     protected $uniacid = 0;
 
