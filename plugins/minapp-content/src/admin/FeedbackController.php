@@ -8,6 +8,7 @@ use Yunshop\MinappContent\models\ComplainModel;
 use Yunshop\MinappContent\models\ComplainTypeModel;
 use Yunshop\MinappContent\models\FeedbackModel;
 use Yunshop\MinappContent\services\MinappContentService;
+use app\common\helpers\Url;
 
 class FeedbackController extends BaseController
 {
