@@ -446,7 +446,7 @@ class PostsController extends ApiController
                 ->orderBy('create_time', 'desc')->get()->toArray();
             foreach ($replyRs as &$v) {
                 $userIds[] = $v['user_id'];
-                $v['time'] = $this->dataarticletime($v['create_time']);
+                $v['time'] = $this->dataarticletime(strtotime($v['create_time']));
             }
             unset($v);
         }
