@@ -262,7 +262,7 @@ class AcupointController extends ApiController
         foreach ($acupointComments as $k => $v) {
             $acupointComments[$k]['images'] = json_decode($v['images'], true);
             Carbon::setLocale('zh');
-            $acupointComments['time'] = Carbon::createFromTimestamp($v['create_time'])->diffForHumans();
+            $acupointComments[$k]['time'] = Carbon::createFromTimestamp($v['create_time'])->diffForHumans();
             $like = pdo_get('diagnostic_service_acupoint_comment_like', array('user_id' => $user_id, 'comment_id' => $v['id']));
             if ($like) {
                 $acupointComments[$k]['is_like'] = 2;  //已点赞
