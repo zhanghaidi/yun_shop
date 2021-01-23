@@ -34,7 +34,6 @@ class SomatoController extends ApiController
             return $this->successJson('获取题库成功', json_decode($result, true));
         }
 
-        // TODO 暂不区分题库 uniacid
         $questionRs = QuestionBankModel::select(
             'id', 'list_order', 'title', 'option1_score', 'option2_score',
             'option3_score', 'option4_score', 'option5_score', 'options', 'somato_type_id'
