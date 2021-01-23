@@ -96,7 +96,7 @@ class FeedbackController extends BaseController
 
             $complainTypeModel->fill($requestComplainType);
             $complainTypeModel->uniacid = \YunShop::app()->uniacid;
-
+            $complainTypeModel->create_time = time();
             $validator = $complainTypeModel->validator();
             if($validator->fails()){
                 $this->error($validator->messages());
