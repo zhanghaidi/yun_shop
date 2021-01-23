@@ -670,27 +670,38 @@ class InitializationController extends BaseController
                 break;
             }
 
+            $v['symptom'] = explode(',', $v['symptom']);
+            $v['symptom'] = array_values(array_unique(array_filter($v['symptom'])));
+            $newLabel = [];
+            foreach ($v['symptom'] as $v2) {
+                if (!isset($labelRelationRs[$v2])) {
+                    continue 2;
+                }
+
+                $newLabel[] = $labelRelationRs[$v2];
+            }
+
             $v['recommend_article'] = explode(',', $v['recommend_article']);
             $v['recommend_article'] = array_values(array_unique(array_filter($v['recommend_article'])));
             $newArticle = [];
-            foreach ($v['recommend_article'] as $v2) {
+            foreach ($v['recommend_article'] as $v3) {
                 // TODO 文章不存在，跳过不处理
-                if (!isset($articleRelationRs[$v2])) {
+                if (!isset($articleRelationRs[$v3])) {
                     continue;
                 }
 
-                $newArticle[] = $articleRelationRs[$v2];
+                $newArticle[] = $articleRelationRs[$v3];
             }
 
             $v['recommend_acupotion'] = explode(',', $v['recommend_acupotion']);
             $v['recommend_acupotion'] = array_values(array_unique(array_filter($v['recommend_acupotion'])));
             $newAcupoint = [];
-            foreach ($v['recommend_acupotion'] as $v3) {
-                if (!isset($acupointRelationRs[$v3])) {
+            foreach ($v['recommend_acupotion'] as $v4) {
+                if (!isset($acupointRelationRs[$v4])) {
                     continue 2;
                 }
 
-                $newAcupoint[] = $acupointRelationRs[$v3];
+                $newAcupoint[] = $acupointRelationRs[$v4];
             }
 
             if ($tempId > 0) {
@@ -703,7 +714,7 @@ class InitializationController extends BaseController
                         'nums' => $v['nums'],
                         'pass_score' => $v['pass_score'],
                         'description' => $v['description'],
-                        'symptom' => $v['symptom'],
+                        'symptom' => implode(',', $newLabel),
                         'disease' => $v['disease'],
                         'content' => $v['content'],
                         'recommend_article' => implode(',', $newArticle),
