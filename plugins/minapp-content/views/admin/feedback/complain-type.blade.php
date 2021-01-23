@@ -19,39 +19,29 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>反馈用户</th>
-                        <th>用户ID</th>
-                        <th>用户账号</th>
-                        <th>反馈内容</th>
-                        <th>反馈图片</th>
-                        <th>手机号</th>
-                        <th>反馈条数</th>
-                        <th>反馈时间</th>
+                        <th>投诉类型名称</th>
+                        <th>排序</th>
+                        <th>添加时间</th>
+                        <th>显示状态</th>
+                        <th>操作</th>
+
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($data as $value)
+                    @foreach($recordList as $value)
                     <tr>
-                        <td>{{$value['id']}}</td>
+                        <td>{{$value->id}}</td>
+                        <td>{{$value->name}}</td>
+                        <td>{{$value->list_order}}</td>
+                        <td>{{$value->create_time}}</td>
                         <td>
-                            <a href="{{ tomedia($value['avatarurl']) }}" target="_blank">
-                                <img src="{{$value['avatarurl']}}" width="50" height="50" class="img-circle">
-                            </a>
-                            {{$value['nickname']}}
+                            {{$value->status}}
                         </td>
-                        <td>{{$value['user_id']}}</td>
-                        <td>{{$value['account']}}</td>
-                        <td>{{$value['content']}}</td>
                         <td>
-                        @foreach($value['images'] as $img)
-                            <a href="{{tomedia($img)}}" target="_blank"><img src="{{tomedia($img)}}" width="75" height="75"></a>
-                        @endforeach
+                            <a href="{{ yzWebUrl('plugin.minapp-content.admin.complain-type-edit', ['id' => $value->id]) }}" title="编辑"><i class="fa fa-edit"></i></a> &nbsp;
+                            <a href="{{ yzWebUrl('plugin.minapp-content.admin.complain-type-delete', ['id' => $value->id]) }}" onclick="return confirm('确定删除吗');return false;"  title="删除"><i class="fa fa-trash-o"></i></a>
                         </td>
-                        <td>{{$value['telephone']}}</td>
-                        <td>
-                            <a href="{{ yzWebUrl('plugin.minapp-content.admin.feedback.msg', ['id' => $value['user_id']]) }}"><i class="fa fa-comment-o"></i> {{$value['counts']}}</a>
-                        </td>
-                        <td>{{$value['add_time']}}</td>
+
                     </tr>
                     @endforeach
                 </tbody>
