@@ -28,7 +28,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($recordList as $value)
+                    @foreach($pageList as $value)
                     <tr>
                         <td>{{$value->id}}</td>
                         <td>
