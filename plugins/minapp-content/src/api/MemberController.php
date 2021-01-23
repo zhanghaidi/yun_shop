@@ -12,6 +12,7 @@ use Yunshop\EnterpriseWechat\services\QyWeChatService;
 class MemberController extends ApiController
 {
     private $pagesize = 15;
+    protected $publicAction = ['familyInvite'];
     protected $ignoreAction = ['familyInvite'];
     protected $xc_uniacid = 3;
 
