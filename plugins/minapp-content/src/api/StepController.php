@@ -1,7 +1,7 @@
 <?php
 
 namespace Yunshop\MinappContent\api;
-use app\admin\controller\Log;
+
 use app\common\components\ApiController;
 use app\frontend\modules\member\services\factory\MemberFactory;
 use Illuminate\Support\Facades\DB;
@@ -33,13 +33,26 @@ class StepController extends ApiController
         }
 
         //获取session_key
-        $info = $member->wxCode2SessionKey($code, $app_type);
-        if ($info['errno'] != 0) {
+        $res = $member->wxCode2SessionKey($code, $app_type);
+        if ($res['errno'] != 0) {
 
-            return $this->errorJson($info['msg'], ['status' => 1]);
+            return $this->errorJson($res['msg'], ['status' => 1]);
         }
 
-        Log::info('微信步数解密数据：',$info);
+        //$openid = $res['res']['openid'];     //用户opneid
+        $session_key = $res['res']['session_key']; //用户sessionkey
+        if (!$session_key) {
+            return $this->errorJson('获取session_key失败', array('status' => 0));
+        }
+
+        //解密用户步数信息
+        $info = $member->wxDecodeInfo($session_key, $encryptedData, $iv, $app_type);
+        if ($info['errno'] != 0) {
+
+            return $this->errorJson($res['msg'], ['status' => 2]);
+        }
+
+        //\Log::info('微信步数解密数据：',$info);
         //步数数据近一月
         $stepsList = $info['res']['stepInfoList'];
 
