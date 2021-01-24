@@ -216,14 +216,14 @@ class SomatoController extends ApiController
             // 平和质
             $tureContent = '您的体质是：平和质';
             $tureSomatoTypeId = $gentleId;
-            $tureSomatoDerivedScore = isset($gentleDerivedScore) ? gentleDerivedScore : 0;
+            $tureSomatoDerivedScore = isset($gentleDerivedScore) ? $gentleDerivedScore : 0;
             $hasContent = '';
             $hasSomatoTypeId = '';
         } elseif ($isGentleType == 2) {
             // 平和质 有倾向体质
             $tureContent = '您的体质基本是：平和质';
             $tureSomatoTypeId = $gentleId;
-            $tureSomatoDerivedScore = isset($gentleDerivedScore) ? gentleDerivedScore : 0;
+            $tureSomatoDerivedScore = isset($gentleDerivedScore) ? $gentleDerivedScore : 0;
             $hasContent = '（ 有 ' . implode(',', $hasSomatoTypeName) . ' 倾向）';
             $hasSomatoTypeId = implode(',', $hasSomatoTypeId);
         } else {
