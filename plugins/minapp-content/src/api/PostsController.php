@@ -208,7 +208,7 @@ class PostsController extends ApiController
             return $this->errorJson('发布失败', ['status' => 0]);
         }
         if ($post->status == 0) {
-            return $this->errorJson('帖子标题或内容涉及违规敏感词,请等待后台审核', ['status' => 1]);
+            return $this->successJson('帖子标题或内容涉及违规敏感词,请等待后台审核', ['status' => 0]);
         }
         return $this->successJson('发布成功', ['status' => 1]);
     }
