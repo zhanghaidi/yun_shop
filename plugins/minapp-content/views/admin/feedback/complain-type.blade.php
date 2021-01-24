@@ -38,11 +38,16 @@
                         <td>{{$value->list_order}}</td>
                         <td>{{$value->create_time}}</td>
                         <td>
-                            {{$value->status}} == 1 ? 显示:隐藏
+                            @if($value->status == 1)
+                                <span class="label label-success">显示</span>
+                                @else
+                                <span class="label label-default">隐藏</span>
+                                @endif
+                            {{$value->status}}
                         </td>
                         <td>
-                            <a href="{{ yzWebUrl('plugin.minapp-content.admin.complain-type-edit', ['id' => $value->id]) }}" title="编辑"><i class="fa fa-edit"></i></a> &nbsp;
-                            <a href="{{ yzWebUrl('plugin.minapp-content.admin.complain-type-delete', ['id' => $value->id]) }}" onclick="return confirm('确定删除吗');return false;"  title="删除"><i class="fa fa-trash-o"></i></a>
+                            <a href="{{ yzWebUrl('plugin.minapp-content.admin.feedback.complain-type-edit', ['id' => $value->id]) }}" title="编辑"><i class="fa fa-edit"></i></a> &nbsp;
+                            <a href="{{ yzWebUrl('plugin.minapp-content.admin.feedback.complain-type-delete', ['id' => $value->id]) }}" onclick="return confirm('确定删除吗');return false;"  title="删除"><i class="fa fa-trash-o"></i></a>
                         </td>
 
                     </tr>
