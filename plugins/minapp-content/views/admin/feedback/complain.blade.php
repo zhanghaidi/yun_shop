@@ -39,11 +39,20 @@
                         </td>
 
                         <td>
-                            {{$value->info->name}}
+
+                            <span class="label label-primary">
+                                @if($value->to_type == 3) 文章
+                                @else 帖子
+                                @endif
+                            </span>.<br>
+                            {{$value->info->title}}
                         </td>
 
                         <td>
-                            {{$value->complain_type->name}}
+                            <span class="label label-info">
+                                {{$value->complainType->name}}
+                            </span>
+
                         </td>
                         <td>
                             <div>

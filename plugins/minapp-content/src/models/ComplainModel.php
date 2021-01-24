@@ -15,7 +15,7 @@ class ComplainModel extends BaseModel
     public $timestamps = false;
     protected $casts = ['create_time' => 'date'];
     protected $guarded = [];
-    protected $appends = ['type_id','info'];
+    protected $appends = ['to_type'];
 
     //关联用户
     public function user()
@@ -44,7 +44,7 @@ class ComplainModel extends BaseModel
      */
     public function info()
     {
-        return $this->morphTo('resource','to_type_id','info_id');
+        return $this->morphTo('info','to_type_id','info_id');
     }
 
     /**
@@ -63,19 +63,10 @@ class ComplainModel extends BaseModel
         return $map[$value];
     }
 
-    public function setTypeIdAttribute()
+    public function getToTypeAttribute()
     {
         return $this->attributes['to_type_id'];
     }
 
-    public function setInfoAttribute()
-    {
-        return $this->attributes['info_id'];
-    }
-
-    /*public function setFirstNameAttribute($value)
-    {
-        return $this->attributes['first_name'] ;
-    }*/
 
 }
