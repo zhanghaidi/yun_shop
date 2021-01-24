@@ -170,7 +170,7 @@ class FeedbackController extends BaseController
     {
         $recordList = ComplainModel::uniacid()->orderBy('id','desc')
             ->with([
-                'type',
+                'complainType',
                 'user' => function($user){
                     return $user->select('ajy_uid','nickname','avatarurl');
                 }
