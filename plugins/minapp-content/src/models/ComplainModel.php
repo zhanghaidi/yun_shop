@@ -15,6 +15,7 @@ class ComplainModel extends BaseModel
     public $timestamps = false;
     protected $casts = ['create_time' => 'date'];
     protected $guarded = [];
+    protected $appends = ['type_id','info'];
 
     //关联用户
     public function user()
@@ -24,7 +25,7 @@ class ComplainModel extends BaseModel
     }
 
     //关联投诉类型
-    public function type()
+    public function complainType()
     {
         return $this->belongsTo('Yunshop\MinappContent\models\ComplainTypeModel', 'type', 'id');
     }
@@ -55,7 +56,7 @@ class ComplainModel extends BaseModel
     public function getToTypeIdAttribute($value)
     {
         $map = [
-            1 => 'App\backend\modules\tracking\models\DiagnosticServiceAcupoint', //穴位
+            //1 => 'App\backend\modules\tracking\models\DiagnosticServiceAcupoint', //穴位
             3 => 'App\backend\modules\tracking\models\DiagnosticServiceArticle', //文章
             4 => 'App\backend\modules\tracking\models\DiagnosticServicePost',  //社区
         ];

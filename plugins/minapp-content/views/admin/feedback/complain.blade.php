@@ -21,8 +21,8 @@
                         <th>ID</th>
                         <th>投诉者</th>
                         <th>投诉对象</th>
-                        <th>类型</th>
-                        <th>内容</th>
+                        <th>投诉类型</th>
+                        <th>图文内容</th>
                         <th>投诉时间</th>
                         <th>操作</th>
                     </tr>
@@ -43,12 +43,12 @@
                         </td>
 
                         <td>
-                            {{$value->type->name}}
+                            {{$value->complain_type->name}}
                         </td>
                         <td>
                             <div>
                                 @foreach($value->images as $img)
-                                    <a href="{{tomedia($img)}}" target="_blank"><img src="{{tomedia($img)}}" width="55" height="55"></a>
+                                    <a href="{{tomedia($img)}}" target="_blank"><img src="{{tomedia($img)}}" width="50" height="50"></a>
                                 @endforeach
                             </div>
                             <div>
@@ -59,7 +59,7 @@
                         <td>
                             {{$value->create_time}}
                         </td>
-                        <td><a href="{{ yzWebUrl('plugin.minapp-content.admin.feedback.complain-type-delete', ['id' => $value->id]) }}" onclick="return confirm('确定删除吗');return false;"  title="删除"><i class="fa fa-trash-o"></i></a></td>
+                        <td><a href="{{ yzWebUrl('plugin.minapp-content.admin.feedback.complain-delete', ['id' => $value->id]) }}" onclick="return confirm('确定删除吗');return false;"  title="删除"><i class="fa fa-trash-o"></i></a></td>
                     </tr>
                     @endforeach
                 </tbody>
