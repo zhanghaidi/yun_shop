@@ -39,13 +39,17 @@
                         </td>
 
                         <td>
-
+                            @if($value->to_type == 3)
                             <span class="label label-primary">
-                                @if($value->to_type == 3) 文章
-                                @else 帖子
-                                @endif
+                                 文章
                             </span>.<br>
-                            {{$value->info->title}}
+                                <a href="{{ yzWebUrl('plugin.minapp-content.admin.article.index', ['search[article_id]' => $value->info_id]) }}">{{$value->info->title}}</a>
+                            @else
+                            <span class="label label-primary">
+                                 帖子
+                            </span>.<br>
+                            <a href="{{ yzWebUrl('plugin.minapp-content.admin.post.index', ['search[keywords]' => $value->info_id]) }}">{{$value->info->title}}</a>
+                            @endif
                         </td>
 
                         <td>
