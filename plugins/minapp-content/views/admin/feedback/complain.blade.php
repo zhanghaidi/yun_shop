@@ -59,7 +59,7 @@
                         <td>
                             {{$value->create_time}}
                         </td>
-                        <td><a href="{{ yzWebUrl('plugin.minapp-content.admin.complain-type-delete', ['id' => $value->id]) }}" onclick="return confirm('确定删除吗');return false;"  title="删除"><i class="fa fa-trash-o"></i></a></td>
+                        <td><a href="{{ yzWebUrl('plugin.minapp-content.admin.feedback.complain-type-delete', ['id' => $value->id]) }}" onclick="return confirm('确定删除吗');return false;"  title="删除"><i class="fa fa-trash-o"></i></a></td>
                     </tr>
                     @endforeach
                 </tbody>
