@@ -43,7 +43,6 @@
                                 @else
                                 <span class="label label-default">隐藏</span>
                                 @endif
-                            {{$value->status}}
                         </td>
                         <td>
                             <a href="{{ yzWebUrl('plugin.minapp-content.admin.feedback.complain-type-edit', ['id' => $value->id]) }}" title="编辑"><i class="fa fa-edit"></i></a> &nbsp;
