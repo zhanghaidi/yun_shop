@@ -361,6 +361,12 @@ class PostsController extends ApiController
             return $this->errorJson('评论帖子不存在或已被删除');
         }
 
+        $boardRs = SnsBoardModel::select('id', 'need_check_replys')
+            ->where('id', $postRs->board_id)->first();
+        if (!isset($boardRs->id)) {
+            return $this->errorJson('帖子版块不存在或已被删除');
+        }
+
         $comment = new PostCommentModel;
         $comment->user_id = $memberId;
         $comment->uniacid = \YunShop::app()->uniacid;
@@ -375,7 +381,11 @@ class PostsController extends ApiController
         if ($contentcheck !== true) {
             $comment->status = 0;
         } else {
-            $comment->status = 1;
+            if ($boardRs->need_check_replys == 1) {
+                $comment->status = 1;
+            } else {
+                $comment->status = 1;
+            }
         }
         if ($parentId > 0) {
             $comment->parent_id = $parentId;
@@ -401,7 +411,7 @@ class PostsController extends ApiController
         }
 
         if ($comment->status == 0) {
-            return $this->errorJson('评论内容涉及违规敏感词，请等待后台审核');
+            return $this->errorJson('评论内容请等待后台审核');
         }
         $postRs->comment_nums += 1;
         $postRs->save();
