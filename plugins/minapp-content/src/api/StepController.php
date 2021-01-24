@@ -1,6 +1,7 @@
 <?php
 
 namespace Yunshop\MinappContent\api;
+use app\admin\controller\Log;
 use app\common\components\ApiController;
 use app\frontend\modules\member\services\factory\MemberFactory;
 use Illuminate\Support\Facades\DB;
@@ -38,9 +39,9 @@ class StepController extends ApiController
             return $this->errorJson($info['msg'], ['status' => 1]);
         }
 
-        $data = $info['res'];
+        Log::info('微信步数解密数据：',$info);
         //步数数据近一月
-        $stepsList = $data['stepInfoList'];
+        $stepsList = $info['res']['stepInfoList'];
 
         //今日目前总步数
         $tody = date('Y-m-d', TIMESTAMP);
