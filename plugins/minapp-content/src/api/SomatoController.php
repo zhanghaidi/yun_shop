@@ -116,8 +116,13 @@ class SomatoController extends ApiController
         $tempTypeRs = SomatoTypeModel::select('id', 'name')
             ->where('uniacid', \YunShop::app()->uniacid)->get()->toArray();
         $typeRs = [];
+        // 平和体质ID
+        $gentleId = 0;
         foreach ($tempTypeRs as $v) {
             $typeRs[$v['id']] = $v['name'];
+            if ($v['name'] == '平和质') {
+                $gentleId = $v['id'];
+            }
         }
         unset($tempTypeRs);
 
@@ -210,14 +215,14 @@ class SomatoController extends ApiController
         if ($isGentleType == 3) {
             // 平和质
             $tureContent = '您的体质是：平和质';
-            $tureSomatoTypeId = 1;
+            $tureSomatoTypeId = $gentleId;
             $tureSomatoDerivedScore = isset($gentleDerivedScore) ? gentleDerivedScore : 0;
             $hasContent = '';
             $hasSomatoTypeId = '';
         } elseif ($isGentleType == 2) {
             // 平和质 有倾向体质
             $tureContent = '您的体质基本是：平和质';
-            $tureSomatoTypeId = 1;
+            $tureSomatoTypeId = $gentleId;
             $tureSomatoDerivedScore = isset($gentleDerivedScore) ? gentleDerivedScore : 0;
             $hasContent = '（ 有 ' . implode(',', $hasSomatoTypeName) . ' 倾向）';
             $hasSomatoTypeId = implode(',', $hasSomatoTypeId);
