@@ -226,7 +226,7 @@ class AcupointController extends ApiController
         $newComment = DB::table('diagnostic_service_acupoint_comment')->where(['id' => $comment_id])->first();
         $newComment['images'] = json_decode($newComment['images'], true);
         if ($newComment['status'] == 0) {
-            return $this->successJson('评论内容涉及违规敏感词，请等待后台审核', array('status' => 0));
+            return $this->errorJson('评论内容涉及违规敏感词，请等待后台审核', array('status' => 0));
         }
         DB::table('diagnostic_service_acupoint')->where(['id' => $acupoint_id])->increment('comment_nums');
         return $this->successJson('评论成功', array('status' => 1, 'newComment' => $newComment));
