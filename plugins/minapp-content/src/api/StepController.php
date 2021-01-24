@@ -3,6 +3,7 @@
 namespace Yunshop\MinappContent\api;
 use app\common\components\ApiController;
 use app\frontend\modules\member\services\factory\MemberFactory;
+use Illuminate\Support\Facades\DB;
 
 class StepController extends ApiController
 {
@@ -51,9 +52,13 @@ class StepController extends ApiController
         //可用步数
         $usableSteps = intval($todySteps - $exchangeSteps);
         //兑换步数最低标准 fixBy-wk 20201021 新版首页二级页面 展示可用步数和步数最低兑换标准
-        $system = pdo_get('diagnostic_service_system_step', array('id' => 1));
+        $system = DB::table('diagnostic_service_system_step')->where('uniacid', $uniacid)->first();
+        if(!$system){
+            return $this->errorJson('暂未开启步数兑换设置');
+        }
         $least_steps = intval($system['least_step']);
         $steps_data = [
+            'tody_total_steps' => $todySteps,
             'usable_steps' => $usableSteps,
             'least_steps' => $least_steps
         ];
