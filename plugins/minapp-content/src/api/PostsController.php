@@ -382,7 +382,7 @@ class PostsController extends ApiController
             $comment->status = 0;
         } else {
             if ($boardRs->need_check_replys == 1) {
-                $comment->status = 1;
+                $comment->status = 0;
             } else {
                 $comment->status = 1;
             }
