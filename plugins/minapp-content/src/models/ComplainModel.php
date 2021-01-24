@@ -26,7 +26,7 @@ class ComplainModel extends BaseModel
     //关联投诉类型
     public function type()
     {
-        return $this->hasOne('Yunshop\MinappContent\models\ComplainTypeModel', 'type', 'id');
+        return $this->belongsTo('Yunshop\MinappContent\models\ComplainTypeModel', 'type', 'id');
     }
 
     //读取数组格式图片
