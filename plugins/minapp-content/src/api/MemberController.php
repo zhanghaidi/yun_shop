@@ -604,7 +604,7 @@ class MemberController extends ApiController
         //https://www.aijuyi.net/app/index.php?i=39&co=FW2763150201310708&ip=127.0.0.1&c=entry&ke=546566&m=zmcn_fw&do=a
         $url = $_W['siteroot'] . "app/index.php";  //请求地址url拼接
 
-        $resJson = $this->https_request($url, $data);
+        $resJson = $this->http_request($url, $data);
 
         if (!$resJson) {
             return $this->errorJson('请求失败');
