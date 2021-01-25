@@ -17,7 +17,7 @@
             <form id="form1" role="form" class="form-horizontal form" method="post" action="">
                 <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
                     <div class="input-group">
-                        <div class="input-group-addon">穴位ID:</div>
+                        <div class="input-group-addon">1穴位ID:</div>
                         <input type="text" placeholder="请输入穴位ID搜索" value="{{$search['id']}}" name="search[id]" class="form-control">
                     </div>
                 </div>
