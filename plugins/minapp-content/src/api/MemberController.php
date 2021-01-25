@@ -557,6 +557,7 @@ class MemberController extends ApiController
         return $this->errorJson('地址正在努力收集中，请手动添加！');
     }
 
+    //防伪查询
     public function zmCode()
     {
         global $_W;
@@ -602,18 +603,19 @@ class MemberController extends ApiController
         ];
 
         //https://www.aijuyi.net/app/index.php?i=39&co=FW2763150201310708&ip=127.0.0.1&c=entry&ke=546566&m=zmcn_fw&do=a
-        $url = $_W['siteroot'] . "app/index.php";  //请求地址url拼接
+        $url = 'https://' . $_SERVER["HTTP_HOST"] . "/app/index.php";  //请求地址url拼接
 
-        $resJson = $this->https_request($url, $data);
+        $res = ihttp_request($url, $data);
 
-        if (!$resJson) {
-            return $this->errorJson('请求失败');
+        if ($res['code'] != 200) {
+            return $this->errorJson('防伪api地址请求失败:'.$resJson['code']);
         }
 
-        \Log::info('--------防伪查询接口请求返回值-------', $resJson);
+        $resJson = json_decode($res['content'], true);
+        //\Log::info('--------防伪查询接口请求返回值-------', $resJson);
 
-        if ($resJson['content'] == 0) {
-            return $this->successJson('success', json_decode($resJson, true));
+        if ($resJson['content'] === 0) {
+            return $this->successJson('success', $resJson);
         } else {
             $errCode = $resJson;
             // 1888：服务器API接口关闭
@@ -705,28 +707,6 @@ class MemberController extends ApiController
             }
         }
         return $chatStatus;
-    }
-
-    //curl 防伪查询方法post
-    private function https_request($url, $data = null)
-    {
-        if (function_exists('curl_init')) {
-            $curl = curl_init();
-            curl_setopt($curl, CURLOPT_URL, $url);
-            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
-            curl_setopt($curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1);
-            if (!empty($data)) {
-                curl_setopt($curl, CURLOPT_POST, 1);
-                curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-            }
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-            $output = curl_exec($curl);
-            curl_close($curl);
-            return $output;
-        } else {
-            return false;
-        }
     }
 
 }
