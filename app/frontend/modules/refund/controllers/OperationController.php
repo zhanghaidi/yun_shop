@@ -57,7 +57,7 @@ class OperationController extends ApiController
                 ];
             $params = array(
                 [
-                    "shop_id" => $jushuitanSetRs['jushuitan_shop_id'],
+                    "shop_id" => (int) $jushuitanSetRs['jushuitan_shop_id'],
                     "outer_as_id" => $data['refund_sn'],
                     "so_id" => $order_data['order_sn'],
                     "type" => '普通退货',

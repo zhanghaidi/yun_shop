@@ -62,7 +62,7 @@ class JuShuiTanController extends ApiController
                                 'seller_account' => $order->address->mobile, //string卖家支付账号，最大 50 （必传项）
                                 'buyer_account' => $order->shop_name //string买家支付账号，最大 200 （必传项）
                             ],
-                            'shop_id' => $this->setRs['jushuitan_shop_id'], //int店铺编号 （必传项）
+                            'shop_id' => (int) $this->setRs['jushuitan_shop_id'], //int店铺编号 （必传项）
                             'so_id' => $order->order_sn,  //string订单编号 （必传项）
                             'order_date' => $order->pay_time->toDateTimeString(),//stringCarbon::$order->create_time, //订单日期 （必传项）
                             'shop_status' => 'WAIT_SELLER_SEND_GOODS',  //string（必传项）订单：等待买家付款=WAIT_BUYER_PAY，等待卖家发货=WAIT_SELLER_SEND_GOODS,等待买家确认收货=WAIT_BUYER_CONFIRM_GOODS, 交易成功=TRADE_FINISHED, 付款后交易关闭=TRADE_CLOSED,付款前交易关闭=TRADE_CLOSED_BY_TAOBAO；发货前可更新
@@ -106,7 +106,7 @@ class JuShuiTanController extends ApiController
                     "buyer_account" => $order_data['mobile'],
                     "seller_account" => "艾居益商城"
                 ],
-                "shop_id" => $this->setRs['jushuitan_shop_id'],
+                "shop_id" => (int) $this->setRs['jushuitan_shop_id'],
                 "so_id" => $order_data['order_sn'],
                 "order_date" => date('Y-m-d h:i:s', $order_data['create_time']),
                 "shop_status" => "WAIT_SELLER_SEND_GOODS",
