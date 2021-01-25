@@ -610,6 +610,8 @@ class MemberController extends ApiController
             return $this->errorJson('请求失败');
         }
 
+        \Log::info('--------防伪查询接口请求返回值-------', $resJson);
+
         if ($resJson['content'] == 0) {
             return $this->successJson('success', json_decode($resJson, true));
         } else {
