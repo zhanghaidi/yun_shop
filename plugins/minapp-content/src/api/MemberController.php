@@ -705,23 +705,26 @@ class MemberController extends ApiController
         return $chatStatus;
     }
 
-    //封装post请求防伪查询方法再用
-    private function http_request($url, $data = null)
+    //curl 防伪查询方法post
+    private function https_request($url, $data = null)
     {
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
-
-        if (!empty($data)) {
-            curl_setopt($curl, CURLOPT_POST, TRUE);
-            curl_setopt($curl, CURLOPT_POSTFIELDS,$data);
+        if (function_exists('curl_init')) {
+            $curl = curl_init();
+            curl_setopt($curl, CURLOPT_URL, $url);
+            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
+            curl_setopt($curl, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1);
+            if (!empty($data)) {
+                curl_setopt($curl, CURLOPT_POST, 1);
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+            }
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+            $output = curl_exec($curl);
+            curl_close($curl);
+            return $output;
+        } else {
+            return false;
         }
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
-        $output = curl_exec($curl);
-        curl_close($curl);
-        //file_put_contents('/tmp/heka_weixin.' . date("Ymd") . '.log', date('Y-m-d H:i:s') . "\t" . $output . "\n", FILE_APPEND);
-        return $output;
     }
 
 }
