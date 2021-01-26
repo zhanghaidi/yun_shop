@@ -69,12 +69,12 @@ class Kernel extends ConsoleKernel
         //          ->hourly();
 
         // 每分钟执行新课程视频发布提醒
-        $schedule->command('command:coursereminder')
+        $schedule->command('command:coursereminder-aloneminiapp')
             ->withoutOverlapping()
             ->everyMinute();
 
         // 每分钟执行待支付订单提醒
-        $schedule->command('command:notpaidordernotice')
+        $schedule->command('command:notpaidordernotice-aloneminiapp')
             ->withoutOverlapping()
             ->everyMinute();
 
@@ -84,12 +84,12 @@ class Kernel extends ConsoleKernel
             ->everyMinute();
 
         // 定时执行 未签到用户签到提醒
-        $schedule->command('command:signreminder')
+        $schedule->command('command:signreminder-aloneminiapp')
             ->withoutOverlapping()
             ->cron('0 10,15,18,20 * * *');
 
         //每分钟执行直播间订阅开播提醒
-        $schedule->command('command:livereminder')
+        $schedule->command('command:livereminder-aloneminiapp')
             ->withoutOverlapping()
             ->everyMinute();
     }

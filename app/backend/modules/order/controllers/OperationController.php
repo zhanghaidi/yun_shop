@@ -135,7 +135,6 @@ class OperationController extends BaseController
             if (!isset($jushuitanSetRs['jushuitan_shop_id'])){
                 return $this->message('后台退款失败:聚水潭配置错误','','error');
             }
-    
 
             $address = explode(" ", $order->address->address);
             $goods = $order->hasManyOrderGoods->toArray();
