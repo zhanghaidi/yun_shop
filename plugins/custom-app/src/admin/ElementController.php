@@ -25,7 +25,7 @@ class ElementController extends BaseController
                 return $this->message('元素数据错误，请联系开发', '', 'danger');
             }
 
-            if (in_array($sortRs->type, [1, 2])) {
+            if (in_array($sortRs->type, [1, 2, 5])) {
                 if (!isset($data['content']) || empty($data['content'])) {
                     return $this->message('请填写内容', '', 'danger');
                 }

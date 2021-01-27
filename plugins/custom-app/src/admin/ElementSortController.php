@@ -59,7 +59,7 @@ class ElementSortController extends BaseController
             if (!isset($data['name']) || !isset($data['label'])) {
                 return $this->message('请填写名称和标识', '', 'danger');
             }
-            if (!isset($data['type']) || !in_array($data['type'], [1, 2, 3, 4])) {
+            if (!isset($data['type']) || !in_array($data['type'], [1, 2, 3, 4, 5])) {
                 return $this->message('请选择页面元素的值类型', '', 'danger');
             }
 

@@ -74,6 +74,9 @@ class ElementController extends ApiController
                     if ($v2['type'] == 2) {
                         $v3['content'] = yz_tomedia($v3['content']);
                     }
+                    if ($v2['type'] == 5) {
+                        $v3['content'] = yz_tomedia($v3['content']);
+                    }
 
                     if (in_array($v2['type'], [3, 4])) {
                         $v3['content'] = json_decode($v3['content'], true);
