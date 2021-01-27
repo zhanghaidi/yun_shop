@@ -25,6 +25,7 @@ class BannerController extends BaseController
             ->select('diagnostic_service_banner_position.name', 'diagnostic_service_banner.*')
             ->where($where)
             ->orderBy('diagnostic_service_banner.position_id', 'desc')
+            ->orderBy('diagnostic_service_banner.type', 'asc')
             ->orderBy('diagnostic_service_banner.list_order', 'desc')
             ->paginate($this->pageSize);
 
