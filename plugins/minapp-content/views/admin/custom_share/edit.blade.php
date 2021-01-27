@@ -54,7 +54,7 @@
 <script language="JavaScript">
     $(function () {
         $.get('/static/pages/share.json', function (data) {
-            if (!('options' in data)) {
+            if (!('mainOptions' in data)) {
                 return false;
             }
             let _pageOpt = '';
