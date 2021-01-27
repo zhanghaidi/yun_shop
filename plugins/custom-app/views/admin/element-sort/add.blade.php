@@ -37,6 +37,9 @@
                     <label class="radio-inline">
                         <input type="radio" name="data[type]" value="4" /> 图片URL - 多值
                     </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="data[type]" value="5" /> 视频URL
+                    </label>
                 </div>
             </div>
 

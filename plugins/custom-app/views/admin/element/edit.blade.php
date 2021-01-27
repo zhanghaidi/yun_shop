@@ -85,6 +85,15 @@
                 </div>
             </div>
 
+            @elseif($sort['type'] == 5)
+
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label">视频网址</label>
+                <div class="col-xs-12 col-sm-9 col-md-10">
+                    {!! app\common\helpers\ImageHelper::tplFormFieldVideo('data[content]', $data['content'])!!}
+                </div>
+            </div>
+
             @endif
 
             <div class="form-group">
