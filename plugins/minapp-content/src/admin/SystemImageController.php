@@ -32,7 +32,7 @@ class SystemImageController extends BaseController
             $searchData['keywords'] = trim($searchData['keywords']);
             $list = $list->where('name', 'like', '%' . $searchData['keywords'] . '%');
         }
-        $list = $list->orderBy(['position_id' => 'asc', 'list_order' => 'desc'])
+        $list = $list->orderBy(['list_order', 'desc'])
             ->orderBy('id', 'asc')
             ->paginate($this->pageSize)->toArray();
         $pager = PaginationHelper::show($list['total'], $list['current_page'], $this->pageSize);
