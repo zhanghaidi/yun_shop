@@ -62,7 +62,7 @@ class BannerController extends BaseController
                 'is_href' => $param['is_href'],
                 'jumpurl' => $param['jumpurl'],
                 'appid' => trim($param['appid']),
-                'jumptype' => $param['jumptype'],
+                'jumptype' => isset($param['jumptype'])?$param['jumptype']:1,
                 'type' => $param['type'],
                 'status' => $param['status'],
                 'add_time' => time(),
