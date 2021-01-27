@@ -58,6 +58,7 @@
                 return false;
             }
             let _pageOpt = '';
+            _pageOpt += '<option value="">请选择分享名称</option>';
             for (var i = 0; i < data.mainOptions.length; i++) {
                 let _list = data.mainOptions[i];
                 if (!('value' in _list) || !('name' in _list)) {
@@ -78,8 +79,6 @@
         if ("{{$info['id']}}") {
             $('select[name="pageSelect"]').attr('disabled', 'disabled');
         }
-
-
     })
 </script>
 @endsection
