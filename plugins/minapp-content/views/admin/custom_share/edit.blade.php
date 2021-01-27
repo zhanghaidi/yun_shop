@@ -58,8 +58,8 @@
                 return false;
             }
             let _pageOpt = '';
-            for (var i = 0; i < data.options.length; i++) {
-                let _list = data.options[i];
+            for (var i = 0; i < data.mainOptions.length; i++) {
+                let _list = data.mainOptions[i];
                 if (!('value' in _list) || !('name' in _list)) {
                     continue;
                 }
