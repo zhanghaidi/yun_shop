@@ -114,9 +114,9 @@
                         <th style="width: 66px;">点赞量
                             <div data-field="like_nums" class="th-sorter none"><div></div><div></div></div>
                         </th>
-                        <th style="width: 66px;">评论量
+                        <!-- <th style="width: 66px;">评论量
                             <div data-field="comment_nums" class="th-sorter none"><div></div><div></div></div>
-                        </th>
+                        </th> -->
                         <!-- <th>是否开启辟谣</th> -->
                         <th>添加时间</th>
                         <th class="text-right">操作</th>
@@ -165,11 +165,11 @@
                         </td>
                         <td style="text-align: center;">{{$value['read_nums']}}</td>
                         <td style="text-align: center;">{{$value['like_nums']}}</td>
-                        <td style="text-align: center;">
+                        <!-- <td style="text-align: center;">
                             <a href="{{ yzWebUrl('plugin.minapp-content.admin.article-replys.index', ['id' => $value['id']]) }}">
                                 <i class="fa fa-comment-o"></i> {{$value['comment_nums']}}
                             </a>
-                        </td>
+                        </td> -->
                         <!-- <td>
                             @if($value['is_discuss'] == 1)
                             <span class="label label-primary" title="{{date('Y-m-d H:i', $value['discuss_start'])}} -- {{date('Y-m-d H:i', $value['end_time'])}}">开启</span>

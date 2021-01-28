@@ -101,11 +101,9 @@
                         <th style="width: 66px;">点赞量
                             <div data-field="like_nums" class="th-sorter none"><div></div><div></div></div>
                         </th>
-                        <th style="width: 66px;">评论量
+                        <!-- <th style="width: 66px;">评论量
                             <div data-field="comment_nums" class="th-sorter none"><div></div><div></div></div>
-                        </th>
-                        <!--<th>话题标签</th>
-                        <th>话题类型</th>-->
+                        </th> -->
                         <th>发布时间</th>
                         <th class="text-right">操作</th>
                     </tr>
@@ -173,11 +171,11 @@
                         </td>
                         <td style="text-align: center;">{{$value['view_nums']}}</td>
                         <td style="text-align: center;">{{$value['like_nums']}}</td>
-                        <td style="text-align: center;">
+                        <!-- <td style="text-align: center;">
                             <a href="{{ yzWebUrl('plugin.minapp-content.admin.sns-replys.index', ['id' => $value['id']]) }}">
                                 <i class="fa fa-comment-o"></i> {{$value['comment_nums']}}
                             </a>
-                        </td>
+                        </td> -->
                         <td>{{$value['create_time']}}</td>
                         <td class="text-right">
                             <a href="{{ yzWebUrl('plugin.minapp-content.admin.post.edit', ['id' => $value['id']]) }}" title="编辑"><i class="fa fa-edit"></i></a> &nbsp; 
