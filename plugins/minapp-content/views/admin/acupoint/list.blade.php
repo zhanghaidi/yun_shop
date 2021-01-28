@@ -58,7 +58,7 @@
                         <th>穴位主调</th>
                         <th>音频</th>
                         <th>视频</th>
-                        <th>笔记</th>
+                        <!-- <th>笔记</th> -->
                         <th>操作</th>
                     </tr>
                 </thead>
@@ -90,9 +90,9 @@
                         <td width="150">
                             <a href="{{tomedia($value['video'])}}" target="_blank"><video width="150px" height="60px"> <source src="{{tomedia($value['video'])}}"> </video></a>
                         </td>
-                        <td width="50">
+                        <!-- <td width="50">
                             <a class="btn-link" href="{{ yzWebUrl('plugin.minapp-content.admin.acupoint-replys.index', ['id' => $value['id']]) }}"><i class="fa fa-comment-o"></i> {{$value['comment_nums']}} </a>
-                        </td>
+                        </td> -->
                         <td>
                             <a href="{{ yzWebUrl('plugin.minapp-content.admin.acupoint.edit', ['id' => $value['id']]) }}" title="编辑"><i class="fa fa-edit"></i></a> &nbsp; 
                             <a href="{{ yzWebUrl('plugin.minapp-content.admin.acupoint.delete', ['id' => $value['id']]) }}" onclick="return confirm('确认删除该记录吗？');return false;"  title="删除"><i class="fa fa-trash-o"></i></a>

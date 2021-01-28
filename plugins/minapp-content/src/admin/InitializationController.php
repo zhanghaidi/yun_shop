@@ -9,7 +9,9 @@ use Yunshop\MinappContent\models\ArticleCategoryModel;
 use Yunshop\MinappContent\models\ArticleModel;
 use Yunshop\MinappContent\models\LabelModel;
 use Yunshop\MinappContent\models\MeridianModel;
+use Yunshop\MinappContent\models\PostModel;
 use Yunshop\MinappContent\models\QuestionBankModel;
+use Yunshop\MinappContent\models\SnsBoardModel;
 use Yunshop\MinappContent\models\SomatoQuestionModel;
 use Yunshop\MinappContent\models\SomatoTypeModel;
 use Yunshop\MinappContent\services\MinappContentService;
@@ -41,6 +43,12 @@ class InitializationController extends BaseController
         $oldQuestion = QuestionBankModel::where('uniacid', $this->sourceAppid)->count();
         $newQuestion = QuestionBankModel::where('uniacid', \YunShop::app()->uniacid)->count();
 
+        $oldBoard = SnsBoardModel::where('uniacid', $this->sourceAppid)->count();
+        $newBoard = SnsBoardModel::where('uniacid', \YunShop::app()->uniacid)->count();
+
+        $oldPost = PostModel::where('uniacid', $this->sourceAppid)->where('type', 2)->count();
+        $newPost = PostModel::where('uniacid', \YunShop::app()->uniacid)->where('type', 2)->count();
+
         return view('Yunshop\MinappContent::admin.init.index', [
             'pluginName' => MinappContentService::get('name'),
             'meridian' => [
@@ -70,6 +78,14 @@ class InitializationController extends BaseController
             'question' => [
                 'old' => $oldQuestion,
                 'new' => $newQuestion,
+            ],
+            'board' => [
+                'old' => $oldBoard,
+                'new' => $newBoard,
+            ],
+            'post' => [
+                'old' => $oldPost,
+                'new' => $newPost,
             ],
         ]);
     }
@@ -479,7 +495,7 @@ class InitializationController extends BaseController
                         'content' => $v['content'],
                         'thumb' => $v['thumb'],
                         'images' => $v['images'],
-                        'author' => $v['author'],
+                        // 'author' => $v['author'],
                         'list_order' => $v['list_order'],
                         'status' => $v['status'],
                         'video' => $v['video'],
@@ -510,7 +526,7 @@ class InitializationController extends BaseController
                 'author' => $v['author'],
                 'list_order' => $v['list_order'],
                 'status' => $v['status'],
-                'create_time' => $nowTime,
+                'create_time' => strtotime($v['create_time']) > 0 ? strtotime($v['create_time']) : $nowTime,
                 'video' => $v['video'],
                 'is_discuss' => $v['is_discuss'],
                 'ture_option' => $v['ture_option'],
@@ -900,5 +916,155 @@ class InitializationController extends BaseController
         }
 
         return $this->successJson('症状标签、体质、测评题库信息迁移完成了');
+    }
+
+    public function post()
+    {
+        if (\YunShop::app()->uniacid == $this->sourceAppid) {
+            return $this->errorJson('养居益自身项目数据，无需同步');
+        }
+        $update = (int) \YunShop::request()->update;
+        if ($update === 1) {
+            $update = true;
+        } else {
+            $update = false;
+        }
+
+        // 话题版块信息迁移
+        $sourceRs = SnsBoardModel::where('uniacid', $this->sourceAppid)->get()->toArray();
+
+        $nowRs = SnsBoardModel::select('id', 'name')
+            ->where('uniacid', \YunShop::app()->uniacid)->get()->toArray();
+
+        $insertData = [];
+        $nowTime = time();
+        foreach ($sourceRs as $v) {
+            $tempId = 0;
+            foreach ($nowRs as $v1) {
+                if ($v['name'] != $v1['name']) {
+                    continue;
+                }
+                $tempId = $v1['id'];
+                break;
+            }
+
+            if ($tempId > 0) {
+                if ($update == true) {
+                    SnsBoardModel::where([
+                        'id' => $tempId,
+                        'uniacid' => \YunShop::app()->uniacid,
+                    ])->limit(1)->update([
+                        'name' => $v['name'],
+                        'thumb' => $v['thumb'],
+                        'status' => $v['status'],
+                        'list_order' => $v['list_order'],
+                        'need_check' => $v['need_check'],
+                        'need_check_replys' => $v['need_check_replys'],
+                        'is_user_publish' => $v['is_user_publish'],
+                    ]);
+                }
+
+                continue;
+            }
+            $insertData[] = [
+                'name' => $v['name'],
+                'uniacid' => \YunShop::app()->uniacid,
+                'thumb' => $v['thumb'],
+                'status' => $v['status'],
+                'create_time' => $nowTime,
+                'list_order' => $v['list_order'],
+                'need_check' => $v['need_check'],
+                'need_check_replys' => $v['need_check_replys'],
+                'is_user_publish' => $v['is_user_publish'],
+            ];
+        }
+        if (isset($insertData[0])) {
+            SnsBoardModel::insert($insertData);
+        }
+
+        // 话题版块ID对照关系
+        $nowRs = SnsBoardModel::select('id', 'name')
+            ->where('uniacid', \YunShop::app()->uniacid)->get()->toArray();
+        $boardRelationRs = [];
+        foreach ($sourceRs as $v1) {
+            foreach ($nowRs as $v2) {
+                if ($v1['name'] != $v2['name']) {
+                    continue;
+                }
+                $boardRelationRs[$v1['id']] = $v2['id'];
+                break;
+            }
+        }
+        if (count($sourceRs) != count($boardRelationRs)) {
+            return $this->errorJson('话题版块信息迁移出错了');
+        }
+
+        // 话题信息迁移
+        $sourceRs = PostModel::where('uniacid', $this->sourceAppid)
+            ->where('type', 2)->get()->toArray();
+
+        $nowRs = PostModel::select('id', 'title', 'create_time')
+            ->where('uniacid', \YunShop::app()->uniacid)
+            ->where('type', 2)->get()->toArray();
+
+        $insertData = [];
+        $nowTime = time();
+        foreach ($sourceRs as $v) {
+            $tempId = 0;
+            foreach ($nowRs as $v1) {
+                if ($v['title'] != $v1['title']) {
+                    continue;
+                }
+                if ($v['create_time'] != $v1['create_time']) {
+                    continue;
+                }
+                $tempId = $v1['id'];
+                break;
+            }
+
+            if (!isset($boardRelationRs[$v['board_id']])) {
+                continue;
+            }
+
+            if ($tempId > 0) {
+                if ($update == true) {
+                    PostModel::where([
+                        'id' => $tempId,
+                        'uniacid' => \YunShop::app()->uniacid,
+                    ])->limit(1)->update([
+                        'title' => $v['title'],
+                        'content' => $v['content'],
+                        'images' => $v['images'],
+                        'video' => $v['video'],
+                        'video_thumb' => $v['video_thumb'],
+                        'is_recommend' => $v['is_recommend'],
+                        'is_hot' => $v['is_hot'],
+                        'status' => $v['status'],
+                        'board_id' => $boardRelationRs[$v['board_id']],
+                    ]);
+                }
+
+                continue;
+            }
+            $insertData[] = [
+                'uniacid' => \YunShop::app()->uniacid,
+                'title' => $v['title'],
+                'content' => $v['content'],
+                'images' => $v['images'],
+                'video' => $v['video'],
+                'video_thumb' => $v['video_thumb'],
+                'create_time' => strtotime($v['create_time']) > 0 ? strtotime($v['create_time']) : $nowRs,
+                'is_recommend' => $v['is_recommend'],
+                'is_hot' => $v['is_hot'],
+                'status' => $v['status'],
+                'board_id' => $boardRelationRs[$v['board_id']],
+                'type' => 2,
+            ];
+        }
+        if (isset($insertData[0])) {
+            PostModel::insert($insertData);
+        }
+
+        return $this->successJson('版块、话题信息迁移完成了');
     }
 }

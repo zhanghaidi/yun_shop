@@ -41,6 +41,8 @@ class Kernel extends ConsoleKernel
         'app\console\Commands\LiveReminderAloneMiniApp',
         'app\console\Commands\NotPaidOrderNoticeAloneMiniApp',
         'app\console\Commands\SignReminderAloneMiniApp',
+
+        'app\console\Commands\RecommendArticle',
     ];
     /**
      * The bootstrap classes for the application.
@@ -92,6 +94,13 @@ class Kernel extends ConsoleKernel
         $schedule->command('command:livereminder-aloneminiapp')
             ->withoutOverlapping()
             ->everyMinute();
+
+        //每日凌晨执行更新推荐文章
+        $schedule->command('command:recommendarticle')
+            ->withoutOverlapping()
+            ->daily();
+
+
     }
 
     /**
