@@ -10,8 +10,8 @@ use Yunshop\Appletslive\common\services\BaseService;
 //文章控制器-wk 20210106
 class ArticleController extends ApiController
 {
-    protected $publicAction = ['articleCategory', 'articles', 'articleInfo', 'articleInfoComments'];
-    protected $ignoreAction = ['articleCategory', 'articles', 'articleInfo', 'articleInfoComments'];
+    protected $publicAction = ['articleCategory', 'articles', 'recommendArticle', 'articleInfo', 'articleInfoComments'];
+    protected $ignoreAction = ['articleCategory', 'articles', 'recommendArticle', 'articleInfo', 'articleInfoComments'];
 
     protected $user_id = 0;
     protected $uniacid = 0;
