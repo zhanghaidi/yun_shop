@@ -74,6 +74,7 @@
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                     <span class="help-block">1、文章关联的商品，需手工设置； 点击进入<a href="{{ yzWebUrl('plugin.minapp-content.admin.article.index') }}" target="_blank">文章列表</a></span>
+                    <span class="help-block">PS: 文章中的“文章来源/作者”属性，初次同步会同步导入；后续使用“覆盖更新”不覆盖</span>
                 </div>
             </div>
 
@@ -119,20 +120,36 @@
 
             <hr />
 
-
             <div class="row">
-                <div class="form-group col-xs-12 col-sm-5 col-md-5 col-lg-5">
+                <div class="form-group col-xs-12 col-sm-5 col-md-4 col-lg-2">
                     <div class="input-group">
-                        <div class="input-group-addon">轮播图位置</div>
-                        <input type="text" placeholder="养居益" value="" name="old[banner]" class="form-control" disabled>
+                        <div class="input-group-addon">版块</div>
+                        <input type="text" placeholder="养居益" value="{{$board['old']}} - 养居益" name="old[board]" class="form-control" disabled>
                         <div class="input-group-addon"> VS </div>
-                        <input type="text" placeholder="本程序" value="" name="new[banner]" class="form-control" disabled>
+                        <input type="text" placeholder="本程序" value="{{$board['new']}} - 本程序" name="new[board]" class="form-control" disabled>
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-addon">话题</div>
+                        <input type="text" placeholder="养居益" value="{{$post['old']}}" name="old[post]" class="form-control" disabled>
+                        <div class="input-group-addon"> VS </div>
+                        <input type="text" placeholder="本程序" value="{{$post['new']}}" name="new[post]" class="form-control" disabled>
+                    </div>
+                </div>
+                <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-1">
+                    <div class="input-group">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" name="update[post]" value="1" /> 是否覆盖更新
+                        </label>
                     </div>
                 </div>
                 <div class="form-group col-xs-12 col-sm-2 col-md-2 col-lg-2">
                     <div class="input-group">
-                        <button class="btn btn-success" id="banner"><i class="fa fa-share-square-o"></i> 同步</button>
+                        <button class="btn btn-success" id="post"><i class="fa fa-share-square-o"></i> 同步</button>
                     </div>
+                </div>
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <span class="help-block">1、版块关联的管理员，需手工设置； 点击进入<a href="{{ yzWebUrl('plugin.minapp-content.admin.sns-board.index') }}" target="_blank">版块列表</a></span>
+                    <span class="help-block">2、话题关联的发帖用户，需手工设置； 点击进入<a href="{{ yzWebUrl('plugin.minapp-content.admin.post.index') }}" target="_blank">话题列表</a></span>
                 </div>
             </div>
 
@@ -238,6 +255,32 @@ $(function () {
         $.get(_url, function(res) {
             if (res.result == 1) {
                 util.message('症状、体质、题库数据同步成功', '', 'success');
+            } else {
+                util.message(res.msg, '', 'warning');
+            }
+        });
+    });
+
+    $('#post').on('click', function(){
+        $('#post').attr('disabled', true);
+        setTimeout(function(){
+            $('#post').attr('disabled', false);
+        }, 1000);
+
+        _update = $('input[name="update[post]"]').is(":checked");
+        if (_update == true && !confirm('选中覆盖更新，将会把艾居益应用中，关于健康社区的最新更改，同步入本应用，是否确认？')) {
+            util.message('数据同步被中止', '', 'warning');
+            return false;
+        }
+
+        _url = "{{ yzWebUrl('plugin.minapp-content.admin.initialization.post') }}";
+        _url = _url.replace(/&amp;/g, '&');
+        if (_update == true) {
+            _url += '&update=1';
+        }
+        $.get(_url, function(res) {
+            if (res.result == 1) {
+                util.message('话题版块、社区话题数据同步成功', '', 'success');
             } else {
                 util.message(res.msg, '', 'warning');
             }
