@@ -29,14 +29,15 @@ class RecommendArticle extends Command
 
         Log::info(date('Y-m-d H:i:s').'------------------------ 开始推荐文章 BEGIN -------------------------------');
 
-        $res = DB::table("diagnostic_service_article")->where('is_hot', 1)->update(['is_hot' => 0]);
+        $service_uniacid = 45;
+        $res = DB::table("diagnostic_service_article")->where('is_hot', 1)->where('uniacid', '!=', $service_uniacid)->update(['is_hot' => 0]);
 
         $articles = DB::table("diagnostic_service_article")->select('uniacid')->where('status', 1)->groupBy('uniacid')->get()->toArray();
 
         $uniacidArr = array_column($articles,'uniacid');
 
         foreach ($uniacidArr as $uniacid){
-            if($uniacid == 45){
+            if($uniacid == $service_uniacid){
                 continue;
             }
             $articleIdArr = DB::table("diagnostic_service_article")
