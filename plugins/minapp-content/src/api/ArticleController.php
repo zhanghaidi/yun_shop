@@ -3,6 +3,7 @@
 namespace Yunshop\MinappContent\api;
 
 use app\common\components\ApiController;
+use app\common\helpers\Cache;
 use Carbon\Carbon;
 use Yunshop\Appletslive\common\services\BaseService;
 
@@ -53,7 +54,7 @@ class ArticleController extends ApiController
         $uniacid = $this->uniacid;
 
         $pindex = intval(request()->get('page', 1));
-        $psize = intval(request()->get('pageSize', 0));;
+        $psize = intval(request()->get('pageSize', 0));
         if (!$psize) {
             $psize = 10;
         }
@@ -84,6 +85,64 @@ class ArticleController extends ApiController
 
         return $this->successJson('获取分类下所有文章', compact('total', 'totalPage', 'articleList'));
     }
+
+    //获取随机推荐30篇文章
+    public function recommendArticle()
+    {
+        $uniacid = $this->uniacid;
+
+        $pindex = intval(request()->get('page', 1));
+        $psize = 10;
+
+        //1、每日凌晨随机推荐一次 根据时间戳
+        $today = Carbon::now()->startOfDay();
+        $uniacid = $this->uniacid;
+        $cacheKey = $today . $uniacid . $pindex;
+
+        //$recommendArticle = Cache::get($cacheKey);
+        /*if(empty($recommendArticle)){
+
+
+        }*/
+
+        $query = load()->object('query');
+        $recommendArticle = $query->from('diagnostic_service_article')
+            ->select('id', 'title', 'description', 'share_img', 'thumb', 'video', 'content', 'images', 'author', 'create_time', 'read_nums', 'like_nums', 'comment_nums')
+            ->where(array('uniacid' => $uniacid, 'status' => 1))
+            ->orderby(rand())
+            ->page($pindex, $psize)
+            ->limit(30)
+            ->getall();
+
+        $total = intval($query->getLastQueryTotal()); //总条数
+        $totalPage = intval(($total + $psize - 1) / $psize); //总页数
+
+        foreach ($recommendArticle as $k => $v) {
+            Carbon::setLocale('zh');
+            $articleList[$k]['time'] = Carbon::createFromTimestamp($v['create_time'])->diffForHumans();
+            $articleList[$k]['content'] = html_entity_decode($v['content']);
+            $articleList[$k]['images'] = json_decode($v['images'], true);
+        }
+        //Cache::add($cache_key, $data, 60);
+
+        return $recommendArticle;
+
+
+       /* $cache_key = 'sortAcupoint' . $this->uniacid;
+        $data = Cache::get($cache_key);
+        if (empty($data)) {
+            $acupotion = AcupointModel::where(['uniacid' => $this->uniacid])->select('id', 'name', 'chart')->get();
+            $data = [];
+            foreach ($acupotion as $k => $v) { //对穴位做排序处理
+                $data[$v['chart']]['data'][] = $v;
+            }
+            ksort($data);
+            Cache::forget($cache_key);
+            Cache::add($cache_key, $data, 60);
+        }*/
+
+    }
+
 
     /**
      * 文章详情
