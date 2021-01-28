@@ -36,6 +36,9 @@ class RecommendArticle extends Command
         $uniacidArr = array_column($articles,'uniacid');
 
         foreach ($uniacidArr as $uniacid){
+            if($uniacid == 45){
+                continue;
+            }
             $articleIdArr = DB::table("diagnostic_service_article")
                 ->select('id','uniacid')
                 ->where(['uniacid'=> $uniacid ,'status' => 1])
