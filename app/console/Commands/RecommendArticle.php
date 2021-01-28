@@ -27,7 +27,7 @@ class RecommendArticle extends Command
     public function handle()
     {
 
-        Log::info(data('Y-m-d H:i:s').'------------------------ 开始推荐文章 BEGIN -------------------------------');
+        Log::info(date('Y-m-d H:i:s').'------------------------ 开始推荐文章 BEGIN -------------------------------');
 
         $res = DB::table("diagnostic_service_article")->where('is_hot', 1)->update(['is_hot' => 0]);
 
@@ -36,6 +36,9 @@ class RecommendArticle extends Command
         $uniacidArr = array_column($articles,'uniacid');
 
         foreach ($uniacidArr as $uniacid){
+            if($uniacid == 45){
+                continue;
+            }
             $articleIdArr = DB::table("diagnostic_service_article")
                 ->select('id','uniacid')
                 ->where(['uniacid'=> $uniacid ,'status' => 1])
@@ -43,6 +46,7 @@ class RecommendArticle extends Command
                 ->take(30)
                 ->update(['is_hot' => 1]);
 
+            Log::info("------------------------ uniacid -------------------------------".$uniacid);
         }
 
         Log::info("------------------------ 推荐文章任务 END -------------------------------\n");
