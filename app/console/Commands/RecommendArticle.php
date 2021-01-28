@@ -46,6 +46,7 @@ class RecommendArticle extends Command
                 ->take(30)
                 ->update(['is_hot' => 1]);
 
+            Log::info("------------------------ uniacid -------------------------------".$uniacid);
         }
 
         Log::info("------------------------ 推荐文章任务 END -------------------------------\n");
