@@ -27,7 +27,7 @@ class RecommendArticle extends Command
     public function handle()
     {
 
-        Log::info(data('Y-m-d H:i:s').'------------------------ 开始推荐文章 BEGIN -------------------------------');
+        Log::info(date('Y-m-d H:i:s').'------------------------ 开始推荐文章 BEGIN -------------------------------');
 
         $res = DB::table("diagnostic_service_article")->where('is_hot', 1)->update(['is_hot' => 0]);
 
