@@ -46,7 +46,7 @@
                 <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-2 control-label">热区图片：</label>
                     <div class="col-xs-12 col-sm-9 col-md-8">
-                        {!! app\common\helpers\ImageHelper::tplFormFieldImage('image', $info['image']) !!}
+                        {!! app\common\helpers\ImageHelper::tplFormFieldImage('data[image]', $info['image']) !!}
                         <span class="help-block">请按照规定尺寸上传</span>
                     </div>
                 </div>
