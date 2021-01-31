@@ -43,10 +43,10 @@
                 <label class="col-xs-12 col-sm-3 col-md-2 control-label">是否显示</label>
                 <div class="col-xs-12 col-sm-9 col-md-10">
                     <label class="radio-inline">
-                        <input type="radio" name="data[status]" value="1" @if($info['status'] === 1) checked="checked" @endif /> 显示
+                        <input type="radio" name="data[status]" value="1" @if($info['status'] == 1) checked="checked" @endif /> 显示
                     </label>
                     <label class="radio-inline">
-                        <input type="radio" name="data[status]" value="0" @if($info['status'] === 0) checked="checked" @endif /> 隐藏
+                        <input type="radio" name="data[status]" value="0" @if($info['status'] == 0) checked="checked" @endif /> 隐藏
                     </label>
                     <span class="help-block">是否显示</span>
                 </div>
@@ -54,16 +54,27 @@
 
                 <div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-2 control-label">显示类型</label>
-                    <div class="col-xs-12 col-sm-9 col-md-10">
+                    <div class="col-sm-9 col-xs-12">
                         <label class="radio-inline">
-                            <input type="radio" name="data[type]" value="1" @if($info['type'] === 1) checked="checked" @endif /> 横版
-                        </label>
+                            <input type="radio" name="data[type]" value="1"
+                                   @if($info['type'] == 1) checked="checked" @endif /> 横版</label>
                         <label class="radio-inline">
-                            <input type="radio" name="data[type]" value="2" @if($info['type'] === 2) checked="checked" @endif /> 竖版
-                        </label>
+                            <input type="radio" name="data[type]" value="2"
+                                   @if($info['type'] == 2) checked="checked" @endif /> 竖版</label>
                         <span class="help-block">首页显示类型</span>
                     </div>
+                    {{--<div class="col-xs-12 col-sm-9 col-md-10">
+                        <label class="radio-inline">
+                            <input type="radio" name="data[type]"  id="type-0" value="1" @if($info['type'] === 1) checked="checked" @endif /> 横版
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="data[type]" id="type-1" value="2" @if($info['type'] === 2) checked="checked" @endif /> 竖版
+                        </label>
+                        <span class="help-block">首页显示类型</span>
+                    </div>--}}
                 </div>
+
+
 
 
             <div class="form-group">
