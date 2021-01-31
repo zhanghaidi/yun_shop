@@ -140,7 +140,8 @@ class HotSpotImageController extends BaseController
         }
         $infoRs->save();
 
-        return $this->message($message);
+
+        return $this->message($message, Url::absoluteWeb('plugin.minapp-content.admin.hot_spot_image.index',['hotSpotId' => $this->hotSpotId]));
     }
 
     public function delete()
@@ -155,6 +156,7 @@ class HotSpotImageController extends BaseController
             'uniacid' => \YunShop::app()->uniacid,
         ])->delete();
 
-        return $this->message('删除成功');
+        //return $this->message('删除成功');
+        return $this->message("删除成功", Url::absoluteWeb('plugin.minapp-content.admin.hot_spot_image.index',['hotSpotId' => $this->hotSpotId]));
     }
 }
