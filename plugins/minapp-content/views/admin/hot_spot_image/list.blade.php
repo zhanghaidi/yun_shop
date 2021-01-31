@@ -88,8 +88,8 @@
                         </td>
                         <td>{{$value['create_time']}}</td>
                         <td class="text-right">
-                            <a href="{{ yzWebUrl('plugin.minapp-content.admin.system-notice.edit', ['id' => $value['id'],'hotSpotId' => $hotSpotId]) }}" title="编辑"><i class="fa fa-edit"></i></a> &nbsp;
-                            <a href="{{ yzWebUrl('plugin.minapp-content.admin.system-notice.delete', ['id' => $value['id'],'hotSpotId' => $hotSpotId]) }}" onclick="return confirm('确定删除吗');return false;"  title="删除"><i class="fa fa-trash-o"></i></a>
+                            <a href="{{ yzWebUrl('plugin.minapp-content.admin.hot-spot-image.edit', ['id' => $value['id'], 'hotSpotId' => $hotSpotId]) }}" title="编辑"><i class="fa fa-edit"></i></a> &nbsp;
+                            <a href="{{ yzWebUrl('plugin.minapp-content.admin.hot-spot-image.delete', ['id' => $value['id'],'hotSpotId' => $hotSpotId]) }}" onclick="return confirm('确定删除吗');return false;"  title="删除"><i class="fa fa-trash-o"></i></a>
                         </td>
                     </tr>
                     @endforeach
