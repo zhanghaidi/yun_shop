@@ -88,7 +88,7 @@
                         </td>
                         <td>{{$value['create_time']}}</td>
                         <td class="text-right">
-                            <a href="{{ yzWebUrl('plugin.minapp-content.admin.hot-spot-image', ['hotSpotId' => $value['id']]) }}" title="添加热区图片"><i class="fa fa-image"></i></a> &nbsp;
+                            <a href="{{ yzWebUrl('plugin.minapp-content.admin.hot-spot-image.index', ['hotSpotId' => $value['id']]) }}" title="添加热区图片"><i class="fa fa-image"></i></a> &nbsp;
                             <a href="{{ yzWebUrl('plugin.minapp-content.admin.hot-spot.edit', ['id' => $value['id']]) }}" title="编辑"><i class="fa fa-edit"></i></a> &nbsp;
                             <a href="{{ yzWebUrl('plugin.minapp-content.admin.hot-spot.delete', ['id' => $value['id']]) }}" onclick="return confirm('确定删除吗');return false;"  title="删除"><i class="fa fa-trash-o"></i></a>
                         </td>
