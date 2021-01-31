@@ -713,6 +713,36 @@ class PluginApplication extends \app\common\services\PluginApplication
                             'url' => 'plugin.minapp-content.admin.hot-spot.delete',
                             'parents' => ['minapp_content', 'banner_manage'],
                         ],
+
+                        'hot_spot_image_manage' => [
+                            'name' => '首页热区图片管理',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.hot-spot-image.index',
+                            'parents' => ['minapp_content', 'banner_manage'],
+                        ],
+                        'hot_spot_image_edit' => [
+                            'name' => '编辑热区图片',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.hot-spot-image.edit',
+                            'parents' => ['minapp_content', 'banner_manage'],
+                        ],
+                        'hot_spot_image_status' => [
+                            'name' => '热区图片显示状态管理',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.hot-spot-image.status',
+                            'parents' => ['minapp_content', 'banner_manage'],
+                        ],
+                        'hot_spot_image_del' => [
+                            'name' => '删除热区图片',
+                            'permit' => 1,
+                            'menu' => 0,
+                            'url' => 'plugin.minapp-content.admin.hot-spot-image.delete',
+                            'parents' => ['minapp_content', 'banner_manage'],
+                        ],
+
                     ],
                 ],
                 'sport_clock' => [
