@@ -93,7 +93,7 @@ class HotSpotImageController extends BaseController
                 return $this->message('修改失败', '', 'danger');
             }
 
-            return $this->message('修改成功', Url::absoluteWeb('plugin.minapp-content.admin.hot_spot_image.index'));
+            return $this->message('修改成功', Url::absoluteWeb('plugin.minapp-content.admin.hot_spot_image.index',['hotSpotId' => $this->hotSpotId]));
         }
 
         $id = (int) \YunShop::request()->id;
@@ -109,7 +109,7 @@ class HotSpotImageController extends BaseController
 
         $minappRs = DB::table('account_wxapp')->select('key', 'name')->get()->toArray();
 
-        return view('Yunshop\MinappContent::admin.system_notice.edit', [
+        return view('Yunshop\MinappContent::admin.hot_spot_image.edit', [
             'pluginName' => MinappContentService::get('name'),
             'info' => isset($infoRs) ? $infoRs : null,
             'app' => $minappRs,
