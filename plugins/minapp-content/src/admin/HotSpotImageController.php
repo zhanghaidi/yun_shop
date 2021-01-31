@@ -10,7 +10,7 @@ use Yunshop\MinappContent\models\HotSpotModel;
 use Yunshop\MinappContent\models\HotSpotImageModel;
 use Yunshop\MinappContent\services\MinappContentService;
 
-class SystemNoticeController extends BaseController
+class HotSpotImageController extends BaseController
 {
     private $pageSize = 20;
     protected $hotSpotId;
