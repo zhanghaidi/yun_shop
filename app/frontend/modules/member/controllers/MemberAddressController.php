@@ -247,15 +247,14 @@ class MemberAddressController extends ApiController
 
             $memberId = \YunShop::app()->getMemberId();
 
-            /*if ($addressModel->isdefault) {
-                //修改默认收货地址
-                $this->memberAddressRepository->cancelDefaultAddress($memberId);
+            if (\YunShop::request()->isdefault) {
+                if((!$this->memberAddressRepository->getAddressByData($params) && $addressModel->isdefault) || ($this->memberAddressRepository->getAddressByData($params) && !$addressModel->isdefault)){
+                    $addressModel->isdefault = 1;
 
-            }*/
-            if (empty($addressModel->isdefault) && \YunShop::request()->isdefault) {
-                $addressModel->isdefault = 1;
+                    $this->memberAddressRepository->cancelDefaultAddress(\YunShop::app()->getMemberId());
 
-                $this->memberAddressRepository->cancelDefaultAddress($memberId);
+                }
+
             }
 
             $addressModel->uid = $memberId;
