@@ -10,4 +10,9 @@ class HotSpotModel extends BaseModel
     const UPDATED_AT = null;
 
     public $table = 'diagnostic_service_hot_spot';
+
+    public function image()
+    {
+        return $this->hasMany('Yunshop\MinappContent\models\HotSpotImageModel', 'spot_id', 'id');
+    }
 }
