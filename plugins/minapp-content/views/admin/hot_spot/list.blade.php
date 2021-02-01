@@ -59,6 +59,7 @@
                         <th>显示样式</th>
                         <th>是否显示</th>
                         <th>添加时间</th>
+                        <th>图片数量(显示状态)</th>
                         <th class="text-right">操作</th>
                     </tr>
                 </thead>
@@ -87,6 +88,7 @@
                             </a>
                         </td>
                         <td>{{$value['create_time']}}</td>
+                        <td><a href="{{ yzWebUrl('plugin.minapp-content.admin.hot-spot-image.index', ['hotSpotId' => $value['id']]) }}">{{$value['image_count']}}</a></td>
                         <td class="text-right">
                             <a href="{{ yzWebUrl('plugin.minapp-content.admin.hot-spot-image.index', ['hotSpotId' => $value['id']]) }}" title="添加热区图片"><i class="fa fa-image"></i></a> &nbsp;
                             <a href="{{ yzWebUrl('plugin.minapp-content.admin.hot-spot.edit', ['id' => $value['id']]) }}" title="编辑"><i class="fa fa-edit"></i></a> &nbsp;

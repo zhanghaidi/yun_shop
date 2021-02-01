@@ -25,8 +25,8 @@ use Yunshop\MinappContent\services\WeixinMiniprogramService;
 
 class IndexController extends ApiController
 {
-    protected $publicAction = ['systemCategory', 'banner', 'systemSecond', 'systemLoginImage', 'hotSearch'];
-    protected $ignoreAction = ['systemCategory', 'banner', 'systemSecond', 'systemLoginImage', 'hotSearch'];
+    protected $publicAction = ['systemCategory', 'banner', 'systemSecond', 'systemLoginImage', 'hotSearch', 'hotSpot'];
+    protected $ignoreAction = ['systemCategory', 'banner', 'systemSecond', 'systemLoginImage', 'hotSearch', 'hotSpot'];
 
     public function systemCategory()
     {

@@ -17,7 +17,9 @@ class HotSpotController extends BaseController
     {
         $searchData = \YunShop::request()->search;
 
-        $list = HotSpotModel::where('uniacid', \YunShop::app()->uniacid);
+        $list = HotSpotModel::where('uniacid', \YunShop::app()->uniacid)->withCount(['image' => function($image){
+            return $image->where('status', 1);
+        }]);
         if (isset($searchData['datelimit']['start']) && isset($searchData['datelimit']['end']) &&
             strtotime($searchData['datelimit']['start']) !== false && strtotime($searchData['datelimit']['end']) !== false
         ) {
