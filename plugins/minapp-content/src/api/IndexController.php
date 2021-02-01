@@ -14,6 +14,8 @@ use Yunshop\MinappContent\models\AcupointModel;
 use Yunshop\MinappContent\models\ArticleModel;
 use Yunshop\MinappContent\models\BannerModel;
 use Yunshop\MinappContent\models\BannerPositionModel;
+use Yunshop\MinappContent\models\HotSpotModel;
+use Illuminate\Support\Facades\Cache;
 use Yunshop\MinappContent\models\PostModel;
 use Yunshop\MinappContent\models\SearchModel;
 use Yunshop\MinappContent\models\ShareQrcodeModel;
@@ -531,5 +533,29 @@ class IndexController extends ApiController
         $return['total'] = $listRs->total();
         $return['totalPage'] = $listRs->lastPage();
         return $this->successJson('成功获取商品列表', $return);
+    }
+
+    //    首页热区
+    public function hotSpot()
+    {
+        $cache_key = 'hotSpot' . $this->uniacid;
+        $hotSpot = Cache::get($cache_key);
+        if(!$hotSpot){
+            $hotSpot = HotSpotModel::uniacid()
+                ->select('id','list_order','title','type')
+                ->withCount(['image' => function($image){
+                    return $image->where('status', 1);
+                }])
+                ->with(['image' => function($image){
+                    return $image->select('id','list_order','image','jumpurl','appid')->where('status', 1);
+                }])
+                ->where(['status' => 1])
+                ->orderBy('display_order', 'desc')
+                ->orderBy('id', 'asc')->get();
+            Cache::forget($cache_key);
+            Cache::add($cache_key, $hotSpot, 7200);
+        }
+        return $this->successJson('ok',$hotSpot);
+
     }
 }
