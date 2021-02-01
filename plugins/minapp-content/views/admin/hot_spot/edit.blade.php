@@ -28,15 +28,13 @@
                 </div>
             </div>
 
-            <div class="form-group">
+            {{--<div class="form-group">
                 <label class="col-xs-12 col-sm-3 col-md-2 control-label">标题 <span style="color: red">*</span></label>
                 <div class="col-xs-12 col-sm-9 col-md-10">
                     <input type="text" name="data[title]" class="form-control" value="{{$info['title']}}" required>
                     <span class="help-block">请填写热区标题</span>
                 </div>
-            </div>
-
-
+            </div>--}}
 
 
             <div class="form-group">
@@ -52,7 +50,7 @@
                 </div>
             </div>
 
-                <div class="form-group">
+                {{--<div class="form-group">
                     <label class="col-xs-12 col-sm-3 col-md-2 control-label">显示类型</label>
                     <div class="col-sm-9 col-xs-12">
                         <label class="radio-inline">
@@ -62,7 +60,7 @@
                             <input type="radio" name="data[type]" value="2"
                                    @if($info['type'] == 2) checked="checked" @endif /> 竖版</label>
                         <span class="help-block">首页显示类型</span>
-                    </div>
+                    </div>--}}
                     {{--<div class="col-xs-12 col-sm-9 col-md-10">
                         <label class="radio-inline">
                             <input type="radio" name="data[type]"  id="type-0" value="1" @if($info['type'] === 1) checked="checked" @endif /> 横版
