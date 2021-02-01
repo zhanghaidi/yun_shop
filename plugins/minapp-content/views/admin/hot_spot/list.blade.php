@@ -55,11 +55,12 @@
                     <tr>
                         <th width="100">ID</th>
                         <th width="100">排序</th>
-                        <th>热区标题</th>
-                        <th>显示样式</th>
+                        {{--<th>热区标题</th>
+                        <th>显示样式</th>--}}
                         <th>是否显示</th>
                         <th>添加时间</th>
                         <th>图片数量(显示状态)</th>
+                        <th>图片</th>
                         <th class="text-right">操作</th>
                     </tr>
                 </thead>
@@ -68,8 +69,8 @@
                     <tr>
                         <td>{{$value['id']}}</td>
                         <td>{{$value['list_order']}}</td>
-                        <td>{{$value['title']}}</td>
-                        <td>
+                        {{-- <td>{{$value['title']}}</td>
+                       <td>
 
                                 @if($value['type'] == 1)
                                     <span class="label label-primary">横版</span>
@@ -77,7 +78,7 @@
                                     <span class="label label-success">竖版</span>
                                 @endif
 
-                        </td>
+                        </td>--}}
                         <td>
                             <a href="{{ yzWebUrl('plugin.minapp-content.admin.hot-spot.status', ['id' => $value['id']]) }}">
                             @if($value['status'] == 1)
@@ -89,6 +90,12 @@
                         </td>
                         <td>{{$value['create_time']}}</td>
                         <td><a href="{{ yzWebUrl('plugin.minapp-content.admin.hot-spot-image.index', ['hotSpotId' => $value['id']]) }}">{{$value['image_count']}}</a></td>
+                        <td>
+                            @foreach($value['image'] as $image)
+                                <a href="{{tomedia($image['image'])}}" target="_blank"><img src="{{tomedia($image['image'])}}" width="120/{{$value['image_count']}}"></a>
+                            @endforeach
+                            
+                        </td>
                         <td class="text-right">
                             <a href="{{ yzWebUrl('plugin.minapp-content.admin.hot-spot-image.index', ['hotSpotId' => $value['id']]) }}" title="添加热区图片"><i class="fa fa-image"></i></a> &nbsp;
                             <a href="{{ yzWebUrl('plugin.minapp-content.admin.hot-spot.edit', ['id' => $value['id']]) }}" title="编辑"><i class="fa fa-edit"></i></a> &nbsp;

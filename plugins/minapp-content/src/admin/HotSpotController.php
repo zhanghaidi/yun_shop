@@ -7,6 +7,7 @@ use app\common\helpers\PaginationHelper;
 use app\common\helpers\Url;
 use Illuminate\Support\Facades\DB;
 use Yunshop\MinappContent\models\HotSpotModel;
+use Yunshop\MinappContent\models\HotSpotImageModel;
 use Yunshop\MinappContent\services\MinappContentService;
 
 class HotSpotController extends BaseController
@@ -17,9 +18,15 @@ class HotSpotController extends BaseController
     {
         $searchData = \YunShop::request()->search;
 
-        $list = HotSpotModel::where('uniacid', \YunShop::app()->uniacid)->withCount(['image' => function($image){
-            return $image->where('status', 1);
-        }]);
+        $list = HotSpotModel::where('uniacid', \YunShop::app()->uniacid)
+            ->withCount(['image' => function($image){
+                return $image->where('status', 1);
+            }])
+            ->with(['image' => function($image){
+                return $image->select('id','spot_id','list_order','image','jumpurl','appid')->where('status', 1)
+                    ->orderBy('list_order', 'desc');
+
+            }]);
         if (isset($searchData['datelimit']['start']) && isset($searchData['datelimit']['end']) &&
             strtotime($searchData['datelimit']['start']) !== false && strtotime($searchData['datelimit']['end']) !== false
         ) {
@@ -71,9 +78,9 @@ class HotSpotController extends BaseController
                 $notice->uniacid = \YunShop::app()->uniacid;
             }
             $notice->list_order = isset($data['list_order']) ? $data['list_order'] : 0;
-            $notice->title = isset($data['title']) ? $data['title'] : '';
+            //$notice->title = isset($data['title']) ? $data['title'] : '';
             $notice->status = isset($data['status']) ? $data['status'] : 0;
-            $notice->type = isset($data['type']) ? $data['type'] : 0;
+            //$notice->type = isset($data['type']) ? $data['type'] : 0;
             $notice->save();
             if (!isset($notice->id) || $notice->id <= 0) {
                 return $this->message('修改失败', '', 'danger');
@@ -133,11 +140,17 @@ class HotSpotController extends BaseController
             return $this->message('ID参数错误', '', 'danger');
         }
 
-        HotSpotModel::where([
+        $res = HotSpotModel::where([
             'id' => $id,
             'uniacid' => \YunShop::app()->uniacid,
         ])->delete();
 
+        if($res){
+            HotSpotImageModel::where([
+                'spot_id' => $id,
+                'uniacid' => \YunShop::app()->uniacid,
+            ])->delete();
+        }
         return $this->message('删除成功');
     }
 }
