@@ -248,9 +248,9 @@ class MemberAddressController extends ApiController
             $memberId = \YunShop::app()->getMemberId();
 
             if ($addressModel->isdefault) {
-                $addressModel->isdefault = 1;
                 //修改默认收货地址
                 $this->memberAddressRepository->cancelDefaultAddress($memberId);
+                $addressModel->isdefault = 1;
             }
 
             $addressModel->uid = $memberId;
