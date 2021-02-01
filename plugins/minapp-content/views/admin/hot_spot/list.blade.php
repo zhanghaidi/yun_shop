@@ -92,9 +92,9 @@
                         <td><a href="{{ yzWebUrl('plugin.minapp-content.admin.hot-spot-image.index', ['hotSpotId' => $value['id']]) }}">{{$value['image_count']}}</a></td>
                         <td>
                             @foreach($value['image'] as $image)
-                                <a href="{{tomedia($image['image'])}}" target="_blank"><img src="{{tomedia($image['image'])}}" width="120/{{$value['image_count']}}"></a>
+                                <a href="{{tomedia($image['image'])}}" target="_blank"><img src="{{tomedia($image['image'])}}" width="{{120/$value['image_count']}}"></a>
                             @endforeach
-                            
+
                         </td>
                         <td class="text-right">
                             <a href="{{ yzWebUrl('plugin.minapp-content.admin.hot-spot-image.index', ['hotSpotId' => $value['id']]) }}" title="添加热区图片"><i class="fa fa-image"></i></a> &nbsp;
