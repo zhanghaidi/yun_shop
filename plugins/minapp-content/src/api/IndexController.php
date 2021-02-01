@@ -547,11 +547,13 @@ class IndexController extends ApiController
                     return $image->where('status', 1);
                 }])
                 ->with(['image' => function($image){
-                    return $image->select('id','list_order','image','jumpurl','appid')->where('status', 1);
+                    return $image->select('id','list_order','image','jumpurl','appid')->where('status', 1)
+                        ->orderBy('list_order', 'desc');
+
                 }])
                 ->where(['status' => 1])
-                ->orderBy('display_order', 'desc')
-                ->orderBy('id', 'asc')->get();
+                ->orderBy('list_order', 'desc')
+                ->get();
             Cache::forget($cache_key);
             Cache::add($cache_key, $hotSpot, 7200);
         }
