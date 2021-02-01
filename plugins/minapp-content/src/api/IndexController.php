@@ -547,7 +547,7 @@ class IndexController extends ApiController
                     return $image->where('status', 1);
                 }])
                 ->with(['image' => function($image){
-                    return $image->select('id','list_order','image','jumpurl','appid')->where('status', 1)
+                    return $image->select('id','spot_id','list_order','image','jumpurl','appid')->where('status', 1)
                         ->orderBy('list_order', 'desc');
 
                 }])
