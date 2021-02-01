@@ -241,7 +241,7 @@ class MemberAddressController extends ApiController
             ];
 
             //增加收货地址时去重校验
-            $addressModel = $this->memberAddressRepository->where($params)->first() ? $this->memberAddressRepository->where($params)->first() : $this->memberAddressRepository->fill($data);
+            $addressModel = $this->memberAddressRepository->getAddressByData($params) ? $this->memberAddressRepository->getAddressByData($params) : $this->memberAddressRepository->fill($data);
 
             //$addressModel = $this->memberAddressRepository->fill($data);
 

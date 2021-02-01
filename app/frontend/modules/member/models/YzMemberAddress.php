@@ -38,6 +38,19 @@ class YzMemberAddress extends \app\common\models\YzMemberAddress
     }
 
     /*
+     *  Get the receiving address information through the receiving address Data
+     *
+     *  @param array $addressData
+     *
+     *  @return array
+     * */
+    public static function getAddressByData($addressData)
+    {
+        return static::uniacid()->where($addressData)->first();
+    }
+
+
+    /*
      *  Delete the receiving address by receiving address ID
      *
      *  @param int $addressId
