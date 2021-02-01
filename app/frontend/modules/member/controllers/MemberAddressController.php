@@ -227,9 +227,23 @@ class MemberAddressController extends ApiController
             if(\Setting::get('shop.trade.is_street')){
                 $data['street'] = request()->input('street', '');
             }
-            $addressModel = $this->memberAddressRepository->fill($data);
+//            增加获取添加收货地址去重校验
+            $params = [
+                'uid' => \YunShop::app()->getMemberId(),
+                'uniacid' => \YunShop::app()->uniacid,
+                'username'  => \YunShop::request()->username,
+                'mobile'    => \YunShop::request()->mobile,
+                'zipcode'   => '',
+                'province'  => request()->input('province', ''),
+                'city'      => request()->input('city', ''),
+                'district'  =>  request()->input('district', ''),
+                'address'   => trim(\YunShop::request()->address)
+            ];
 
+            //增加收货地址时去重校验
+            $addressModel = $this->memberAddressRepository->where($params)->first() ? $this->memberAddressRepository->where($params)->first() : $this->memberAddressRepository->fill($data);
 
+            //$addressModel = $this->memberAddressRepository->fill($data);
 
             $memberId = \YunShop::app()->getMemberId();
 
