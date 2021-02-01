@@ -37,6 +37,21 @@ class MemberAddress extends \app\common\models\MemberAddress
         return static::uniacid()->where('id', $addressId)->first();
     }
 
+
+    /*
+     *  Get the receiving address information through the receiving address Data
+     *
+     *  @param array $addressData
+     *
+     *  @return array
+     * */
+    public static function getAddressByData($addressData)
+    {
+        return static::uniacid()->where($addressData)->first();
+    }
+
+
+
     /*
      *  Delete the receiving address by receiving address ID
      *
