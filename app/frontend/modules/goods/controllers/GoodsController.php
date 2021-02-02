@@ -623,7 +623,8 @@ class GoodsController extends GoodsApiController
         if ($list['total'] > 0) {
             $data = collect($list['data'])->map(function ($rows) {
                 return collect($rows)->map(function ($item, $key) {
-                    if ($key == 'thumb') {
+
+                    if ($key == 'thumb' || $key == 'short_thumb') {
                         return yz_tomedia($item);
                     } else {
                         return $item;
