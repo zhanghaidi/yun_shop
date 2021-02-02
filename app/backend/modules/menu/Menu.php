@@ -5075,7 +5075,7 @@ class Menu
                     ],
                 ],
             ],
-            'jiushi_sms' => [
+            /*'jiushi_sms' => [
                 'name'             => '发短信',
                 'url'              => 'jiushisms.jiushisms.sendsms',
                 'url_params'       => '',
@@ -5153,7 +5153,7 @@ class Menu
 
                 ]
 
-            ],
+            ],*/
 
         ];
     }
