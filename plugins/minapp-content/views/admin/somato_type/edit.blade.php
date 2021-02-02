@@ -47,6 +47,18 @@
                 </div>
             </div>
 
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">易患疾病：</label>
+                    <div class="col-xs-12 col-sm-9 col-md-10">
+                        <select name="data[disease][]" data-placeholder="请选择体质易患疾病" class="form-control select2" multiple>
+                            @foreach($disease as $item)
+                                <option value="{{$item['id']}}"@if(in_array($item['id'], $info['disease'])) selected @endif>{{$item['name']}}</option>
+                            @endforeach
+                        </select>
+                        {{--<span class="help-block"><a href="{{ yzWebUrl('plugin.minapp-content.admin.label.edit') }}" target="_blank"><i class="fa fa-plus-circle"></i> 添加症状标签</a></span>--}}
+                    </div>
+                </div>
+
             <div class="form-group">
                 <label class="col-xs-12 col-sm-3 col-md-2 control-label">体质调理方案</label>
                 <div class="col-xs-12 col-sm-9 col-md-10">
