@@ -391,7 +391,7 @@ class SomatoController extends ApiController
                 throw new AppException('小程序码生成错误');
             }
         } catch (\Exception $e) {
-            Log::info("生成小程序码失败", [
+            \Log::info("生成小程序码失败", [
                 'qrcode' => isset($qrcode) ? $qrcode : '',
                 'page' => $page,
                 'scene' => $scene,
