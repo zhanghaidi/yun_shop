@@ -108,12 +108,19 @@
             </div>
 
             <div class="form-group">
-                <label class="col-xs-12 col-sm-3 col-md-2 control-label">文章作者/来源</label>
+                <label class="col-xs-12 col-sm-3 col-md-2 control-label">文章作者</label>
                 <div class="col-xs-12 col-sm-9 col-md-10">
                     <input type="text" name="data[author]" class="form-control" value="{{$info['author']}}">
                     <span class="help-block">请填写文章作者/来源</span>
                 </div>
             </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">作者头像</label>
+                    <div class="col-xs-12 col-sm-9 col-md-10">
+                        {!! app\common\helpers\ImageHelper::tplFormFieldImage('data[avatar]', $info['avatar'])!!}
+                        <span class="help-block">文章作者头像</span>
+                    </div>
+                </div>
 
             <div class="form-group">
                 <label class="col-xs-12 col-sm-3 col-md-2 control-label">是否显示</label>
