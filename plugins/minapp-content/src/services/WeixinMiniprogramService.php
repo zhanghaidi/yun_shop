@@ -4,8 +4,8 @@ namespace Yunshop\MinappContent\services;
 
 use app\common\facades\Setting;
 use app\common\modules\wechat\UnifyAccesstoken;
-use app\common\AppExceptions\AppAppException;
-use app\common\AppExceptions\ShopAppException;
+use app\common\exceptions\AppException;
+use app\common\exceptions\ShopException;
 use GuzzleHttp\Client as GuzzleHttp;
 
 class WeixinMiniprogramService
@@ -18,7 +18,7 @@ class WeixinMiniprogramService
     {
         if (!preg_match('/[0-9a-zA-Z\!\#\$\&\'\(\)\*\+\,\/\:\;\=\?\@\-\.\_\~]{1,32}/', $scene)) {
             
-            throw new AppAppException('场景值不合法');
+            throw new AppException('场景值不合法');
         }
         if ($width < 280 || $width > 1280) {
             throw new AppException('二维码的宽度不合法');

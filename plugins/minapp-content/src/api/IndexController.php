@@ -5,8 +5,8 @@ namespace Yunshop\MinappContent\api;
 use app\common\components\ApiController;
 use app\common\facades\Setting;
 use app\common\models\Goods;
-use app\common\AppExceptions\AppAppException;
-use app\common\AppExceptions\ShopAppException;
+use app\common\exceptions\AppException;
+use app\common\exceptions\ShopException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Storage;
@@ -440,7 +440,7 @@ class IndexController extends ApiController
             if (!isset($qrcode->id) || !isset($qrcode->qrcode)) {
                 throw new AppException('小程序码生成错误');
             }
-        } catch (AppException $e) {
+        } catch (\Exception $e) {
             Log::info("生成小程序码失败", [
                 'qrcode' => isset($qrcode) ? $qrcode : '',
                 'page' => $page,
@@ -470,7 +470,7 @@ class IndexController extends ApiController
                 ],
                 'is_hyaline' => true,
             ]);
-        } catch (AppException $e) {
+        } catch (\Exception $e) {
             Log::info("生成小程序码失败", [
                 'response' => isset($qrResponse) ? $qrResponse : '',
                 'page' => $page,

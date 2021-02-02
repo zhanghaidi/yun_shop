@@ -7,8 +7,6 @@
  * Time: 15:20
  */
 namespace app\common\modules\wechat;
-use app\common\exceptions\AppException;
-use app\common\exceptions\ShopException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use app\common\models\AccountWechats;
@@ -101,12 +99,15 @@ class UnifyAccesstoken
         }else{
             $type = 4;
         }
+
         $url = "https://www.aijuyi.net/api/accesstoken.php?type={$type}&appid={$appid}&secret=secret";
+
         $res = ihttp_get($url);
         $content = @json_decode($res['content'],true);
-        if(!$content['accesstoken']){
-            throw new AppException('调用生产统一access_tokenAPI出错');
+        if(!$content['accesstoken'] || array_key_exists('errno',$content['accesstoken'])){
+            return false;
         }
+
         return $content['accesstoken'];
 
     }
