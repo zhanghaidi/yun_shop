@@ -85,6 +85,9 @@ return [
 //通知设置
     'notice_set_title'          => '通知设置',
     'sign_notice'               => $sign . '通知',
+    'sign_remind_template'      => '每日签到提醒模板消息',
+    'sign_remind_wechat'        => '公众号提醒',
+    'sign_remind_minapp'        => '小程序提醒',
 
 
 //权限操作

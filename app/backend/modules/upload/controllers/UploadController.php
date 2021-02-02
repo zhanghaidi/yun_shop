@@ -228,7 +228,7 @@ class UploadController extends BaseController
                 $info['state'] = 'SUCCESS';
                 die(json_encode($info));
             }
-        } elseif ($type == 'video') {
+        } elseif ($type == 'video' || $type == 'audio') {
             if ($file->getClientSize() > 50 * 1024 * 1024) {
                 return $this->errorJson('资源过大.');
             }
@@ -341,7 +341,7 @@ class UploadController extends BaseController
                     'uid' => $_W['uid'],
                     'filename' => safe_gpc_html(htmlspecialchars_decode($originalName, ENT_QUOTES)),
                     'attachment' => $url,
-                    'type' => 3,
+                    'type' => $type =='video' ? 3 : 2,
                     'createtime' => TIMESTAMP,
                     'module_upload_dir' => '',
                     'group_id' => 0,

@@ -36,16 +36,7 @@ class LiveRoomController extends ApiController
 
     public function __construct()
     {
-        $member_id = \YunShop::app()->getMemberId();
-        if(!$member_id){
-            response()->json([
-                'result' => 41009,
-                'msg' => '请登录',
-                'data' => '',
-            ], 200, ['charset' => 'utf-8'])->send();
-            exit;
-        }
-
+        parent::preAction();
     }
 
     public function index()
@@ -108,7 +99,7 @@ class LiveRoomController extends ApiController
             return  $this->errorJson('用户ID为空');
         }
 
-        $_model = CloudLiveRoom::where('id', $id)
+        $_model = CloudLiveRoom::uniacid()->where('id', $id)
             ->withCount('hasManyLike','hasManySubscription')
             ->first();
 
@@ -122,8 +113,8 @@ class LiveRoomController extends ApiController
         //获取用户订阅状态
         $_model->is_subscription = 0;
         $_model->is_like = 0;
-        $userSubscription = CloudLiveRoomSubscription::where(['room_id'=>$_model->id,'user_id'=>$member_id])->first();
-        $userLike = CloudLiveRoomLike::where(['room_id'=>$_model->id,'user_id'=>$member_id])->first();
+        $userSubscription = CloudLiveRoomSubscription::uniacid()->where(['room_id'=>$_model->id,'user_id'=>$member_id])->first();
+        $userLike = CloudLiveRoomLike::uniacid()->where(['room_id'=>$_model->id,'user_id'=>$member_id])->first();
         if(!empty($userSubscription)){
             $_model->is_subscription = 1;
         }
@@ -160,7 +151,7 @@ class LiveRoomController extends ApiController
             return  $this->errorJson('直播间ID为空');
         }
 
-        $_model = CloudLiveRoom::where('id',$id)->first();
+        $_model = CloudLiveRoom::uniacid()->where('id',$id)->first();
         if (!$_model) {
             return $this->errorJson('未获取到直播间');
         }

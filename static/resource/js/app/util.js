@@ -712,6 +712,33 @@
 	// 	});
 	//
 	// }; // end of audio
+    util.voice = function(e, t, i, o) {
+        var n = {
+            type: "audio",
+            direct: !1,
+            multiple: !1,
+            path: "",
+            dest_dir: "",
+			global : false,
+            needType: 2
+		};
+        e && (n.path = e),
+        !i && o && (i = o),
+            n = $.extend({},
+				n, i),
+			require(["fileUploader"],
+                function(e) {
+                    e.upload_url('./index.php?c=site&a=entry&m=yun_shop&do=shop&route=upload.upload.upload&upload_type=');
+                    e.image_url('./index.php?c=site&a=entry&m=yun_shop&do=shop&route=upload.upload.getImage&local=local&group_id=-999');
+                    e.fetch_url('./index.php?c=site&a=entry&m=yun_shop&do=shop&route=upload.upload.fetch');
+                    e.delet_url('./index.php?c=site&a=entry&m=yun_shop&do=shop&route=upload.upload.delete');
+                    e.video_url('./index.php?c=site&a=entry&m=yun_shop&do=shop&route=upload.upload.getVideo&local=local&type=voice&pagesize=5');
+                    e.show(function(e) {
+                            e && $.isFunction(t) && t(e)
+                        },
+                        n);
+                })
+    },
     util.audio = function(e, t, i, o) {
         var n = {
             type: "voice",

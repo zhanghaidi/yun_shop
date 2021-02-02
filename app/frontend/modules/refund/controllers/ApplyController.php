@@ -11,6 +11,7 @@ use app\frontend\modules\refund\services\RefundMessageService;
 use app\frontend\modules\order\services\OrderService; //前端订单service
 use Request;
 use app\frontend\modules\order\services\MiniMessageService;
+use app\common\facades\Setting;
 
 /**
  * Created by PhpStorm.
@@ -159,6 +160,12 @@ class ApplyController extends ApiController
         }
 
         if($order->jushuitan_status == 1){
+            $jushuitanSetRs = Setting::get('shop.order');
+            $jushuitanSetRs = array_filter($jushuitanSetRs);
+            if (!isset($jushuitanSetRs['jushuitan_shop_id'])){
+                return false;
+            }
+
             $address = explode(" ", $order->address->address);
             $goods = $order->hasManyOrderGoods->toArray();
             $items = [];
@@ -187,7 +194,7 @@ class ApplyController extends ApiController
                     'seller_account' => $order->address->mobile, //string卖家支付账号，最大 50 （必传项）
                     'buyer_account' => $order->shop_name //string买家支付账号，最大 200 （必传项）
                 ],
-                'shop_id' => 10820686, //int店铺编号 （必传项）
+                'shop_id' => (int) $jushuitanSetRs['jushuitan_shop_id'], //int店铺编号 （必传项）
                 'so_id' => $order->order_sn,  //string订单编号 （必传项）
                 'order_date' => $order->pay_time->toDateTimeString(),//stringCarbon::$order->create_time, //订单日期 （必传项）
                 'shop_status' => 'WAIT_SELLER_SEND_GOODS',  //string（必传项）订单：等待买家付款=WAIT_BUYER_PAY，等待卖家发货=WAIT_SELLER_SEND_GOODS,等待买家确认收货=WAIT_BUYER_CONFIRM_GOODS, 交易成功=TRADE_FINISHED, 付款后交易关闭=TRADE_CLOSED,付款前交易关闭=TRADE_CLOSED_BY_TAOBAO；发货前可更新
