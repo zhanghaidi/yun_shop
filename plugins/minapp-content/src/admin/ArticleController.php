@@ -153,6 +153,7 @@ class ArticleController extends BaseController
             }
             $article->video = isset($data['video']) ? trim($data['video']) : '';
             $article->author = isset($data['author']) ? trim($data['author']) : '';
+            $article->avatar = isset($data['avatar']) ? trim($data['avatar']) : '';
             $article->status = isset($data['status']) ? intval($data['status']) : 0;
             $article->content = $data['content'];
             $article->images = json_encode(ArticleModel::getImageFromHtml(html_entity_decode($data['content'])));

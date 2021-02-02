@@ -105,7 +105,7 @@
                         <th style="width: 320px;">文章标题</th>
                         <th>所属分类</th>
                         <th>文章视频</th>
-                        <th>文章来源/作者</th>
+                        <th>文章作者</th>
                         <th>是否显示</th>
                         <th>是否推荐</th>
                         <th style="width: 66px;">浏览量
@@ -148,7 +148,12 @@
                                 </video>
                             </a>
                         </td>
-                        <td>{{$value['author']}}</td>
+                        <td class="text-center">
+                            <a href="{{ tomedia($value['avatar']) }}" target="_blank">
+                                <img src="{{tomedia($value['avatar'])}}" width="50" />
+                            </a><br>
+                            {{$value['author']}}
+                        </td>
                         <td>
                             <a href="{{ yzWebUrl('plugin.minapp-content.admin.article.status', ['id' => $value['id']]) }}">
                             @if($value['status'] == 1)
