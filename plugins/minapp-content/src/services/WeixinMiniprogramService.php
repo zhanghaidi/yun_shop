@@ -4,7 +4,8 @@ namespace Yunshop\MinappContent\services;
 
 use app\common\facades\Setting;
 use app\common\modules\wechat\UnifyAccesstoken;
-use Exception;
+use app\common\exceptions\AppException;
+use app\common\exceptions\ShopException;
 use GuzzleHttp\Client as GuzzleHttp;
 
 class WeixinMiniprogramService
@@ -16,20 +17,21 @@ class WeixinMiniprogramService
     public static function getCodeUnlimit(string $scene, string $page = '', int $width = 430, array $option = [])
     {
         if (!preg_match('/[0-9a-zA-Z\!\#\$\&\'\(\)\*\+\,\/\:\;\=\?\@\-\.\_\~]{1,32}/', $scene)) {
-            throw new Exception('场景值不合法');
+            
+            throw new AppException('场景值不合法');
         }
         if ($width < 280 || $width > 1280) {
-            throw new Exception('二维码的宽度不合法');
+            throw new AppException('二维码的宽度不合法');
         }
 
         $minAppRs = Setting::get('plugin.min_app');
         if (!isset($minAppRs['key']) || !isset($minAppRs['secret'])) {
-            throw new Exception('小程序APPID和APPSECRET获取错误');
+            throw new AppException('小程序APPID和APPSECRET获取错误');
         }
 
-        $accessToken = UnifyAccesstoken::getAccessToken($minAppRs['key']);
+        $accessToken = UnifyAccesstoken::unifiedProductionAccessToken($minAppRs['key']);
         if ($accessToken === false) {
-            throw new Exception('AccessToken获取错误');
+            throw new AppException('AccessToken获取错误');
         }
 
         $postBody = [
@@ -63,7 +65,7 @@ class WeixinMiniprogramService
         $http = new GuzzleHttp();
         $response = $http->request('POST', $url, $requestOption);
         if ($response->getStatusCode() != 200) {
-            throw new Exception('访问公众平台接口失败');
+            throw new AppException('访问公众平台接口失败');
         }
         $responseBody = $response->getBody()->getContents();
         return $responseBody;

@@ -11,6 +11,7 @@ use Yunshop\MinappContent\models\ArticleModel;
 use Yunshop\MinappContent\models\LabelModel;
 use Yunshop\MinappContent\models\SomatoTypeModel;
 use Yunshop\MinappContent\services\MinappContentService;
+use Illuminate\Support\Facades\DB;
 
 class SomatoTypeController extends BaseController
 {
@@ -75,6 +76,7 @@ class SomatoTypeController extends BaseController
             $type->name = $data['name'];
             $type->description = $data['description'];
             $type->symptom = isset($data['symptom']) ? implode(',', $data['symptom']) : '';
+            $type->disease = isset($data['disease']) ? implode(',', $data['disease']) : '';
             $type->content = isset($data['content']) ? $data['content'] : '';
             $type->recommend_goods = isset($data['recommend_goods']) ? implode(',', $data['recommend_goods']) : '';
             $type->recommend_article = isset($data['recommend_article']) ? implode(',', $data['recommend_article']) : '';
@@ -98,6 +100,7 @@ class SomatoTypeController extends BaseController
             }
 
             $infoRs->symptom = explode(',', $infoRs->symptom);
+            $infoRs->disease = explode(',', $infoRs->disease);
             $infoRs->recommend_goods = explode(',', $infoRs->recommend_goods);
             $infoRs->recommend_article = explode(',', $infoRs->recommend_article);
             $infoRs->recommend_acupotion = explode(',', $infoRs->recommend_acupotion);
@@ -107,6 +110,10 @@ class SomatoTypeController extends BaseController
             'uniacid' => \YunShop::app()->uniacid,
             'status' => 1,
             'type' => 2,
+        ])->get()->toArray();
+
+        $diseaseRs = DB::table("diagnostic_service_disease")->select('id', 'name')->where([
+            'status' => 1,
         ])->get()->toArray();
 
         $acupointRs = AcupointModel::select('id', 'name')->where([
@@ -133,6 +140,7 @@ class SomatoTypeController extends BaseController
             'acupoint' => $acupointRs,
             'goods' => $goodsRs,
             'article' => $articleRs,
+            'disease' => $diseaseRs
         ]);
     }
 
