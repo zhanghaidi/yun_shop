@@ -8,12 +8,19 @@
 namespace app\backend\modules\tracking\models;
 
 use Illuminate\Database\Eloquent\Model;
+use app\common\scopes\UniacidScope;
 
 class GoodsTrackingStatistics extends Model
 {
+
     protected $table = 'diagnostic_service_goods_tracking_statistics';
 
 
+    public static function boot()
+    {
+        parent::boot();
+        self::addGlobalScope(new UniacidScope());
+    }
     /**
      * 获取与上报埋点相关的商品。
      * return $this->hasOne('App\Goods', 'foreign_key', 'local_key');

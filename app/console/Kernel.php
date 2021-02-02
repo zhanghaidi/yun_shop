@@ -35,7 +35,15 @@ class Kernel extends ConsoleKernel
         CourseReminder::class,
         NotPaidOrderNotice::class,
         SyncWxappLiveRoom::class,
-//        SignReminder::class,
+        // SignReminder::class,
+
+        'app\console\Commands\CourseReminderAloneMiniApp',
+        'app\console\Commands\LiveReminderAloneMiniApp',
+        'app\console\Commands\NotPaidOrderNoticeAloneMiniApp',
+        'app\console\Commands\SignReminderAloneMiniApp',
+
+        'app\console\Commands\RecommendArticle', //文章推荐commands
+        'app\console\Commands\RecommendPost',   //达人推荐commands
     ];
     /**
      * The bootstrap classes for the application.
@@ -64,12 +72,12 @@ class Kernel extends ConsoleKernel
         //          ->hourly();
 
         // 每分钟执行新课程视频发布提醒
-        $schedule->command('command:coursereminder')
+        $schedule->command('command:coursereminder-aloneminiapp')
             ->withoutOverlapping()
             ->everyMinute();
 
         // 每分钟执行待支付订单提醒
-        $schedule->command('command:notpaidordernotice')
+        $schedule->command('command:notpaidordernotice-aloneminiapp')
             ->withoutOverlapping()
             ->everyMinute();
 
@@ -79,14 +87,26 @@ class Kernel extends ConsoleKernel
             ->everyMinute();
 
         // 定时执行 未签到用户签到提醒
-        $schedule->command('command:signreminder')
+        $schedule->command('command:signreminder-aloneminiapp')
             ->withoutOverlapping()
             ->cron('0 10,15,18,20 * * *');
 
         //每分钟执行直播间订阅开播提醒
-        $schedule->command('command:livereminder')
+        $schedule->command('command:livereminder-aloneminiapp')
             ->withoutOverlapping()
             ->everyMinute();
+
+        //每日凌晨执行更新推荐文章
+        $schedule->command('command:recommendarticle')
+            ->withoutOverlapping()
+            ->daily();
+
+        //每日凌晨执行更新推荐达人
+        $schedule->command('command:recommendpost')
+            ->withoutOverlapping()
+            ->daily();
+
+
     }
 
     /**

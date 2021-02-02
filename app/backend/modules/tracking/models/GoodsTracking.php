@@ -10,9 +10,16 @@ namespace app\backend\modules\tracking\models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use app\common\scopes\UniacidScope;
 
 class GoodsTracking extends Model
 {
+    public static function boot()
+    {
+        parent::boot();
+        self::addGlobalScope(new UniacidScope());
+    }
+
     protected $table = 'diagnostic_service_goods_tracking';
     public $timestamps = false;
 

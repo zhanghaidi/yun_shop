@@ -611,14 +611,15 @@
                             mode: f,
                             psize: 5
                         };
-                    else var g = "./index.php?c=utility&a=file&do=local&type=audio&pagesize=5",
+                    else var g = "./index.php?c=utility&a=file&do=voice&local=local",
+                    // else var g = "./index.php?c=site&a=entry&m=yun_shop&do=shop&route=upload.upload.getImage&local=local&group_id=-999",
                         h = {
                             page: c
                         };
                     var i = d.modalobj.find("#history_audio");
                     return a.getJSON(g, h,
                         function(c) {
-                            c = c.message,
+                            c = c.message.message,
                                 i.find(".history-content").html('<i class="fa fa-spinner fa-pulse"></i>'),
                                 b.isEmpty(c.items) ? i.find(".history-content").css("text-align", "center").html('<i class="fa fa-info-circle"></i> 暂无数据') : (i.data("attachment", c.items), i.find(".history-content").empty(), i.find(".history-content").html(b.template(d.buildHtml()[d.options.isWechat ? "weixin_localAudioDialogLi": "localAudioDialogLi"])(c)), i.find("#image-list-pager").html(c.page), i.find(".pagination a").click(function() {
                                     d.localAudioPage(a(this).attr("page"))
@@ -630,7 +631,14 @@
                         i.find(".modal-footer .btn-primary").unbind("click").click(function() {
                             var b = [];
                             i.find(".history-content .btn-primary").each(function() {
-                                b.push(d.modalobj.find("#history_audio").data("attachment")[a(this).attr("attachid")]),
+                                // b.push(d.modalobj.find("#history_audio").data("attachment")[a(this).attr("attachid")]),
+                                var dd = d.modalobj.find("#history_audio").data("attachment");
+                                for (cc in dd) {
+                                    if (dd[cc].id == a(this).attr("attachid")) {
+                                        var ee = dd[cc]
+                                    }
+                                };
+                                b.push(ee),
                                     a(this).removeClass("btn-primary")
                             }),
                                 d.finish(b)

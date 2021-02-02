@@ -11,7 +11,7 @@
         /* 滑块选择小白点 */
         .el-switch.is-checked .el-switch__core::after {left: 100%;margin-left: -17px;}
         .el-switch__core::after {content: "";position: absolute;top: 1px;left: 1px;border-radius: 100%;transition: all .3s;width: 16px;height: 16px;background-color: #fff;}
-        
+
         .avatar-uploader .el-upload {margin-top:15px;border: 1px dashed #d9d9d9;border-radius: 6px;cursor: pointer;position: relative;overflow: hidden;}
         .avatar-uploader .el-upload:hover {border-color: #409EFF;}
         .avatar-uploader-icon {font-size: 28px;color: #8c939d;width: 178px;height: 178px;line-height: 178px;text-align: center;}
@@ -51,6 +51,20 @@
                         <input v-model="link" ref="link" style="position:absolute;opacity:0;height:1px;" />
                     <div class="tip">点击复制小程序直播列表链接。</div>
                 </el-form-item>
+
+                <el-form-item label="课程开播通知 - 公众号模板" prop="">
+                    <el-select v-model="form.wechat_template" placeholder="请选择微信公众号消息模板">
+                        <el-option v-for="item in wechatTemplate" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                    </el-select>
+                </el-form-item>
+
+                <el-form-item label="课程开播通知 - 小程序模板" prop="">
+                    <el-select v-model="form.minapp_template" placeholder="请选择小程序消息模板">
+                        <el-option v-for="item in minappTemplate" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                    </el-select>
+                </el-form-item>
+
+
                 <el-form-item label="" prop="">
                     <el-button type="success" @click="submit('form')">
                         提交
@@ -66,6 +80,16 @@
             data() {
                 let set = {!! $set ?: '{}' !!};
                 let link = {!! $link ?: '{}' !!};
+                let wechatTemplate = {!! $wechat_template !!};
+                wechatTemplate.map(item => {
+                    item.label = item.title;
+                    item.value = item.id;
+                });
+                let minappTemplate = {!! $minapp_template !!};
+                minappTemplate.map(item => {
+                    item.label = item.title;
+                    item.value = item.id;
+                });
                 return{
                     loading:false,
                     table_loading:false,
@@ -73,8 +97,12 @@
                     link:link,
                     form:{
                         is_open : 0,
+                        wechat_template : 0,
+                        minapp_template : 0,
                         ...set
                     },
+                    wechatTemplate: wechatTemplate,
+                    minappTemplate: minappTemplate,
                     rules: {
                         appId: [
                             { required: true, message: '请输入appId', trigger: 'blur' },

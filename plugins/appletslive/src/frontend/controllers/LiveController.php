@@ -39,7 +39,7 @@ use app\Jobs\SendTemplateMsgJob;
 class LiveController extends BaseController
 {
     protected $user_id = 0;
-    protected $uniacid = 45;
+    protected $uniacid = 0;
     protected $is_follow_account = false;
     protected $is_ios;
     /**
@@ -48,9 +48,11 @@ class LiveController extends BaseController
     public function __construct()
     {
         parent::__construct();
+        $this->uniacid =\YunShop::app()->uniacid;
         $this->user_id = \YunShop::app()->getMemberId();
         $this->is_follow_account = $this->checkIsFollowAccount();
         $this-> is_ios = request()->get('os_name') == 'ios' ? true : false;
+
     }
 
     /**
@@ -65,7 +67,7 @@ class LiveController extends BaseController
         $wxapp_user = DB::table('diagnostic_service_user')->where('ajy_uid', $this->user_id)->first();
         if ($wxapp_user) {
             $wechat_fan_info = DB::table('mc_mapping_fans')
-                ->where('uniacid', 39)
+                ->where('uniacid', $this->uniacid)
                 ->where('unionid', $wxapp_user['unionid'])
                 ->first();
             if (!empty($wechat_fan_info) && $wechat_fan_info['follow'] == 1) {
@@ -603,6 +605,7 @@ class LiveController extends BaseController
             $not_show_list = DB::table('yz_appletslive_room')
                 ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag', 'buy_type', 'ios_open', 'ios_goods_id', 'expire_time', 'goods_id')
                 ->where('type', 1)
+                ->where('uniacid',$this->uniacid)
                 ->where('delete_time', 0)
                 ->where('buy_type',1)
                 ->where('ios_open',0)
@@ -616,12 +619,14 @@ class LiveController extends BaseController
             }
 
             $total = DB::table('yz_appletslive_room')
+                ->where('uniacid',$this->uniacid)
                 ->where('type', 1)
                 ->where('delete_time', 0)
                 ->whereNotIn('id',$not_show_array)
                 ->count();
             $list = DB::table('yz_appletslive_room')
                 ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag', 'buy_type', 'ios_open', 'ios_goods_id', 'expire_time', 'goods_id', 'display_type')
+                ->where('uniacid',$this->uniacid)
                 ->where('type', 1)
                 ->where('delete_time', 0)
                 ->whereIn('display_type', [1, 2])
@@ -693,10 +698,6 @@ class LiveController extends BaseController
      */
     public function roominfo()
     {
-        // $sharer_uid = request()->get('sharer_uid', 0);
-        // if ($sharer_uid) {
-        //     Log::info('someone visit room detail page via sharing link. sharer uid id:' . $sharer_uid);
-        // }
 
         $room_id = request()->get('room_id', 0);
         $room_info = CacheService::getRoomInfo($room_id);
@@ -763,10 +764,10 @@ class LiveController extends BaseController
         }else{
 
             if($subscripInfo['status'] == 1){
-                DB::table($table)->where($map)->update(['status' => 0]);
+                DB::table($table)->where('uniacid',$this->uniacid)->where($map)->update(['status' => 0]);
                 $msg = '取消订阅成功';
             }else{
-                DB::table($table)->where($map)->update(['status' => 1]);
+                DB::table($table)->where('uniacid',$this->uniacid)->where($map)->update(['status' => 1]);
 //                CacheService::setRoomNum($input['room_id'], 'subscription_num');
 //                CacheService::setUserSubscription($this->user_id, $input['room_id']);
 //                CacheService::setRoomSubscription($input['room_id'], $this->user_id);
@@ -809,6 +810,7 @@ class LiveController extends BaseController
         //     $not_show_list = DB::table('yz_appletslive_room')
         //         ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag', 'buy_type', 'ios_open', 'ios_goods_id', 'expire_time', 'goods_id')
         //         ->where('type', 1)
+        //        ->where('uniacid',$this->uniacid)
         //         ->where('is_selected', 1)
         //         ->where('delete_time', 0)
         //         ->where('buy_type',1)
@@ -926,7 +928,8 @@ class LiveController extends BaseController
         $wxapp_base_service = new BaseService();
         $sensitive_check = $wxapp_base_service->msgSecCheck($content);
         if (!is_bool($sensitive_check) || $sensitive_check === false) {
-            return $this->errorJson('评论内容包含敏感词', $sensitive_check);
+            // TODO 暂时屏蔽微信内容审核
+            // return $this->errorJson('评论内容包含敏感词', $sensitive_check);
         }
 
         // 组装插入数据
@@ -955,7 +958,7 @@ class LiveController extends BaseController
         }
 
         if (array_key_exists('parent_id', $input) && $input['parent_id'] > 0) {
-            $parent = DB::table('yz_appletslive_room_comment')->where('id', $input['parent_id'])->first();
+            $parent = DB::table('yz_appletslive_room_comment')->where('uniacid',$this->uniacid)->where('id', $input['parent_id'])->first();
             if ($parent) {
                 $comment_num_inc = false;
                 $insert_data['parent_id'] = $parent['id'];
@@ -988,13 +991,14 @@ class LiveController extends BaseController
             return $this->errorJson('评论id有误');
         }
         $is_mine = DB::table('yz_appletslive_room_comment')
+            ->where('uniacid',$this->uniacid)
             ->where('id', $input['comment_id'])
             ->where('user_id', $this->user_id)
             ->first();
         if (!$is_mine) {
             return $this->errorJson('只能删除自己的评论');
         }
-        DB::table('yz_appletslive_room_comment')->where('id', $input['comment_id'])->delete();
+        DB::table('yz_appletslive_room_comment')->where('uniacid',$this->uniacid)->where('id', $input['comment_id'])->delete();
         if ($is_mine['parent_id'] == 0) {
             CacheService::setRoomNum($is_mine['room_id'], 'comment_num', true);
         }
@@ -1115,7 +1119,8 @@ class LiveController extends BaseController
         $wxapp_base_service = new BaseService();
         $sensitive_check = $wxapp_base_service->msgSecCheck($content);
         if (!is_bool($sensitive_check) || $sensitive_check === false) {
-            return $this->errorJson('评论内容包含敏感词', $sensitive_check);
+            // TODO 暂时屏蔽微信内容审核
+            // return $this->errorJson('评论内容包含敏感词', $sensitive_check);
         }
         $content_status = $wxapp_base_service->textCheck($content);
 
@@ -1143,7 +1148,7 @@ class LiveController extends BaseController
         }
 
         if (array_key_exists('parent_id', $input) && $input['parent_id'] > 0) {
-            $parent = DB::table('yz_appletslive_replay_comment')->where('id', $input['parent_id'])->first();
+            $parent = DB::table('yz_appletslive_replay_comment')->where('uniacid',$this->uniacid)->where('id', $input['parent_id'])->first();
             if ($parent) {
                 $comment_num_inc = false;
                 $insert_data['parent_id'] = $parent['id'];
@@ -1176,6 +1181,7 @@ class LiveController extends BaseController
             return $this->errorJson('评论id有误');
         }
         $is_mine = DB::table('yz_appletslive_replay_comment')
+            ->where('uniacid',$this->uniacid)
             ->where('id', $input['comment_id'])
             ->where('user_id', $this->user_id)
             ->first();
@@ -1303,7 +1309,7 @@ class LiveController extends BaseController
 
         $table = 'yz_appletslive_room_subscription';
         $map = [['room_id', '=', $input['album_id']], ['user_id', '=', $this->user_id]];
-        $subscripInfo = DB::table($table)->where($map)->first();
+        $subscripInfo = DB::table($table)->where('uniacid',$this->uniacid)->where($map)->first();
         if (!$subscripInfo) {
             DB::table($table)->insert([
                 'uniacid' => $this->uniacid,
@@ -1318,10 +1324,10 @@ class LiveController extends BaseController
             $msg = '订阅成功';
         } else {
             if ($subscripInfo['status'] == 1) {
-                DB::table($table)->where($map)->update(['status' => 0]);
+                DB::table($table)->where('uniacid',$this->uniacid)->where($map)->update(['status' => 0]);
                 $msg = '取消订阅成功';
             } else {
-                DB::table($table)->where($map)->update(['status' => 1]);
+                DB::table($table)->where('uniacid',$this->uniacid)->where($map)->update(['status' => 1]);
                 $msg = '订阅成功';
             }
 
@@ -1454,7 +1460,7 @@ class LiveController extends BaseController
         }
 
         if (array_key_exists('parent_id', $input) && $input['parent_id'] > 0) {
-            $parent = DB::table('yz_appletslive_room_comment')->where('id', $input['parent_id'])->first();
+            $parent = DB::table('yz_appletslive_room_comment')->where('uniacid',$this->uniacid)->where('id', $input['parent_id'])->first();
             if ($parent) {
                 $comment_num_inc = false;
                 $insert_data['parent_id'] = $parent['id'];
@@ -1487,13 +1493,14 @@ class LiveController extends BaseController
             return $this->errorJson('评论id有误');
         }
         $is_mine = DB::table('yz_appletslive_room_comment')
+            ->where('uniacid',$this->uniacid)
             ->where('id', $input['comment_id'])
             ->where('user_id', $this->user_id)
             ->first();
         if (!$is_mine) {
             return $this->errorJson('只能删除自己的评论');
         }
-        DB::table('yz_appletslive_room_comment')->where('id', $input['comment_id'])->delete();
+        DB::table('yz_appletslive_room_comment')->where('uniacid',$this->uniacid)->where('id', $input['comment_id'])->delete();
         if ($is_mine['parent_id'] == 0) {
             CacheService::setBrandSaleAlbumNum($is_mine['room_id'], 'comment_num', true);
         }
@@ -1530,6 +1537,7 @@ class LiveController extends BaseController
             $offset = ($page - 1) * $limit;
             $not_show_list = DB::table('yz_appletslive_room')
                 ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag', 'buy_type', 'ios_open', 'ios_goods_id', 'expire_time', 'goods_id')
+                ->where('uniacid',$this->uniacid)
                 ->where('type', 1)
                 ->where('is_selected', 1)
                 ->where('delete_time', 0)
@@ -1545,6 +1553,7 @@ class LiveController extends BaseController
             }
 
             $total = DB::table('yz_appletslive_room')
+                ->where('uniacid',$this->uniacid)
                 ->where('type', 1)
                 ->where('is_selected', 1)
                 ->where('delete_time', 0)
@@ -1552,6 +1561,7 @@ class LiveController extends BaseController
                 ->count();
             $list = DB::table('yz_appletslive_room')
                 ->select('id', 'name', 'live_status','cover_img', 'subscription_num', 'view_num', 'comment_num','tag', 'buy_type', 'ios_open', 'ios_goods_id', 'expire_time', 'goods_id', 'display_type')
+                ->where('uniacid',$this->uniacid)
                 ->where('type', 1)
                 ->where('is_selected', 1)
                 ->where('delete_time', 0)
@@ -1626,11 +1636,12 @@ class LiveController extends BaseController
         $page = request()->get('page', 1);
         $limit = request()->get('limit', 10);
         $offset = ($page - 1) * $limit;
-        $total = DB::table('yz_appletslive_liveroom')->where('live_status', $live_room_status)->count();
+        $total = DB::table('yz_appletslive_liveroom')->where('uniacid',$this->uniacid)->where('live_status', $live_room_status)->count();
 
         $live_rooms = DB::table('yz_appletslive_liveroom')
             ->select('id','roomid','name', 'cover_img', 'anchor_name', 'share_img', 'goods', 'goods_ids')
             ->where('live_status', $live_room_status)
+            ->where('uniacid',$this->uniacid)
             ->orderBy('start_time', 'desc')
             ->offset($offset)
             ->limit($limit)
@@ -1650,7 +1661,6 @@ class LiveController extends BaseController
      */
     public function validateCourse()
     {
-
         $room_id = request()->get('room_id', 0);
         $goods_id = request()->get('goods_id', 0);
         $where = [];
@@ -1663,6 +1673,7 @@ class LiveController extends BaseController
         $room_info = DB::table('yz_appletslive_room')
             ->select('id', 'name', 'buy_type', 'expire_time', 'goods_id')
             ->where('type', 1)
+            ->where('uniacid',$this->uniacid)
             ->where($where)
             ->where('delete_time', 0)
             ->first();
@@ -1681,7 +1692,8 @@ class LiveController extends BaseController
                 ->where([
                     ['yz_order.status', '=', '3'], //订单状态 -1关闭,0待付款,1待发货,2待收货,3已完成
                     ['yz_order_goods.goods_id', '=', $room_info['goods_id']],
-                    ['yz_order_goods.uid', '=', $this->user_id]
+                    ['yz_order_goods.uid', '=', $this->user_id],
+                    ['yz_order_goods.uniacid', '=', $this->uniacid]
                 ])->get()->toArray();
             if (!empty($orders_info)) { //有购买完成的订单
 
@@ -1700,6 +1712,7 @@ class LiveController extends BaseController
                         ['yz_order.status', '=', '3'], //订单状态 -1关闭,0待付款,1待发货,2待收货,3已完成
                         ['yz_order_goods.goods_id', '=', $room_info['goods_id']],
                         ['yz_order_goods.uid', '=', $this->user_id],
+                        ['yz_order_goods.uniacid', '=', $this->uniacid],
                         ['yz_order_goods.course_expire_status', '=', 0]
                     ])->orderBy('yz_order.pay_time', 'asc')
                     ->get()->toArray();
@@ -1715,7 +1728,13 @@ class LiveController extends BaseController
                         //计算过期时间 更新时间 和 商品状态  更新商品管理order_goods表状态
                         $course_expire_time += $room_info['expire_time'] * 86400;
                         //累加之后更新订单状态
-                        $up_order_goods_res = DB::table('yz_order_goods')->where([['id', '=', $val['id']], ['goods_id', '=', $val['goods_id']], ['uid', '=', $this->user_id]])->update(['course_expire_status' => 1]);
+                        $up_order_goods_res = DB::table('yz_order_goods')
+                            ->where([
+                                ['uniacid', '=', $this->uniacid],
+                                ['id', '=', $val['id']],
+                                ['goods_id', '=', $val['goods_id']],
+                                ['uid', '=', $this->user_id]]
+                            )->update(['course_expire_status' => 1]);
                         if (!$up_order_goods_res) {
                             DB::rollBack();//事务回滚
                             return $this->errorJson('验证失败', [
@@ -1731,7 +1750,7 @@ class LiveController extends BaseController
                     if ($room_info['expire_time'] != -1) { //课程不是永久课程才更新时间 永久课程不用更新过期时间
 
                         //判断课程是否过期 如果已过期就是支付时间 + 购买时长，如果没有过期，购买时长累计
-                        $room_subscription_info = DB::table('yz_appletslive_room_subscription')->where([['room_id', '=', $room_id], ['user_id', '=', $this->user_id]])->first();
+                        $room_subscription_info = DB::table('yz_appletslive_room_subscription') ->where('uniacid',$this->uniacid)->where([['room_id', '=', $room_id], ['user_id', '=', $this->user_id]])->first();
                         if (time() <= $room_subscription_info['course_expire']) {
                             //未过期 现有过期时间戳 + 累计时长
                             $course_expire = $room_subscription_info['course_expire'] + $course_expire_time;
@@ -1742,7 +1761,10 @@ class LiveController extends BaseController
                             $course_expire = $pay_time + $course_expire_time;
                         }
                         //更新课程过期时间 如果后期允许一个商品关联多个课程，过期时间需要根据goods_id 关联的课程都更新下
-                        $up_course_expire_res = DB::table('yz_appletslive_room_subscription')->where([['room_id', '=', $room_id], ['user_id', '=', $this->user_id]])->update(['course_expire' => $course_expire]);
+                        $up_course_expire_res = DB::table('yz_appletslive_room_subscription')
+                            ->where('uniacid',$this->uniacid)
+                            ->where([['room_id', '=', $room_id], ['user_id', '=', $this->user_id]])
+                            ->update(['course_expire' => $course_expire]);
                         if (!$up_course_expire_res) {
                             DB::rollBack();//事务回滚
                             return $this->errorJson('验证失败', [
@@ -1759,7 +1781,10 @@ class LiveController extends BaseController
 
                 } else {
                     //如果不存在未累加的过期时间订单  查询课程过期时间
-                    $room_subscription_info = DB::table('yz_appletslive_room_subscription')->where([['room_id', '=', $room_id], ['user_id', '=', $this->user_id]])->first();
+                    $room_subscription_info = DB::table('yz_appletslive_room_subscription')
+                        ->where('uniacid',$this->uniacid)
+                        ->where([['room_id', '=', $room_id], ['user_id', '=', $this->user_id]])
+                        ->first();
                     $course_expire = $room_subscription_info['course_expire'];
                 }
                 if ($room_info['expire_time'] != -1) {
@@ -1801,7 +1826,7 @@ class LiveController extends BaseController
 
         $table = 'yz_appletslive_room_subscription';
         $map = [['room_id', '=', $room_id], ['user_id', '=', $this->user_id]];
-        $subscripInfo = DB::table($table)->where($map)->first();
+        $subscripInfo = DB::table($table)->where('uniacid',$this->uniacid)->where($map)->first();
         if (!$subscripInfo) {
 
             DB::table($table)->insert([

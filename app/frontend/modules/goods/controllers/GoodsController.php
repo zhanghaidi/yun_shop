@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\DB;
 use Monolog\Handler\IFTTTHandler;
 use Yunshop\Commission\Common\Services\GoodsDetailService;
 use Yunshop\Designer\models\ViewSet;
+use Yunshop\EnterpriseWechat\services\QyWeiBanService;
 use Yunshop\Room\models\Room;
 use Yunshop\ServiceFee\models\ServiceFeeModel;
 use Yunshop\StoreCashier\store\models\StoreGoods;
@@ -61,7 +62,7 @@ class GoodsController extends GoodsApiController
         //fixby-zhd-商品详情免登陆20201101
         $member_id = \YunShop::app()->getMemberId();
 
-        if($member_id){
+        if ($member_id) {
             try {
                 $member = Member::current()->yzMember;
             } catch (MemberNotLoginException  $e) {
@@ -76,10 +77,10 @@ class GoodsController extends GoodsApiController
         $goodsModel = $goods_model->uniacid()
             ->with([
                 'hasManyParams' => function ($query) {
-                    return $query->select('goods_id', 'title', 'value')->orderby('displayorder','asc');
+                    return $query->select('goods_id', 'title', 'value')->orderby('displayorder', 'asc');
                 },
                 'hasManySpecs' => function ($query) {
-                    return $query->select('id', 'goods_id', 'title', 'description')->orderby('display_order','asc');
+                    return $query->select('id', 'goods_id', 'title', 'description')->orderby('display_order', 'asc');
                 },
                 'hasManyOptions' => function ($query) {
                     return $query->select('id', 'goods_id', 'title', 'thumb', 'product_price', 'market_price', 'stock', 'specs', 'weight');
@@ -102,10 +103,10 @@ class GoodsController extends GoodsApiController
             ->find($id);
         $goodsModel->vip_level_status;
         if (!$goodsModel) {
-            if(is_null($integrated)){
+            if (is_null($integrated)) {
                 return $this->errorJson('商品不存在.');
-            }else{
-                return show_json(0,'商品不存在.');
+            } else {
+                return show_json(0, '商品不存在.');
             }
         }
 
@@ -120,10 +121,10 @@ class GoodsController extends GoodsApiController
         }
 
         if (!$goodsModel->status) {
-            if(is_null($integrated)){
+            if (is_null($integrated)) {
                 return $this->errorJson('商品已下架.');
-            }else{
-                return show_json(0,'商品已下架.');
+            } else {
+                return show_json(0, '商品已下架.');
             }
         }
 
@@ -202,17 +203,17 @@ class GoodsController extends GoodsApiController
 
         //商品是否开启领优惠卷
         //fixby-zhd-商品详情免登陆20201101
-        if(!$member_id){
+        if (!$member_id) {
             $goodsModel->availability = 0;
-        }else{
+        } else {
             $goodsModel->availability = $this->couponsMemberLj($member);
         }
 
         //判断用户已购买总数 2020/8/03  zhd add line 1
         //fixby-zhd-商品详情免登陆20201101
-        if($member_id){
+        if ($member_id) {
             $goodsModel->member_history_num = Member::current()->orderGoods()->where('goods_id', $id)->sum('total');
-        }else{
+        } else {
             $goodsModel->member_history_num = 0;
         }
 
@@ -259,10 +260,10 @@ class GoodsController extends GoodsApiController
     {
         $id = intval(\YunShop::request()->id);
         if (!$id) {
-            if(is_null($integrated)){
+            if (is_null($integrated)) {
                 return $this->errorJson('请传入正确参数.');
-            }else{
-                return show_json(0,'请传入正确参数.');
+            } else {
+                return show_json(0, '请传入正确参数.');
             }
 
         }
@@ -290,13 +291,13 @@ class GoodsController extends GoodsApiController
 
         //判断是否酒店商品
         $goodsModel->is_hotel = $goodsModel->plugin_id == 33 ? 1 : 0;
-        $goodsModel->is_store = $goodsModel->plugin_id == 32 ? 1 :0;
+        $goodsModel->is_store = $goodsModel->plugin_id == 32 ? 1 : 0;
 
 
-        if (app('plugins')->isEnabled('label')){
+        if (app('plugins')->isEnabled('label')) {
             $goodsModel->label = '';
             $pic = Setting::get('plugin.label');
-            if ($pic['is_label']){
+            if ($pic['is_label']) {
                 $goodsModel->label = $pic;
             }
         }
@@ -309,10 +310,10 @@ class GoodsController extends GoodsApiController
         $this->goodsServiceFree($goodsModel);
 
 
-        if(is_null($integrated)){
+        if (is_null($integrated)) {
             return $this->successJson('成功', $goodsModel);
-        }else{
-            return show_json(1,$goodsModel);
+        } else {
+            return show_json(1, $goodsModel);
         }
 
     }
@@ -328,22 +329,19 @@ class GoodsController extends GoodsApiController
             }
         }
         //直播插件
-        $this->apiData['is_room'] =  (integer)(app('plugins')->isEnabled('room') && Setting::get('plugin.room_set_basic')['is_open_room']);
+        $this->apiData['is_room'] = (integer)(app('plugins')->isEnabled('room') && Setting::get('plugin.room_set_basic')['is_open_room']);
 
         //客服设置
-        foreach ((new ServiceController())->index() as $k=>$v)
-        {
+        foreach ((new ServiceController())->index() as $k => $v) {
             $this->apiData[$k] = $v;
         }
         if (!is_null(\app\common\modules\shop\ShopConfig::current()->get('customer_service'))) {
             $class = array_get(\app\common\modules\shop\ShopConfig::current()->get('customer_service'), 'class');
             $function = array_get(\app\common\modules\shop\ShopConfig::current()->get('customer_service'), 'function');
-            $ret = $class::$function(request()->id,request()->type);
+            $ret = $class::$function(request()->id, request()->type);
             if ($ret) {
-                if(is_array($ret))
-                {
-                    foreach ($ret as $rk => $rv)
-                    {
+                if (is_array($ret)) {
+                    foreach ($ret as $rk => $rv) {
                         $this->apiData[$rk] = $rv;
                     }
                 }
@@ -352,89 +350,86 @@ class GoodsController extends GoodsApiController
         if ($is_new_goods == 1) {
             $newGoodsController = new NewGoodsController();
             $request = request();
-            $this->dataIntegrated($newGoodsController->getGoods($request, true),'get_goods');
-            $this->dataIntegrated($newGoodsController->getGoodsType($request, true),'goods_type');
+            $this->dataIntegrated($newGoodsController->getGoods($request, true), 'get_goods');
+            $this->dataIntegrated($newGoodsController->getGoodsType($request, true), 'goods_type');
 
             $storeId = $this->apiData['get_goods']->store_goods->store_id;
 
-            if($storeId){
-                if(class_exists('\Yunshop\StoreCashier\frontend\store\NewGoodsController')){
-                    if($this->apiData['goods_type']['store_id'])
-                    {
-                        $this->dataIntegrated(\Yunshop\StoreCashier\frontend\store\NewGoodsController::getStoreService($request, true,$this->apiData['goods_type']['store_id']),'store_service');
+            if ($storeId) {
+                if (class_exists('\Yunshop\StoreCashier\frontend\store\NewGoodsController')) {
+                    if ($this->apiData['goods_type']['store_id']) {
+                        $this->dataIntegrated(\Yunshop\StoreCashier\frontend\store\NewGoodsController::getStoreService($request, true, $this->apiData['goods_type']['store_id']), 'store_service');
                     }
-                    $this->dataIntegrated(\Yunshop\StoreCashier\frontend\store\NewGoodsController::getInfobyStoreId($request, true,$storeId),'get_store_Info');
+                    $this->dataIntegrated(\Yunshop\StoreCashier\frontend\store\NewGoodsController::getInfobyStoreId($request, true, $storeId), 'get_store_Info');
                     if (MemberService::isLogged()) {
-                        $this->dataIntegrated(\Yunshop\StoreCashier\frontend\shoppingCart\MemberCartController::index($request,true,$storeId),'member_cart');
+                        $this->dataIntegrated(\Yunshop\StoreCashier\frontend\shoppingCart\MemberCartController::index($request, true, $storeId), 'member_cart');
                     }
-                }else{
+                } else {
                     return $this->errorJson('门店插件未开启');
                 }
             }
 
-            if($this->apiData['get_goods']->is_hotel){
-                if(class_exists('\Yunshop\Hotel\frontend\hotel\NewGoodsController')){
-                    $this->dataIntegrated(\Yunshop\Hotel\frontend\hotel\NewGoodsController::getGoodsDetailByGoodsId($request,true),'get_hotel_info');
-                }else{
+            if ($this->apiData['get_goods']->is_hotel) {
+                if (class_exists('\Yunshop\Hotel\frontend\hotel\NewGoodsController')) {
+                    $this->dataIntegrated(\Yunshop\Hotel\frontend\hotel\NewGoodsController::getGoodsDetailByGoodsId($request, true), 'get_hotel_info');
+                } else {
                     return $this->errorJson('酒店插件未开启');
                 }
             }
 
-            if(Setting::get('shop.member')['display_page'] == 1 && Setting::get('shop.member')['level_type'] == 2){
+            if (Setting::get('shop.member')['display_page'] == 1 && Setting::get('shop.member')['level_type'] == 2) {
                 $this->apiData['display_page'] = 1;
-            }else{
+            } else {
                 $this->apiData['display_page'] = 0;
             }
 
-            $this->dataIntegrated($this->pluginEnabled(),'pluginEnabled');
+            $this->dataIntegrated($this->pluginEnabled(), 'pluginEnabled');
 
             return $this->successJson('', $this->apiData);
         } else {
             $request = request();
-            $this->dataIntegrated($this->getGoods($request, true),'get_goods');
-            $this->dataIntegrated($this->getGoodsType($request, true),'goods_type');
-            
+            $this->dataIntegrated($this->getGoods($request, true), 'get_goods');
+            $this->dataIntegrated($this->getGoodsType($request, true), 'goods_type');
+
             $storeId = $this->apiData['get_goods']->store_goods->store_id;
-            if($storeId){
-                if(class_exists('\Yunshop\StoreCashier\frontend\store\GetStoreInfoController')){
-                    if($this->apiData['goods_type']['store_id'])
-                    {
-                        $this->dataIntegrated(\Yunshop\StoreCashier\frontend\store\StoreController::getStoreService($request, true,$this->apiData['goods_type']['store_id']),'store_service');
+            if ($storeId) {
+                if (class_exists('\Yunshop\StoreCashier\frontend\store\GetStoreInfoController')) {
+                    if ($this->apiData['goods_type']['store_id']) {
+                        $this->dataIntegrated(\Yunshop\StoreCashier\frontend\store\StoreController::getStoreService($request, true, $this->apiData['goods_type']['store_id']), 'store_service');
                     }
-                    $this->dataIntegrated(\Yunshop\StoreCashier\frontend\store\GetStoreInfoController::getInfobyStoreId($request, true,$storeId),'get_store_Info');
-                    $this->dataIntegrated(\Yunshop\StoreCashier\frontend\shoppingCart\MemberCartController::index($request,true,$storeId),'member_cart');
-                }else{
+                    $this->dataIntegrated(\Yunshop\StoreCashier\frontend\store\GetStoreInfoController::getInfobyStoreId($request, true, $storeId), 'get_store_Info');
+                    $this->dataIntegrated(\Yunshop\StoreCashier\frontend\shoppingCart\MemberCartController::index($request, true, $storeId), 'member_cart');
+                } else {
                     return $this->errorJson('门店插件未开启');
                 }
             }
-            if($this->apiData['get_goods']->is_hotel){
-                if(class_exists('\Yunshop\Hotel\frontend\hotel\GoodsController')){
-                    $this->dataIntegrated(\Yunshop\Hotel\frontend\hotel\GoodsController::getGoodsDetailByGoodsId($request,true),'get_hotel_info');
-                }else{
+            if ($this->apiData['get_goods']->is_hotel) {
+                if (class_exists('\Yunshop\Hotel\frontend\hotel\GoodsController')) {
+                    $this->dataIntegrated(\Yunshop\Hotel\frontend\hotel\GoodsController::getGoodsDetailByGoodsId($request, true), 'get_hotel_info');
+                } else {
                     return $this->errorJson('酒店插件未开启');
                 }
             }
 
-            if (app('plugins')->isEnabled('guide-page')){
-                if(class_exists('\Yunshop\GuidePage\frontend\GuidePageController')){
-                    $this->dataIntegrated(\Yunshop\GuidePage\frontend\GuidePageController::index(),'get_guidepage_info');
-                }else{
+            if (app('plugins')->isEnabled('guide-page')) {
+                if (class_exists('\Yunshop\GuidePage\frontend\GuidePageController')) {
+                    $this->dataIntegrated(\Yunshop\GuidePage\frontend\GuidePageController::index(), 'get_guidepage_info');
+                } else {
                     return $this->errorJson('引导页插件未开启');
                 }
             }
 
 
-
-            if(Setting::get('shop.member')['display_page'] == 1 && Setting::get('shop.member')['level_type'] == 2){
+            if (Setting::get('shop.member')['display_page'] == 1 && Setting::get('shop.member')['level_type'] == 2) {
                 $this->apiData['display_page'] = 1;
-            }else{
+            } else {
                 $this->apiData['display_page'] = 0;
             }
 
-            $this->dataIntegrated(\app\frontend\modules\member\controllers\MemberHistoryController::store($request, true),'store');
-            $this->dataIntegrated(\app\frontend\modules\member\controllers\MemberFavoriteController::isFavorite($request, true),'is_favorite');
+            $this->dataIntegrated(\app\frontend\modules\member\controllers\MemberHistoryController::store($request, true), 'store');
+            $this->dataIntegrated(\app\frontend\modules\member\controllers\MemberFavoriteController::isFavorite($request, true), 'is_favorite');
 
-            $this->dataIntegrated($this->pluginEnabled(),'pluginEnabled');
+            $this->dataIntegrated($this->pluginEnabled(), 'pluginEnabled');
 
             return $this->successJson('', $this->apiData);
         }
@@ -447,10 +442,10 @@ class GoodsController extends GoodsApiController
      */
     protected function pluginEnabled()
     {
-        $data['package_deliver_enabled'] = app('plugins')->isEnabled('package-deliver')?1:0;
-        $data['help_center_enabled'] = app('plugins')->isEnabled('help-center')?1:0;
+        $data['package_deliver_enabled'] = app('plugins')->isEnabled('package-deliver') ? 1 : 0;
+        $data['help_center_enabled'] = app('plugins')->isEnabled('help-center') ? 1 : 0;
 
-        return show_json(1,$data);
+        return show_json(1, $data);
     }
 
     /**
@@ -466,10 +461,10 @@ class GoodsController extends GoodsApiController
         $goods_type = 'goods';//通用
         $id = request()->id;
         if (!$id) {
-            if(is_null($integrated)){
+            if (is_null($integrated)) {
                 return $this->errorJson('请传入正确参数.');
-            }else{
-                return show_json(0,'请传入正确参数.');
+            } else {
+                return show_json(0, '请传入正确参数.');
             }
 
         }
@@ -496,8 +491,7 @@ class GoodsController extends GoodsApiController
             $goods_type = 'hotelGoods';
         }
 
-        if ($goodsModel->plugin_id == 66)
-        {
+        if ($goodsModel->plugin_id == 66) {
             $goods_type = 'voiceGoods';
         }
 
@@ -518,26 +512,26 @@ class GoodsController extends GoodsApiController
         if ($goodsModel->plugin_id == 47) {
             $goods_type = 'staging_buy_car_goods';
         }
-		
-		//预约插件
+
+        //预约插件
         if ($goodsModel->plugin_id == 101) {
             $goods_type = 'appointment_goods';
         }
 
         //预约插件
         if ($goodsModel->plugin_id == 101) {
-        $goods_type = 'appointment_goods';
-    }
+            $goods_type = 'appointment_goods';
+        }
         //芸签电子合同插件
         if ($goodsModel->plugin_id == 103) {
             $goods_type = 'yun_sign_goods';
         }
         $data['goods_type'] = $goods_type;
 
-        if(is_null($integrated)){
+        if (is_null($integrated)) {
             return $this->successJson('成功', $data);
-        }else{
-            return show_json(1,$data);
+        } else {
+            return show_json(1, $data);
         }
     }
 
@@ -594,14 +588,14 @@ class GoodsController extends GoodsApiController
             $where = function ($query) use ($field, $goodIdsSearch) {
                 $query->whereIn($field, json_decode($goodIdsSearch, true));
             };
-        }else{
+        } else {
             //fixBy-wk-20201130 搜索接口过滤关联课程的商品 避免和根据商品id获取商品的筛选条件冲突，两者只能用一个
             $course_goods = DB::table('yz_appletslive_room')
                 ->select('id', 'goods_id')
-                ->where('type',1)
-                ->where('goods_id','>',0)
+                ->where('type', 1)
+                ->where('goods_id', '>', 0)
                 ->get()->toArray();
-            if(!empty($course_goods)){
+            if (!empty($course_goods)) {
                 $goods_ids = array_unique(array_column($course_goods, 'goods_id'));
 
                 $field = 'id';
@@ -651,12 +645,12 @@ class GoodsController extends GoodsApiController
             return $this->errorJson('没有找到商品.');
         }
 
-        foreach ($build->get() as $k=>$v) {
+        foreach ($build->get() as $k => $v) {
             /*$rGoods = $goods_model->select()
                 ->where('id', $v['goods_id'])
                 ->first();*/
             //fixBy-wk-20201005 增加虚拟销量 和 销量字段 real_sales show_sales virtual_sales
-            $goodsInfo =  DB::table('yz_goods')->select('virtual_sales','real_sales','show_sales')->where("status", 1)->where('id', $v['goods_id'])->first();
+            $goodsInfo = DB::table('yz_goods')->select('virtual_sales', 'real_sales', 'show_sales')->where("status", 1)->where('id', $v['goods_id'])->first();
             $list['data'][$k]['virtual_sales'] = $goodsInfo['virtual_sales'];
             $list['data'][$k]['real_sales'] = $goodsInfo['real_sales'];
             $list['data'][$k]['show_sales'] = $goodsInfo['show_sales'];
@@ -838,11 +832,11 @@ class GoodsController extends GoodsApiController
             $data = [];
         }
 
-        if($goodsModel->hasOneSale->all_point_deduct && $goodsModel->hasOneSale->has_all_point_deduct){//商品设置
-            $data['name'] = $shopSet['credit1'] ? $shopSet['credit1'].'全额抵扣':'积分全额抵扣';
+        if ($goodsModel->hasOneSale->all_point_deduct && $goodsModel->hasOneSale->has_all_point_deduct) {//商品设置
+            $data['name'] = $shopSet['credit1'] ? $shopSet['credit1'] . '全额抵扣' : '积分全额抵扣';
             $data['key'] = 'all_point_deduct';
             $data['type'] = 'string';
-            $data['value'] = '可使用' . $goodsModel->hasOneSale->all_point_deduct .'个'.($shopSet['credit1'] ? $shopSet['credit1'] .'全额抵扣购买' : '积分全额抵扣购买');
+            $data['value'] = '可使用' . $goodsModel->hasOneSale->all_point_deduct . '个' . ($shopSet['credit1'] ? $shopSet['credit1'] . '全额抵扣购买' : '积分全额抵扣购买');
             array_push($sale, $data);
             $data = [];
         }
@@ -867,11 +861,10 @@ class GoodsController extends GoodsApiController
         }
 
 
-
         $point = [];
-        if (app('plugins')->isEnabled('store-cashier')){//门店抵扣设置
-            $store_goods = StoreGoods::where('goods_id',$goodsModel->id)->first();
-            $point = StoreSetting::getStoreSettingByStoreId($store_goods->store_id)->where('key','point')->first();
+        if (app('plugins')->isEnabled('store-cashier')) {//门店抵扣设置
+            $store_goods = StoreGoods::where('goods_id', $goodsModel->id)->first();
+            $point = StoreSetting::getStoreSettingByStoreId($store_goods->store_id)->where('key', 'point')->first();
         }
 
         $data['name'] = $shopSet['credit1'] ?: '积分';
@@ -898,10 +891,10 @@ class GoodsController extends GoodsApiController
             } elseif (!empty($point['value']['set']['money_max']) && $point['value']['set']['money_max'] != 0) {
                 $max_point_deduct = $point['value']['set']['money_max'] . '%';
             } else {
-                $max_point_deduct = $set['money_max'] ? $set['money_max'] . '%': 0;
+                $max_point_deduct = $set['money_max'] ? $set['money_max'] . '%' : 0;
             }
 
-            if (!empty(mb_substr($max_point_deduct, 0,-1))) {
+            if (!empty(mb_substr($max_point_deduct, 0, -1))) {
                 $data['value'][] = '最高抵扣' . $max_point_deduct;
             }
         }
@@ -912,7 +905,7 @@ class GoodsController extends GoodsApiController
             } else {
                 $min_point_deduct = $set['money_min'] ? $set['money_min'] . '%' : 0;
             }
-            if (!empty(mb_substr($min_point_deduct, 0,-1))) {
+            if (!empty(mb_substr($min_point_deduct, 0, -1))) {
                 $data['value'][] = '最少抵扣' . $min_point_deduct;
             }
         }
@@ -936,7 +929,7 @@ class GoodsController extends GoodsApiController
         $exist_love = app('plugins')->isEnabled('love');
         if ($exist_love) {
 
-            $love_goods = $this->getLoveSet($goodsModel,$goodsModel->id);
+            $love_goods = $this->getLoveSet($goodsModel, $goodsModel->id);
 
             $data['name'] = $love_goods['name'];
             $data['key'] = 'love';
@@ -983,7 +976,7 @@ class GoodsController extends GoodsApiController
 
         //经销商提成
         $exist_team_dividend = app('plugins')->isEnabled('team-dividend');
-        if($exist_team_dividend){
+        if ($exist_team_dividend) {
             //验证是否是经销商及等级
             $is_agent = $this->isValidateTeamDividend($member);
             if ($is_agent) {
@@ -993,10 +986,10 @@ class GoodsController extends GoodsApiController
                 //返回经销商等级奖励比例  商品等级奖励规则
                 $team_dividend_data = (new TeamDividendGoodsDetailService($goodsModel))->getGoodsDetailData();
                 if ($team_dividend_data['team_dividend_show'] == 1) {
-                    $data['name'] = $team_dividend_name.'提成';
+                    $data['name'] = $team_dividend_name . '提成';
                     $data['key'] = 'team-dividend';
                     $data['type'] = 'array';
-                    $data['value'][] = $team_dividend_name.'提成' . $team_dividend_data['team_dividend_royalty'];
+                    $data['value'][] = $team_dividend_name . '提成' . $team_dividend_data['team_dividend_royalty'];
                     array_unshift($sale, $data);
                     $data = [];
                 }
@@ -1006,7 +999,7 @@ class GoodsController extends GoodsApiController
 
         $exist_pending_order = app('plugins')->isEnabled('pending-order');
         if ($exist_pending_order) {
-            $pending_order_goods =  \Yunshop\PendingOrder\services\PendingOrderGoodsService::getGoodsWholesaleSend($goodsModel->id);
+            $pending_order_goods = \Yunshop\PendingOrder\services\PendingOrderGoodsService::getGoodsWholesaleSend($goodsModel->id);
             $pending_order['name'] = '批发劵';
             $pending_order['key'] = 'pending-order';
             $pending_order['type'] = 'array';
@@ -1154,7 +1147,7 @@ class GoodsController extends GoodsApiController
 
         $exist_love = app('plugins')->isEnabled('love');
         if ($exist_love) {
-            $love_goods = $this->getLoveSet($goodsModel ,$goodsModel->id);
+            $love_goods = $this->getLoveSet($goodsModel, $goodsModel->id);
             $data['love_name'] = $love_goods['name'];
             if ($love_goods['deduction']) {
                 $data['deduction_proportion'] = $love_goods['deduction_proportion'];
@@ -1184,7 +1177,7 @@ class GoodsController extends GoodsApiController
     /**
      * 获取商品爱心值设置
      */
-    public function getLoveSet($goods,$goods_id)
+    public function getLoveSet($goods, $goods_id)
     {
         $data = [
             'name' => \Setting::get('love.name') ?: '爱心值',
@@ -1197,9 +1190,9 @@ class GoodsController extends GoodsApiController
         $love_set = \Setting::get('love');
 
         $res = app('plugins')->isEnabled('store-cashier');
-        if ($res){//门店抵扣设置
-            $store_goods = StoreGoods::where('goods_id',$goods_id)->first();
-            $love = StoreSetting::getStoreSettingByStoreId($store_goods->store_id)->where('key','love')->first();
+        if ($res) {//门店抵扣设置
+            $store_goods = StoreGoods::where('goods_id', $goods_id)->first();
+            $love = StoreSetting::getStoreSettingByStoreId($store_goods->store_id)->where('key', 'love')->first();
             $set = \Setting::get('plugin.store_widgets', 'deduction_proportion');
 //            dd($set['love']['deduction_proportion'],$love->value['deduction_proportion']);
         }
@@ -1212,7 +1205,7 @@ class GoodsController extends GoodsApiController
 
 
         if ($item->deduction) {//商品独立设置
-            if ($love_set['deduction']){
+            if ($love_set['deduction']) {
                 $deduction_proportion = $love_set['deduction_proportion'];
                 $deduction = $love_set['deduction'];
             }
@@ -1221,12 +1214,12 @@ class GoodsController extends GoodsApiController
 //                $deduction = $set['love']['deduction'];
 //            }
             // $price = $goods->price * ($deduction_proportion / 100);love[deduction_proportion_low]
-            if (!empty($love) && $love->value['deduction_proportion'] && $love->value['deduction_proportion'] != 0){//门店设置
+            if (!empty($love) && $love->value['deduction_proportion'] && $love->value['deduction_proportion'] != 0) {//门店设置
                 $deduction_proportion = $love->value['deduction_proportion'];
                 $deduction = $love->value['deduction'];
             }
 
-            if ($item->deduction_proportion && $item->deduction_proportion != 0){
+            if ($item->deduction_proportion && $item->deduction_proportion != 0) {
                 $deduction_proportion = $item->deduction_proportion;
                 $deduction = $item->deduction;
             }
@@ -1249,14 +1242,14 @@ class GoodsController extends GoodsApiController
 
             // $award_price = $goods->price * ($award_proportion / 100);
             //门店设置
-            if (!empty($love) && $love->value['award_proportion'] && $love->value['award_proportion'] != 0){
+            if (!empty($love) && $love->value['award_proportion'] && $love->value['award_proportion'] != 0) {
                 $award_proportion = $love->value['award_proportion'];
                 $award = $love->value['award'];
             }
 
             //商品独立设置
-            if ($item->award_proportion && $item->award_proportion != 0){
-                $award_proportion =  $item->award_proportion;//bccomp($item->award_proportion, 0.00, 2);
+            if ($item->award_proportion && $item->award_proportion != 0) {
+                $award_proportion = $item->award_proportion;//bccomp($item->award_proportion, 0.00, 2);
                 $award = $item->award;
             }
 
@@ -1336,7 +1329,7 @@ class GoodsController extends GoodsApiController
             $love_goods = $this->getLoveSet($goodsModel, $goodsModel->id);
 
             if ($love_goods['award'] && \Setting::get('love.goods_detail_show_love') == 2) {
-                return  '购买赠送' . $love_goods['award_proportion'] . $love_goods['name'];
+                return '购买赠送' . $love_goods['award_proportion'] . $love_goods['name'];
             }
         }
 
@@ -1348,17 +1341,15 @@ class GoodsController extends GoodsApiController
         if (app('plugins')->isEnabled('service-fee')) {
             $serviceFee = Setting::get('plugins.service-fee');
             if ($serviceFee['service']['open'] == 1) {
-                $serviceFees = ServiceFeeModel::where('goods_id',$goodsModel->id)->first();
+                $serviceFees = ServiceFeeModel::where('goods_id', $goodsModel->id)->first();
                 if ($serviceFees->is_open) {
-                    $fee = ['name'=>$serviceFee['service']['name'],'money'=>$serviceFees->fee];
+                    $fee = ['name' => $serviceFee['service']['name'], 'money' => $serviceFees->fee];
                     $goodsModel->fee = $fee;
                 }
             }
         }
         return;
     }
-
-
 
 
     public function showPush()
@@ -1388,9 +1379,9 @@ class GoodsController extends GoodsApiController
             foreach ($list['data'] as &$item) {
                 self::unSerializeImage($item);
             }
-            return  $list;
+            return $list;
         }
-        return  $list;
+        return $list;
     }
 
     /*
@@ -1400,20 +1391,20 @@ class GoodsController extends GoodsApiController
     {
 //        $total = OrderGoods::with('hasOneOrder')->where('goods_id',$id)->sum('id');//总条数
 
-        $total = OrderGoods::with(['hasOneOrder',function($q){
-            $q->where('status',3);
-        }])->where('goods_id',$id)->count('id');//总条数
+        $total = OrderGoods::with(['hasOneOrder', function ($q) {
+            $q->where('status', 3);
+        }])->where('goods_id', $id)->count('id');//总条数
 
-        if ($total <= 0){
+        if ($total <= 0) {
             return '100%';
         }
         $level_comment = \app\common\models\Comment::where(['goods_id' => $id])->sum('level');//已评论的分数
         $comment = \app\common\models\Comment::where(['goods_id' => $id])->count('id');//总评论数
-        $mark = bcmul($total,5,2);//总评分  = 总条数 * 5
-        $no_comment = bcmul(bcsub($total,$comment,2) ,5,2);//未评分 = 总条数 - 已评论条数
-        $have_comment = bcmul(bcdiv(bcadd($level_comment,$no_comment,2),$mark,2),100,2);//最终好评率
+        $mark = bcmul($total, 5, 2);//总评分  = 总条数 * 5
+        $no_comment = bcmul(bcsub($total, $comment, 2), 5, 2);//未评分 = 总条数 - 已评论条数
+        $have_comment = bcmul(bcdiv(bcadd($level_comment, $no_comment, 2), $mark, 2), 100, 2);//最终好评率
         //最终好评率 = （（已评论分数 + 未评分） / 总评分）/100
-        return $have_comment.'%';
+        return $have_comment . '%';
     }
 
     // 反序列化图片
@@ -1445,29 +1436,29 @@ class GoodsController extends GoodsApiController
     public function getRoom()
     {
         $goods_id = intval(request()->goods_id);
-        $rooms = Room::select('yz_room.*','yz_room_record_file.id as back_id')
+        $rooms = Room::select('yz_room.*', 'yz_room_record_file.id as back_id')
             ->where(function ($querys) {
-                $querys->whereIn('status',[2,3])
+                $querys->whereIn('status', [2, 3])
                     ->orwhere(function ($query) {
-                    $query->where('status',4)
-                        ->where('yz_room_record_file.id','>',0)
-                        ->where('yz_room_record_file.is_show',1);
-                });
+                        $query->where('status', 4)
+                            ->where('yz_room_record_file.id', '>', 0)
+                            ->where('yz_room_record_file.is_show', 1);
+                    });
             })
-            ->leftJoin('yz_room_record_file',function ($join) {
-                $join->on('yz_room_record_file.room_id','=','yz_room.id');
+            ->leftJoin('yz_room_record_file', function ($join) {
+                $join->on('yz_room_record_file.room_id', '=', 'yz_room.id');
             })
             ->with('hasOneMember')
-            ->wherehas('hasManyGoods',function ($query) use ($goods_id) {
-                $query->where('goods_id',$goods_id);
+            ->wherehas('hasManyGoods', function ($query) use ($goods_id) {
+                $query->where('goods_id', $goods_id);
             })
-            ->orderByRaw("FIELD(status, " . implode(", ", [3,2,4]) . ")")
-            ->orderBy('yz_room.recommend','asc')
-            ->orderBy('yz_room_record_file.recommend','asc')
-            ->orderBy('yz_room.id','desc')
+            ->orderByRaw("FIELD(status, " . implode(", ", [3, 2, 4]) . ")")
+            ->orderBy('yz_room.recommend', 'asc')
+            ->orderBy('yz_room_record_file.recommend', 'asc')
+            ->orderBy('yz_room.id', 'desc')
             ->paginate(10);
         $room = [];
-        foreach ($rooms as $key=>$val) {
+        foreach ($rooms as $key => $val) {
             $room[$key]['avatar'] = $val->hasOneMember['avatar_image'];
             $room[$key]['nickname'] = $val->hasOneMember['nickname'];
             $room[$key]['id'] = $val->id;
@@ -1486,7 +1477,7 @@ class GoodsController extends GoodsApiController
                 $room[$key]['play_type'] = 3;
             } elseif ($val->status == 3) {
                 $room[$key]['play_type'] = 1;
-            } else{
+            } else {
                 $room[$key]['play_type'] = 2;
                 $room[$key]['back_id'] = $val->back_id;
             }
@@ -1509,21 +1500,23 @@ class GoodsController extends GoodsApiController
         if (!$list->isEmpty()) {
             $list = set_medias($list->toArray(), 'thumb');
         }
-        $user_data=Db::table('yz_member')->where(['member_id'=>$user_id])->first();
-        $data['list']=$list;
-        $data['level']=$user_data['level_id'];
+        $user_data = Db::table('yz_member')->where(['member_id' => $user_id])->first();
+        $data['list'] = $list;
+        $data['level'] = $user_data['level_id'];
         return $this->successJson('获取促销商品成功', $data);
     }
 
     //增加商品详情热度展示 fixby-wk-goodsHotOrders 2020-09-29  2020-10-10  优化显示全部完成订单的20条 20201104 优化为缓存 30分钟后过期
-    public function getGoodsHotOrders(){
+    public function getGoodsHotOrders()
+    {
         //Cache 的第二個參數是分鐘 多少分钟会过期
-        $list = Cache::remember('good_hot_orders', 30, function () {
+        $list = Cache::remember('good_hot_orders'.\YunShop::app()->uniacid, 30, function () {
             return DB::table('yz_order as o')
                 ->join('yz_order_address as p', 'o.id', '=', 'p.order_id')
                 ->join('diagnostic_service_user as u', 'o.uid', '=', 'u.ajy_uid')
                 ->select('u.avatarurl', 'p.address')
                 ->where('o.status', 3)
+                ->where('o.uniacid',\YunShop::app()->uniacid)
                 ->groupBY('o.uid')
                 ->orderBy('o.create_time', 'DESC')
                 ->take(20)
@@ -1532,8 +1525,10 @@ class GoodsController extends GoodsApiController
 
         return $this->successJson('获取成功', $list);
     }
+
     //增加获取满额优惠 设置接口 fixby-wk-getEnoughReduce 2020-11-14
-    public function getEnoughReduce(){
+    public function getEnoughReduce()
+    {
 
         $enoug_reduce_list = Setting::get('enoughReduce');
         return $this->successJson('获取成功', $enoug_reduce_list);
@@ -1594,9 +1589,9 @@ class GoodsController extends GoodsApiController
 
         if ($exist_commission) {
 
-            if($member){
+            if ($member) {
                 $is_agent = $this->isValidateCommission($member);
-            }else{
+            } else {
                 $is_agent = true;
             }
 
@@ -1646,9 +1641,139 @@ class GoodsController extends GoodsApiController
 
         $result->push(MemberCartService::newMemberCart($goods_params));
         $res = $result->validate();
-        if(!$res){
-            return $this->successJson('验证成功',$res);
+        if (!$res) {
+            return $this->successJson('验证成功', $res);
         }
 
+    }
+
+    //商品埋点上报 fixby-zhd-2021-1-3
+    public function goodsTracking()
+    {
+        $to_type_id = intval(\YunShop::request()->to_type_id);
+        $resource_id = intval(\YunShop::request()->resource_id);
+        $goods_id = intval(\Yunshop::request()->goods_id);
+        $action = intval(\YunShop::request()->action);
+        $val = \YunShop::request()->val;
+        $parent_page = \YunShop::request()->parent_page;
+        $app_version = \YunShop::request()->app_version;
+        $app_type = \YunShop::request()->app_type;
+
+        if (!$to_type_id || !$resource_id || !$goods_id) {
+
+            return $this->errorJson('请传入商品来源参数.');
+        }
+        if (!$action) {
+
+            return $this->errorJson('请传入操作动作id');
+        }
+
+        $goods_ids = explode(',', $goods_id);
+
+        foreach ($goods_ids as $v) {
+            $data = array(
+                'uniacid' => \YunShop::app()->uniacid,
+                'user_id' => \YunShop::app()->getMemberId(),
+                'to_type_id' => $to_type_id, //商品推荐来源类型1:穴位 2：病例 （买点已设置，暂无页面）3：文章 4：社区话题 5：体质测试 6：灸师推荐  7:课时推荐  8：直播商品 
+                // 9：首页商城' 10：活动商品（限时秒杀/新人礼/穴位查询···） 11:分享（分享好友、朋友圈等）,12:搜索 13：购物车
+                'resource_id' => $resource_id, //根据类型id对应穴位、病例、文章、话题、体质、灸师id，课时id， 直播间id，商城id（1底部导航 2：功能区导航），活动海报/轮播/广告位 id，分享者user_id',搜索（1全局搜索 2：商城搜索）
+                'goods_id' => $v,
+                'action' => $action, //动作类型 1：查看 2、收藏 3、加购 4：下单 5：支付
+                'val' => $val, //根据action记录相应参数：加购记录加购商品数 下单记录订单编号
+                'parent_page' => html_entity_decode($parent_page),
+                'app_version' => $app_version,
+                'app_type' => $app_type,
+                'create_time' => TIMESTAMP
+            );
+
+            $res = DB::table('diagnostic_service_goods_tracking')->insert($data);
+            if (!$res) {
+                return $this->errorJson('数据插入失败');
+            }
+
+            $qyWechatSetting = \Setting::get('plugin.enterprise-wechat');
+            if ($qyWechatSetting && $qyWechatSetting['weiban_corpid'] && $qyWechatSetting['weiban_secret']) {
+                $this->sendOrderTrack($data);
+            }
+
+        }
+
+        return $this->successJson('ok');
+    }
+
+    //订单导入
+    public function sendOrderTrack($data)
+    {
+        $member_id = $data['user_id'];
+        $goods_id = $data['goods_id'];
+        $action = $data['action']; //动作类型 1：查看 2、收藏 3、加购 4：下单 5：支付
+        $val = $data['val']; //根据action记录相应参数：加购记录加购商品数 下单记录订单编号
+        $user = DB::table('diagnostic_service_user')->select('ajy_uid', 'unionid')->where('ajy_uid', $member_id)->first();
+        $goods = DB::table('yz_goods')->select('id', 'title', 'price')->where(['id' => $goods_id])->first();
+
+        $orderData = array(
+            "shop_id" => "10820686",     //shop_id	str	否	店铺id，为店铺的唯一编号，若存在店铺数据，需携带此参数用于辨识区分店铺
+            "shop_name" => "养居益商城",      //shop_name	str	否	店铺名称
+            "item_id" => $goods_id,   //item_id	str	是	商品id
+            "item_name" => $goods['title'], //item_name	str	是	商品名称
+            "item_price" => $goods['price'],//item_price	str	是	商品价格
+            "amount" => 1,//amount	int	是	购买数量
+            "payment_amount" => $goods['price'],//payment_amount	int	是	购买总金额
+            "order_id" => date('Y-m-d H:i:s') . '-' . $member_id . '-' . $goods_id,//order_id	str	是	订单号
+            "order_status" => "浏览",//order_status	str	是	订单状态
+            "create_time" => time(),//create_time	int	是	订单创建时间
+            "paid_time" => time(),//paid_time	int	是	订单支付时间
+            "unionid" => $user['unionid'],//unionid	str	是	客户的unionid
+            "order_type" => "用户足迹",//order_type	str	是	订单类型，限制不超过12个字节（英文1字节，汉字2字节）此参数对应侧边栏的订单名称的显示
+            //"discount_amount"=>"0.00",//discount_amount	int	否	优惠金额
+            //"payment_channel" => "微信",//payment_channel	str	否	支付渠道
+            //shop_fields	ShopField[]否	店铺信息自定义字段列表，非店铺基本字段。字段说明见 ShopField数据模型
+            /*"shop_fields" => array(
+                [
+                    "field_name" => "养居益商城",
+                    "value" => "营业中",
+                ],
+                [
+                    "field_name" => "店铺评分",
+                    "value" => "4.5",
+                ]
+
+            ),*/
+            //item_fields	ItemField[]	否	商品信息自定义字段列表，非商品的基本字段。字段说明见 ItemField数据模型
+            /*"item_fields" => array(
+                [
+                    "field_name" => "商品描述",
+                    "value" => "商品足迹",
+                ],
+                [
+                    "field_name" => "商品类别",
+                    "value" => "实体商品",
+                ]
+            ),*/
+            //order_fields	OrderField[]	否	订单信息自定义字段，非订单基本字段列表。字段说明见 OrderField数据模型
+            /*"order_fields" => array(
+                [
+                    "field_name" => "买家手机号",
+                    "value" => "13607697385",
+                ],
+
+            )*/
+        );
+
+        if ($action == 1) {
+            $orderData['order_status'] = '查看';
+        } elseif ($action == 2) {
+            $orderData['order_status'] = '收藏';
+        } elseif ($action == 3) {
+            $orderData['order_status'] = '加购';
+            $orderData['amount'] = intval($val); //加购件数
+        } elseif ($action == 4) {
+            $orderData['order_status'] = '下单';
+        } elseif ($action == 5) {
+            $orderData['order_status'] = '支付';
+        }
+
+        $res = QyWeiBanService::importOrder($orderData);
+        return $res;
     }
 }

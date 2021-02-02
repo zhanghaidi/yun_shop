@@ -19,6 +19,7 @@ use app\common\modules\shop\models\Shop;
 use app\frontend\modules\member\services\factory\MemberFactory;
 use app\common\services\Session;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class ApiController extends BaseController
 {
@@ -154,5 +155,11 @@ class ApiController extends BaseController
           return $this->errorJson('请登录', ['login_status' => 0, 'login_url' => Url::absoluteApi('member.login.index', $queryString), 'extra' => $extra]);
 
         }
+    }
+    //转换时间戳
+    public function dataarticletime($times)
+    {
+        Carbon::setLocale('zh');
+        return Carbon::createFromTimestamp($times)->diffForHumans();
     }
 }

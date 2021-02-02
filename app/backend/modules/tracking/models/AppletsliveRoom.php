@@ -9,9 +9,16 @@
 namespace app\backend\modules\tracking\models;
 
 use Illuminate\Database\Eloquent\Model;
+use app\common\scopes\UniacidScope;
 
 class AppletsliveRoom extends Model
 {
+    public static function boot()
+    {
+        parent::boot();
+        self::addGlobalScope(new UniacidScope);
+    }
+
     //小程序直播插件 小程序直播间表
     protected $table = 'yz_appletslive_liveroom';
     protected $primaryKey = 'roomid';

@@ -7,9 +7,9 @@
  * Time: 15:20
  */
 namespace app\common\modules\wechat;
-
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use app\common\models\AccountWechats;
 
 class UnifyAccesstoken
 {
@@ -88,5 +88,27 @@ class UnifyAccesstoken
         $httpCode = curl_getinfo($ch,CURLINFO_HTTP_CODE);
         curl_close($ch);
         return $file_contents;
+    }
+
+    //获取微擎统生产环境统一AccessToken
+    public static function unifiedProductionAccessToken($appid)
+    {
+        $account_wachats = AccountWechats::where('key', $appid)->first();
+        if(!empty($account_wachats->uniacid)){
+            $type = 1;
+        }else{
+            $type = 4;
+        }
+
+        $url = "https://www.aijuyi.net/api/accesstoken.php?type={$type}&appid={$appid}&secret=secret";
+
+        $res = ihttp_get($url);
+        $content = @json_decode($res['content'],true);
+        if(!$content['accesstoken'] || array_key_exists('errno',$content['accesstoken'])){
+            return false;
+        }
+
+        return $content['accesstoken'];
+
     }
 }

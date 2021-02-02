@@ -14,6 +14,7 @@ use app\common\components\BaseController;
 use app\common\helpers\Url;
 use app\common\models\notice\MessageTemp;
 use Yunshop\Sign\Common\Services\SetService;
+use app\common\models\notice\MinAppTemplateMessage;
 
 class NoticeSetController extends BaseController
 {
@@ -25,9 +26,18 @@ class NoticeSetController extends BaseController
 
     public function see()
     {
+        $wechatTemplate = MessageTemp::select('id', 'title')
+            ->where('uniacid', \YunShop::app()->uniacid)
+            ->get()->toArray();
+
+        $minAppTemplate = MinAppTemplateMessage::select('id', 'title')
+            ->where('uniacid', \YunShop::app()->uniacid)
+            ->get()->toArray();
+
         return view($this->view_value,[
             'sign' => SetService::getSignSet(),
-            'temp_list' => MessageTemp::select('id', 'title')->get()
+            'temp_list' => $wechatTemplate,
+            'minapp_temp' => $minAppTemplate,
         ])->render();
     }
 
