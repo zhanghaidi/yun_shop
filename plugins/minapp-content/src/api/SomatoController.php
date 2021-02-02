@@ -4,7 +4,8 @@ namespace Yunshop\MinappContent\api;
 
 use app\common\components\ApiController;
 use app\common\models\Goods;
-use Exception;
+use app\common\AppAppExceptions\AppAppAppException;
+use app\common\AppAppExceptions\ShopAppAppException;
 use Illuminate\Support\Facades\Redis;
 use Yunshop\MinappContent\api\IndexController;
 use Yunshop\MinappContent\models\AcupointModel;
@@ -15,6 +16,7 @@ use Yunshop\MinappContent\models\LabelModel;
 use Yunshop\MinappContent\models\QuestionBankModel;
 use Yunshop\MinappContent\models\SomatoQuestionModel;
 use Yunshop\MinappContent\models\SomatoTypeModel;
+use Illuminate\Support\Facades\DB;
 
 class SomatoController extends ApiController
 {
@@ -359,7 +361,7 @@ class SomatoController extends ApiController
                 ->where('uniacid', \YunShop::app()->uniacid)->get();
         }
         if (isset($somatoTypeRs->recommend_goods[0])) {
-            $somatoTypeRs->goods = Goods::select('id', 'title', 'thumb', 'status', 'deleted_at')
+            $somatoTypeRs->goods = Goods::select('id', 'title', 'thumb', 'status', 'virtual_sales', 'show_sales', 'price', 'deleted_at')
                 ->whereIn('id', $somatoTypeRs->recommend_goods)
                 ->where('uniacid', \YunShop::app()->uniacid)
                 ->where('status', 1)
@@ -386,9 +388,9 @@ class SomatoController extends ApiController
         try {
             $qrcode = IndexController::qrcodeCreateUnlimit($memberId, $scene, $page, isset(\YunShop::request()->os) ? \YunShop::request()->os : '');
             if (!isset($qrcode->id) || !isset($qrcode->qrcode)) {
-                throw new Exception('小程序码生成错误');
+                throw new AppException('小程序码生成错误');
             }
-        } catch (Exception $e) {
+        } catch (AppException $e) {
             Log::info("生成小程序码失败", [
                 'qrcode' => isset($qrcode) ? $qrcode : '',
                 'page' => $page,
