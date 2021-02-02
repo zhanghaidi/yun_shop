@@ -68,7 +68,7 @@ class ArticleController extends ApiController
 
         $query = load()->object('query');
         $articleList = $query->from('diagnostic_service_article')
-            ->select('id', 'title', 'description', 'share_img', 'thumb', 'video', 'content', 'images', 'author', 'create_time', 'read_nums', 'like_nums', 'comment_nums')
+            ->select('id', 'title', 'description', 'share_img', 'thumb', 'video', 'content', 'images', 'author','avatar', 'create_time', 'read_nums', 'like_nums', 'comment_nums')
             ->where($where)
             ->orderby(array('list_order' => 'DESC', 'id' => 'DESC'))
             ->page($pindex, $psize)
@@ -100,7 +100,7 @@ class ArticleController extends ApiController
             return $this->errorJson('文章id不能为空');
         }
 
-        $articleInfo = pdo_get('diagnostic_service_article', array('id' => $id), array('id', 'title', 'description', 'content', 'share_img', 'thumb', 'video', 'uid', 'author', 'create_time', 'read_nums', 'like_nums', 'comment_nums', 'recommend_goods', 'recommend_acupotion', 'to_type_id'));
+        $articleInfo = pdo_get('diagnostic_service_article', array('id' => $id), array('id', 'title', 'description', 'content', 'share_img', 'thumb', 'video', 'uid', 'author','avatar', 'create_time', 'read_nums', 'like_nums', 'comment_nums', 'recommend_goods', 'recommend_acupotion', 'to_type_id'));
         if ($articleInfo) {
             $articleInfo['content'] = html_entity_decode($articleInfo['content']); //把 HTML 实体转换为字符
             Carbon::setLocale('zh');
