@@ -132,6 +132,25 @@
     </div>
 </div>
 <div class="form-group">
+    <label class=" col-sm-3 col-md-2 control-label">商品短标题</label>
+    <div class="col-sm-4 col-xs-12">
+        <input type="text" name="goods[short_title]"  class="form-control" value="{{$goods['short_title']}}" />
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label">商品副图</label>
+    <div class="col-sm-9 col-xs-12 col-md-6 detail-logo">
+        {!! app\common\helpers\ImageHelper::tplFormFieldImage('goods[short_thumb]', $goods['short_thumb']) !!}
+        <span class="help-block">建议尺寸: 640 * 640 ，或正方型图片 </span>
+        @if (!empty($goods['short_thumb']))
+            <a href='{{yz_tomedia($goods['short_thumb'])}}' target='_blank'>
+                <img src="{{yz_tomedia($goods['short_thumb'])}}" style='width:100px;border:1px solid #ccc;padding:1px' />
+            </a>
+        @endif
+    </div>
+</div>
+
+<div class="form-group">
     <label class="col-xs-12 col-sm-3 col-md-2 control-label">其他图片</label>
     <div class="col-sm-9  col-md-6 col-xs-12">
 
