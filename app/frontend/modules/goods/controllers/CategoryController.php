@@ -161,7 +161,7 @@ class CategoryController extends BaseController
 
         $goods_model = \app\common\modules\shop\ShopConfig::current()->get('goods.models.commodity_classification');
         $goods_model = new $goods_model;
-        $list = $goods_model->uniacid()->select(['yz_goods.id','yz_goods.title','yz_goods.thumb','yz_goods.market_price','yz_goods.price','yz_goods.cost_price','yz_goods.stock','yz_goods.real_sales','yz_goods.show_sales','yz_goods.virtual_sales','yz_goods.has_option'])
+        $list = $goods_model->uniacid()->select(['yz_goods.id','yz_goods.title','yz_goods.thumb','yz_goods.short_title','yz_goods.short_thumb','yz_goods.market_price','yz_goods.price','yz_goods.cost_price','yz_goods.stock','yz_goods.real_sales','yz_goods.show_sales','yz_goods.virtual_sales','yz_goods.has_option'])
             ->with(['hasManySpecs' => function ($query) {
             return $query->select('id', 'goods_id', 'title', 'description')->with(['hasManySpecsItem'=>function($query){
                 return $query->select('id', 'title', 'specid', 'thumb');
@@ -187,6 +187,11 @@ class CategoryController extends BaseController
                 $goodsModel->thumb = yz_tomedia($goodsModel->thumb,'image');
             } else {
                 $goodsModel->thumb = yz_tomedia($goodsModel->thumb);
+            }
+            if (strexists($goodsModel->short_thumb, 'image/')) {
+                $goodsModel->short_thumb = yz_tomedia($goodsModel->short_thumb,'image');
+            } else {
+                $goodsModel->short_thumb = yz_tomedia($goodsModel->short_thumb);
             }
 
             foreach ($goodsModel->hasManySpecs as &$spec) {
