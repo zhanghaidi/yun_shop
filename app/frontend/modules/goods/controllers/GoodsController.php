@@ -606,7 +606,7 @@ class GoodsController extends GoodsApiController
         }
 
 
-        $build = $goods_model->Search($requestSearch)->selectRaw("thumb,market_price,price,cost_price,title, " . DB::getTablePrefix() . "yz_goods.id as goods_id")
+        $build = $goods_model->Search($requestSearch)->selectRaw("thumb,market_price,price,cost_price,title,short_title,short_thumb, " . DB::getTablePrefix() . "yz_goods.id as goods_id")
             ->where("status", 1)
             ->where($where)
             ->whereInPluginIds();
@@ -623,7 +623,8 @@ class GoodsController extends GoodsApiController
         if ($list['total'] > 0) {
             $data = collect($list['data'])->map(function ($rows) {
                 return collect($rows)->map(function ($item, $key) {
-                    if ($key == 'thumb') {
+
+                    if ($key == 'thumb' || $key == 'short_thumb') {
                         return yz_tomedia($item);
                     } else {
                         return $item;
