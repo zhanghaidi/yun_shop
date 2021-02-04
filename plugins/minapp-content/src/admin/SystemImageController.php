@@ -76,7 +76,7 @@ class SystemImageController extends BaseController
             $image->jumpurl = isset($data['jumpurl']) ? $data['jumpurl'] : '';
             $image->appid = isset($data['appid']) ? $data['appid'] : '';
             $image->jumptype = isset($data['jumptype']) ? $data['jumptype'] : 0;
-            $image->aid = isset($data['aid']) ? $data['aid'] : 0;
+            $image->aid = isset($data['aid']) ? $data['aid'] : 45;
             $image->save();
             if (!isset($image->id) || $image->id <= 0) {
                 return $this->message('修改失败', '', 'danger');
