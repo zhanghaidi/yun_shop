@@ -109,7 +109,7 @@
                 </div>
             </div>
 
-            <div class="form-group">
+            <!-- <div class="form-group">
                 <label class="col-xs-12 col-sm-3 col-md-2 control-label">所属平台</label>
                 <div class="col-xs-12 col-sm-9 col-md-10">
                     <label class="radio-inline">
@@ -120,7 +120,7 @@
                     </label>
                     <span class="help-block">所属平台</span>
                 </div>
-            </div>
+            </div> -->
 
             <div class="form-group">
                 <label class="col-sm-2 control-label"></label>
