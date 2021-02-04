@@ -562,7 +562,7 @@ class GoodsController extends GoodsApiController
 
         $goods_model = \app\common\modules\shop\ShopConfig::current()->get('goods.models.commodity_classification');
         $goods_model = new $goods_model;
-        if (!in_array($order_field, ['price', 'show_sales', 'comment_num'])) {
+        if (!in_array($order_field, ['price', 'show_sales', 'comment_num', 'created_at'])) {
             $order_field = 'display_order';
         }
         $order_by = (\YunShop::request()->order_by == 'asc') ? 'asc' : 'desc';
