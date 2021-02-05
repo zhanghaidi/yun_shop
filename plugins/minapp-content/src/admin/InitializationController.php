@@ -19,6 +19,7 @@ use Yunshop\MinappContent\services\MinappContentService;
 class InitializationController extends BaseController
 {
     public $sourceAppid = 45;
+    public $sourceTwoAppid = 39;
 
     public function index()
     {
@@ -92,7 +93,7 @@ class InitializationController extends BaseController
 
     public function acupoint()
     {
-        if (\YunShop::app()->uniacid == $this->sourceAppid) {
+        if (\YunShop::app()->uniacid == $this->sourceAppid || \YunShop::app()->uniacid == $this->sourceTwoAppid) {
             return $this->errorJson('养居益自身项目数据，无需同步');
         }
         $update = (int) \YunShop::request()->update;
@@ -103,7 +104,7 @@ class InitializationController extends BaseController
         }
 
         // 经络信息迁移
-        $sourceRs = MeridianModel::where('uniacid', $this->sourceAppid)->get()->toArray();
+        $sourceRs = MeridianModel::whereIn('uniacid', [$this->sourceAppid, $this->sourceTwoAppid])->get()->toArray();
 
         $nowRs = MeridianModel::select('id', 'name', 'discription')
             ->where('uniacid', \YunShop::app()->uniacid)->get()->toArray();
@@ -196,7 +197,7 @@ class InitializationController extends BaseController
         }
 
         // 穴位信息迁移
-        $sourceRs = AcupointModel::where('uniacid', $this->sourceAppid)->get()->toArray();
+        $sourceRs = AcupointModel::whereIn('uniacid', [$this->sourceAppid, $this->sourceTwoAppid])->get()->toArray();
 
         $nowRs = AcupointModel::select('id', 'name')
             ->where('uniacid', \YunShop::app()->uniacid)->get()->toArray();
@@ -292,7 +293,7 @@ class InitializationController extends BaseController
             return $this->errorJson('穴位信息迁移出错了');
         }
 
-        $sourceRs = AcupointMerModel::where('uniacid', $this->sourceAppid)->get()->toArray();
+        $sourceRs = AcupointMerModel::whereIn('uniacid', [$this->sourceAppid, $this->sourceTwoAppid])->get()->toArray();
 
         if ($update == true) {
             AcupointMerModel::where('uniacid', \YunShop::app()->uniacid)->delete();
@@ -348,7 +349,7 @@ class InitializationController extends BaseController
 
     public function article()
     {
-        if (\YunShop::app()->uniacid == $this->sourceAppid) {
+        if (\YunShop::app()->uniacid == $this->sourceAppid || \YunShop::app()->uniacid == $this->sourceTwoAppid) {
             return $this->errorJson('养居益自身项目数据，无需同步');
         }
         $update = (int) \YunShop::request()->update;
@@ -359,7 +360,7 @@ class InitializationController extends BaseController
         }
 
         // 文章分类信息迁移
-        $sourceRs = ArticleCategoryModel::where('uniacid', $this->sourceAppid)->get()->toArray();
+        $sourceRs = ArticleCategoryModel::whereIn('uniacid', [$this->sourceAppid, $this->sourceTwoAppid])->get()->toArray();
 
         $nowRs = ArticleCategoryModel::select('id', 'name')
             ->where('uniacid', \YunShop::app()->uniacid)->get()->toArray();
@@ -428,7 +429,7 @@ class InitializationController extends BaseController
         }
 
         // 穴位ID对照关系
-        $sourceRs = AcupointModel::where('uniacid', $this->sourceAppid)->get()->toArray();
+        $sourceRs = AcupointModel::whereIn('uniacid', [$this->sourceAppid, $this->sourceTwoAppid])->get()->toArray();
 
         $nowRs = AcupointModel::select('id', 'name')
             ->where('uniacid', \YunShop::app()->uniacid)->get()->toArray();
@@ -447,7 +448,7 @@ class InitializationController extends BaseController
         }
 
         // 文章信息迁移
-        $sourceRs = ArticleModel::where('uniacid', $this->sourceAppid)->get()->toArray();
+        $sourceRs = ArticleModel::whereIn('uniacid', [$this->sourceAppid, $this->sourceTwoAppid])->get()->toArray();
 
         $nowRs = ArticleModel::select('id', 'title', 'description')
             ->where('uniacid', \YunShop::app()->uniacid)->get()->toArray();
@@ -548,7 +549,7 @@ class InitializationController extends BaseController
 
     public function question()
     {
-        if (\YunShop::app()->uniacid == $this->sourceAppid) {
+        if (\YunShop::app()->uniacid == $this->sourceAppid || \YunShop::app()->uniacid == $this->sourceTwoAppid) {
             return $this->errorJson('养居益自身项目数据，无需同步');
         }
         $update = (int) \YunShop::request()->update;
@@ -559,7 +560,7 @@ class InitializationController extends BaseController
         }
 
         // 症状标签信息迁移
-        $sourceRs = LabelModel::where('uniacid', $this->sourceAppid)->get()->toArray();
+        $sourceRs = LabelModel::whereIn('uniacid', [$this->sourceAppid, $this->sourceTwoAppid])->get()->toArray();
 
         $nowRs = LabelModel::select('id', 'name', 'type')
             ->where('uniacid', \YunShop::app()->uniacid)->get()->toArray();
@@ -628,7 +629,7 @@ class InitializationController extends BaseController
         }
 
         // 穴位ID对照关系
-        $sourceRs = AcupointModel::where('uniacid', $this->sourceAppid)->get()->toArray();
+        $sourceRs = AcupointModel::whereIn('uniacid', [$this->sourceAppid, $this->sourceTwoAppid])->get()->toArray();
 
         $nowRs = AcupointModel::select('id', 'name')
             ->where('uniacid', \YunShop::app()->uniacid)->get()->toArray();
@@ -647,7 +648,7 @@ class InitializationController extends BaseController
         }
 
         // 文章ID对照关系
-        $sourceRs = ArticleModel::where('uniacid', $this->sourceAppid)->get()->toArray();
+        $sourceRs = ArticleModel::whereIn('uniacid', [$this->sourceAppid, $this->sourceTwoAppid])->get()->toArray();
 
         $nowRs = ArticleModel::select('id', 'title', 'description')
             ->where('uniacid', \YunShop::app()->uniacid)->get()->toArray();
@@ -669,7 +670,7 @@ class InitializationController extends BaseController
         }
 
         // 体质信息迁移
-        $sourceRs = SomatoTypeModel::where('uniacid', $this->sourceAppid)->get()->toArray();
+        $sourceRs = SomatoTypeModel::whereIn('uniacid', [$this->sourceAppid, $this->sourceTwoAppid])->get()->toArray();
 
         $nowRs = SomatoTypeModel::select('id', 'name')
             ->where('uniacid', \YunShop::app()->uniacid)->get()->toArray();
@@ -778,7 +779,7 @@ class InitializationController extends BaseController
         }
 
         // 测评题库信息迁移
-        $sourceRs = QuestionBankModel::where('uniacid', $this->sourceAppid)->get()->toArray();
+        $sourceRs = QuestionBankModel::whereIn('uniacid', [$this->sourceAppid, $this->sourceTwoAppid])->get()->toArray();
 
         $nowRs = QuestionBankModel::select('id', 'title')
             ->where('uniacid', \YunShop::app()->uniacid)->get()->toArray();
@@ -868,7 +869,7 @@ class InitializationController extends BaseController
             return $this->errorJson('测评题库信息迁移出错了');
         }
 
-        $sourceRs = SomatoQuestionModel::where('uniacid', $this->sourceAppid)->get()->toArray();
+        $sourceRs = SomatoQuestionModel::whereIn('uniacid', [$this->sourceAppid, $this->sourceTwoAppid])->get()->toArray();
 
         if ($update == true) {
             SomatoQuestionModel::where('uniacid', \YunShop::app()->uniacid)->delete();
@@ -920,7 +921,7 @@ class InitializationController extends BaseController
 
     public function post()
     {
-        if (\YunShop::app()->uniacid == $this->sourceAppid) {
+        if (\YunShop::app()->uniacid == $this->sourceAppid || \YunShop::app()->uniacid == $this->sourceTwoAppid) {
             return $this->errorJson('养居益自身项目数据，无需同步');
         }
         $update = (int) \YunShop::request()->update;
@@ -931,7 +932,7 @@ class InitializationController extends BaseController
         }
 
         // 话题版块信息迁移
-        $sourceRs = SnsBoardModel::where('uniacid', $this->sourceAppid)->get()->toArray();
+        $sourceRs = SnsBoardModel::whereIn('uniacid', [$this->sourceAppid, $this->sourceTwoAppid])->get()->toArray();
 
         $nowRs = SnsBoardModel::select('id', 'name')
             ->where('uniacid', \YunShop::app()->uniacid)->get()->toArray();
@@ -1000,7 +1001,7 @@ class InitializationController extends BaseController
         }
 
         // 话题信息迁移
-        $sourceRs = PostModel::where('uniacid', $this->sourceAppid)
+        $sourceRs = PostModel::whereIn('uniacid', [$this->sourceAppid, $this->sourceTwoAppid])
             ->where('type', 2)->get()->toArray();
 
         $nowRs = PostModel::select('id', 'title', 'create_time')
