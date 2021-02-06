@@ -199,7 +199,6 @@
 <div class="form-group">
     <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span ></span>商品价格</label>
     <div class="col-sm-9 col-xs-12 form-inline">
-        <input type="text" name="goods[sales_one_name]"   class="form-control" value="{{$goods['sales_one_name']}}" />
         <div class="input-group form-group col-sm-3">
             <span class="input-group-addon">现价</span>
             <input type="text" name="goods[price]" id="product_price" class="form-control" value="{{$goods['price'] ? : 0}}" />
@@ -221,9 +220,33 @@
 </div>
 
 <div class="form-group">
-    <label class=" col-sm-3 col-md-2 control-label">促销关键词</label>
-    <div class="col-sm-4 col-xs-12">
-        <input type="text" name="goods[sales_two_name]"  class="form-control" value="{{$goods['sales_two_name']}}" />
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label">活动标识图片</label>
+    <div class="col-sm-9 col-xs-12 col-md-6 detail-logo">
+        {!! app\common\helpers\ImageHelper::tplFormFieldImage('goods[sales_one_name_url]', $goods['sales_one_name_url']) !!}
+        <span class="help-block">建议尺寸: 高度建议33PX，宽度自适应</span>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class=" col-sm-3 col-md-2 control-label">活动背景</label>
+    <div class="col-sm-9 col-xs-12 form-inline">
+        <div class="input-group form-group col-sm-3">
+            <span class="input-group-addon">文字</span>
+            <input type="text" name="goods[sales_two_name]" class="form-control" value="{{$goods['sales_two_name']}}" />
+        </div>
+        <div class="input-group form-group col-sm-3">
+            <span class="input-group-addon">颜色RGB值</span>
+            <input type="text" name="goods[sales_two_name_color]" class="form-control" value="{{$goods['sales_two_name_color']}}" />
+        </div>
+        <span class='help-block'>活动背景文字请控制在8个字，颜色RGB值以#开头</span>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label">活动背景图片</label>
+    <div class="col-sm-9 col-xs-12 col-md-6 detail-logo">
+        {!! app\common\helpers\ImageHelper::tplFormFieldImage('goods[sales_two_name_url]', $goods['sales_two_name_url']) !!}
+        <span class="help-block">建议尺寸: 高度建议135PX，宽度750PX</span>
     </div>
 </div>
 
