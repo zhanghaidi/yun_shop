@@ -183,6 +183,16 @@ class GoodsController extends GoodsApiController
             }
             $goodsModel->thumb_url = $thumb_url;
         }
+        if (isset($goodsModel->sales_one_name_url[0])) {
+            $goodsModel->sales_one_name_url = yz_tomedia($goodsModel->sales_one_name_url);
+        }
+        if (isset($goodsModel->sales_two_name_color[0]) && $goodsModel->sales_two_name_color[0] == '#') {
+        }else{
+            $goodsModel->sales_two_name_color = '#000000';
+        }
+        if (isset($goodsModel->sales_two_name_url[0])) {
+            $goodsModel->sales_two_name_url = yz_tomedia($goodsModel->sales_two_name_url);
+        }
 
         //商品视频处理
         if (!is_null($goodsModel->hasOneGoodsVideo) && $goodsModel->hasOneGoodsVideo->goods_video) {
