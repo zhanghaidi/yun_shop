@@ -53,13 +53,15 @@ class IndexController extends ApiController
             return $this->errorJson('label未发现');
         }
 
-        $cacheKey = 'AJX:MAC:A:IC:B:' . $label;
+        $cacheKey = 'AJX:MAC:A:IC:B:' . \YunShop::app()->uniacid . ':' . $label;
         $result = Redis::get($cacheKey);
         if ($result !== false && $result !== null) {
             return $this->successJson('success', json_decode($result, true));
         }
 
-        $positionRs = BannerPositionModel::select('id')->where('label', $label)->first();
+        $positionRs = BannerPositionModel::select('id')
+            ->where('label', $label)
+            ->where('uniacid', \YunShop::app()->uniacid)->first();
         if (!isset($positionRs->id)) {
             return $this->errorJson('position未发现');
         }
