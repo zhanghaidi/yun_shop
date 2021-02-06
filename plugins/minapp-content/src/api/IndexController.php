@@ -541,7 +541,7 @@ class IndexController extends ApiController
     //    首页热区
     public function hotSpot()
     {
-        $cache_key = 'hotSpot' . $this->uniacid;
+        $cache_key = 'hotSpot' . \YunShop::app()->uniacid;
         $hotSpot = Cache::get($cache_key);
         if(!$hotSpot){
             $hotSpot = HotSpotModel::uniacid()
