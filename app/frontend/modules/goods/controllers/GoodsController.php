@@ -183,6 +183,16 @@ class GoodsController extends GoodsApiController
             }
             $goodsModel->thumb_url = $thumb_url;
         }
+        if (isset($goodsModel->sales_one_name_url[0])) {
+            $goodsModel->sales_one_name_url = yz_tomedia($goodsModel->sales_one_name_url);
+        }
+        if (isset($goodsModel->sales_two_name_color[0]) && $goodsModel->sales_two_name_color[0] == '#') {
+        }else{
+            $goodsModel->sales_two_name_color = '#000000';
+        }
+        if (isset($goodsModel->sales_two_name_url[0])) {
+            $goodsModel->sales_two_name_url = yz_tomedia($goodsModel->sales_two_name_url);
+        }
 
         //商品视频处理
         if (!is_null($goodsModel->hasOneGoodsVideo) && $goodsModel->hasOneGoodsVideo->goods_video) {
@@ -606,7 +616,7 @@ class GoodsController extends GoodsApiController
         }
 
 
-        $build = $goods_model->Search($requestSearch)->selectRaw("thumb,market_price,price,cost_price,title,short_title,short_thumb, " . DB::getTablePrefix() . "yz_goods.id as goods_id")
+        $build = $goods_model->Search($requestSearch)->selectRaw("thumb,market_price,price,cost_price,title,short_title,short_thumb, " . DB::getTablePrefix() . "yz_goods.id as goods_id, sales_one_name_url")
             ->where("status", 1)
             ->where($where)
             ->whereInPluginIds();
@@ -624,7 +634,7 @@ class GoodsController extends GoodsApiController
             $data = collect($list['data'])->map(function ($rows) {
                 return collect($rows)->map(function ($item, $key) {
 
-                    if ($key == 'thumb' || $key == 'short_thumb') {
+                    if ($key == 'thumb' || $key == 'short_thumb' || $key == 'sales_one_name_url') {
                         return yz_tomedia($item);
                     } else {
                         return $item;
